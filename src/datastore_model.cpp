@@ -30,7 +30,7 @@ QVariant DatastoreEntryModel::data(const QModelIndex& index, const int role) con
 {
 	if (role == Qt::DisplayRole)
 	{
-		if (index.row() < entries.size())
+		if (index.row() < static_cast<int>(entries.size()))
 		{
 			if (index.column() == 0)
 			{
@@ -94,7 +94,7 @@ QVariant DatastoreEntryVersionModel::data(const QModelIndex& index, const int ro
 {
 	if (role == Qt::DisplayRole)
 	{
-		if (index.row() < versions.size())
+		if (index.row() < static_cast<int>(versions.size()))
 		{
 			if (index.column() == 0)
 			{
@@ -102,7 +102,7 @@ QVariant DatastoreEntryVersionModel::data(const QModelIndex& index, const int ro
 			}
 			else if (index.column() == 1)
 			{
-				return versions.at(index.row()).get_content_length();
+				return static_cast<unsigned long long>(versions.at(index.row()).get_content_length());
 			}
 			else if (index.column() == 2)
 			{

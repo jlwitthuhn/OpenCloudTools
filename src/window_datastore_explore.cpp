@@ -257,7 +257,7 @@ void ExploreDatastoreWindow::universe_list_changed()
 	if (this_profile)
 	{
 		select_universe_combo->clear();
-		for (const std::pair<long long, QString>& this_universe : this_profile->universe_ids())
+		for (const std::pair<const long long, QString>& this_universe : this_profile->universe_ids())
 		{
 			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.second).arg(this_universe.first);
 			select_universe_combo->addItem(formatted, QVariant{ this_universe.first });

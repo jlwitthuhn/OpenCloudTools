@@ -149,7 +149,7 @@ QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional
 	return HttpRequestBuilder::delete_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name);
 }
 
-void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
@@ -378,12 +378,12 @@ QString PostStandardDatastoreEntryRequest::get_title_string() const
 	return "Uploading new entry...";
 }
 
-QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString> cursor)
+QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>)
 {
 	return HttpRequestBuilder::post_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name, body_md5, userids, attributes);
 }
 
-void PostStandardDatastoreEntryRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	success = true;
 	emit status_message(QString{ "Complete" });

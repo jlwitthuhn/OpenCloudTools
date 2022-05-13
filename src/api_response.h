@@ -66,7 +66,7 @@ public:
 	const QString& get_version() const { return version; }
 	const QString& get_userids() const { return userids; }
 	const std::optional<QString>& get_attributes() const { return attributes; }
-	const DatastoreEntryType get_entry_type() const { return entry_type; }
+	DatastoreEntryType get_entry_type() const { return entry_type; }
 	const QString& get_data_decoded() const { return data_decoded; }
 	const QString& get_data_raw() const { return data_raw; }
 

@@ -183,7 +183,7 @@ void UserSettings::save_to_disk()
 	settings.beginWriteArray("list");
 	{
 		int next_array_index = 0;
-		for (std::pair<uint, ApiKeyProfile> this_pair : api_keys)
+		for (const std::pair<const uint, ApiKeyProfile>& this_pair : api_keys)
 		{
 			if (this_pair.second.save_to_disk())
 			{
@@ -195,7 +195,7 @@ void UserSettings::save_to_disk()
 				settings.beginWriteArray("universe_ids");
 				{
 					int next_universe_array_index = 0;
-					for (const auto this_inner_pair : this_pair.second.universe_ids())
+					for (const std::pair<const long long, QString>& this_inner_pair : this_pair.second.universe_ids())
 					{
 						settings.setArrayIndex(next_universe_array_index++);
 						settings.setValue("universe_id", this_inner_pair.first);
