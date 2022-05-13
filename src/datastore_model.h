@@ -1,0 +1,40 @@
+#pragma once
+
+#include <optional>
+#include <vector>
+
+#include <QAbstractTableModel>
+
+#include "api_response.h"
+
+class DatastoreEntryModel : public QAbstractTableModel
+{
+	Q_OBJECT
+public:
+	DatastoreEntryModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries);
+
+	std::optional<StandardDatastoreEntry> get_entry(size_t row_index) const;
+
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+	virtual int columnCount(const QModelIndex& parent = QModelIndex{}) const override;
+	virtual int rowCount(const QModelIndex& parent = QModelIndex{}) const override;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+	std::vector<StandardDatastoreEntry> entries;
+};
+
+class DatastoreEntryVersionModel : public QAbstractTableModel
+{
+	Q_OBJECT
+public:
+	DatastoreEntryVersionModel(QObject* parent, const std::vector<StandardDatastoreEntryVersion>& versions);
+
+	std::optional<StandardDatastoreEntryVersion> get_version(size_t row_index) const;
+
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+	virtual int columnCount(const QModelIndex& parent = QModelIndex{}) const override;
+	virtual int rowCount(const QModelIndex& parent = QModelIndex{}) const override;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+	std::vector<StandardDatastoreEntryVersion> versions;
+};
