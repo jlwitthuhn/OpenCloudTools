@@ -25,6 +25,7 @@ AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };
 		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+        info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 		info_layout->addRow("Name", name_edit);
 		info_layout->addRow("Universe ID", id_edit);
 	}

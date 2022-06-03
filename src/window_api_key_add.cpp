@@ -27,7 +27,6 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<uint, 
 	QWidget* info_panel = new QWidget{ this };
 	{
 		name_edit = new QLineEdit{ info_panel };
-		name_edit->setMinimumWidth(280);
 		if (existing)
 		{
 			name_edit->setText(existing->second.name());
@@ -35,7 +34,6 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<uint, 
 		connect(name_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
 		key_edit = new QLineEdit{ info_panel };
-		key_edit->setMinimumWidth(280);
 		if (existing)
 		{
 			key_edit->setText(existing->second.key());
@@ -56,6 +54,7 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<uint, 
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };
 		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+        info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 		info_layout->addRow("Name", name_edit);
 		info_layout->addRow("Key", key_edit);
 		info_layout->addRow("", production_check);
