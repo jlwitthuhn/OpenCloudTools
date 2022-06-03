@@ -110,105 +110,112 @@ ExploreDatastoreWindow::ExploreDatastoreWindow(QWidget* parent, QString title, Q
 			left_bar_layout->addWidget(select_datastore_widget);
 		}
 
-		QGroupBox* right_bar_widget = new QGroupBox{ "Keys", central_widget};
-		{
-			QSizePolicy right_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
-			right_size_policy.setHorizontalStretch(2);
-			right_bar_widget->setSizePolicy(right_size_policy);
+        QWidget* right_bar_widget = new QWidget{ central_widget };
+        {
+            QGroupBox* right_group_box = new QGroupBox{ "Keys", right_bar_widget };
+            {
+                QSizePolicy right_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
+                right_size_policy.setHorizontalStretch(2);
+                right_group_box->setSizePolicy(right_size_policy);
 
-			QWidget* right_top_widget = new QWidget{ right_bar_widget };
-			{
-				QLabel* datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
+                QWidget* right_top_widget = new QWidget{ right_group_box };
+                {
+                    QLabel* datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
 
-				datastore_name_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastoreWindow::search_text_changed);
+                    datastore_name_edit = new QLineEdit{ right_top_widget };
+                    connect(datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastoreWindow::search_text_changed);
 
-				QLabel* datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
+                    QLabel* datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
 
-				datastore_scope_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastoreWindow::search_text_changed);
+                    datastore_scope_edit = new QLineEdit{ right_top_widget };
+                    connect(datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastoreWindow::search_text_changed);
 
-				QLabel* datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
+                    QLabel* datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
 
-				datastore_key_name_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastoreWindow::search_text_changed);
+                    datastore_key_name_edit = new QLineEdit{ right_top_widget };
+                    connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastoreWindow::search_text_changed);
 
-				QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
-				right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_top_layout->addWidget(datastore_name_label);
-				right_top_layout->addWidget(datastore_name_edit);
-				right_top_layout->addWidget(datastore_scope_label);
-				right_top_layout->addWidget(datastore_scope_edit);
-				right_top_layout->addWidget(datastore_key_name_label);
-				right_top_layout->addWidget(datastore_key_name_edit);
-			}
+                    QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
+                    right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+                    right_top_layout->addWidget(datastore_name_label);
+                    right_top_layout->addWidget(datastore_name_edit);
+                    right_top_layout->addWidget(datastore_scope_label);
+                    right_top_layout->addWidget(datastore_scope_edit);
+                    right_top_layout->addWidget(datastore_key_name_label);
+                    right_top_layout->addWidget(datastore_key_name_edit);
+                }
 
-			QWidget* right_top_button_widget = new QWidget{ right_bar_widget };
-			{
-				find_all_button = new QPushButton{ "Find all", right_top_button_widget };
-				connect(find_all_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_find_all);
+                QWidget* right_top_button_widget = new QWidget{ right_group_box };
+                {
+                    find_all_button = new QPushButton{ "Find all", right_top_button_widget };
+                    connect(find_all_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_find_all);
 
-				find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
-				connect(find_prefix_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_find_prefix);
+                    find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
+                    connect(find_prefix_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_find_prefix);
 
-				QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
-				find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
+                    QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
+                    find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
 
-				find_limit_edit = new QLineEdit{ right_top_button_widget };
-				find_limit_edit->setText("1200");
-				find_limit_edit->setFixedWidth(60);
+                    find_limit_edit = new QLineEdit{ right_top_button_widget };
+                    find_limit_edit->setText("1200");
+                    find_limit_edit->setFixedWidth(60);
 
-				QHBoxLayout* right_top_button_layout = new QHBoxLayout{ right_top_button_widget };
-				right_top_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_top_button_layout->addWidget(find_all_button);
-				right_top_button_layout->addWidget(find_prefix_button);
-				right_top_button_layout->addWidget(find_limit_label);
-				right_top_button_layout->addWidget(find_limit_edit);
-			}
+                    QHBoxLayout* right_top_button_layout = new QHBoxLayout{ right_top_button_widget };
+                    right_top_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+                    right_top_button_layout->addWidget(find_all_button);
+                    right_top_button_layout->addWidget(find_prefix_button);
+                    right_top_button_layout->addWidget(find_limit_label);
+                    right_top_button_layout->addWidget(find_limit_edit);
+                }
 
-			datastore_entry_tree = new QTreeView{ right_bar_widget };
-			connect(datastore_entry_tree, &QTreeView::pressed, this, &ExploreDatastoreWindow::handle_datastore_entry_selection_changed);
+                datastore_entry_tree = new QTreeView{ right_group_box };
+                connect(datastore_entry_tree, &QTreeView::pressed, this, &ExploreDatastoreWindow::handle_datastore_entry_selection_changed);
 
-			QWidget* right_read_buttons = new QWidget{ right_bar_widget };
-			{
-				view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
-				connect(view_entry_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_view_entry);
+                QWidget* right_read_buttons = new QWidget{ right_group_box };
+                {
+                    view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
+                    connect(view_entry_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_view_entry);
 
-				view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
-				connect(view_versions_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_view_versions);
+                    view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
+                    connect(view_versions_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_view_versions);
 
-				QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
-				right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_read_layout->addWidget(view_entry_button);
-				right_read_layout->addWidget(view_versions_button);
-			}
+                    QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
+                    right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+                    right_read_layout->addWidget(view_entry_button);
+                    right_read_layout->addWidget(view_versions_button);
+                }
 
-			QFrame* right_separator = new QFrame{ right_bar_widget };
-			right_separator->setFrameShape(QFrame::HLine);
-			right_separator->setFrameShadow(QFrame::Sunken);
+                QFrame* right_separator = new QFrame{ right_group_box };
+                right_separator->setFrameShape(QFrame::HLine);
+                right_separator->setFrameShadow(QFrame::Sunken);
 
-			QWidget* right_edit_buttons = new QWidget{ right_bar_widget };
-			{
-				edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
-				connect(edit_entry_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_edit_entry);
+                QWidget* right_edit_buttons = new QWidget{ right_group_box };
+                {
+                    edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
+                    connect(edit_entry_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_edit_entry);
 
-				delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
-				connect(delete_entry_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_delete_entry);
+                    delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
+                    connect(delete_entry_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_delete_entry);
 
-				QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
-				right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_edit_layout->addWidget(edit_entry_button);
-				right_edit_layout->addWidget(delete_entry_button);
-			}
+                    QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
+                    right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+                    right_edit_layout->addWidget(edit_entry_button);
+                    right_edit_layout->addWidget(delete_entry_button);
+                }
 
-			QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar_widget };
-			right_bar_layout->addWidget(right_top_widget);
-			right_bar_layout->addWidget(right_top_button_widget);
-			right_bar_layout->addWidget(datastore_entry_tree);
-			right_bar_layout->addWidget(right_read_buttons);
-			right_bar_layout->addWidget(right_separator);
-			right_bar_layout->addWidget(right_edit_buttons);
-		}
+                QVBoxLayout* right_box_layout = new QVBoxLayout{ right_group_box };
+                right_box_layout->addWidget(right_top_widget);
+                right_box_layout->addWidget(right_top_button_widget);
+                right_box_layout->addWidget(datastore_entry_tree);
+                right_box_layout->addWidget(right_read_buttons);
+                right_box_layout->addWidget(right_separator);
+                right_box_layout->addWidget(right_edit_buttons);
+            }
+
+            QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar_widget };
+            right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+            right_bar_layout->addWidget(right_group_box);
+        }
 
 		QHBoxLayout* central_layout = new QHBoxLayout{ central_widget };
 		central_layout->addWidget(left_bar_widget);
