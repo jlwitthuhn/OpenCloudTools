@@ -222,6 +222,8 @@ ExploreDatastoreWindow::ExploreDatastoreWindow(QWidget* parent, QString title, Q
 		central_layout->addWidget(right_bar_widget);
 	}
 	setCentralWidget(central_widget);
+    
+    setMinimumHeight(500);
 
 	selected_universe_changed();
 	selected_datastore_changed();

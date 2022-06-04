@@ -29,7 +29,7 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	connect(close_button, &QPushButton::clicked, this, &OperationInProgressDialog::close);
 
 	setMinimumWidth(330);
-	setMinimumHeight(200);
+	setMinimumHeight(240);
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(top_label);
@@ -40,7 +40,7 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	connect(request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
 	connect(request, &DataRequest::status_message, this, &OperationInProgressDialog::handle_status_message);
 
-	resize(330, 240);
+	resize(330, 280);
 
 	if (std::optional<QString> message = wed())
 	{
