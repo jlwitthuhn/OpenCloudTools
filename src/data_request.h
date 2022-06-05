@@ -43,6 +43,8 @@ protected:
 
 	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{});
 
+	virtual QString get_send_message() const;
+
 	void handle_reply_ready();
 	void resend();
 
@@ -134,6 +136,7 @@ protected:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+	virtual QString get_send_message() const;
 
 	long long universe_id;
 	QString datastore_name;

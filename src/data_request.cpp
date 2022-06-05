@@ -47,7 +47,7 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
-	emit status_message(QString{ "Sending request..." });
+	emit status_message(get_send_message());
 }
 
 DataRequest::DataRequest(QObject* const parent, const QString& api_key) : QObject{ parent }, api_key{ api_key }
@@ -59,6 +59,11 @@ void DataRequest::handle_http_404(const QString& body, const QList<QNetworkReply
 {
 	emit status_message(QString{ "Received HTTP 404, aborting" });
 	emit status_message(body);
+}
+
+QString DataRequest::get_send_message() const
+{
+	return QString{ "Sending request..." };
 }
 
 void DataRequest::handle_reply_ready()
@@ -319,6 +324,11 @@ void GetStandardDatastoreEntryRequest::handle_http_404(const QString& body, cons
 
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
+}
+
+QString GetStandardDatastoreEntryRequest::get_send_message() const
+{
+	return QString{ "Sending request for '%1'..." }.arg(key_name);
 }
 
 GetStandardDatastoreEntryAtVersionRequest::GetStandardDatastoreEntryAtVersionRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version) :
