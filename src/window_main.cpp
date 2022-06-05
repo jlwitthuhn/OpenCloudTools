@@ -1,4 +1,4 @@
-#include "window_datastore_explore.h"
+#include "window_main.h"
 
 #include <QAction>
 #include <QComboBox>

@@ -10,7 +10,7 @@
 
 #include "user_settings.h"
 #include "window_api_key_add.h"
-#include "window_datastore_explore.h"
+#include "window_main.h"
 
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {

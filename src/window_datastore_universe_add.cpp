@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 
 #include "user_settings.h"
-#include "window_datastore_explore.h"
+#include "window_main.h"
 
 AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent) : QWidget{ parent, Qt::Window }
 {

@@ -48,10 +48,10 @@ add_executable(OpenCloudTools
 	./src/window_datastore_download.h
 	./src/window_datastore_download_progress.cpp
 	./src/window_datastore_download_progress.h
-	./src/window_datastore_explore.cpp
-	./src/window_datastore_explore.h
 	./src/window_datastore_universe_add.cpp
 	./src/window_datastore_universe_add.h
+	./src/window_main.cpp
+	./src/window_main.h
 	./src/window_view_datastore_entry.cpp
 	./src/window_view_datastore_entry.h
 	./src/window_view_datastore_entry_versions.cpp
