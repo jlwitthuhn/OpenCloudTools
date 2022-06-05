@@ -1,4 +1,4 @@
-#include "window_view_datastore_entry.h"
+#include "window_datastore_entry_view.h"
 
 #include <QFormLayout>
 #include <QGroupBox>

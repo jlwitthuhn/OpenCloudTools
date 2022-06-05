@@ -24,9 +24,9 @@
 #include "user_settings.h"
 #include "window_api_key_manage.h"
 #include "window_datastore_download.h"
+#include "window_datastore_entry_versions_view.h"
+#include "window_datastore_entry_view.h"
 #include "window_datastore_universe_add.h"
-#include "window_view_datastore_entry.h"
-#include "window_view_datastore_entry_versions.h"
 
 MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QMainWindow{ parent, Qt::Window }, api_key { api_key }
 {
