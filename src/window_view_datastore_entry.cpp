@@ -43,16 +43,19 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 		}
 	}
 
-	QString displayed_userids = details.get_userids();
-	if (std::optional<QString> formatted = format_json(displayed_userids))
+	std::optional<QString> displayed_userids = details.get_userids();
+	if (displayed_userids)
 	{
-		displayed_userids = *formatted;
+		if (std::optional<QString> formatted = format_json(*displayed_userids))
+		{
+			displayed_userids = *formatted;
+		}
 	}
 
-	std::optional<QString> displayed_attributes;
-	if (details.get_attributes())
+	std::optional<QString> displayed_attributes = details.get_attributes();
+	if (displayed_attributes)
 	{
-		if (std::optional<QString> formatted = format_json(*details.get_attributes()))
+		if (std::optional<QString> formatted = format_json(*displayed_attributes))
 		{
 			displayed_attributes = *formatted;
 		}
@@ -128,9 +131,12 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 				data_edit->setReadOnly(true);
 				data_edit->setText(displayed_data);
 
-				userids_edit = new QTextEdit{ tab_widget };
-				userids_edit->setReadOnly(true);
-				userids_edit->setText(displayed_userids);
+				if (displayed_userids)
+				{
+					userids_edit = new QTextEdit{ tab_widget };
+					userids_edit->setReadOnly(true);
+					userids_edit->setText(*displayed_userids);
+				}
 
 				if (displayed_attributes)
 				{
@@ -140,7 +146,10 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 				}
 
 				tab_widget->addTab(data_edit, "Data");
-				tab_widget->addTab(userids_edit, "User IDs");
+				if (userids_edit != nullptr)
+				{
+					tab_widget->addTab(userids_edit, "User IDs");
+				}
 				if (attributes_edit != nullptr)
 				{
 					tab_widget->addTab(attributes_edit, "Attributes");
@@ -161,7 +170,10 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 				new_data_edit->setText(displayed_data);
 
 				new_userids_edit = new QTextEdit{ tab_widget };
-				new_userids_edit->setText(displayed_userids);
+				if (displayed_userids)
+				{
+					new_userids_edit->setText(*displayed_userids);
+				}
 
 				new_attributes_edit = new QTextEdit{ tab_widget };
 				if (displayed_attributes)

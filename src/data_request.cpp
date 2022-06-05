@@ -306,13 +306,8 @@ void GetStandardDatastoreEntryRequest::handle_http_200(const QString& body, cons
 		emit status_message("Error, response did not contain version");
 		return;
 	}
-	if (!userids)
-	{
-		emit status_message("Error, response did not contain userids");
-		return;
-	}
 
-	response = GetStandardDatastoreEntryDetailsResponse::from(universe_id, datastore_name, scope, key_name, *version, *userids, attributes, body);
+	response = GetStandardDatastoreEntryDetailsResponse::from(universe_id, datastore_name, scope, key_name, *version, userids, attributes, body);
 
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
@@ -383,7 +378,7 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 	}
 }
 
-PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString userids, std::optional<QString> attributes, QString body)
+PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body)
 	: DataRequest{ parent, api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, userids{ userids }, attributes{ attributes }
 {
 	request_type = HttpRequestType::Post;

@@ -57,14 +57,14 @@ private:
 class DatastoreEntryWithDetails
 {
 public:
-	DatastoreEntryWithDetails(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const QString& userids, const std::optional<QString>& attributes, const QString& data);
+	DatastoreEntryWithDetails(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data);
 
 	long long get_universe_id() const { return universe_id; }
 	const QString& get_datastore_name() const { return datastore_name; }
 	const QString& get_scope() const { return scope; }
 	const QString& get_key_name() const { return key_name; }
 	const QString& get_version() const { return version; }
-	const QString& get_userids() const { return userids; }
+	const std::optional<QString>& get_userids() const { return userids; }
 	const std::optional<QString>& get_attributes() const { return attributes; }
 	DatastoreEntryType get_entry_type() const { return entry_type; }
 	const QString& get_data_decoded() const { return data_decoded; }
@@ -76,7 +76,7 @@ private:
 	QString scope;
 	QString key_name;
 	QString version;
-	QString userids;
+	std::optional<QString> userids;
 	std::optional<QString> attributes;
 	DatastoreEntryType entry_type;
 	QString data_decoded;
@@ -86,12 +86,12 @@ private:
 class GetStandardDatastoreEntryDetailsResponse
 {
 public:
-	static std::optional<GetStandardDatastoreEntryDetailsResponse> from(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const QString& userids, const std::optional<QString>& attributes, const QString& body);
+	static std::optional<GetStandardDatastoreEntryDetailsResponse> from(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& body);
 
 	DatastoreEntryWithDetails get_details() const { return details; }
 
 private:
-	GetStandardDatastoreEntryDetailsResponse(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const QString& userids, const std::optional<QString>& attributes, const QString& data);
+	GetStandardDatastoreEntryDetailsResponse(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data);
 
 	DatastoreEntryWithDetails details;
 };

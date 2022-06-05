@@ -94,7 +94,7 @@ QNetworkRequest HttpRequestBuilder::get_standard_datastore_entry_versions(const 
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::post_standard_datastore_entry(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& body_md5, const QString& userids, const std::optional<QString>& attributes)
+QNetworkRequest HttpRequestBuilder::post_standard_datastore_entry(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& body_md5, const std::optional<QString>& userids, const std::optional<QString>& attributes)
 {
 	QString url = datastore_base_url(universe_id) + "/standard-datastores/datastore/entries/entry";
 	url = url + "?datastoreName=" + QUrl::toPercentEncoding(datastore_name);
@@ -104,7 +104,10 @@ QNetworkRequest HttpRequestBuilder::post_standard_datastore_entry(const QString&
 	QNetworkRequest req{ url };
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
-	req.setRawHeader("roblox-entry-userids", userids.toStdString().c_str());
+	if (userids)
+	{
+		req.setRawHeader("roblox-entry-userids", userids->toStdString().c_str());
+	}
 	if (attributes)
 	{
 		req.setRawHeader("roblox-entry-attributes", attributes->toStdString().c_str());

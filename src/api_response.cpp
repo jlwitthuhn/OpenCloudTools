@@ -127,7 +127,7 @@ std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesRe
 	}
 }
 
-DatastoreEntryWithDetails::DatastoreEntryWithDetails(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const QString& userids, const std::optional<QString>& attributes, const QString& data) :
+DatastoreEntryWithDetails::DatastoreEntryWithDetails(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data) :
 	universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, version{ version }, userids{ userids }, attributes{ attributes }, data_raw{ data }
 {
 	data_decoded = data_raw;
@@ -154,12 +154,12 @@ DatastoreEntryWithDetails::DatastoreEntryWithDetails(long long universe_id, cons
 	}
 }
 
-std::optional<GetStandardDatastoreEntryDetailsResponse> GetStandardDatastoreEntryDetailsResponse::from(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const QString& userids, const std::optional<QString>& attributes, const QString& body)
+std::optional<GetStandardDatastoreEntryDetailsResponse> GetStandardDatastoreEntryDetailsResponse::from(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& body)
 {
 	return GetStandardDatastoreEntryDetailsResponse{ universe_id, datastore_name, scope, key_name, version, userids, attributes, body };
 }
 
-GetStandardDatastoreEntryDetailsResponse::GetStandardDatastoreEntryDetailsResponse(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const QString& userids, const std::optional<QString>& attributes, const QString& data) :
+GetStandardDatastoreEntryDetailsResponse::GetStandardDatastoreEntryDetailsResponse(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data) :
 	details{ universe_id, datastore_name, scope, key_name, version, userids, attributes, data}
 {
 

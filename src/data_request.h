@@ -178,7 +178,7 @@ private:
 class PostStandardDatastoreEntryRequest : public DataRequest
 {
 public:
-	PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString userids, std::optional<QString> attributes, QString body);
+	PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body);
 
 	virtual QString get_title_string() const override;
 
@@ -192,7 +192,7 @@ private:
 	QString datastore_name;
 	QString scope;
 	QString key_name;
-	QString userids;
+	std::optional<QString> userids;
 	std::optional<QString> attributes;
 	QString body_md5;
 

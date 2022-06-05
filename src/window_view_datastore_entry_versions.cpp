@@ -129,7 +129,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 					std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
 					if (opt_response)
 					{
-						const QString userids = req.get_response()->get_details().get_userids();
+						const std::optional<QString> userids = req.get_response()->get_details().get_userids();
 						const std::optional<QString> attributes = req.get_response()->get_details().get_attributes();
 						const QString body = req.get_response()->get_details().get_data_raw();
 
