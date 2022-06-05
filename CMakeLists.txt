@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(OpenCloudTools VERSION 1.0.0 LANGUAGES CXX)
+project(OpenCloudTools VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,6 +12,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Network Widgets)
 
 add_executable(OpenCloudTools
+	./extern/sqlite/sqlite3.c
 	./src/main.cpp
 	./src/api_key.cpp
 	./src/api_key.h
@@ -27,6 +28,8 @@ add_executable(OpenCloudTools
 	./src/diag_operation_in_progress.h
 	./src/http_req_builder.cpp
 	./src/http_req_builder.h
+	./src/sqlite_wrapper.cpp
+	./src/sqlite_wrapper.h
 	./src/user_settings.cpp
 	./src/user_settings.h
 	./src/util_enum.cpp
@@ -41,6 +44,10 @@ add_executable(OpenCloudTools
 	./src/window_api_key_add.h
 	./src/window_api_key_manage.cpp
 	./src/window_api_key_manage.h
+	./src/window_datastore_download.cpp
+	./src/window_datastore_download.h
+	./src/window_datastore_download_progress.cpp
+	./src/window_datastore_download_progress.h
 	./src/window_datastore_explore.cpp
 	./src/window_datastore_explore.h
 	./src/window_datastore_universe_add.cpp
@@ -50,6 +57,8 @@ add_executable(OpenCloudTools
 	./src/window_view_datastore_entry_versions.cpp
 	./src/window_view_datastore_entry_versions.h
 )
+
+target_include_directories(OpenCloudTools PRIVATE ./extern/sqlite)
 
 target_link_libraries(OpenCloudTools PRIVATE Qt6::Network)
 target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)

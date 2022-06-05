@@ -23,6 +23,7 @@
 #include "diag_operation_in_progress.h"
 #include "user_settings.h"
 #include "window_api_key_manage.h"
+#include "window_datastore_download.h"
 #include "window_datastore_universe_add.h"
 #include "window_view_datastore_entry.h"
 #include "window_view_datastore_entry_versions.h"
@@ -96,12 +97,16 @@ ExploreDatastoreWindow::ExploreDatastoreWindow(QWidget* parent, QString title, Q
 				select_datastore_list = new QListWidget{ select_datastore_widget };
 				connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastoreWindow::selected_datastore_changed);
 
-				select_datastore_fetch_button = new QPushButton{ "Fetch datastores", this };
+				select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
 				connect(select_datastore_fetch_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_fetch_datastores);
+
+				select_datastore_download_button = new QPushButton{ "Bulk download...", select_datastore_widget };
+				connect(select_datastore_download_button, &QPushButton::clicked, this, &ExploreDatastoreWindow::pressed_download);
 
 				QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
 				select_datastore_layout->addWidget(select_datastore_list);
 				select_datastore_layout->addWidget(select_datastore_fetch_button);
+				select_datastore_layout->addWidget(select_datastore_download_button);
 			}
 
 			QVBoxLayout* left_bar_layout = new QVBoxLayout{ left_bar_widget };
@@ -238,6 +243,7 @@ void ExploreDatastoreWindow::selected_universe_changed()
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(select_universe_combo->count() > 0);
+	select_datastore_download_button->setEnabled(select_universe_combo->count() > 0);
 	datastore_entry_tree->setModel(nullptr);
 	search_text_changed();
 	handle_datastore_entry_selection_changed();
@@ -318,6 +324,27 @@ void ExploreDatastoreWindow::pressed_delete_entry()
 				req.send_request();
 				diag.exec();
 			}
+		}
+	}
+}
+
+void ExploreDatastoreWindow::pressed_download()
+{
+	if (select_universe_combo->count() > 0)
+	{
+		const long long universe_id = select_universe_combo->currentData().toLongLong();
+
+		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
+		OperationInProgressDialog diag{ this, &req };
+		req.send_request();
+		diag.exec();
+
+		const std::vector<QString> datastores = req.get_datastore_names();
+		if (datastores.size() > 0)
+		{
+			DownloadDatastoreWindow* download_window = new DownloadDatastoreWindow{ this, api_key, universe_id, datastores };
+			download_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+			download_window->show();
 		}
 	}
 }
