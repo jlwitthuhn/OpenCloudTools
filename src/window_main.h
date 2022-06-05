@@ -9,11 +9,11 @@ class QListWidget;
 class QPushButton;
 class QTreeView;
 
-class ExploreDatastoreWindow : public QMainWindow
+class MyMainWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
-	explicit ExploreDatastoreWindow(QWidget* parent, QString title, QString api_key);
+	explicit MyMainWindow(QWidget* parent, QString title, QString api_key);
 
 private:
 	void selected_universe_changed();

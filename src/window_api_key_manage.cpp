@@ -128,8 +128,8 @@ void ManageApiKeysWindow::click_sel()
 			std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile();
 			if (details)
 			{
-				ExploreDatastoreWindow* explore_window = new ExploreDatastoreWindow(nullptr, details->name(), details->key());
-				explore_window->show();
+				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
+				main_window->show();
 				close();
 			}
 		}
