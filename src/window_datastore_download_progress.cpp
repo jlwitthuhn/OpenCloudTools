@@ -68,13 +68,13 @@ void DownloadDatastoreProgressWindow::update_ui()
 	{
 		QString progress_text = QString{ "Downloading datastore %1/%2..." }.arg(progress.get_current_datastore_index() + 1).arg(datastore_names.size());
 		label_overall->setText(progress_text);
-		bar_overall->setValue(progress.get_overall_progress());
+		bar_overall->setValue(static_cast<int>(progress.get_overall_progress()));
 		std::optional<size_t> local_progress = progress.get_local_progress();
 		if (local_progress)
 		{
 			label_entry->setText("Downloading...");
 			bar_entry->setMaximum(DownloadProgress::MAXIMUM);
-			bar_entry->setValue(*local_progress);
+			bar_entry->setValue(static_cast<int>(*local_progress));
 		}
 		else
 		{

@@ -38,7 +38,7 @@ void SqliteDatastoreWriter::write(const DatastoreEntryWithDetails& details)
 	{
 		sqlite3_stmt* stmt = nullptr;
 		std::string sql = "INSERT INTO datastore (universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, userids, attributes) VALUES (?010, ?020, ?030, ?040, ?050, ?060, ?070, ?080, ?090, ?100, ?110);";
-		sqlite3_prepare_v2(db_handle, sql.c_str(), sql.size(), &stmt, nullptr);
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 		if (stmt != nullptr)
 		{
 			sqlite3_bind_int64(stmt, 10, details.get_universe_id());
