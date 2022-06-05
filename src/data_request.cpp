@@ -55,6 +55,12 @@ DataRequest::DataRequest(QObject* const parent, const QString& api_key) : QObjec
 
 }
 
+void DataRequest::handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	emit status_message(QString{ "Received HTTP 404, aborting" });
+	emit status_message(body);
+}
+
 void DataRequest::handle_reply_ready()
 {
 	QString status = pending_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
@@ -67,6 +73,10 @@ void DataRequest::handle_reply_ready()
 	if (status == "200") // OK
 	{
 		handle_http_200(reply_body, headers);
+	}
+	else if (status == "404") // Too many requests
+	{
+		handle_http_404(reply_body, headers);
 	}
 	else if (status == "429") // Too many requests
 	{
@@ -303,6 +313,14 @@ void GetStandardDatastoreEntryRequest::handle_http_200(const QString& body, cons
 	}
 
 	response = GetStandardDatastoreEntryDetailsResponse::from(universe_id, datastore_name, scope, key_name, *version, *userids, attributes, body);
+
+	emit status_message(QString{ "Complete" });
+	emit request_complete();
+}
+
+void GetStandardDatastoreEntryRequest::handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
+{
+	response = std::nullopt;
 
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
