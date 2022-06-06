@@ -18,7 +18,7 @@ void UserSettings::set_autoclose_progress_window(const bool autoclose)
 	}
 }
 
-std::optional<ApiKeyProfile> UserSettings::get_api_key(const uint id) const
+std::optional<ApiKeyProfile> UserSettings::get_api_key(const unsigned int id) const
 {
 	auto it = api_keys.find(id);
 	if (it != api_keys.end())
@@ -40,7 +40,7 @@ void UserSettings::add_api_key(const ApiKeyProfile& details, const bool emit_sig
 	}
 }
 
-void UserSettings::update_api_key(const uint id, const ApiKeyProfile& details)
+void UserSettings::update_api_key(const unsigned int id, const ApiKeyProfile& details)
 {
 	std::optional<ApiKeyProfile> existing = get_api_key(id);
 	if (existing)
@@ -57,13 +57,13 @@ void UserSettings::update_api_key(const uint id, const ApiKeyProfile& details)
 	}
 }
 
-void UserSettings::delete_api_key(const uint id)
+void UserSettings::delete_api_key(const unsigned int id)
 {
 	api_keys.erase(id);
 	emit api_key_list_changed();
 }
 
-void UserSettings::select_api_key(const uint id)
+void UserSettings::select_api_key(const unsigned int id)
 {
 	if (id > 0)
 	{
@@ -176,14 +176,14 @@ void UserSettings::save_to_disk()
 
 	settings.beginGroup("api_keys");
 
-	settings.setValue("version", static_cast<uint>(1));
+	settings.setValue("version", static_cast<unsigned int>(1));
 
 	settings.beginGroup("keys");
-	settings.setValue("version", static_cast<uint>(1));
+	settings.setValue("version", static_cast<unsigned int>(1));
 	settings.beginWriteArray("list");
 	{
 		int next_array_index = 0;
-		for (const std::pair<const uint, ApiKeyProfile>& this_pair : api_keys)
+		for (const std::pair<const unsigned int, ApiKeyProfile>& this_pair : api_keys)
 		{
 			if (this_pair.second.save_to_disk())
 			{

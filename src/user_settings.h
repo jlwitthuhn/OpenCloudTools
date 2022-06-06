@@ -17,14 +17,14 @@ public:
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
 
-	std::map<uint, ApiKeyProfile> get_all_api_keys() const { return api_keys; };
-	std::optional<ApiKeyProfile> get_api_key(uint id) const;
+	std::map<unsigned int, ApiKeyProfile> get_all_api_keys() const { return api_keys; };
+	std::optional<ApiKeyProfile> get_api_key(unsigned int id) const;
 
 	void add_api_key(const ApiKeyProfile& details, bool emit_signal = true);
-	void update_api_key(uint id, const ApiKeyProfile& details);
-	void delete_api_key(uint id);
+	void update_api_key(unsigned int id, const ApiKeyProfile& details);
+	void delete_api_key(unsigned int id);
 
-	void select_api_key(uint id);
+	void select_api_key(unsigned int id);
 	std::optional<ApiKeyProfile> get_selected_profile() const;
 	void selected_add_universe(long long universe_id, const QString& name);
 	void selected_remove_universe(long long universe_id);
@@ -42,8 +42,8 @@ private:
 
 	bool autoclose_progress_window = true;
 
-	std::optional<uint> selected_key;
+	std::optional<unsigned int> selected_key;
 
-	uint next_api_key_id = 1;
-	std::map<uint, ApiKeyProfile> api_keys;
+	unsigned int next_api_key_id = 1;
+	std::map<unsigned int, ApiKeyProfile> api_keys;
 };
