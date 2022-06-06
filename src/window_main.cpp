@@ -62,173 +62,183 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 	QWidget* central_widget = new QWidget{ this };
 	{
-		QWidget* left_bar_widget = new QWidget{ central_widget };
+		QWidget* top_bar_widget = new QWidget{ central_widget };
 		{
-			QSizePolicy left_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
-			left_size_policy.setHorizontalStretch(1);
-			left_bar_widget->setSizePolicy(left_size_policy);
-
-			QGroupBox* select_universe_widget = new QGroupBox{ "Select universe", left_bar_widget };
+			QGroupBox* select_universe_group = new QGroupBox{ "Select universe", top_bar_widget };
 			{
-				select_universe_combo = new QComboBox{ select_universe_widget };
+				select_universe_combo = new QComboBox{ select_universe_group };
 				connect(select_universe_combo, &QComboBox::currentIndexChanged, this, &MyMainWindow::selected_universe_changed);
 
-				QWidget* select_universe_button_widget = new QWidget{ select_universe_widget };
-				{
-					QPushButton* add_universe_button = new QPushButton{ "Add...", select_universe_button_widget };
-					connect(add_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_add_universe);
+				QPushButton* add_universe_button = new QPushButton{ "Add...", select_universe_group };
+				add_universe_button->setMaximumWidth(150);
+				connect(add_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_add_universe);
 
-					del_universe_button = new QPushButton{ "Remove", select_universe_button_widget };
-					connect(del_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_remove_universe);
+				del_universe_button = new QPushButton{ "Remove", select_universe_group };
+				del_universe_button->setMaximumWidth(150);
+				connect(del_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_remove_universe);
 
-					QHBoxLayout* select_universe_button_layout = new QHBoxLayout{ select_universe_button_widget };
-					select_universe_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-					select_universe_button_layout->addWidget(add_universe_button);
-					select_universe_button_layout->addWidget(del_universe_button);
-				}
-
-				QVBoxLayout* select_universe_layout = new QVBoxLayout{ select_universe_widget };
+				QHBoxLayout* select_universe_layout = new QHBoxLayout{ select_universe_group };
 				select_universe_layout->addWidget(select_universe_combo);
-				select_universe_layout->addWidget(select_universe_button_widget);
+				select_universe_layout->addWidget(add_universe_button);
+				select_universe_layout->addWidget(del_universe_button);
 			}
 
-			QGroupBox* select_datastore_widget = new QGroupBox{ "Datastores", left_bar_widget };
-			{
-				select_datastore_list = new QListWidget{ select_datastore_widget };
-				connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &MyMainWindow::selected_datastore_changed);
-
-				select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
-				connect(select_datastore_fetch_button, &QPushButton::clicked, this, &MyMainWindow::pressed_fetch_datastores);
-
-				select_datastore_download_button = new QPushButton{ "Bulk download...", select_datastore_widget };
-				connect(select_datastore_download_button, &QPushButton::clicked, this, &MyMainWindow::pressed_download);
-
-				QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
-				select_datastore_layout->addWidget(select_datastore_list);
-				select_datastore_layout->addWidget(select_datastore_fetch_button);
-				select_datastore_layout->addWidget(select_datastore_download_button);
-			}
-
-			QVBoxLayout* left_bar_layout = new QVBoxLayout{ left_bar_widget };
-			left_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-			left_bar_layout->addWidget(select_universe_widget);
-			left_bar_layout->addWidget(select_datastore_widget);
+			QVBoxLayout* top_bar_layout = new QVBoxLayout{ top_bar_widget };
+			top_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+			top_bar_layout->addWidget(select_universe_group);
 		}
 
-        QWidget* right_bar_widget = new QWidget{ central_widget };
-        {
-            QGroupBox* right_group_box = new QGroupBox{ "Keys", right_bar_widget };
-            {
-                QSizePolicy right_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
-                right_size_policy.setHorizontalStretch(2);
-                right_group_box->setSizePolicy(right_size_policy);
+		QWidget* panel_container = new QWidget{ central_widget };
+		{
+			QWidget* left_bar_widget = new QWidget{ panel_container };
+			{
+				QSizePolicy left_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
+				left_size_policy.setHorizontalStretch(1);
+				left_bar_widget->setSizePolicy(left_size_policy);
 
-                QWidget* right_top_widget = new QWidget{ right_group_box };
-                {
-                    QLabel* datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
+				QGroupBox* select_datastore_widget = new QGroupBox{ "Datastores", left_bar_widget };
+				{
+					select_datastore_list = new QListWidget{ select_datastore_widget };
+					connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &MyMainWindow::selected_datastore_changed);
 
-                    datastore_name_edit = new QLineEdit{ right_top_widget };
-                    connect(datastore_name_edit, &QLineEdit::textChanged, this, &MyMainWindow::search_text_changed);
+					select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
+					connect(select_datastore_fetch_button, &QPushButton::clicked, this, &MyMainWindow::pressed_fetch_datastores);
 
-                    QLabel* datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
+					select_datastore_download_button = new QPushButton{ "Bulk download...", select_datastore_widget };
+					connect(select_datastore_download_button, &QPushButton::clicked, this, &MyMainWindow::pressed_download);
 
-                    datastore_scope_edit = new QLineEdit{ right_top_widget };
-                    connect(datastore_scope_edit, &QLineEdit::textChanged, this, &MyMainWindow::search_text_changed);
+					QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
+					select_datastore_layout->addWidget(select_datastore_list);
+					select_datastore_layout->addWidget(select_datastore_fetch_button);
+					select_datastore_layout->addWidget(select_datastore_download_button);
+				}
 
-                    QLabel* datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
+				QVBoxLayout* left_bar_layout = new QVBoxLayout{ left_bar_widget };
+				left_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+				left_bar_layout->addWidget(select_datastore_widget);
+			}
 
-                    datastore_key_name_edit = new QLineEdit{ right_top_widget };
-                    connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &MyMainWindow::search_text_changed);
+			QWidget* right_bar_widget = new QWidget{ panel_container };
+			{
+				QSizePolicy right_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
+				right_size_policy.setHorizontalStretch(2);
+				right_bar_widget->setSizePolicy(right_size_policy);
 
-                    QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
-                    right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-                    right_top_layout->addWidget(datastore_name_label);
-                    right_top_layout->addWidget(datastore_name_edit);
-                    right_top_layout->addWidget(datastore_scope_label);
-                    right_top_layout->addWidget(datastore_scope_edit);
-                    right_top_layout->addWidget(datastore_key_name_label);
-                    right_top_layout->addWidget(datastore_key_name_edit);
-                }
+				QGroupBox* right_group_box = new QGroupBox{ "Keys", right_bar_widget };
+				{
+					QWidget* right_top_widget = new QWidget{ right_group_box };
+					{
+						QLabel* datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
 
-                QWidget* right_top_button_widget = new QWidget{ right_group_box };
-                {
-                    find_all_button = new QPushButton{ "Find all", right_top_button_widget };
-                    connect(find_all_button, &QPushButton::clicked, this, &MyMainWindow::pressed_find_all);
+						datastore_name_edit = new QLineEdit{ right_top_widget };
+						connect(datastore_name_edit, &QLineEdit::textChanged, this, &MyMainWindow::search_text_changed);
 
-                    find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
-                    connect(find_prefix_button, &QPushButton::clicked, this, &MyMainWindow::pressed_find_prefix);
+						QLabel* datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
 
-                    QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
-                    find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
+						datastore_scope_edit = new QLineEdit{ right_top_widget };
+						connect(datastore_scope_edit, &QLineEdit::textChanged, this, &MyMainWindow::search_text_changed);
 
-                    find_limit_edit = new QLineEdit{ right_top_button_widget };
-                    find_limit_edit->setText("1200");
-                    find_limit_edit->setFixedWidth(60);
+						QLabel* datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
 
-                    QHBoxLayout* right_top_button_layout = new QHBoxLayout{ right_top_button_widget };
-                    right_top_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-                    right_top_button_layout->addWidget(find_all_button);
-                    right_top_button_layout->addWidget(find_prefix_button);
-                    right_top_button_layout->addWidget(find_limit_label);
-                    right_top_button_layout->addWidget(find_limit_edit);
-                }
+						datastore_key_name_edit = new QLineEdit{ right_top_widget };
+						connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &MyMainWindow::search_text_changed);
 
-                datastore_entry_tree = new QTreeView{ right_group_box };
-                connect(datastore_entry_tree, &QTreeView::pressed, this, &MyMainWindow::handle_datastore_entry_selection_changed);
+						QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
+						right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+						right_top_layout->addWidget(datastore_name_label);
+						right_top_layout->addWidget(datastore_name_edit);
+						right_top_layout->addWidget(datastore_scope_label);
+						right_top_layout->addWidget(datastore_scope_edit);
+						right_top_layout->addWidget(datastore_key_name_label);
+						right_top_layout->addWidget(datastore_key_name_edit);
+					}
 
-                QWidget* right_read_buttons = new QWidget{ right_group_box };
-                {
-                    view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
-                    connect(view_entry_button, &QPushButton::clicked, this, &MyMainWindow::pressed_view_entry);
+					QWidget* right_top_button_widget = new QWidget{ right_group_box };
+					{
+						find_all_button = new QPushButton{ "Find all", right_top_button_widget };
+						connect(find_all_button, &QPushButton::clicked, this, &MyMainWindow::pressed_find_all);
 
-                    view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
-                    connect(view_versions_button, &QPushButton::clicked, this, &MyMainWindow::pressed_view_versions);
+						find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
+						connect(find_prefix_button, &QPushButton::clicked, this, &MyMainWindow::pressed_find_prefix);
 
-                    QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
-                    right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-                    right_read_layout->addWidget(view_entry_button);
-                    right_read_layout->addWidget(view_versions_button);
-                }
+						QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
+						find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
 
-                QFrame* right_separator = new QFrame{ right_group_box };
-                right_separator->setFrameShape(QFrame::HLine);
-                right_separator->setFrameShadow(QFrame::Sunken);
+						find_limit_edit = new QLineEdit{ right_top_button_widget };
+						find_limit_edit->setText("1200");
+						find_limit_edit->setFixedWidth(60);
 
-                QWidget* right_edit_buttons = new QWidget{ right_group_box };
-                {
-                    edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
-                    connect(edit_entry_button, &QPushButton::clicked, this, &MyMainWindow::pressed_edit_entry);
+						QHBoxLayout* right_top_button_layout = new QHBoxLayout{ right_top_button_widget };
+						right_top_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+						right_top_button_layout->addWidget(find_all_button);
+						right_top_button_layout->addWidget(find_prefix_button);
+						right_top_button_layout->addWidget(find_limit_label);
+						right_top_button_layout->addWidget(find_limit_edit);
+					}
 
-                    delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
-                    connect(delete_entry_button, &QPushButton::clicked, this, &MyMainWindow::pressed_delete_entry);
+					datastore_entry_tree = new QTreeView{ right_group_box };
+					connect(datastore_entry_tree, &QTreeView::pressed, this, &MyMainWindow::handle_datastore_entry_selection_changed);
 
-                    QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
-                    right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-                    right_edit_layout->addWidget(edit_entry_button);
-                    right_edit_layout->addWidget(delete_entry_button);
-                }
+					QWidget* right_read_buttons = new QWidget{ right_group_box };
+					{
+						view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
+						connect(view_entry_button, &QPushButton::clicked, this, &MyMainWindow::pressed_view_entry);
 
-                QVBoxLayout* right_box_layout = new QVBoxLayout{ right_group_box };
-                right_box_layout->addWidget(right_top_widget);
-                right_box_layout->addWidget(right_top_button_widget);
-                right_box_layout->addWidget(datastore_entry_tree);
-                right_box_layout->addWidget(right_read_buttons);
-                right_box_layout->addWidget(right_separator);
-                right_box_layout->addWidget(right_edit_buttons);
-            }
+						view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
+						connect(view_versions_button, &QPushButton::clicked, this, &MyMainWindow::pressed_view_versions);
 
-            QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar_widget };
-            right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-            right_bar_layout->addWidget(right_group_box);
-        }
+						QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
+						right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+						right_read_layout->addWidget(view_entry_button);
+						right_read_layout->addWidget(view_versions_button);
+					}
 
-		QHBoxLayout* central_layout = new QHBoxLayout{ central_widget };
-		central_layout->addWidget(left_bar_widget);
-		central_layout->addWidget(right_bar_widget);
+					QFrame* right_separator = new QFrame{ right_group_box };
+					right_separator->setFrameShape(QFrame::HLine);
+					right_separator->setFrameShadow(QFrame::Sunken);
+
+					QWidget* right_edit_buttons = new QWidget{ right_group_box };
+					{
+						edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
+						connect(edit_entry_button, &QPushButton::clicked, this, &MyMainWindow::pressed_edit_entry);
+
+						delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
+						connect(delete_entry_button, &QPushButton::clicked, this, &MyMainWindow::pressed_delete_entry);
+
+						QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
+						right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+						right_edit_layout->addWidget(edit_entry_button);
+						right_edit_layout->addWidget(delete_entry_button);
+					}
+
+					QVBoxLayout* right_box_layout = new QVBoxLayout{ right_group_box };
+					right_box_layout->addWidget(right_top_widget);
+					right_box_layout->addWidget(right_top_button_widget);
+					right_box_layout->addWidget(datastore_entry_tree);
+					right_box_layout->addWidget(right_read_buttons);
+					right_box_layout->addWidget(right_separator);
+					right_box_layout->addWidget(right_edit_buttons);
+				}
+
+				QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar_widget };
+				right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+				right_bar_layout->addWidget(right_group_box);
+			}
+
+			QHBoxLayout* panel_layout = new QHBoxLayout{ panel_container };
+			panel_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+			panel_layout->addWidget(left_bar_widget);
+			panel_layout->addWidget(right_bar_widget);
+		}
+
+		QVBoxLayout* central_layout = new QVBoxLayout{ central_widget };
+		central_layout->addWidget(top_bar_widget);
+		central_layout->addWidget(panel_container);
 	}
 	setCentralWidget(central_widget);
-    
-    setMinimumHeight(500);
+
+	setMinimumWidth(700);
+	setMinimumHeight(500);
 
 	selected_universe_changed();
 	selected_datastore_changed();
