@@ -38,6 +38,7 @@ private:
 	void handle_datastore_entry_selection_changed();
 
 	QString api_key;
+	std::optional<long long> selected_universe_id;
 
 	QAction* action_toggle_autoclose = nullptr;
 

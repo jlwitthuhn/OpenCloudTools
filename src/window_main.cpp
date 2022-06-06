@@ -249,7 +249,15 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 void MyMainWindow::selected_universe_changed()
 {
-
+	if (select_universe_combo->count() > 0)
+	{
+		const long long universe_id = select_universe_combo->currentData().toLongLong();
+		selected_universe_id = universe_id;
+	}
+	else
+	{
+		selected_universe_id = std::nullopt;
+	}
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(select_universe_combo->count() > 0);
@@ -270,7 +278,7 @@ void MyMainWindow::selected_datastore_changed()
 
 void MyMainWindow::search_text_changed()
 {
-	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && select_universe_combo->currentText().size() > 0;
+	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && selected_universe_id;
 	const bool find_prefix_enabled = find_all_enabled && datastore_key_name_edit->text().size() > 0 && datastore_key_name_edit->text().size() > 0;
 	find_all_button->setEnabled(find_all_enabled);
 	find_prefix_button->setEnabled(find_prefix_enabled);
@@ -299,9 +307,9 @@ void MyMainWindow::pressed_add_universe()
 
 void MyMainWindow::pressed_remove_universe()
 {
-	if (select_universe_combo->count() > 0)
+	if (selected_universe_id)
 	{
-		UserSettings::get()->selected_remove_universe(select_universe_combo->currentData().toLongLong());
+		UserSettings::get()->selected_remove_universe(*selected_universe_id);
 	}
 }
 
@@ -340,9 +348,9 @@ void MyMainWindow::pressed_delete_entry()
 
 void MyMainWindow::pressed_download()
 {
-	if (select_universe_combo->count() > 0)
+	if (selected_universe_id)
 	{
-		const long long universe_id = select_universe_combo->currentData().toLongLong();
+		const long long universe_id = *selected_universe_id;
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
@@ -388,9 +396,9 @@ void MyMainWindow::pressed_edit_entry()
 
 void MyMainWindow::pressed_fetch_datastores()
 {
-	if (select_universe_combo->count() > 0)
+	if (selected_universe_id)
 	{
-		const long long universe_id = select_universe_combo->currentData().toLongLong();
+		const long long universe_id = *selected_universe_id;
 		if (universe_id > 0)
 		{
 			GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
@@ -411,9 +419,9 @@ void MyMainWindow::pressed_fetch_datastores()
 
 void MyMainWindow::pressed_find_all()
 {
-	if (datastore_name_edit->text().trimmed().size() > 0)
+	if (selected_universe_id && datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = select_universe_combo->currentData().toLongLong();
+		const long long universe_id = *selected_universe_id;
 		if (universe_id > 0)
 		{
 			QString datastore_name = datastore_name_edit->text().trimmed();
@@ -442,9 +450,9 @@ void MyMainWindow::pressed_find_all()
 
 void MyMainWindow::pressed_find_prefix()
 {
-	if (datastore_name_edit->text().trimmed().size() > 0)
+	if (selected_universe_id && datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = select_universe_combo->currentData().toLongLong();
+		const long long universe_id = *selected_universe_id;
 		if (universe_id > 0)
 		{
 			QString datastore_name = datastore_name_edit->text().trimmed();
