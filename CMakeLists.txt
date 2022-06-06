@@ -65,4 +65,10 @@ target_include_directories(OpenCloudTools PRIVATE ./extern/sqlite)
 target_link_libraries(OpenCloudTools PRIVATE Qt6::Network)
 target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)
 
+if (MSVC)
+	target_compile_options(OpenCloudTools PRIVATE /W3)
+else()
+	target_compile_options(OpenCloudTools PRIVATE -Wall -Wextra)
+endif()
+
 install(TARGETS OpenCloudTools)

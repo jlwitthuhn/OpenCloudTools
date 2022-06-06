@@ -59,10 +59,10 @@ private:
 		std::optional<size_t> entry_total = std::nullopt;
 	};
 
-	DownloadProgress progress;
-
 	QString api_key;
 	long long universe_id;
+
+	DownloadProgress progress;
 	std::unique_ptr<SqliteDatastoreWriter> writer;
 	std::vector<QString> datastore_names;
 

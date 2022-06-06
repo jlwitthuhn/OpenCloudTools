@@ -318,7 +318,7 @@ void GetStandardDatastoreEntryRequest::handle_http_200(const QString& body, cons
 	emit request_complete();
 }
 
-void GetStandardDatastoreEntryRequest::handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
+void GetStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	response = std::nullopt;
 
