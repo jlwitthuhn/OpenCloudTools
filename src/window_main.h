@@ -11,6 +11,7 @@ class QComboBox;
 class QPushButton;
 class QWidget;
 
+class BulkDataPanel;
 class ExploreDatastorePanel;
 
 class MyMainWindow : public QMainWindow
@@ -40,4 +41,5 @@ private:
 	QPushButton* del_universe_button = nullptr;
 
 	ExploreDatastorePanel* explore_datastore_panel = nullptr;
+	BulkDataPanel* bulk_data_panel = nullptr;
 };

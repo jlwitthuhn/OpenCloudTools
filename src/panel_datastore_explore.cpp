@@ -24,7 +24,6 @@
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
 #include "util_enum.h"
-#include "window_datastore_download.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 
@@ -47,13 +46,9 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 			select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
 			connect(select_datastore_fetch_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_fetch_datastores);
 
-			select_datastore_download_button = new QPushButton{ "Bulk download...", select_datastore_widget };
-			connect(select_datastore_download_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_download);
-
 			QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
 			select_datastore_layout->addWidget(select_datastore_list);
 			select_datastore_layout->addWidget(select_datastore_fetch_button);
-			select_datastore_layout->addWidget(select_datastore_download_button);
 		}
 
 		QVBoxLayout* left_bar_layout = new QVBoxLayout{ left_bar_widget };
@@ -182,7 +177,6 @@ void ExploreDatastorePanel::selected_universe_changed(const std::optional<long l
 	selected_universe_id = new_universe;
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(selected_universe_id.has_value());
-	select_datastore_download_button->setEnabled(selected_universe_id.has_value());
 	search_text_changed();
 	datastore_entry_tree->setModel(nullptr);
 	handle_datastore_entry_selection_changed();
@@ -236,27 +230,6 @@ void ExploreDatastorePanel::pressed_delete_entry()
 				req.send_request();
 				diag.exec();
 			}
-		}
-	}
-}
-
-void ExploreDatastorePanel::pressed_download()
-{
-	if (selected_universe_id)
-	{
-		const long long universe_id = *selected_universe_id;
-
-		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
-		OperationInProgressDialog diag{ this, &req };
-		req.send_request();
-		diag.exec();
-
-		const std::vector<QString> datastores = req.get_datastore_names();
-		if (datastores.size() > 0)
-		{
-			DownloadDatastoreWindow* download_window = new DownloadDatastoreWindow{ this, api_key, universe_id, datastores };
-			download_window->setWindowModality(Qt::WindowModality::ApplicationModal);
-			download_window->show();
 		}
 	}
 }

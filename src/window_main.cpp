@@ -19,6 +19,7 @@
 #include <QWidget>
 
 #include "api_key.h"
+#include "panel_bulk_data.h"
 #include "panel_datastore_explore.h"
 #include "user_settings.h"
 #include "window_api_key_manage.h"
@@ -88,6 +89,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 		{
 			explore_datastore_panel = new ExploreDatastorePanel{ central_tab_widget, api_key, selected_universe_id };
 			central_tab_widget->addTab(explore_datastore_panel, "Explore Datastores");
+
+			bulk_data_panel = new BulkDataPanel{ central_tab_widget, api_key, selected_universe_id };
+			central_tab_widget->addTab(bulk_data_panel, "Bulk Data");
 		}
 
 		QVBoxLayout* central_layout = new QVBoxLayout{ central_widget };
@@ -115,6 +119,7 @@ void MyMainWindow::selected_universe_changed()
 	}
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	explore_datastore_panel->selected_universe_changed(selected_universe_id);
+	bulk_data_panel->selected_universe_changed(selected_universe_id);
 }
 
 void MyMainWindow::universe_list_changed()

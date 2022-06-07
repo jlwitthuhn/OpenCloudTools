@@ -28,6 +28,8 @@ add_executable(OpenCloudTools
 	./src/diag_operation_in_progress.h
 	./src/http_req_builder.cpp
 	./src/http_req_builder.h
+	./src/panel_bulk_data.cpp
+	./src/panel_bulk_data.h
 	./src/panel_datastore_explore.cpp
 	./src/panel_datastore_explore.h
 	./src/sqlite_wrapper.cpp

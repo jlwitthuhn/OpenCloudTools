@@ -25,7 +25,6 @@ private:
 	void selected_datastore_changed();
 
 	void pressed_delete_entry();
-	void pressed_download();
 	void pressed_edit_entry();
 	void pressed_fetch_datastores();
 	void pressed_find_all();
@@ -38,7 +37,6 @@ private:
 
 	QListWidget* select_datastore_list = nullptr;
 	QPushButton* select_datastore_fetch_button = nullptr;
-	QPushButton* select_datastore_download_button = nullptr;
 
 	QLineEdit* datastore_name_edit = nullptr;
 	QLineEdit* datastore_scope_edit = nullptr;
