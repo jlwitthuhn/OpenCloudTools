@@ -62,7 +62,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 		right_size_policy.setHorizontalStretch(2);
 		right_bar_widget->setSizePolicy(right_size_policy);
 
-		QGroupBox* right_group_box = new QGroupBox{ "Keys", right_bar_widget };
+		QGroupBox* right_group_box = new QGroupBox{ "Search", right_bar_widget };
 		{
 			QWidget* right_top_widget = new QWidget{ right_group_box };
 			{
