@@ -138,15 +138,15 @@ int DataRequest::get_next_429_delay()
 	http_429s_count = http_429s_count + 1;
 	if (http_429s_count < 2)
 	{
-		return 2000;
+		return 2500;
 	}
 	else if (http_429s_count < 3)
 	{
-		return 4000;
+		return 5000;
 	}
 	else
 	{
-		return 8000;
+		return 10000;
 	}
 }
 
