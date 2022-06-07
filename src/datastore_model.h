@@ -1,9 +1,14 @@
 #pragma once
 
+#include <cstddef>
+
 #include <optional>
 #include <vector>
 
+#include <Qt>
 #include <QAbstractTableModel>
+#include <QObject>
+#include <QVariant>
 
 #include "api_response.h"
 

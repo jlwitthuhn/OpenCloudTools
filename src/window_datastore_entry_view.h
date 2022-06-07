@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include <QObject>
 #include <QString>
 #include <QWidget>
 
@@ -10,7 +11,6 @@
 class DatastoreEntryWithDetails;
 class QLineEdit;
 class QPushButton;
-class QString;
 class QTextEdit;
 
 class ViewDatastoreEntryWindow : public QWidget

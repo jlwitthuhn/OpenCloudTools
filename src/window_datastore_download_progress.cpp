@@ -1,11 +1,16 @@
 #include "window_datastore_download_progress.h"
 
+#include <utility>
+
+#include <Qt>
 #include <QGroupBox>
 #include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
+
+#include "data_request.h"
 
 DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer) :
 	QWidget{ parent, Qt::Window },

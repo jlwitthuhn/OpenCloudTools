@@ -1,8 +1,13 @@
 #include "sqlite_wrapper.h"
 
+#include <optional>
+
+#include <QString>
+
 #include <sqlite3.h>
 
 #include "api_response.h"
+#include "util_enum.h"
 
 std::unique_ptr<SqliteDatastoreWriter> SqliteDatastoreWriter::from_path(const std::string& file_path)
 {

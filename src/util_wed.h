@@ -2,6 +2,6 @@
 
 #include <optional>
 
-#include <QString>
+class QString;
 
 std::optional<QString> wed();

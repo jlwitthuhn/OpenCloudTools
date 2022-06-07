@@ -1,18 +1,29 @@
 #include "panel_datastore_explore.h"
 
+#include <cstddef>
+#include <vector>
+
+#include <Qt>
+#include <QAbstractTableModel>
+#include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QList>
 #include <QListWidget>
+#include <QMargins>
 #include <QPushButton>
+#include <QSizePolicy>
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "api_response.h"
 #include "data_request.h"
 #include "datastore_model.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "util_enum.h"
 #include "window_datastore_download.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"

@@ -5,6 +5,7 @@
 #include <optional>
 
 #include <QObject>
+#include <QString>
 
 #include "api_key.h"
 

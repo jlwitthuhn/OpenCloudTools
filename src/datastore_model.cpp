@@ -1,5 +1,10 @@
 #include "datastore_model.h"
 
+#include <algorithm>
+#include <memory>
+
+#include <QString>
+
 DatastoreEntryModel::DatastoreEntryModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries) : QAbstractTableModel{ parent } , entries { entries }
 {
 	std::sort(this->entries.begin(), this->entries.end(), [](const StandardDatastoreEntry& a, const StandardDatastoreEntry& b) {

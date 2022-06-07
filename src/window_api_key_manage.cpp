@@ -1,13 +1,23 @@
 #include "window_api_key_manage.h"
 
 #include <map>
+#include <memory>
+#include <optional>
+#include <type_traits>
+#include <utility>
 
+#include <Qt>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QList>
 #include <QListWidget>
+#include <QMargins>
+#include <QMetaType>
 #include <QPushButton>
+#include <QVariant>
 #include <QVBoxLayout>
 
+#include "api_key.h"
 #include "user_settings.h"
 #include "window_api_key_add.h"
 #include "window_main.h"
@@ -91,7 +101,7 @@ void ManageApiKeysWindow::click_ed()
 		QVariant data = selected.first()->data(Qt::UserRole);
 		if (data.metaType().id() == QMetaType::UInt)
 		{
-			uint key_id =  data.toUInt();
+			unsigned int key_id =  data.toUInt();
 			std::optional<ApiKeyProfile> opt_details = UserSettings::get()->get_api_key(key_id);
 			if (opt_details)
 			{
@@ -144,8 +154,8 @@ void ManageApiKeysWindow::rebuild_slots()
 		delete this_item;
 	}
 
-	std::map<uint, ApiKeyProfile> keys = UserSettings::get()->get_all_api_keys();
-	for (std::pair<uint, ApiKeyProfile> this_pair : keys)
+	std::map<unsigned int, ApiKeyProfile> keys = UserSettings::get()->get_all_api_keys();
+	for (std::pair<unsigned int, ApiKeyProfile> this_pair : keys)
 	{
 		QListWidgetItem* this_item = new QListWidgetItem(list_widget);
 		this_item->setData(Qt::UserRole, this_pair.first);

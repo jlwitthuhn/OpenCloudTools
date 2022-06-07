@@ -1,20 +1,25 @@
 #pragma once
 
+#include <cstddef>
+
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include <QObject>
 #include <QString>
 #include <QWidget>
 
 #include "api_response.h"
-#include "data_request.h"
 #include "sqlite_wrapper.h"
 
 class QLabel;
 class QProgressBar;
 class QPushButton;
 class QTextEdit;
+
+class GetStandardDatastoreEntriesRequest;
+class GetStandardDatastoreEntryRequest;
 
 class DownloadDatastoreProgressWindow : public QWidget
 {

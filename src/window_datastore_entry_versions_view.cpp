@@ -1,11 +1,18 @@
 #include "window_datastore_entry_versions_view.h"
 
+#include <optional>
+
+#include <Qt>
+#include <QAbstractTableModel>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QPushButton>
 #include <QTreeView>
+#include <QVBoxLayout>
 
+#include "api_response.h"
 #include "data_request.h"
 #include "datastore_model.h"
 #include "diag_confirm_change.h"

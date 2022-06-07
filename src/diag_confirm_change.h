@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QDialog>
+#include <QObject>
 
 class QCheckBox;
+class QPushButton;
 class QWidget;
 
 enum class ChangeType

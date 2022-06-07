@@ -1,8 +1,10 @@
 #include "util_json_string.h"
 
+#include <QChar>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 
 std::optional<QString> decode_json_string(const QString& json_string)
 {

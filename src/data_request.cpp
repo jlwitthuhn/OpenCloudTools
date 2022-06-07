@@ -2,11 +2,12 @@
 
 #include <algorithm>
 
+#include <QByteArray>
 #include <QCryptographicHash>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPointer>
 #include <QTimer>
+#include <QVariant>
 
 #include "api_response.h"
 #include "http_req_builder.h"

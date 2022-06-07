@@ -1,12 +1,18 @@
 #include "diag_confirm_change.h"
 
+#include <memory>
+#include <optional>
+
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QWidget>
 
+#include "api_key.h"
 #include "user_settings.h"
 
 ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType change_type) : QDialog{ parent }

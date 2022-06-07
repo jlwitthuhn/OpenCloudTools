@@ -5,7 +5,6 @@
 #include <QString>
 
 class QNetworkRequest;
-class QObject;
 
 class HttpRequestBuilder
 {

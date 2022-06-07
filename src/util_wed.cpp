@@ -1,6 +1,7 @@
 #include "util_wed.h"
 
 #include <QDate>
+#include <QString>
 
 std::optional<QString> wed()
 {

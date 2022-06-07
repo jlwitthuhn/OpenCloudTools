@@ -2,13 +2,15 @@
 
 #include <vector>
 
+#include <QObject>
+#include <QString>
 #include <QWidget>
-
-#include "api_response.h"
 
 class QLineEdit;
 class QPushButton;
 class QTreeView;
+
+class StandardDatastoreEntryVersion;
 
 class ViewDatastoreEntryVersionsWindow : public QWidget
 {

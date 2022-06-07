@@ -1,5 +1,7 @@
 #include "http_req_builder.h"
 
+#include <string>
+
 #include <QNetworkRequest>
 #include <QUrl>
 

@@ -1,5 +1,9 @@
 #include "diag_operation_in_progress.h"
 
+#include <memory>
+#include <optional>
+
+#include <Qt>
 #include <QCheckBox>
 #include <QLabel>
 #include <QPushButton>
@@ -9,6 +13,8 @@
 #include "data_request.h"
 #include "user_settings.h"
 #include "util_wed.h"
+
+class QWidget;
 
 OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataRequest* request) : QDialog{ parent }, request{ request }
 {

@@ -1,9 +1,12 @@
 #include "window_datastore_entry_view.h"
 
+#include <Qt>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QLineEdit>
+#include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>

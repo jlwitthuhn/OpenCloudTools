@@ -1,12 +1,18 @@
 #include "window_datastore_universe_add.h"
 
+#include <memory>
+
+#include <Qt>
 #include <QFormLayout>
+#include <QHBoxLayout>
+#include <QLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QPushButton>
+#include <QString>
 #include <QVBoxLayout>
 
 #include "user_settings.h"
-#include "window_main.h"
 
 AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent) : QWidget{ parent, Qt::Window }
 {

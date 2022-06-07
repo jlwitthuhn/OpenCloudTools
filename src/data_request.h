@@ -1,19 +1,18 @@
 #pragma once
 
-#include <memory>
+#include <cstddef>
+
 #include <optional>
 #include <vector>
 
 #include <QList>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QObject>
 #include <QString>
 
 #include "api_response.h"
-
-class QNetworkReply;
-class QNetworkRequest;
 
 enum class HttpRequestType
 {

@@ -1,15 +1,21 @@
 #include "window_api_key_add.h"
 
+#include <memory>
+
+#include <Qt>
 #include <QCheckBox>
 #include <QFormLayout>
+#include <QHBoxLayout>
+#include <QLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QPushButton>
+#include <QString>
 #include <QVBoxLayout>
 
-#include "api_key.h"
 #include "user_settings.h"
 
-AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<uint, ApiKeyProfile>> existing) : QWidget{ parent, Qt::Window }
+AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<unsigned int, ApiKeyProfile>> existing) : QWidget{ parent, Qt::Window }
 {
 	if (existing)
 	{

@@ -1,12 +1,14 @@
 #pragma once
 
-#include <QMessageBox>
+#include <QDialog>
+#include <QObject>
+#include <QString>
 
 class DataRequest;
 class QCheckBox;
 class QPushButton;
-class QString;
 class QTextEdit;
+class QWidget;
 
 class OperationInProgressDialog : public QDialog
 {

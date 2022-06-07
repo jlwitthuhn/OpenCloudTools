@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QObject>
 #include <QWidget>
 
 class QLineEdit;
@@ -17,7 +18,7 @@ private:
 	void text_changed();
 	void pressed_add();
 
-	uint existing_id = 0;
+	unsigned int existing_id = 0;
 
 	QLineEdit* name_edit = nullptr;
 	QLineEdit* id_edit = nullptr;

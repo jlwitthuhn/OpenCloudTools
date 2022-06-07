@@ -1,7 +1,5 @@
 #include "api_key.h"
 
-#include <algorithm>
-
 ApiKeyProfile::ApiKeyProfile(const QString& name, const QString& key, const bool production, const bool save_to_disk) : _name{ name }, _key{ key }, _production{ production }, _save_to_disk{ save_to_disk }
 {
 

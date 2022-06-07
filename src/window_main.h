@@ -1,10 +1,15 @@
 #pragma once
 
+#include <optional>
+
+#include <QObject>
 #include <QString>
 #include <QMainWindow>
 
+class QAction;
 class QComboBox;
 class QPushButton;
+class QWidget;
 
 class ExploreDatastorePanel;
 

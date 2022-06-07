@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstddef>
+
 #include <optional>
 #include <utility>
 
+#include <QObject>
 #include <QWidget>
 
 #include "api_key.h"
@@ -11,11 +14,14 @@ class QCheckBox;
 class QLineEdit;
 class QPushButton;
 
+// This is needed to appease IWYU
+constexpr size_t _window_api_key_h_dummy = sizeof(ApiKeyProfile);
+
 class AddApiKeyWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit AddApiKeyWindow(QWidget* parent = nullptr, std::optional<std::pair<uint, ApiKeyProfile>> existing = std::nullopt);
+	explicit AddApiKeyWindow(QWidget* parent = nullptr, std::optional<std::pair<unsigned int, ApiKeyProfile>> existing = std::nullopt);
 
 private:
 	bool input_is_valid() const;
@@ -24,7 +30,7 @@ private:
 	void add_key();
 	void update_key();
 
-	uint existing_id = 0;
+	unsigned int existing_id = 0;
 
 	QLineEdit* name_edit = nullptr;
 	QLineEdit* key_edit = nullptr;

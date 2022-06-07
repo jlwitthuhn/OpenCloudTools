@@ -1,25 +1,26 @@
 #include "window_main.h"
 
+#include <map>
+#include <memory>
+#include <utility>
+
+#include <Qt>
 #include <QAction>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QMargins>
 #include <QMenu>
 #include <QMenuBar>
 #include <QPushButton>
+#include <QVariant>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include "api_key.h"
-#include "data_request.h"
-#include "datastore_model.h"
-#include "diag_confirm_change.h"
-#include "diag_operation_in_progress.h"
 #include "panel_datastore_explore.h"
 #include "user_settings.h"
 #include "window_api_key_manage.h"
-#include "window_datastore_download.h"
-#include "window_datastore_entry_versions_view.h"
-#include "window_datastore_entry_view.h"
 #include "window_datastore_universe_add.h"
 
 MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QMainWindow{ parent, Qt::Window }, api_key { api_key }

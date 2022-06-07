@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QtGlobal>
 
 #include "window_api_key_manage.h"
 

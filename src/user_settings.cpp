@@ -1,6 +1,9 @@
 #include "user_settings.h"
 
+#include <utility>
+
 #include <QSettings>
+#include <QVariant>
 
 std::unique_ptr<UserSettings>& UserSettings::get()
 {

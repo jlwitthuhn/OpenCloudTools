@@ -1,10 +1,16 @@
 #include "window_datastore_download.h"
 
+#include <memory>
+#include <utility>
+
+#include <Qt>
 #include <QFileDialog>
+#include <QFlags>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QListWidget>
+#include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
