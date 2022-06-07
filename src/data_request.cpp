@@ -116,6 +116,7 @@ void DataRequest::resend()
 {
 	if (pending_request)
 	{
+		emit status_message("Resending...");
 		switch (request_type)
 		{
 		case HttpRequestType::Get:
