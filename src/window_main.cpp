@@ -13,6 +13,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QPushButton>
+#include <QTabWidget>
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -83,11 +84,15 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			top_bar_layout->addWidget(select_universe_group);
 		}
 
-		explore_datastore_panel = new ExploreDatastorePanel{ central_widget, api_key, selected_universe_id };
+		QTabWidget* central_tab_widget = new QTabWidget{ central_widget };
+		{
+			explore_datastore_panel = new ExploreDatastorePanel{ central_tab_widget, api_key, selected_universe_id };
+			central_tab_widget->addTab(explore_datastore_panel, "Explore Datastores");
+		}
 
 		QVBoxLayout* central_layout = new QVBoxLayout{ central_widget };
 		central_layout->addWidget(top_bar_widget);
-		central_layout->addWidget(explore_datastore_panel);
+		central_layout->addWidget(central_tab_widget);
 	}
 	setCentralWidget(central_widget);
 

@@ -169,7 +169,6 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	}
 
 	QHBoxLayout* layout = new QHBoxLayout{ this };
-	layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 	layout->addWidget(left_bar_widget);
 	layout->addWidget(right_bar_widget);
 
