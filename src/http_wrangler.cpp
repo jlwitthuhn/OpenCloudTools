@@ -111,6 +111,7 @@ QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int 
 QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body)
 {
 	init_network_manager();
+	request.setAttribute(QNetworkRequest::Attribute::Http2AllowedAttribute, false);
 	http_log_entries.push_back(HttpLogEntry{ type, request.url().toString() });
 	switch (type)
 	{
