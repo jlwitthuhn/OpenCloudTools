@@ -21,6 +21,93 @@ HttpLogEntry::HttpLogEntry(HttpRequestType type, const QString& url) : _timestam
 
 }
 
+HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& entries) : entries{ entries }
+{
+	std::sort(this->entries.begin(), this->entries.end(), [](const HttpLogEntry& a, const HttpLogEntry& b) {
+		return b.timestamp() < a.timestamp();
+	});
+}
+
+QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
+{
+	if (role == Qt::DisplayRole)
+	{
+		if (index.row() < static_cast<int>(entries.size()))
+		{
+			if (index.column() == 0)
+			{
+				return entries.at(index.row()).timestamp().toString(Qt::ISODateWithMs);
+			}
+			else if (index.column() == 1)
+			{
+				return get_enum_string(entries.at(index.row()).type());
+			}
+			else if (index.column() == 2 || index.column() == 3)
+			{
+				const QString& url = entries.at(index.row()).url();
+				qsizetype paramIndex = url.indexOf('?');
+				if (index.column() == 2)
+				{
+					if (paramIndex >= 0)
+					{
+						return url.left(paramIndex);
+					}
+					else
+					{
+						return url;
+					}
+				}
+				else
+				{
+					if (paramIndex >= 0)
+					{
+						return url.right(url.size() - paramIndex);
+					}
+					else
+					{
+						return "";
+					}
+				}
+			}
+		}
+	}
+	return QVariant{};
+}
+
+int HttpLogModel::columnCount(const QModelIndex&) const
+{
+	return 4;
+}
+
+int HttpLogModel::rowCount(const QModelIndex&) const
+{
+	return static_cast<int>(entries.size());
+}
+
+QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+	{
+		if (section == 0)
+		{
+			return "Time";
+		}
+		else if (section == 1)
+		{
+			return "Method";
+		}
+		else if (section == 2)
+		{
+			return "Base URL";
+		}
+		else if (section == 3)
+		{
+			return "URL Params";
+		}
+	}
+	return QVariant{};
+}
+
 QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body)
 {
 	init_network_manager();
@@ -45,67 +132,13 @@ QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request
 	}
 }
 
+void HttpWrangler::clear_log()
+{
+	http_log_entries.clear();
+}
+
 HttpLogModel* HttpWrangler::make_log_model(QObject* parent)
 {
+	init_network_manager();
 	return new HttpLogModel{ parent, http_log_entries };
-}
-
-HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& entries)
-{
-	std::sort(this->entries.begin(), this->entries.end(), [](const HttpLogEntry& a, const HttpLogEntry& b) {
-		return a.timestamp() < b.timestamp();
-	});
-}
-
-QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
-{
-	if (role == Qt::DisplayRole)
-	{
-		if (index.row() < static_cast<int>(entries.size()))
-		{
-			if (index.column() == 0)
-			{
-				return entries.at(index.row()).timestamp().toString();
-			}
-			else if (index.column() == 1)
-			{
-				return get_enum_string(entries.at(index.row()).type());
-			}
-			else if (index.column() == 2)
-			{
-				return entries.at(index.row()).url();
-			}
-		}
-	}
-	return QVariant{};
-}
-
-int HttpLogModel::columnCount(const QModelIndex&) const
-{
-	return 3;
-}
-
-int HttpLogModel::rowCount(const QModelIndex&) const
-{
-	return static_cast<int>(entries.size());
-}
-
-QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-	{
-		if (section == 0)
-		{
-			return "Time";
-		}
-		else if (section == 1)
-		{
-			return "Method";
-		}
-		else if (section == 2)
-		{
-			return "URL";
-		}
-	}
-	return QVariant{};
 }

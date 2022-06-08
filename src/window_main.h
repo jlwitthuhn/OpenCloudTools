@@ -9,6 +9,7 @@
 class QAction;
 class QComboBox;
 class QPushButton;
+class QTabWidget;
 class QWidget;
 
 class BulkDataPanel;
@@ -31,6 +32,7 @@ private:
 	void pressed_toggle_autoclose();
 
 	void handle_autoclose_changed();
+	void handle_tab_changed(int index);
 
 	QString api_key;
 	std::optional<long long> selected_universe_id;
@@ -40,6 +42,8 @@ private:
 	QComboBox* select_universe_combo = nullptr;
 
 	QPushButton* del_universe_button = nullptr;
+
+	QTabWidget* panel_tabs = nullptr;
 
 	ExploreDatastorePanel* explore_datastore_panel = nullptr;
 	BulkDataPanel* bulk_data_panel = nullptr;

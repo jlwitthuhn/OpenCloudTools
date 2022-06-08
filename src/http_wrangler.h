@@ -48,5 +48,6 @@ class HttpWrangler
 public:
 	static QNetworkReply* send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body = std::nullopt);
 
+	static void clear_log();
 	static HttpLogModel* make_log_model(QObject* parent);
 };

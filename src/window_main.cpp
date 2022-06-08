@@ -86,21 +86,23 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			top_bar_layout->addWidget(select_universe_group);
 		}
 
-		QTabWidget* central_tab_widget = new QTabWidget{ central_widget };
+		panel_tabs = new QTabWidget{ central_widget };
 		{
-			explore_datastore_panel = new ExploreDatastorePanel{ central_tab_widget, api_key, selected_universe_id };
-			central_tab_widget->addTab(explore_datastore_panel, "Explore Datastores");
+			explore_datastore_panel = new ExploreDatastorePanel{ panel_tabs, api_key, selected_universe_id };
+			panel_tabs->addTab(explore_datastore_panel, "Explore Datastores");
 
-			bulk_data_panel = new BulkDataPanel{ central_tab_widget, api_key, selected_universe_id };
-			central_tab_widget->addTab(bulk_data_panel, "Bulk Data");
+			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key, selected_universe_id };
+			panel_tabs->addTab(bulk_data_panel, "Bulk Data");
 
-			http_log_panel = new HttpLogPanel{ central_tab_widget };
-			central_tab_widget->addTab(http_log_panel, "HTTP Log");
+			http_log_panel = new HttpLogPanel{ panel_tabs };
+			panel_tabs->addTab(http_log_panel, "HTTP Log");
+
+			connect(panel_tabs, &QTabWidget::currentChanged, this, &MyMainWindow::handle_tab_changed);
 		}
 
 		QVBoxLayout* central_layout = new QVBoxLayout{ central_widget };
 		central_layout->addWidget(top_bar_widget);
-		central_layout->addWidget(central_tab_widget);
+		central_layout->addWidget(panel_tabs);
 	}
 	setCentralWidget(central_widget);
 
@@ -174,5 +176,17 @@ void MyMainWindow::handle_autoclose_changed()
 	if (autoclose != action_toggle_autoclose->isChecked())
 	{
 		action_toggle_autoclose->setChecked(autoclose);
+	}
+}
+
+void MyMainWindow::handle_tab_changed(const int index)
+{
+	if (panel_tabs)
+	{
+		QWidget* the_panel = panel_tabs->widget(index);
+		if (HttpLogPanel* http_panel = dynamic_cast<HttpLogPanel*>(the_panel))
+		{
+			http_panel->tab_opened();
+		}
 	}
 }
