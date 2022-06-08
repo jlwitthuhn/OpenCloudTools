@@ -2,6 +2,7 @@
 
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -48,6 +49,11 @@ void BulkDataPanel::pressed_download()
 {
 	if (selected_universe_id)
 	{
+		QMessageBox* msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Alert");
+		msg_box->setText("The Bulk Download feature may change in the near future. The format of the sqlite database is not final, so don't depend on it too much.");
+		msg_box->exec();
+
 		const long long universe_id = *selected_universe_id;
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
