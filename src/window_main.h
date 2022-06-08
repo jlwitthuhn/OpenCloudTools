@@ -13,6 +13,7 @@ class QWidget;
 
 class BulkDataPanel;
 class ExploreDatastorePanel;
+class HttpLogPanel;
 
 class MyMainWindow : public QMainWindow
 {
@@ -42,4 +43,5 @@ private:
 
 	ExploreDatastorePanel* explore_datastore_panel = nullptr;
 	BulkDataPanel* bulk_data_panel = nullptr;
+	HttpLogPanel* http_log_panel = nullptr;
 };

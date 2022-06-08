@@ -21,6 +21,7 @@
 #include "api_key.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_explore.h"
+#include "panel_http_log.h"
 #include "user_settings.h"
 #include "window_api_key_manage.h"
 #include "window_datastore_universe_add.h"
@@ -92,6 +93,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 			bulk_data_panel = new BulkDataPanel{ central_tab_widget, api_key, selected_universe_id };
 			central_tab_widget->addTab(bulk_data_panel, "Bulk Data");
+
+			http_log_panel = new HttpLogPanel{ central_tab_widget };
+			central_tab_widget->addTab(http_log_panel, "HTTP Log");
 		}
 
 		QVBoxLayout* central_layout = new QVBoxLayout{ central_widget };
