@@ -11,6 +11,8 @@
 
 #include "api_response.h"
 #include "http_req_builder.h"
+#include "http_wrangler.h"
+#include "util_enum.h"
 
 void DataRequest::send_request(std::optional<QString> cursor)
 {
@@ -25,26 +27,7 @@ void DataRequest::send_request(std::optional<QString> cursor)
 	}
 
 	pending_request = build_request(cursor);
-	switch (request_type)
-	{
-	case HttpRequestType::Get:
-		pending_reply = net_access_manager.get(*pending_request);
-		break;
-	case HttpRequestType::Post:
-		pending_reply = net_access_manager.post(*pending_request, post_body->toUtf8());
-		break;
-	case HttpRequestType::Delete:
-		pending_reply = net_access_manager.deleteResource(*pending_request);
-		break;
-	}
-	if (post_body)
-	{
-		pending_reply = net_access_manager.post(*pending_request, post_body->toUtf8());
-	}
-	else
-	{
-		pending_reply = net_access_manager.get(*pending_request);
-	}
+	pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
@@ -117,18 +100,7 @@ void DataRequest::resend()
 	if (pending_request)
 	{
 		emit status_message("Resending...");
-		switch (request_type)
-		{
-		case HttpRequestType::Get:
-			pending_reply = net_access_manager.get(*pending_request);
-			break;
-		case HttpRequestType::Post:
-			pending_reply = net_access_manager.post(*pending_request, post_body->toUtf8());
-			break;
-		case HttpRequestType::Delete:
-			pending_reply = net_access_manager.deleteResource(*pending_request);
-			break;
-		}
+		pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
 		connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 	}
 }

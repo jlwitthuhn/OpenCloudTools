@@ -11,6 +11,13 @@ enum class DatastoreEntryType
 	Json,
 };
 
+enum class HttpRequestType
+{
+	Get,
+	Post,
+	Delete,
+};
+
 enum class ViewEditMode
 {
 	View,

@@ -6,20 +6,12 @@
 #include <vector>
 
 #include <QList>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
 #include <QString>
 
 #include "api_response.h"
-
-enum class HttpRequestType
-{
-	Get,
-	Post,
-	Delete,
-};
 
 class DataRequest : public QObject
 {
@@ -50,8 +42,6 @@ protected:
 	int get_next_429_delay();
 
 	QString api_key;
-
-	QNetworkAccessManager net_access_manager;
 
 	std::optional<QNetworkRequest> pending_request;
 	QNetworkReply* pending_reply = nullptr;
