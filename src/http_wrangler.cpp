@@ -7,6 +7,7 @@
 
 static std::once_flag network_access_once;
 static std::unique_ptr<QNetworkAccessManager> network_access_manager;
+static std::vector<HttpLogEntry> http_log_entries;
 
 static void init_network_manager()
 {
@@ -15,9 +16,15 @@ static void init_network_manager()
 	});
 }
 
+HttpLogEntry::HttpLogEntry(HttpRequestType type, const QString& url) : _timestamp{ QDateTime::currentDateTime() }, _type{type}, _url{url}
+{
+
+}
+
 QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body)
 {
 	init_network_manager();
+	http_log_entries.push_back(HttpLogEntry{ type, request.url().toString() });
 	switch (type)
 	{
 	case HttpRequestType::Get:
@@ -36,4 +43,69 @@ QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request
 	default:
 		return nullptr;
 	}
+}
+
+HttpLogModel* HttpWrangler::make_log_model(QObject* parent)
+{
+	return new HttpLogModel{ parent, http_log_entries };
+}
+
+HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& entries)
+{
+	std::sort(this->entries.begin(), this->entries.end(), [](const HttpLogEntry& a, const HttpLogEntry& b) {
+		return a.timestamp() < b.timestamp();
+	});
+}
+
+QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
+{
+	if (role == Qt::DisplayRole)
+	{
+		if (index.row() < static_cast<int>(entries.size()))
+		{
+			if (index.column() == 0)
+			{
+				return entries.at(index.row()).timestamp().toString();
+			}
+			else if (index.column() == 1)
+			{
+				return get_enum_string(entries.at(index.row()).type());
+			}
+			else if (index.column() == 2)
+			{
+				return entries.at(index.row()).url();
+			}
+		}
+	}
+	return QVariant{};
+}
+
+int HttpLogModel::columnCount(const QModelIndex&) const
+{
+	return 3;
+}
+
+int HttpLogModel::rowCount(const QModelIndex&) const
+{
+	return static_cast<int>(entries.size());
+}
+
+QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+	{
+		if (section == 0)
+		{
+			return "Time";
+		}
+		else if (section == 1)
+		{
+			return "Method";
+		}
+		else if (section == 2)
+		{
+			return "URL";
+		}
+	}
+	return QVariant{};
 }

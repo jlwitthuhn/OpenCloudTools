@@ -25,3 +25,4 @@ enum class ViewEditMode
 };
 
 QString get_enum_string(DatastoreEntryType enum_in);
+QString get_enum_string(HttpRequestType enum_in);
