@@ -70,6 +70,7 @@ void DataRequest::handle_reply_ready()
 	else if (status == "429") // Too many requests
 	{
 		emit status_message(QString{ "Received HTTP 429, briefly pausing..." });
+		emit received_http_429();
 
 		QTimer* timer = new QTimer(this);
 		timer->setSingleShot(true);
@@ -107,12 +108,12 @@ void DataRequest::resend()
 
 int DataRequest::get_next_429_delay()
 {
-	http_429s_count = http_429s_count + 1;
-	if (http_429s_count < 2)
+	http_429_count = http_429_count + 1;
+	if (http_429_count < 2)
 	{
 		return 2500;
 	}
-	else if (http_429s_count < 3)
+	else if (http_429_count < 3)
 	{
 		return 5000;
 	}

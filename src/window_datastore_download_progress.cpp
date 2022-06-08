@@ -101,7 +101,9 @@ void DownloadDatastoreProgressWindow::send_list_keys_request()
 	const size_t current_index = progress.get_current_datastore_index();
 	const QString this_datastore_name = datastore_names[current_index];
 
-	get_entries_request = new GetStandardDatastoreEntriesRequest { this, api_key, universe_id, this_datastore_name, "", "" };
+	get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, "", "" };
+	get_entries_request->set_http_429_count(http_429_count);
+	connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DownloadDatastoreProgressWindow::handle_received_http_429);
 	connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_message, this, &DownloadDatastoreProgressWindow::handle_status_message);
 	connect(get_entries_request, &GetStandardDatastoreEntriesRequest::request_complete, this, &DownloadDatastoreProgressWindow::handle_enumerate_entries_complete);
 	get_entries_request->send_request();
@@ -120,6 +122,8 @@ void DownloadDatastoreProgressWindow::send_next_details_request()
 		pending_entries.pop_back();
 
 		get_entry_details_request = new GetStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+		get_entry_details_request->set_http_429_count(http_429_count);
+		connect(get_entry_details_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DownloadDatastoreProgressWindow::handle_received_http_429);
 		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::status_message, this, &DownloadDatastoreProgressWindow::handle_status_message);
 		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DownloadDatastoreProgressWindow::handle_get_entry_details_complete);
 		get_entry_details_request->send_request();
@@ -166,6 +170,11 @@ void DownloadDatastoreProgressWindow::handle_get_entry_details_complete()
 		get_entry_details_request = nullptr;
 		send_next_details_request();
 	}
+}
+
+void DownloadDatastoreProgressWindow::handle_received_http_429()
+{
+	http_429_count++;
 }
 
 DownloadDatastoreProgressWindow::DownloadProgress::DownloadProgress(const size_t datastore_total) : datastore_total{ datastore_total }

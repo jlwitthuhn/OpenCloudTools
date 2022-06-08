@@ -22,9 +22,12 @@ public:
 
 	virtual QString get_title_string() const = 0;
 
+	void set_http_429_count(size_t new_count) { http_429_count = new_count; }
+
 signals:
 	void request_complete();
 	void status_message(QString message);
+	void received_http_429();
 
 protected:
 	DataRequest(QObject* parent, const QString& api_key);
@@ -49,7 +52,7 @@ protected:
 	HttpRequestType request_type = HttpRequestType::Get;
 	std::optional<QString> post_body;
 
-	size_t http_429s_count = 0;
+	size_t http_429_count = 0;
 };
 
 class DeleteStandardDatastoreEntryRequest : public DataRequest

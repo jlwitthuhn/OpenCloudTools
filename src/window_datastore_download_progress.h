@@ -36,6 +36,7 @@ private:
 	void handle_status_message(QString message);
 	void handle_enumerate_entries_complete();
 	void handle_get_entry_details_complete();
+	void handle_received_http_429();
 
 	class DownloadProgress
 	{
@@ -66,6 +67,8 @@ private:
 
 	QString api_key;
 	long long universe_id;
+
+	size_t http_429_count = 0;
 
 	DownloadProgress progress;
 	std::unique_ptr<SqliteDatastoreWriter> writer;
