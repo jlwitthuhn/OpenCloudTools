@@ -62,7 +62,7 @@ void DataRequest::handle_reply_ready()
 	{
 		handle_http_200(reply_body, headers);
 	}
-	else if (status == "404") // Too many requests
+	else if (status == "404") // Not found
 	{
 		handle_http_404(reply_body, headers);
 	}
@@ -76,16 +76,19 @@ void DataRequest::handle_reply_ready()
 		connect(timer, &QTimer::timeout, this, &DataRequest::resend);
 		timer->start(get_next_429_delay());
 	}
+	else if (status == "500") // Internal server error
+	{
+		emit status_message(QString{ "Received HTTP 500 Internal Server Error, retrying..." });
+		resend();
+	}
 	else if (status == "502") // Bad gateway
 	{
-		emit status_message(QString{ "Received HTTP 502, retrying..." });
-
+		emit status_message(QString{ "Received HTTP 502 Bad Gateway, retrying..." });
 		resend();
 	}
 	else if (status == "504") // Gateway timeout
 	{
-		emit status_message(QString{ "Received HTTP 504, retrying..." });
-
+		emit status_message(QString{ "Received HTTP 504 Gateway Timeout, retrying..." });
 		resend();
 	}
 	else
