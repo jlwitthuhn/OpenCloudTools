@@ -21,7 +21,7 @@ HttpLogEntry::HttpLogEntry(HttpRequestType type, const QString& url) : _timestam
 
 }
 
-HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& entries) : entries{ entries }
+HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& entries) : QAbstractTableModel{ parent }, entries{ entries }
 {
 	std::sort(this->entries.begin(), this->entries.end(), [](const HttpLogEntry& a, const HttpLogEntry& b) {
 		return b.timestamp() < a.timestamp();
