@@ -3,7 +3,7 @@
 #include <optional>
 
 #include <Qt>
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLineEdit>

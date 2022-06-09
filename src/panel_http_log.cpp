@@ -1,5 +1,6 @@
 #include "panel_http_log.h"
 
+#include <QAbstractItemModel>
 #include <QPushButton>
 #include <QTreeView>
 #include <QVBoxLayout>

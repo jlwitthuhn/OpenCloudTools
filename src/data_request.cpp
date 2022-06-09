@@ -4,7 +4,6 @@
 
 #include <QByteArray>
 #include <QCryptographicHash>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QTimer>
 #include <QVariant>

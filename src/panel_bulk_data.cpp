@@ -1,5 +1,8 @@
 #include "panel_bulk_data.h"
 
+#include <vector>
+
+#include <Qt>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QMessageBox>

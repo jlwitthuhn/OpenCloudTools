@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <Qt>
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>

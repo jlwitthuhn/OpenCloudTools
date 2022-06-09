@@ -1,11 +1,16 @@
 #pragma once
 
-#include <optional>
+#include <cstddef>
 
+#include <optional>
+#include <vector>
+
+#include <Qt>
 #include <QAbstractTableModel>
 #include <QDateTime>
 #include <QObject>
 #include <QString>
+#include <QVariant>
 
 #include "util_enum.h"
 

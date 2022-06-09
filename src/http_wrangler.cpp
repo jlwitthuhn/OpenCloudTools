@@ -1,9 +1,12 @@
 #include "http_wrangler.h"
 
+#include <algorithm>
 #include <memory>
 #include <mutex>
 
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QUrl>
 
 static std::once_flag network_access_once;
 static std::unique_ptr<QNetworkAccessManager> network_access_manager;

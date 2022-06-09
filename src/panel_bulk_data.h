@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include <QObject>
+#include <QString>
 #include <QWidget>
 
 class QPushButton;

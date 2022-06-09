@@ -12,6 +12,7 @@
 #include <QString>
 
 #include "api_response.h"
+#include "util_enum.h"
 
 class DataRequest : public QObject
 {
