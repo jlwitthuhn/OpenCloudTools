@@ -15,6 +15,7 @@
 #include <QMargins>
 #include <QPushButton>
 #include <QSizePolicy>
+#include <QSplitter>
 #include <QTreeView>
 #include <QVBoxLayout>
 
@@ -35,7 +36,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QWidget* left_bar_widget = new QWidget{ this };
 	{
 		QSizePolicy left_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
-		left_size_policy.setHorizontalStretch(1);
+		left_size_policy.setHorizontalStretch(5);
 		left_bar_widget->setSizePolicy(left_size_policy);
 
 		QGroupBox* select_datastore_widget = new QGroupBox{ "Datastores", left_bar_widget };
@@ -59,7 +60,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QWidget* right_bar_widget = new QWidget{ this };
 	{
 		QSizePolicy right_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
-		right_size_policy.setHorizontalStretch(2);
+		right_size_policy.setHorizontalStretch(7);
 		right_bar_widget->setSizePolicy(right_size_policy);
 
 		QGroupBox* right_group_box = new QGroupBox{ "Search", right_bar_widget };
@@ -163,9 +164,13 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 		right_bar_layout->addWidget(right_group_box);
 	}
 
+	QSplitter* splitter = new QSplitter{ this };
+	splitter->setChildrenCollapsible(false);
+	splitter->addWidget(left_bar_widget);
+	splitter->addWidget(right_bar_widget);
+
 	QHBoxLayout* layout = new QHBoxLayout{ this };
-	layout->addWidget(left_bar_widget);
-	layout->addWidget(right_bar_widget);
+	layout->addWidget(splitter);
 
 	search_text_changed();
 	selected_datastore_changed();
