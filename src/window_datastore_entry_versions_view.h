@@ -30,11 +30,14 @@ public:
 	QPushButton* revert_button = nullptr;
 
 private:
+	void view_version(const QModelIndex& index);
+
+	void handle_selected_version_changed();
+	void handle_version_double_clicked(const QModelIndex& index);
+
 	void pressed_refresh();
 	void pressed_revert();
 	void pressed_view();
-
-	void handle_versions_selection_changed();
 
 	QString api_key;
 };

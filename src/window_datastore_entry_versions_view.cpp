@@ -50,7 +50,8 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 		{
 			versions_tree->resizeColumnToContents(i);
 		}
-		connect(versions_tree, &QTreeView::pressed, this, &ViewDatastoreEntryVersionsWindow::handle_versions_selection_changed);
+		connect(versions_tree, &QTreeView::doubleClicked, this, &ViewDatastoreEntryVersionsWindow::handle_version_double_clicked);
+		connect(versions_tree, &QTreeView::pressed, this, &ViewDatastoreEntryVersionsWindow::handle_selected_version_changed);
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };
 		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -84,7 +85,50 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 	layout->addWidget(refresh_button);
 	layout->addWidget(button_panel);
 
-	handle_versions_selection_changed();
+	handle_selected_version_changed();
+}
+
+void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		{
+			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(index.row()))
+			{
+				const long long universe_id = universe_id_edit->text().toLongLong();
+				const QString datastore_name = datastore_name_edit->text();
+				const QString scope = scope_edit->text();
+				const QString key_name = key_name_edit->text();
+				const QString version = opt_version->get_version();
+
+				GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
+				OperationInProgressDialog diag{ this, &req };
+				req.send_request();
+				diag.exec();
+
+				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
+				if (opt_response)
+				{
+					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
+					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+					view_entry_window->show();
+				}
+			}
+		}
+	}
+}
+
+void ViewDatastoreEntryVersionsWindow::handle_selected_version_changed()
+{
+	const bool valid = versions_tree->currentIndex().isValid();
+	view_button->setEnabled(valid);
+	revert_button->setEnabled(valid);
+}
+
+void ViewDatastoreEntryVersionsWindow::handle_version_double_clicked(const QModelIndex& index)
+{
+	view_version(index);
 }
 
 void ViewDatastoreEntryVersionsWindow::pressed_refresh()
@@ -158,39 +202,5 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 
 void ViewDatastoreEntryVersionsWindow::pressed_view()
 {
-	QModelIndex current_index = versions_tree->currentIndex();
-	if (current_index.isValid())
-	{
-		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
-		{
-			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(current_index.row()))
-			{
-				const long long universe_id = universe_id_edit->text().toLongLong();
-				const QString datastore_name = datastore_name_edit->text();
-				const QString scope = scope_edit->text();
-				const QString key_name = key_name_edit->text();
-				const QString version = opt_version->get_version();
-
-				GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
-				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
-				diag.exec();
-
-				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
-				if (opt_response)
-				{
-					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
-					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
-					view_entry_window->show();
-				}
-			}
-		}
-	}
-}
-
-void ViewDatastoreEntryVersionsWindow::handle_versions_selection_changed()
-{
-	const bool valid = versions_tree->currentIndex().isValid();
-	view_button->setEnabled(valid);
-	revert_button->setEnabled(valid);
+	view_version(versions_tree->currentIndex());
 }

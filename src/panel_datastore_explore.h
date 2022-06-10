@@ -20,9 +20,12 @@ public:
 	void selected_universe_changed(std::optional<long long> new_universe);
 
 private:
-	void handle_datastore_entry_selection_changed();
-	void search_text_changed();
-	void selected_datastore_changed();
+	void view_entry(const QModelIndex& index);
+
+	void handle_datastore_entry_double_clicked(const QModelIndex& index);
+	void handle_search_text_changed();
+	void handle_selected_datastore_changed();
+	void handle_selected_datastore_entry_changed();
 
 	void pressed_delete_entry();
 	void pressed_edit_entry();

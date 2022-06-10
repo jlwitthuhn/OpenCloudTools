@@ -43,7 +43,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 		QGroupBox* select_datastore_widget = new QGroupBox{ "Datastores", left_bar_widget };
 		{
 			select_datastore_list = new QListWidget{ select_datastore_widget };
-			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastorePanel::selected_datastore_changed);
+			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_changed);
 
 			select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
 			connect(select_datastore_fetch_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_fetch_datastores);
@@ -71,17 +71,17 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 				QLabel* datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
 
 				datastore_name_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::search_text_changed);
+				connect(datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
 
 				QLabel* datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
 
 				datastore_scope_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::search_text_changed);
+				connect(datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
 
 				QLabel* datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
 
 				datastore_key_name_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::search_text_changed);
+				connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
 
 				QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
 				right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -117,7 +117,8 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 			}
 
 			datastore_entry_tree = new QTreeView{ right_group_box };
-			connect(datastore_entry_tree, &QTreeView::pressed, this, &ExploreDatastorePanel::handle_datastore_entry_selection_changed);
+			connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &ExploreDatastorePanel::handle_datastore_entry_double_clicked);
+			connect(datastore_entry_tree, &QTreeView::pressed, this, &ExploreDatastorePanel::handle_selected_datastore_entry_changed);
 
 			QWidget* right_read_buttons = new QWidget{ right_group_box };
 			{
@@ -173,9 +174,9 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QHBoxLayout* layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
-	search_text_changed();
-	selected_datastore_changed();
-	handle_datastore_entry_selection_changed();
+	handle_search_text_changed();
+	handle_selected_datastore_changed();
+	handle_selected_datastore_entry_changed();
 }
 
 void ExploreDatastorePanel::selected_universe_changed(const std::optional<long long> new_universe)
@@ -183,21 +184,50 @@ void ExploreDatastorePanel::selected_universe_changed(const std::optional<long l
 	selected_universe_id = new_universe;
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(selected_universe_id.has_value());
-	search_text_changed();
+	handle_search_text_changed();
 	datastore_entry_tree->setModel(nullptr);
-	handle_datastore_entry_selection_changed();
+	handle_selected_datastore_entry_changed();
 }
 
-void ExploreDatastorePanel::handle_datastore_entry_selection_changed()
+void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 {
-	const bool item_selected = datastore_entry_tree->model() != nullptr && datastore_entry_tree->currentIndex().isValid();
-	view_entry_button->setEnabled(item_selected);
-	view_versions_button->setEnabled(item_selected);
-	edit_entry_button->setEnabled(item_selected);
-	delete_entry_button->setEnabled(item_selected);
+	if (index.isValid())
+	{
+		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		{
+			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			if (opt_entry)
+			{
+				GetStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				OperationInProgressDialog diag{ this, &req };
+				req.send_request();
+				diag.exec();
+
+				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
+				if (opt_response)
+				{
+					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
+					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+					view_entry_window->show();
+				}
+				else
+				{
+					QMessageBox* msg_box = new QMessageBox{ this };
+					msg_box->setWindowTitle("Not Found");
+					msg_box->setText("This entry does not exist or has been deleted.");
+					msg_box->exec();
+				}
+			}
+		}
+	}
 }
 
-void ExploreDatastorePanel::search_text_changed()
+void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
+{
+	view_entry(index);
+}
+
+void ExploreDatastorePanel::handle_search_text_changed()
 {
 	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && selected_universe_id;
 	const bool find_prefix_enabled = find_all_enabled && datastore_key_name_edit->text().size() > 0 && datastore_key_name_edit->text().size() > 0;
@@ -205,13 +235,22 @@ void ExploreDatastorePanel::search_text_changed()
 	find_prefix_button->setEnabled(find_prefix_enabled);
 }
 
-void ExploreDatastorePanel::selected_datastore_changed()
+void ExploreDatastorePanel::handle_selected_datastore_changed()
 {
 	QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
 	if (selected.size() == 1)
 	{
 		datastore_name_edit->setText(selected.first()->text());
 	}
+}
+
+void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
+{
+	const bool item_selected = datastore_entry_tree->model() != nullptr && datastore_entry_tree->currentIndex().isValid();
+	view_entry_button->setEnabled(item_selected);
+	view_versions_button->setEnabled(item_selected);
+	edit_entry_button->setEnabled(item_selected);
+	delete_entry_button->setEnabled(item_selected);
 }
 
 void ExploreDatastorePanel::pressed_delete_entry()
@@ -316,7 +355,7 @@ void ExploreDatastorePanel::pressed_find_all()
 			datastore_entry_tree->setModel(datastore_model);
 			datastore_entry_tree->setColumnWidth(0, 280);
 
-			handle_datastore_entry_selection_changed();
+			handle_selected_datastore_entry_changed();
 		}
 	}
 }
@@ -352,43 +391,14 @@ void ExploreDatastorePanel::pressed_find_prefix()
 			datastore_entry_tree->setModel(datastore_model);
 			datastore_entry_tree->setColumnWidth(0, 280);
 
-			handle_datastore_entry_selection_changed();
+			handle_selected_datastore_entry_changed();
 		}
 	}
 }
 
 void ExploreDatastorePanel::pressed_view_entry()
 {
-	QModelIndex selected_index = datastore_entry_tree->currentIndex();
-	if (selected_index.isValid())
-	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
-		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(selected_index.row());
-			if (opt_entry)
-			{
-				GetStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
-				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
-				diag.exec();
-
-				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
-				if (opt_response)
-				{
-					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
-					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
-					view_entry_window->show();
-				}
-				else
-				{
-					QMessageBox* msg_box = new QMessageBox{ this };
-					msg_box->setWindowTitle("Not Found");
-					msg_box->setText("This entry does not exist or has been deleted.");
-					msg_box->exec();
-				}
-			}
-		}
-	}
+	view_entry(datastore_entry_tree->currentIndex());
 }
 
 void ExploreDatastorePanel::pressed_view_versions()
