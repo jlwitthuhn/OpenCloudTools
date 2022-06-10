@@ -13,6 +13,7 @@
 #include <QList>
 #include <QListWidget>
 #include <QMargins>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QSplitter>
@@ -377,6 +378,13 @@ void ExploreDatastorePanel::pressed_view_entry()
 					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
 					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_entry_window->show();
+				}
+				else
+				{
+					QMessageBox* msg_box = new QMessageBox{ this };
+					msg_box->setWindowTitle("Not Found");
+					msg_box->setText("This entry does not exist or has been deleted.");
+					msg_box->exec();
 				}
 			}
 		}
