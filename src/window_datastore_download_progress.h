@@ -25,7 +25,7 @@ class DownloadDatastoreProgressWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	DownloadDatastoreProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer);
+	DownloadDatastoreProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer);
 
 private:
 	void update_ui();
@@ -67,6 +67,8 @@ private:
 
 	QString api_key;
 	long long universe_id;
+	QString scope;
+	QString key_prefix;
 
 	size_t http_429_count = 0;
 

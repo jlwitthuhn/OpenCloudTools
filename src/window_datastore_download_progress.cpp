@@ -12,10 +12,12 @@
 
 #include "data_request.h"
 
-DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer) :
+DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
 	universe_id{ universe_id },
+	scope{ scope },
+	key_prefix{ key_prefix },
 	progress{ datastore_names.size() },
 	writer{ std::move(writer) },
 	datastore_names{ datastore_names }
@@ -82,7 +84,7 @@ void DownloadDatastoreProgressWindow::send_next_list_keys_request()
 	{
 		const QString this_datastore_name = datastore_names[current_index];
 
-		get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, "", "" };
+		get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, scope, key_prefix };
 		get_entries_request->set_http_429_count(http_429_count);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DownloadDatastoreProgressWindow::handle_received_http_429);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_message, this, &DownloadDatastoreProgressWindow::handle_status_message);
