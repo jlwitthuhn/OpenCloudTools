@@ -22,18 +22,11 @@ DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent
 {
 	setWindowTitle("Download Progress");
 
-	QGroupBox* bars_box = new QGroupBox{ "Progress", this };
-	{
-		progress_label = new QLabel{ "", bars_box };
-		progress_bar = new QProgressBar{ bars_box };
-		progress_bar->setMinimumWidth(360);
-		progress_bar->setTextVisible(false);
-		progress_bar->setMaximum(DownloadProgress::MAXIMUM);
-
-		QVBoxLayout* const bars_layout = new QVBoxLayout{ bars_box };
-		bars_layout->addWidget(progress_label);
-		bars_layout->addWidget(progress_bar);
-	}
+	progress_label = new QLabel{ "", this };
+	progress_bar = new QProgressBar{ this };
+	progress_bar->setMinimumWidth(360);
+	progress_bar->setTextVisible(false);
+	progress_bar->setMaximum(DownloadProgress::MAXIMUM);
 
 	text_box = new QTextEdit{ this };
 	text_box->setReadOnly(true);
@@ -44,7 +37,8 @@ DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent
 	connect(close_button, &QPushButton::clicked, this, &DownloadDatastoreProgressWindow::close);
 
 	QVBoxLayout* const layout = new QVBoxLayout{ this };
-	layout->addWidget(bars_box);
+	layout->addWidget(progress_label);
+	layout->addWidget(progress_bar);
 	layout->addWidget(text_box);
 	layout->addWidget(close_button);
 
