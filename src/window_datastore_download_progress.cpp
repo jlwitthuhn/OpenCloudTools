@@ -24,23 +24,15 @@ DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent
 
 	QGroupBox* bars_box = new QGroupBox{ "Progress", this };
 	{
-		label_overall = new QLabel{ "", bars_box };
-		bar_overall = new QProgressBar{ bars_box };
-		bar_overall->setMinimumWidth(360);
-		bar_overall->setTextVisible(false);
-		bar_overall->setMaximum(DownloadProgress::MAXIMUM);
-
-		label_entry = new QLabel{ "", bars_box };
-		bar_entry = new QProgressBar{ bars_box };
-		bar_entry->setMinimumWidth(360);
-		bar_entry->setTextVisible(false);
-		bar_entry->setRange(0, 0);
+		progress_label = new QLabel{ "", bars_box };
+		progress_bar = new QProgressBar{ bars_box };
+		progress_bar->setMinimumWidth(360);
+		progress_bar->setTextVisible(false);
+		progress_bar->setMaximum(DownloadProgress::MAXIMUM);
 
 		QVBoxLayout* const bars_layout = new QVBoxLayout{ bars_box };
-		bars_layout->addWidget(label_overall);
-		bars_layout->addWidget(bar_overall);
-		bars_layout->addWidget(label_entry);
-		bars_layout->addWidget(bar_entry);
+		bars_layout->addWidget(progress_label);
+		bars_layout->addWidget(progress_bar);
 	}
 
 	text_box = new QTextEdit{ this };
@@ -56,62 +48,59 @@ DownloadDatastoreProgressWindow::DownloadDatastoreProgressWindow(QWidget* parent
 	layout->addWidget(text_box);
 	layout->addWidget(close_button);
 
-	send_list_keys_request();
+	send_next_list_keys_request();
 }
 
 void DownloadDatastoreProgressWindow::update_ui()
 {
 	if (progress.is_done()) {
-		label_overall->setText("Download complete");
-		bar_overall->setMaximum(1);
-		bar_overall->setValue(1);
-		label_entry->setText("Complete");
-		bar_entry->setMaximum(1);
-		bar_entry->setValue(1);
+		progress_label->setText("Download complete");
+		progress_bar->setMaximum(1);
+		progress_bar->setValue(1);
+	}
+	else if (progress.is_enumerating())
+	{
+		progress_label->setText("Enumerating objects...");
+		progress_bar->setMaximum(0);
+		progress_bar->setValue(0);
 	}
 	else
 	{
-		QString progress_text = QString{ "Downloading datastore %1/%2..." }.arg(progress.get_current_datastore_index() + 1).arg(datastore_names.size());
-		label_overall->setText(progress_text);
-		bar_overall->setValue(static_cast<int>(progress.get_overall_progress()));
-		std::optional<size_t> local_progress = progress.get_local_progress();
-		if (local_progress)
+		const std::optional<size_t> opt_entry_total = progress.get_entry_total();
+		if (opt_entry_total)
 		{
-			label_entry->setText("Downloading...");
-			bar_entry->setMaximum(DownloadProgress::MAXIMUM);
-			bar_entry->setValue(static_cast<int>(*local_progress));
+			const QString progress_text = QString{ "Downloading entry %1/%2..." }.arg(progress.get_current_entry_index() + 1).arg(*opt_entry_total);
+			progress_label->setText(progress_text);
+			progress_bar->setValue(static_cast<int>(progress.get_progress()));
+			progress_bar->setMaximum(static_cast<int>(DownloadProgress::MAXIMUM));
 		}
 		else
 		{
-			label_entry->setText("Enumerating entries...");
-			bar_entry->setRange(0, 0);
+			progress_label->setText("Download error");
 		}
 	}
 }
 
-void DownloadDatastoreProgressWindow::send_list_keys_request()
+void DownloadDatastoreProgressWindow::send_next_list_keys_request()
 {
-	if (progress.is_done())
-	{
-		close_button->setText("Close");
-		handle_status_message("Download complete");
-		return;
-	}
-
 	const size_t current_index = progress.get_current_datastore_index();
-	const QString this_datastore_name = datastore_names[current_index];
+	if (current_index < datastore_names.size())
+	{
+		const QString this_datastore_name = datastore_names[current_index];
 
-	get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, "", "" };
-	get_entries_request->set_http_429_count(http_429_count);
-	connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DownloadDatastoreProgressWindow::handle_received_http_429);
-	connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_message, this, &DownloadDatastoreProgressWindow::handle_status_message);
-	connect(get_entries_request, &GetStandardDatastoreEntriesRequest::request_complete, this, &DownloadDatastoreProgressWindow::handle_enumerate_entries_complete);
-	get_entries_request->send_request();
+		get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, "", "" };
+		get_entries_request->set_http_429_count(http_429_count);
+		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DownloadDatastoreProgressWindow::handle_received_http_429);
+		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_message, this, &DownloadDatastoreProgressWindow::handle_status_message);
+		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::request_complete, this, &DownloadDatastoreProgressWindow::handle_list_keys_complete);
+		get_entries_request->send_request();
 
-	progress.clear_entry_done();
-	progress.clear_entry_total();
-
-	update_ui();
+		update_ui();
+	}
+	else
+	{
+		send_next_details_request();
+	}
 }
 
 void DownloadDatastoreProgressWindow::send_next_details_request()
@@ -130,8 +119,8 @@ void DownloadDatastoreProgressWindow::send_next_details_request()
 	}
 	else
 	{
-		progress.advance_datastore_done();
-		send_list_keys_request();
+		close_button->setText("Close");
+		handle_status_message("Download complete");
 	}
 }
 
@@ -141,18 +130,19 @@ void DownloadDatastoreProgressWindow::handle_status_message(const QString messag
 	update_ui();
 }
 
-void DownloadDatastoreProgressWindow::handle_enumerate_entries_complete()
+void DownloadDatastoreProgressWindow::handle_list_keys_complete()
 {
 	if (get_entries_request)
 	{
-		pending_entries = get_entries_request->get_datastore_entries();
-		progress.clear_entry_done();
+		const std::vector<StandardDatastoreEntry>& new_entries = get_entries_request->get_datastore_entries();
+		pending_entries.insert(pending_entries.end(), new_entries.begin(), new_entries.end());
+		progress.advance_datastore_done();
 		progress.set_entry_total(pending_entries.size());
 
 		get_entries_request->deleteLater();
 		get_entries_request = nullptr;
 
-		send_next_details_request();
+		send_next_list_keys_request();
 	}
 }
 
@@ -182,9 +172,14 @@ DownloadDatastoreProgressWindow::DownloadProgress::DownloadProgress(const size_t
 
 }
 
+bool DownloadDatastoreProgressWindow::DownloadProgress::is_enumerating() const
+{
+	return datastore_done < datastore_total;
+}
+
 bool DownloadDatastoreProgressWindow::DownloadProgress::is_done() const
 {
-	return datastore_done >= datastore_total;
+	return entry_total.has_value() && entry_done >= *entry_total;
 }
 
 size_t DownloadDatastoreProgressWindow::DownloadProgress::get_current_datastore_index() const
@@ -192,33 +187,21 @@ size_t DownloadDatastoreProgressWindow::DownloadProgress::get_current_datastore_
 	return datastore_done;
 }
 
-size_t DownloadDatastoreProgressWindow::DownloadProgress::get_overall_progress() const
+size_t DownloadDatastoreProgressWindow::DownloadProgress::get_current_entry_index() const
 {
-	if (datastore_total == 0)
-	{
-		return MAXIMUM;
-	}
-	else
-	{
-		double overall = static_cast<double>(datastore_done) / static_cast<double>(datastore_total);
-		std::optional<size_t> local = get_local_progress();
-		if (local)
-		{
-			overall += (static_cast<double>(*local) / static_cast<double>(MAXIMUM)) / static_cast<double>(datastore_total);
-		}
-		return static_cast<size_t>(overall * MAXIMUM);
-	}
+	return entry_done;
 }
 
-std::optional<size_t> DownloadDatastoreProgressWindow::DownloadProgress::get_local_progress() const
+size_t DownloadDatastoreProgressWindow::DownloadProgress::get_progress() const
 {
 	if (entry_total)
 	{
-		return static_cast<size_t>( (static_cast<double>(entry_done) / static_cast<double>(*entry_total)) * MAXIMUM );
+		double progress = static_cast<double>(entry_done) / static_cast<double>(*entry_total);
+		return static_cast<size_t>(progress * MAXIMUM);
 	}
 	else
 	{
-		return std::nullopt;
+		return MAXIMUM;
 	}
 }
 
@@ -232,17 +215,12 @@ void DownloadDatastoreProgressWindow::DownloadProgress::advance_entry_done()
 	entry_done++;
 }
 
-void DownloadDatastoreProgressWindow::DownloadProgress::clear_entry_done()
-{
-	entry_done = 0;
-}
-
 void DownloadDatastoreProgressWindow::DownloadProgress::set_entry_total(const size_t total)
 {
 	entry_total = total;
 }
 
-void DownloadDatastoreProgressWindow::DownloadProgress::clear_entry_total()
+std::optional<size_t> DownloadDatastoreProgressWindow::DownloadProgress::get_entry_total() const
 {
-	entry_total = std::nullopt;
+	return entry_total;
 }

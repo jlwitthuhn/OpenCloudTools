@@ -30,11 +30,11 @@ public:
 private:
 	void update_ui();
 
-	void send_list_keys_request();
+	void send_next_list_keys_request();
 	void send_next_details_request();
 
 	void handle_status_message(QString message);
-	void handle_enumerate_entries_complete();
+	void handle_list_keys_complete();
 	void handle_get_entry_details_complete();
 	void handle_received_http_429();
 
@@ -43,18 +43,18 @@ private:
 	public:
 		DownloadProgress(size_t datastore_total);
 
+		bool is_enumerating() const;
 		bool is_done() const;
 
 		size_t get_current_datastore_index() const;
-		size_t get_overall_progress() const;
-		std::optional<size_t> get_local_progress() const;
+		size_t get_current_entry_index() const;
+		size_t get_progress() const;
 
 		void advance_datastore_done();
 		void advance_entry_done();
 
-		void clear_entry_done();
 		void set_entry_total(size_t total);
-		void clear_entry_total();
+		std::optional<size_t> get_entry_total() const;
 
 		static constexpr size_t MAXIMUM = 10000;
 
@@ -79,11 +79,8 @@ private:
 	GetStandardDatastoreEntriesRequest* get_entries_request = nullptr;
 	GetStandardDatastoreEntryRequest* get_entry_details_request = nullptr;
 
-	QLabel* label_overall = nullptr;
-	QProgressBar* bar_overall = nullptr;
-
-	QLabel* label_entry = nullptr;
-	QProgressBar* bar_entry = nullptr;
+	QLabel* progress_label = nullptr;
+	QProgressBar* progress_bar = nullptr;
 
 	QTextEdit* text_box = nullptr;
 
