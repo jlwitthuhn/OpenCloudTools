@@ -11,8 +11,9 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Network Widgets)
 
+add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
+
 add_executable(OpenCloudTools
-	./extern/sqlite/sqlite3.c
 	./src/main.cpp
 	./src/api_key.cpp
 	./src/api_key.h
@@ -68,6 +69,7 @@ add_executable(OpenCloudTools
 
 target_include_directories(OpenCloudTools PRIVATE ./extern/sqlite)
 
+target_link_libraries(OpenCloudTools PRIVATE extern_sqlite3)
 target_link_libraries(OpenCloudTools PRIVATE Qt6::Network)
 target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)
 
