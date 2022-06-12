@@ -12,6 +12,7 @@
 #include <QList>
 #include <QListWidget>
 #include <QMargins>
+#include <QMessageBox>
 #include <QMetaType>
 #include <QPushButton>
 #include <QVariant>
@@ -121,7 +122,15 @@ void ManageApiKeysWindow::click_del()
 		QVariant data = selected.first()->data(Qt::UserRole);
 		if (data.metaType().id() == QMetaType::UInt)
 		{
-			UserSettings::get()->delete_api_key(data.toUInt());
+			QMessageBox* msg_box = new QMessageBox{ this };
+			msg_box->setWindowTitle("Confirm deletion");
+			msg_box->setText("Are you sure you want to delete this api key? This cannot be undone.");
+			msg_box->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			int result = msg_box->exec();
+			if (result == QMessageBox::Yes)
+			{
+				UserSettings::get()->delete_api_key(data.toUInt());
+			}
 		}
 	}
 }
