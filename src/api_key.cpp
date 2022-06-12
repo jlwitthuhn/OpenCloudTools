@@ -1,5 +1,7 @@
 #include "api_key.h"
 
+#include <algorithm>
+
 UniverseProfile::UniverseProfile(const QString& name, const long long universe_id) : _name{ name }, _universe_id{ universe_id }
 {
 
@@ -52,4 +54,28 @@ bool ApiKeyProfile::update_universe_details(size_t universe_index, const QString
 const std::vector<UniverseProfile>& ApiKeyProfile::universes() const
 {
 	return _universes;
+}
+
+void ApiKeyProfile::sort_universes()
+{
+	std::sort(_universes.begin(), _universes.end(), [](const UniverseProfile& a, const UniverseProfile& b) -> bool {
+		if (a.name() < b.name())
+		{
+			return true;
+		}
+		else if (b.name() < a.name())
+		{
+			return false;
+		}
+
+		if (a.universe_id() < b.universe_id())
+		{
+			return true;
+		}
+		else if (b.universe_id() < a.universe_id())
+		{
+			return false;
+		}
+		return false;
+	});
 }

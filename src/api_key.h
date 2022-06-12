@@ -40,6 +40,8 @@ public:
 	bool update_universe_details(size_t universe_index, const QString& name, long long universe_id);
 	const std::vector<UniverseProfile>& universes() const;
 
+	void sort_universes();
+
 private:
 	QString _name;
 	QString _key;

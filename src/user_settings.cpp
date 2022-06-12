@@ -100,12 +100,14 @@ std::optional<size_t> UserSettings::selected_profile_add_universe(const Universe
 		auto selected_it = api_keys.find(*selected_key);
 		if (selected_it != api_keys.end())
 		{
-			const std::optional<size_t> new_id = selected_it->second.add_universe(universe_profile);
-			if (new_id)
+			const std::optional<size_t> new_index = selected_it->second.add_universe(universe_profile);
+			if (new_index)
 			{
-				emit universe_list_changed(new_id);
+				selected_universe_index = *new_index;
+				sort_universes();
+				emit universe_list_changed(*selected_universe_index);
 			}
-			return new_id;
+			return new_index;
 		}
 	}
 	return std::nullopt;
@@ -146,9 +148,10 @@ bool UserSettings::update_selected_universe(const QString& name, const long long
 			const bool success = selected_it->second.update_universe_details(*selected_universe_index, name, universe_id);
 			if (success)
 			{
+				sort_universes();
 				emit universe_list_changed(*selected_universe_index);
+				return true;
 			}
-			return success;
 		}
 	}
 	return false;
@@ -168,6 +171,30 @@ std::optional<UniverseProfile> UserSettings::get_selected_universe() const
 		}
 	}
 	return std::nullopt;
+}
+
+void UserSettings::sort_universes()
+{
+	const std::optional<UniverseProfile> originally_selected = get_selected_universe();
+	if (selected_key)
+	{
+		auto selected_it = api_keys.find(*selected_key);
+		if (selected_it != api_keys.end())
+		{
+			selected_it->second.sort_universes();
+
+			if (originally_selected)
+			{
+				for (size_t i = 0; i < selected_it->second.universes().size(); i++)
+				{
+					if (originally_selected->matches_name_and_id(selected_it->second.universes().at(i)))
+					{
+						selected_universe_index = i;
+					}
+				}
+			}
+		}
+	}
 }
 
 void UserSettings::load_from_disk()

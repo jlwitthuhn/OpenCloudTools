@@ -44,6 +44,8 @@ signals:
 private:
 	explicit UserSettings(QObject* parent = nullptr);
 
+	void sort_universes();
+
 	void load_from_disk();
 	void save_to_disk();
 
