@@ -17,6 +17,9 @@ public:
 	QString name() const { return _name; }
 	long long universe_id() const { return _universe_id; }
 
+	void set_name(const QString& name_in) { _name = name_in; }
+	void set_universe_id(const long long universe_id_in) { _universe_id = universe_id_in; }
+
 private:
 	QString _name;
 	long long _universe_id;
@@ -34,6 +37,7 @@ public:
 
 	std::optional<size_t> add_universe(const UniverseProfile& universe_profile);
 	void remove_universe(size_t universe_index);
+	bool update_universe_details(size_t universe_index, const QString& name, long long universe_id);
 	const std::vector<UniverseProfile>& universes() const;
 
 private:

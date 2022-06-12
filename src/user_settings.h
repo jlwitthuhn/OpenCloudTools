@@ -34,6 +34,7 @@ public:
 
 	void select_universe(std::optional<size_t> universe_index);
 	void remove_selected_universe();
+	bool update_selected_universe(const QString& name, long long universe_id);
 	std::optional<UniverseProfile> get_selected_universe() const;
 
 signals:

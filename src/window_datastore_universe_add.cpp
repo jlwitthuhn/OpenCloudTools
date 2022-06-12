@@ -19,9 +19,19 @@
 #include "api_key.h"
 #include "user_settings.h"
 
-AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent) : QWidget{ parent, Qt::Window }
+AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent, const bool edit_current) : QWidget{ parent, Qt::Window }
 {
-	setWindowTitle("Add universe");
+	std::optional<UniverseProfile> existing_universe = edit_current ? UserSettings::get()->get_selected_universe() : std::nullopt;
+	edit_mode = existing_universe.has_value();
+
+	if (edit_mode)
+	{
+		setWindowTitle("Edit universe");
+	}
+	else
+	{
+		setWindowTitle("Add universe");
+	}
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
@@ -29,9 +39,17 @@ AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent
 	QWidget* info_panel = new QWidget{ this };
 	{
 		name_edit = new QLineEdit{ info_panel };
+		if (edit_mode)
+		{
+			name_edit->setText(existing_universe->name());
+		}
 		connect(name_edit, &QLineEdit::textChanged, this, &AddUniverseToDatastoreWindow::text_changed);
 
 		id_edit = new QLineEdit{ info_panel };
+		if (edit_mode)
+		{
+			id_edit->setText(QString::number(existing_universe->universe_id()));
+		}
 		connect(id_edit, &QLineEdit::textChanged, this, &AddUniverseToDatastoreWindow::text_changed);
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };
@@ -48,6 +66,10 @@ AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent
 		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
 
 		add_button = new QPushButton{ "Add", button_panel };
+		if (edit_mode)
+		{
+			add_button->setText("Update");
+		}
 		button_layout->addWidget(add_button);
 		connect(add_button, &QPushButton::clicked, this, &AddUniverseToDatastoreWindow::pressed_add);
 
@@ -76,16 +98,33 @@ void AddUniverseToDatastoreWindow::pressed_add()
 {
 	const QString name = name_edit->text();
 	const long long universe_id = id_edit->text().trimmed().toLongLong();
-	const std::optional<size_t> new_id = UserSettings::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
-	if (new_id)
+	if (edit_mode)
 	{
-		close();
+		if (UserSettings::get()->update_selected_universe(name, universe_id))
+		{
+			close();
+		}
+		else
+		{
+			QMessageBox* msg_box = new QMessageBox{ this };
+			msg_box->setWindowTitle("Update Failed");
+			msg_box->setText("Failed to update universe. A universe with that name and id already exists.");
+			msg_box->exec();
+		}
 	}
 	else
 	{
-		QMessageBox* msg_box = new QMessageBox{ this };
-		msg_box->setWindowTitle("Error");
-		msg_box->setText("Failed to add new universe. A universe with that name and id already exists.");
-		msg_box->exec();
+		const std::optional<size_t> new_id = UserSettings::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
+		if (new_id)
+		{
+			close();
+		}
+		else
+		{
+			QMessageBox* msg_box = new QMessageBox{ this };
+			msg_box->setWindowTitle("Add Failed");
+			msg_box->setText("Failed to add new universe. A universe with that name and id already exists.");
+			msg_box->exec();
+		}
 	}
 }

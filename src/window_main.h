@@ -25,6 +25,7 @@ private:
 	void universe_list_changed();
 
 	void pressed_add_universe();
+	void pressed_edit_universe();
 	void pressed_remove_universe();
 	void pressed_change_key();
 	void pressed_toggle_autoclose();
@@ -38,6 +39,7 @@ private:
 
 	QComboBox* select_universe_combo = nullptr;
 
+	QPushButton* edit_universe_button = nullptr;
 	QPushButton* del_universe_button = nullptr;
 
 	QTabWidget* panel_tabs = nullptr;

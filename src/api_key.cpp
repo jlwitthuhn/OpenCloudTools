@@ -38,6 +38,17 @@ void ApiKeyProfile::remove_universe(const size_t universe_index)
 	}
 }
 
+bool ApiKeyProfile::update_universe_details(size_t universe_index, const QString& name, long long universe_id)
+{
+	if (universe_index < _universes.size())
+	{
+		_universes.at(universe_index).set_name(name);
+		_universes.at(universe_index).set_universe_id(universe_id);
+		return true;
+	}
+	return false;
+}
+
 const std::vector<UniverseProfile>& ApiKeyProfile::universes() const
 {
 	return _universes;

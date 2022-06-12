@@ -71,16 +71,21 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				connect(select_universe_combo, &QComboBox::currentIndexChanged, this, &MyMainWindow::selected_universe_combo_changed);
 
 				QPushButton* add_universe_button = new QPushButton{ "Add...", select_universe_group };
-				add_universe_button->setMaximumWidth(150);
+				add_universe_button->setMaximumWidth(120);
 				connect(add_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_add_universe);
 
-				del_universe_button = new QPushButton{ "Remove", select_universe_group };
-				del_universe_button->setMaximumWidth(150);
+				edit_universe_button = new QPushButton{ "Edit...", select_universe_group };
+				edit_universe_button->setMaximumWidth(120);
+				connect(edit_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_edit_universe);
+
+				del_universe_button = new QPushButton{ "Delete", select_universe_group };
+				del_universe_button->setMaximumWidth(120);
 				connect(del_universe_button, &QPushButton::clicked, this, &MyMainWindow::pressed_remove_universe);
 
 				QHBoxLayout* select_universe_layout = new QHBoxLayout{ select_universe_group };
 				select_universe_layout->addWidget(select_universe_combo);
 				select_universe_layout->addWidget(add_universe_button);
+				select_universe_layout->addWidget(edit_universe_button);
 				select_universe_layout->addWidget(del_universe_button);
 			}
 
@@ -126,6 +131,7 @@ void MyMainWindow::selected_universe_combo_changed()
 	{
 		UserSettings::get()->select_universe(std::nullopt);
 	}
+	edit_universe_button->setEnabled(select_universe_combo->count() > 0);
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	explore_datastore_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
@@ -150,6 +156,13 @@ void MyMainWindow::universe_list_changed()
 void MyMainWindow::pressed_add_universe()
 {
 	AddUniverseToDatastoreWindow* modal_window = new AddUniverseToDatastoreWindow{ this };
+	modal_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+	modal_window->show();
+}
+
+void MyMainWindow::pressed_edit_universe()
+{
+	AddUniverseToDatastoreWindow* modal_window = new AddUniverseToDatastoreWindow{ this, true };
 	modal_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 	modal_window->show();
 }
