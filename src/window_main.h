@@ -23,7 +23,7 @@ public:
 	explicit MyMainWindow(QWidget* parent, QString title, QString api_key);
 
 private:
-	void selected_universe_changed();
+	void selected_universe_combo_changed();
 	void universe_list_changed();
 
 	void pressed_add_universe();
@@ -35,7 +35,6 @@ private:
 	void handle_tab_changed(int index);
 
 	QString api_key;
-	std::optional<long long> selected_universe_id;
 
 	QAction* action_toggle_autoclose = nullptr;
 

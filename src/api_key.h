@@ -1,8 +1,24 @@
 #pragma once
 
-#include <map>
+#include <optional>
+#include <vector>
 
 #include <QString>
+
+class UniverseProfile
+{
+public:
+	UniverseProfile(const QString& name, long long universe_id);
+
+	bool matches_name_and_id(const UniverseProfile& other) const;
+
+	QString name() const { return _name; }
+	long long universe_id() const { return _universe_id; }
+
+private:
+	QString _name;
+	long long _universe_id;
+};
 
 class ApiKeyProfile
 {
@@ -14,9 +30,9 @@ public:
 	bool production() const { return _production; }
 	bool save_to_disk() const { return _save_to_disk; }
 
-	void add_universe(long long universe_id, const QString& name);
-	void remove_universe(long long universe_id);
-	std::map<long long, QString> universe_ids() const;
+	std::optional<size_t> add_universe(const UniverseProfile& universe_profile);
+	void remove_universe(size_t universe_index);
+	const std::vector<UniverseProfile>& universes() const;
 
 private:
 	QString _name;
@@ -24,5 +40,5 @@ private:
 	bool _production = false;
 	bool _save_to_disk = false;
 
-	std::map<long long, QString> _universe_ids;
+	std::vector<UniverseProfile> _universes;
 };

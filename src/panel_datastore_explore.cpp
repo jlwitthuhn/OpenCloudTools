@@ -25,14 +25,14 @@
 #include "datastore_model.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "user_settings.h"
 #include "util_enum.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 
-ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api_key, const std::optional<long long> selected_universe_id) :
+ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api_key) :
 	QWidget{ parent },
-	api_key{ api_key },
-	selected_universe_id{ selected_universe_id }
+	api_key{ api_key }
 {
 	QWidget* left_bar_widget = new QWidget{ this };
 	{
@@ -179,11 +179,10 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	handle_selected_datastore_entry_changed();
 }
 
-void ExploreDatastorePanel::selected_universe_changed(const std::optional<long long> new_universe)
+void ExploreDatastorePanel::selected_universe_changed()
 {
-	selected_universe_id = new_universe;
 	select_datastore_list->clear();
-	select_datastore_fetch_button->setEnabled(selected_universe_id.has_value());
+	select_datastore_fetch_button->setEnabled(UserSettings::get()->get_selected_universe().has_value());
 	handle_search_text_changed();
 	datastore_entry_tree->setModel(nullptr);
 	handle_selected_datastore_entry_changed();
@@ -229,7 +228,8 @@ void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIn
 
 void ExploreDatastorePanel::handle_search_text_changed()
 {
-	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && selected_universe_id;
+	const std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe();
+	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && selected_universe.has_value();
 	const bool find_prefix_enabled = find_all_enabled && datastore_key_name_edit->text().size() > 0 && datastore_key_name_edit->text().size() > 0;
 	find_all_button->setEnabled(find_all_enabled);
 	find_prefix_button->setEnabled(find_prefix_enabled);
@@ -308,9 +308,10 @@ void ExploreDatastorePanel::pressed_edit_entry()
 
 void ExploreDatastorePanel::pressed_fetch_datastores()
 {
-	if (selected_universe_id)
+	const std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe();
+	if (selected_universe)
 	{
-		const long long universe_id = *selected_universe_id;
+		const long long universe_id = selected_universe->universe_id();
 		if (universe_id > 0)
 		{
 			GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
@@ -331,9 +332,10 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 
 void ExploreDatastorePanel::pressed_find_all()
 {
-	if (selected_universe_id && datastore_name_edit->text().trimmed().size() > 0)
+	const std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe();
+	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = *selected_universe_id;
+		const long long universe_id = selected_universe->universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = datastore_name_edit->text().trimmed();
@@ -362,9 +364,10 @@ void ExploreDatastorePanel::pressed_find_all()
 
 void ExploreDatastorePanel::pressed_find_prefix()
 {
-	if (selected_universe_id && datastore_name_edit->text().trimmed().size() > 0)
+	const std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe();
+	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = *selected_universe_id;
+		const long long universe_id = selected_universe->universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = datastore_name_edit->text().trimmed();

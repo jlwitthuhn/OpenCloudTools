@@ -50,9 +50,9 @@ void UserSettings::update_api_key(const unsigned int id, const ApiKeyProfile& de
 	{
 		// Copy existing universe list, this operation only effects top-level params
 		ApiKeyProfile to_insert{ details };
-		for (auto this_pair : existing->universe_ids())
+		for (const UniverseProfile& this_universe_profile : existing->universes())
 		{
-			to_insert.add_universe(this_pair.first, this_pair.second);
+			to_insert.add_universe(this_universe_profile);
 		}
 
 		api_keys.insert_or_assign(id, to_insert);
@@ -76,6 +76,7 @@ void UserSettings::select_api_key(const unsigned int id)
 	{
 		selected_key = std::nullopt;
 	}
+	selected_universe_index = std::nullopt;
 }
 
 std::optional<ApiKeyProfile> UserSettings::get_selected_profile() const
@@ -90,20 +91,20 @@ std::optional<ApiKeyProfile> UserSettings::get_selected_profile() const
 	}
 }
 
-void UserSettings::selected_add_universe(const long long universe_id, const QString& name)
+void UserSettings::selected_profile_add_universe(const UniverseProfile& universe_profile)
 {
 	if (selected_key)
 	{
 		auto selected_it = api_keys.find(*selected_key);
 		if (selected_it != api_keys.end())
 		{
-			selected_it->second.add_universe(universe_id, name);
+			selected_it->second.add_universe(universe_profile);
 			emit universe_list_changed();
 		}
 	}
 }
 
-void UserSettings::selected_remove_universe(const long long universe_id)
+void UserSettings::selected_profile_remove_universe(const long long universe_id)
 {
 	if (selected_key)
 	{
@@ -114,6 +115,43 @@ void UserSettings::selected_remove_universe(const long long universe_id)
 			emit universe_list_changed();
 		}
 	}
+}
+
+void UserSettings::select_universe(const std::optional<size_t> universe_index)
+{
+	selected_universe_index = universe_index;
+}
+
+void UserSettings::remove_selected_universe()
+{
+	if (selected_universe_index)
+	{
+		if (selected_key)
+		{
+			auto selected_it = api_keys.find(*selected_key);
+			if (selected_it != api_keys.end())
+			{
+				selected_it->second.remove_universe(*selected_universe_index);
+				emit universe_list_changed();
+			}
+		}
+	}
+}
+
+std::optional<UniverseProfile> UserSettings::get_selected_universe() const
+{
+	if (selected_key)
+	{
+		auto selected_it = api_keys.find(*selected_key);
+		if (selected_it != api_keys.end())
+		{
+			if (selected_universe_index && *selected_universe_index < selected_it->second.universes().size())
+			{
+				return selected_it->second.universes().at(*selected_universe_index);
+			}
+		}
+	}
+	return std::nullopt;
 }
 
 void UserSettings::load_from_disk()
@@ -147,13 +185,15 @@ void UserSettings::load_from_disk()
 				{
 					settings.setArrayIndex(j);
 					const long long this_universe_id = settings.value("universe_id").toLongLong();
+
 					QString name = "Unnamed";
 					auto maybe_name = settings.value("name");
 					if (maybe_name.isNull() == false)
 					{
 						name = maybe_name.toString();
 					}
-					loaded_key.add_universe(this_universe_id, name);
+
+					loaded_key.add_universe(UniverseProfile{ name, this_universe_id });
 				}
 				settings.endArray();
 				add_api_key(loaded_key, false);
@@ -198,11 +238,11 @@ void UserSettings::save_to_disk()
 				settings.beginWriteArray("universe_ids");
 				{
 					int next_universe_array_index = 0;
-					for (const std::pair<const long long, QString>& this_inner_pair : this_pair.second.universe_ids())
+					for (const UniverseProfile& this_universe_profile : this_pair.second.universes())
 					{
 						settings.setArrayIndex(next_universe_array_index++);
-						settings.setValue("universe_id", this_inner_pair.first);
-						settings.setValue("name", this_inner_pair.second);
+						settings.setValue("name", this_universe_profile.name());
+						settings.setValue("universe_id", this_universe_profile.universe_id());
 					}
 				}
 				settings.endArray();

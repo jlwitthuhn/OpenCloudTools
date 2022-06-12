@@ -69,8 +69,8 @@ void AddUniverseToDatastoreWindow::text_changed()
 
 void AddUniverseToDatastoreWindow::pressed_add()
 {
-	const long long universe_id = id_edit->text().trimmed().toLongLong();
 	const QString name = name_edit->text();
-	UserSettings::get()->selected_add_universe(universe_id, name);
+	const long long universe_id = id_edit->text().trimmed().toLongLong();
+	UserSettings::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
 	close();
 }

@@ -15,9 +15,9 @@ class ExploreDatastorePanel : public QWidget
 {
 	Q_OBJECT
 public:
-	ExploreDatastorePanel(QWidget* parent, const QString& api_key, const std::optional<long long> selected_universe_id);
+	ExploreDatastorePanel(QWidget* parent, const QString& api_key);
 
-	void selected_universe_changed(std::optional<long long> new_universe);
+	void selected_universe_changed();
 
 private:
 	void view_entry(const QModelIndex& index);
@@ -36,7 +36,6 @@ private:
 	void pressed_view_versions();
 
 	QString api_key;
-	std::optional<long long> selected_universe_id;
 
 	QListWidget* select_datastore_list = nullptr;
 	QPushButton* select_datastore_fetch_button = nullptr;

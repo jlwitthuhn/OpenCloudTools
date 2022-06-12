@@ -27,8 +27,13 @@ public:
 
 	void select_api_key(unsigned int id);
 	std::optional<ApiKeyProfile> get_selected_profile() const;
-	void selected_add_universe(long long universe_id, const QString& name);
-	void selected_remove_universe(long long universe_id);
+
+	void selected_profile_add_universe(const UniverseProfile& universe_profile);
+	void selected_profile_remove_universe(long long universe_id);
+
+	void select_universe(std::optional<size_t> universe_index);
+	void remove_selected_universe();
+	std::optional<UniverseProfile> get_selected_universe() const;
 
 signals:
 	void api_key_list_changed();
@@ -44,6 +49,7 @@ private:
 	bool autoclose_progress_window = true;
 
 	std::optional<unsigned int> selected_key;
+	std::optional<size_t> selected_universe_index;
 
 	unsigned int next_api_key_id = 1;
 	std::map<unsigned int, ApiKeyProfile> api_keys;

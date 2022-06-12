@@ -11,12 +11,12 @@
 
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
+#include "user_settings.h"
 #include "window_datastore_download.h"
 
-BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key, const std::optional<long long> selected_universe_id) :
+BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	QWidget{ parent },
-	api_key{ api_key },
-	selected_universe_id{ selected_universe_id }
+	api_key{ api_key }
 {
 	QWidget* container_widget = new QWidget{ this };
 	{
@@ -42,22 +42,21 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key, cons
 	layout->addStretch();
 }
 
-void BulkDataPanel::selected_universe_changed(std::optional<long long> new_universe)
+void BulkDataPanel::selected_universe_changed()
 {
-	selected_universe_id = new_universe;
-	datastore_download_button->setEnabled(selected_universe_id.has_value());
+	datastore_download_button->setEnabled(UserSettings::get()->get_selected_universe().has_value());
 }
 
 void BulkDataPanel::pressed_download()
 {
-	if (selected_universe_id)
+	if (UserSettings::get()->get_selected_universe())
 	{
 		QMessageBox* msg_box = new QMessageBox{ this };
 		msg_box->setWindowTitle("Alert");
 		msg_box->setText("The Bulk Download feature may change in the near future. The format of the sqlite database is not final, so don't depend on it too much.");
 		msg_box->exec();
 
-		const long long universe_id = *selected_universe_id;
+		const long long universe_id = UserSettings::get()->get_selected_universe()->universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };

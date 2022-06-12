@@ -65,7 +65,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			QGroupBox* select_universe_group = new QGroupBox{ "Select universe", top_bar_widget };
 			{
 				select_universe_combo = new QComboBox{ select_universe_group };
-				connect(select_universe_combo, &QComboBox::currentIndexChanged, this, &MyMainWindow::selected_universe_changed);
+				connect(select_universe_combo, &QComboBox::currentIndexChanged, this, &MyMainWindow::selected_universe_combo_changed);
 
 				QPushButton* add_universe_button = new QPushButton{ "Add...", select_universe_group };
 				add_universe_button->setMaximumWidth(150);
@@ -88,10 +88,10 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 		panel_tabs = new QTabWidget{ central_widget };
 		{
-			explore_datastore_panel = new ExploreDatastorePanel{ panel_tabs, api_key, selected_universe_id };
+			explore_datastore_panel = new ExploreDatastorePanel{ panel_tabs, api_key };
 			panel_tabs->addTab(explore_datastore_panel, "Explore Datastores");
 
-			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key, selected_universe_id };
+			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key };
 			panel_tabs->addTab(bulk_data_panel, "Bulk Data");
 
 			http_log_panel = new HttpLogPanel{ panel_tabs };
@@ -112,20 +112,20 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	universe_list_changed();
 }
 
-void MyMainWindow::selected_universe_changed()
+void MyMainWindow::selected_universe_combo_changed()
 {
 	if (select_universe_combo->count() > 0)
 	{
-		const long long universe_id = select_universe_combo->currentData().toLongLong();
-		selected_universe_id = universe_id;
+		const size_t universe_index = select_universe_combo->currentData().toULongLong();
+		UserSettings::get()->select_universe(universe_index);
 	}
 	else
 	{
-		selected_universe_id = std::nullopt;
+		UserSettings::get()->select_universe(std::nullopt);
 	}
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
-	explore_datastore_panel->selected_universe_changed(selected_universe_id);
-	bulk_data_panel->selected_universe_changed(selected_universe_id);
+	explore_datastore_panel->selected_universe_changed();
+	bulk_data_panel->selected_universe_changed();
 }
 
 void MyMainWindow::universe_list_changed()
@@ -134,13 +134,14 @@ void MyMainWindow::universe_list_changed()
 	if (this_profile)
 	{
 		select_universe_combo->clear();
-		for (const std::pair<const long long, QString>& this_universe : this_profile->universe_ids())
+		for (size_t i = 0; i < this_profile->universes().size(); i++)
 		{
-			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.second).arg(this_universe.first);
-			select_universe_combo->addItem(formatted, QVariant{ this_universe.first });
+			const UniverseProfile& this_universe = this_profile->universes().at(i);
+			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.name()).arg(this_universe.universe_id());
+			select_universe_combo->addItem(formatted, QVariant{ i });
 		}
 	}
-	selected_universe_changed();
+	selected_universe_combo_changed();
 }
 
 void MyMainWindow::pressed_add_universe()
@@ -152,10 +153,7 @@ void MyMainWindow::pressed_add_universe()
 
 void MyMainWindow::pressed_remove_universe()
 {
-	if (selected_universe_id)
-	{
-		UserSettings::get()->selected_remove_universe(*selected_universe_id);
-	}
+	UserSettings::get()->remove_selected_universe();
 }
 
 void MyMainWindow::pressed_change_key()
