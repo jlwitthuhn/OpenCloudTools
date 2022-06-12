@@ -12,6 +12,7 @@
 #include <QMargins>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QVariant>
@@ -153,7 +154,15 @@ void MyMainWindow::pressed_add_universe()
 
 void MyMainWindow::pressed_remove_universe()
 {
-	UserSettings::get()->remove_selected_universe();
+	QMessageBox* msg_box = new QMessageBox{ this };
+	msg_box->setWindowTitle("Confirm deletion");
+	msg_box->setText("Are you sure you want to delete this universe? This cannot be undone.");
+	msg_box->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	int result = msg_box->exec();
+	if (result == QMessageBox::Yes)
+	{
+		UserSettings::get()->remove_selected_universe();
+	}
 }
 
 void MyMainWindow::pressed_change_key()
