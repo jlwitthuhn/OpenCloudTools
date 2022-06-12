@@ -33,7 +33,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
 
-	connect(UserSettings::get().get(), &UserSettings::universe_list_changed, this, &MyMainWindow::universe_list_changed);
+	connect(UserSettings::get().get(), &UserSettings::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 	connect(UserSettings::get().get(), &UserSettings::autoclose_changed, this, &MyMainWindow::handle_autoclose_changed);
 
 	QMenuBar* menu_bar = new QMenuBar{ this };
@@ -117,7 +117,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	setMinimumWidth(700);
 	setMinimumHeight(500);
 
-	universe_list_changed();
+	handle_universe_list_changed(std::nullopt);
 }
 
 void MyMainWindow::selected_universe_combo_changed()
@@ -135,22 +135,6 @@ void MyMainWindow::selected_universe_combo_changed()
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	explore_datastore_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
-}
-
-void MyMainWindow::universe_list_changed()
-{
-	std::optional<ApiKeyProfile> this_profile{ UserSettings::get()->get_selected_profile() };
-	if (this_profile)
-	{
-		select_universe_combo->clear();
-		for (size_t i = 0; i < this_profile->universes().size(); i++)
-		{
-			const UniverseProfile& this_universe = this_profile->universes().at(i);
-			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.name()).arg(this_universe.universe_id());
-			select_universe_combo->addItem(formatted, QVariant{ static_cast<unsigned long long>(i) });
-		}
-	}
-	selected_universe_combo_changed();
 }
 
 void MyMainWindow::pressed_add_universe()
@@ -211,4 +195,31 @@ void MyMainWindow::handle_tab_changed(const int index)
 			http_panel->tab_opened();
 		}
 	}
+}
+
+void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_index)
+{
+	std::optional<ApiKeyProfile> this_profile{ UserSettings::get()->get_selected_profile() };
+	if (this_profile)
+	{
+		select_universe_combo->clear();
+		for (size_t i = 0; i < this_profile->universes().size(); i++)
+		{
+			const UniverseProfile& this_universe = this_profile->universes().at(i);
+			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.name()).arg(this_universe.universe_id());
+			select_universe_combo->addItem(formatted, QVariant{ static_cast<unsigned long long>(i) });
+		}
+		if (universe_index)
+		{
+			for (size_t i = 0; i < this_profile->universes().size(); i++)
+			{
+				if (select_universe_combo->itemData(static_cast<int>(i)) == *universe_index)
+				{
+					select_universe_combo->setCurrentIndex(static_cast<int>(i));
+					break;
+				}
+			}
+		}
+	}
+	selected_universe_combo_changed();
 }

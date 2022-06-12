@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <QObject>
 #include <QString>
 #include <QMainWindow>
@@ -22,7 +24,6 @@ public:
 
 private:
 	void selected_universe_combo_changed();
-	void universe_list_changed();
 
 	void pressed_add_universe();
 	void pressed_edit_universe();
@@ -32,6 +33,7 @@ private:
 
 	void handle_autoclose_changed();
 	void handle_tab_changed(int index);
+	void handle_universe_list_changed(std::optional<size_t> universe_index);
 
 	QString api_key;
 

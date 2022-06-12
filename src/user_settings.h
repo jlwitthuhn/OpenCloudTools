@@ -30,7 +30,6 @@ public:
 	std::optional<ApiKeyProfile> get_selected_profile() const;
 
 	std::optional<size_t> selected_profile_add_universe(const UniverseProfile& universe_profile);
-	void selected_profile_remove_universe(long long universe_id);
 
 	void select_universe(std::optional<size_t> universe_index);
 	void remove_selected_universe();
@@ -39,7 +38,7 @@ public:
 
 signals:
 	void api_key_list_changed();
-	void universe_list_changed();
+	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void autoclose_changed();
 
 private:

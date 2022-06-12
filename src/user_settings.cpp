@@ -103,25 +103,12 @@ std::optional<size_t> UserSettings::selected_profile_add_universe(const Universe
 			const std::optional<size_t> new_id = selected_it->second.add_universe(universe_profile);
 			if (new_id)
 			{
-				emit universe_list_changed();
+				emit universe_list_changed(new_id);
 			}
 			return new_id;
 		}
 	}
 	return std::nullopt;
-}
-
-void UserSettings::selected_profile_remove_universe(const long long universe_id)
-{
-	if (selected_key)
-	{
-		auto selected_it = api_keys.find(*selected_key);
-		if (selected_it != api_keys.end())
-		{
-			selected_it->second.remove_universe(universe_id);
-			emit universe_list_changed();
-		}
-	}
 }
 
 void UserSettings::select_universe(const std::optional<size_t> universe_index)
@@ -137,7 +124,7 @@ void UserSettings::remove_selected_universe()
 		if (selected_it != api_keys.end())
 		{
 			selected_it->second.remove_universe(*selected_universe_index);
-			emit universe_list_changed();
+			emit universe_list_changed(std::nullopt);
 		}
 	}
 }
@@ -159,7 +146,7 @@ bool UserSettings::update_selected_universe(const QString& name, const long long
 			const bool success = selected_it->second.update_universe_details(*selected_universe_index, name, universe_id);
 			if (success)
 			{
-				emit universe_list_changed();
+				emit universe_list_changed(*selected_universe_index);
 			}
 			return success;
 		}
