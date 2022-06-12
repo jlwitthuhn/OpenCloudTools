@@ -301,9 +301,9 @@ void ViewDatastoreEntryWindow::pressed_save()
 		}
 	}
 
-	if (DataValidator::is_json_array(userids_raw) == false)
+	if (userids_raw != "" && DataValidator::is_json_array(userids_raw) == false)
 	{
-		show_validation_error(this, "New user list is not a valid Json array.");
+		show_validation_error(this, "New user list is not empty or a valid Json array.");
 		return;
 	}
 
@@ -340,13 +340,13 @@ void ViewDatastoreEntryWindow::pressed_save()
 		data = data_raw;
 	}
 
-	if (userids.has_value() == false || data.has_value() == false)
+	if (data.has_value() == false)
 	{
 		show_validation_error(this, "Failed to format data. This probably shouldn't happen.");
 		return;
 	}
 
-	PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, *userids, attributes, *data };
+	PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data };
 	OperationInProgressDialog diag{ this, &post_req };
 	post_req.send_request();
 	diag.exec();
