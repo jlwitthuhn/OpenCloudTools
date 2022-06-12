@@ -91,17 +91,22 @@ std::optional<ApiKeyProfile> UserSettings::get_selected_profile() const
 	}
 }
 
-void UserSettings::selected_profile_add_universe(const UniverseProfile& universe_profile)
+std::optional<size_t> UserSettings::selected_profile_add_universe(const UniverseProfile& universe_profile)
 {
 	if (selected_key)
 	{
 		auto selected_it = api_keys.find(*selected_key);
 		if (selected_it != api_keys.end())
 		{
-			selected_it->second.add_universe(universe_profile);
-			emit universe_list_changed();
+			const std::optional<size_t> new_id = selected_it->second.add_universe(universe_profile);
+			if (new_id)
+			{
+				emit universe_list_changed();
+			}
+			return new_id;
 		}
 	}
+	return std::nullopt;
 }
 
 void UserSettings::selected_profile_remove_universe(const long long universe_id)

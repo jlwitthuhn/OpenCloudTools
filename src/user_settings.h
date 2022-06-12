@@ -28,7 +28,7 @@ public:
 	void select_api_key(unsigned int id);
 	std::optional<ApiKeyProfile> get_selected_profile() const;
 
-	void selected_profile_add_universe(const UniverseProfile& universe_profile);
+	std::optional<size_t> selected_profile_add_universe(const UniverseProfile& universe_profile);
 	void selected_profile_remove_universe(long long universe_id);
 
 	void select_universe(std::optional<size_t> universe_index);

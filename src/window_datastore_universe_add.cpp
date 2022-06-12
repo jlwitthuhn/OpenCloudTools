@@ -8,6 +8,7 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QMargins>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QString>
 #include <QVBoxLayout>
@@ -71,6 +72,16 @@ void AddUniverseToDatastoreWindow::pressed_add()
 {
 	const QString name = name_edit->text();
 	const long long universe_id = id_edit->text().trimmed().toLongLong();
-	UserSettings::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
-	close();
+	const std::optional<size_t> new_id = UserSettings::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
+	if (new_id)
+	{
+		close();
+	}
+	else
+	{
+		QMessageBox* msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Error");
+		msg_box->setText("Failed to add new universe. A universe with that name and id already exists.");
+		msg_box->exec();
+	}
 }
