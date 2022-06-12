@@ -104,6 +104,7 @@ QNetworkRequest HttpRequestBuilder::post_standard_datastore_entry(const QString&
 	url = url + "&entryKey=" + QUrl::toPercentEncoding(key_name);
 
 	QNetworkRequest req{ url };
+	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
 	if (userids)
