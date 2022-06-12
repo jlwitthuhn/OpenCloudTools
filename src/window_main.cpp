@@ -213,7 +213,7 @@ void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_i
 		{
 			for (size_t i = 0; i < this_profile->universes().size(); i++)
 			{
-				if (select_universe_combo->itemData(static_cast<int>(i)) == *universe_index)
+				if (select_universe_combo->itemData(static_cast<int>(i)) == static_cast<unsigned long long>(*universe_index))
 				{
 					select_universe_combo->setCurrentIndex(static_cast<int>(i));
 					break;
