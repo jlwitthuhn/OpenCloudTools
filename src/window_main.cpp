@@ -139,7 +139,7 @@ void MyMainWindow::universe_list_changed()
 		{
 			const UniverseProfile& this_universe = this_profile->universes().at(i);
 			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.name()).arg(this_universe.universe_id());
-			select_universe_combo->addItem(formatted, QVariant{ i });
+			select_universe_combo->addItem(formatted, QVariant{ static_cast<unsigned long long>(i) });
 		}
 	}
 	selected_universe_combo_changed();
