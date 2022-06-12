@@ -8,7 +8,6 @@
 #include <QFileDialog>
 #include <QFlags>
 #include <QFormLayout>
-#include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <optional>
-
 #include <QObject>
 #include <QString>
 #include <QWidget>
 
 class QLineEdit;
 class QListWidget;
+class QModelIndex;
 class QPushButton;
 class QTreeView;
 

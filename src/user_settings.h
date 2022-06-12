@@ -1,11 +1,12 @@
 #pragma once
 
+#include <cstddef>
+
 #include <map>
 #include <memory>
 #include <optional>
 
 #include <QObject>
-#include <QString>
 
 #include "api_key.h"
 

@@ -7,6 +7,7 @@
 #include <QWidget>
 
 class QLineEdit;
+class QModelIndex;
 class QPushButton;
 class QTreeView;
 

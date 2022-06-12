@@ -3,7 +3,6 @@
 #include <utility>
 
 #include <Qt>
-#include <QGroupBox>
 #include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>

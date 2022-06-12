@@ -1,8 +1,10 @@
 #include "user_settings.h"
 
 #include <utility>
+#include <vector>
 
 #include <QSettings>
+#include <QString>
 #include <QVariant>
 
 std::unique_ptr<UserSettings>& UserSettings::get()

@@ -1,6 +1,9 @@
 #include "panel_datastore_explore.h"
 
 #include <cstddef>
+
+#include <memory>
+#include <optional>
 #include <vector>
 
 #include <Qt>
@@ -20,6 +23,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "api_key.h"
 #include "api_response.h"
 #include "data_request.h"
 #include "datastore_model.h"

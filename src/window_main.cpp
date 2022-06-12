@@ -1,8 +1,10 @@
 #include "window_main.h"
 
-#include <map>
+#include <cstddef>
+
 #include <memory>
-#include <utility>
+#include <optional>
+#include <vector>
 
 #include <Qt>
 #include <QAction>
