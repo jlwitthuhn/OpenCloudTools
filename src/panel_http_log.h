@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QWidget>
 
+class QPoint;
 class QTreeView;
 
 class HttpLogPanel : public QWidget
@@ -17,6 +18,7 @@ private:
 	void refresh();
 
 	void pressed_clear();
+	void pressed_right_click(const QPoint& pos);
 
 	QTreeView* tree_view = nullptr;
 };

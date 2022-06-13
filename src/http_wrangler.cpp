@@ -31,6 +31,18 @@ HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& ent
 	});
 }
 
+std::optional<HttpLogEntry> HttpLogModel::get_entry(const size_t row_index) const
+{
+	if (row_index < entries.size())
+	{
+		return entries.at(row_index);
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}
+
 QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
 {
 	if (role == Qt::DisplayRole)
