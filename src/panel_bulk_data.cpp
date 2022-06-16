@@ -15,7 +15,7 @@
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "user_settings.h"
-#include "window_datastore_download.h"
+#include "window_datastore_bulk_op.h"
 
 BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	QWidget{ parent },

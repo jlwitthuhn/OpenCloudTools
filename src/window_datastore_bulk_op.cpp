@@ -1,4 +1,4 @@
-#include "window_datastore_download.h"
+#include "window_datastore_bulk_op.h"
 
 #include <memory>
 #include <utility>
@@ -18,7 +18,7 @@
 #include <QVBoxLayout>
 
 #include "sqlite_wrapper.h"
-#include "window_datastore_download_progress.h"
+#include "window_datastore_bulk_op_progress.h"
 
 DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
 	QWidget{ parent, Qt::Window },

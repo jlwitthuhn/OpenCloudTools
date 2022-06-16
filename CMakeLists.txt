@@ -53,10 +53,10 @@ add_executable(OpenCloudTools
 	./src/window_api_key_add.h
 	./src/window_api_key_manage.cpp
 	./src/window_api_key_manage.h
-	./src/window_datastore_download.cpp
-	./src/window_datastore_download.h
-	./src/window_datastore_download_progress.cpp
-	./src/window_datastore_download_progress.h
+	./src/window_datastore_bulk_op.cpp
+	./src/window_datastore_bulk_op.h
+	./src/window_datastore_bulk_op_progress.cpp
+	./src/window_datastore_bulk_op_progress.h
 	./src/window_datastore_entry_versions_view.cpp
 	./src/window_datastore_entry_versions_view.h
 	./src/window_datastore_entry_view.cpp
