@@ -38,6 +38,7 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 	layout->addWidget(list_widget);
 
 	connect(list_widget, &QListWidget::itemSelectionChanged, this, &ManageApiKeysWindow::selection_changed);
+	connect(list_widget, &QListWidget::itemDoubleClicked, this, &ManageApiKeysWindow::double_clicked_profile);
 
 	QWidget* button_panel_top = new QWidget{ this };
 	{
@@ -46,17 +47,17 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 
 		QPushButton* add_button = new QPushButton{ "Add...", button_panel_top };
 		button_layout->addWidget(add_button);
-		connect(add_button, &QPushButton::clicked, this, &ManageApiKeysWindow::click_add);
+		connect(add_button, &QPushButton::clicked, this, &ManageApiKeysWindow::pressed_add);
 
 		mod_button = new QPushButton{ "Edit...", button_panel_top };
 		mod_button->setEnabled(false);
 		button_layout->addWidget(mod_button);
-		connect(mod_button, &QPushButton::clicked, this, &ManageApiKeysWindow::click_ed);
+		connect(mod_button, &QPushButton::clicked, this, &ManageApiKeysWindow::pressed_edit);
 
 		del_button = new QPushButton{ "Delete", button_panel_top };
 		del_button->setEnabled(false);
 		button_layout->addWidget(del_button);
-		connect(del_button, &QPushButton::clicked, this, &ManageApiKeysWindow::click_del);
+		connect(del_button, &QPushButton::clicked, this, &ManageApiKeysWindow::pressed_delete);
 	}
 	layout->addWidget(button_panel_top);
 
@@ -68,7 +69,7 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 		sel_button = new QPushButton{ "Select", button_panel_bot };
 		sel_button->setEnabled(false);
 		button_layout->addWidget(sel_button);;
-		connect(sel_button, &QPushButton::clicked, this, &ManageApiKeysWindow::click_sel);
+		connect(sel_button, &QPushButton::clicked, this, &ManageApiKeysWindow::pressed_select);
 
 		QPushButton* close_button = new QPushButton{ "Close", button_panel_bot };
 		button_layout->addWidget(close_button);
@@ -87,14 +88,32 @@ ManageApiKeysWindow::~ManageApiKeysWindow()
 
 }
 
-void ManageApiKeysWindow::click_add()
+void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
+{
+	if (item)
+	{
+		QVariant data = item->data(Qt::UserRole);
+		if (data.metaType().id() == QMetaType::UInt)
+		{
+			UserSettings::get()->select_api_key(data.toUInt());
+			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
+			{
+				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
+				main_window->show();
+				close();
+			}
+		}
+	}
+}
+
+void ManageApiKeysWindow::pressed_add()
 {
 	AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this };
 	add_key_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 	add_key_window->show();
 }
 
-void ManageApiKeysWindow::click_ed()
+void ManageApiKeysWindow::pressed_edit()
 {
 	QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
@@ -103,8 +122,7 @@ void ManageApiKeysWindow::click_ed()
 		if (data.metaType().id() == QMetaType::UInt)
 		{
 			unsigned int key_id =  data.toUInt();
-			std::optional<ApiKeyProfile> opt_details = UserSettings::get()->get_api_key(key_id);
-			if (opt_details)
+			if (std::optional<ApiKeyProfile> opt_details = UserSettings::get()->get_api_key(key_id))
 			{
 				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, std::make_pair(key_id, *opt_details) };
 				add_key_window->setWindowModality(Qt::WindowModality::ApplicationModal);
@@ -114,7 +132,7 @@ void ManageApiKeysWindow::click_ed()
 	}
 }
 
-void ManageApiKeysWindow::click_del()
+void ManageApiKeysWindow::pressed_delete()
 {
 	QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
@@ -135,7 +153,7 @@ void ManageApiKeysWindow::click_del()
 	}
 }
 
-void ManageApiKeysWindow::click_sel()
+void ManageApiKeysWindow::pressed_select()
 {
 	QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
@@ -144,8 +162,7 @@ void ManageApiKeysWindow::click_sel()
 		if (data.metaType().id() == QMetaType::UInt)
 		{
 			UserSettings::get()->select_api_key(data.toUInt());
-			std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile();
-			if (details)
+			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
 				main_window->show();

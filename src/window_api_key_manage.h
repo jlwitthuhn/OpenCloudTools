@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QListWidget;
+class QListWidgetItem;
 class QPushButton;
 
 class ManageApiKeysWindow : public QWidget
@@ -14,10 +15,11 @@ public:
 	virtual ~ManageApiKeysWindow() override;
 
 private:
-	void click_add();
-	void click_ed();
-	void click_del();
-	void click_sel();
+	void double_clicked_profile(QListWidgetItem* item);
+	void pressed_add();
+	void pressed_edit();
+	void pressed_delete();
+	void pressed_select();
 	void rebuild_slots();
 	void selection_changed();
 
