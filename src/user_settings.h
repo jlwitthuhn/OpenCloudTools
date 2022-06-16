@@ -2,9 +2,9 @@
 
 #include <cstddef>
 
-#include <map>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include <QObject>
 
@@ -19,14 +19,14 @@ public:
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
 
-	std::map<unsigned int, ApiKeyProfile> get_all_api_keys() const { return api_keys; };
-	std::optional<ApiKeyProfile> get_api_key(unsigned int id) const;
+	std::vector<ApiKeyProfile> get_all_api_keys() const { return api_keys; };
+	std::optional<ApiKeyProfile> get_api_key(size_t key_index) const;
 
-	std::optional<unsigned int> add_api_key(const ApiKeyProfile& details, bool emit_signal = true);
-	void update_api_key(unsigned int id, const ApiKeyProfile& details);
-	void delete_api_key(unsigned int id);
+	std::optional<size_t> add_api_key(const ApiKeyProfile& details, bool emit_signal = true);
+	void update_api_key(size_t index, const ApiKeyProfile& details);
+	void delete_api_key(size_t index);
 
-	void select_api_key(unsigned int id);
+	void select_api_key(std::optional<size_t> index);
 	std::optional<ApiKeyProfile> get_selected_profile() const;
 
 	std::optional<size_t> selected_profile_add_universe(const UniverseProfile& universe_profile);
@@ -53,9 +53,8 @@ private:
 
 	bool autoclose_progress_window = true;
 
-	std::optional<unsigned int> selected_key;
+	std::optional<size_t> selected_key_index;
 	std::optional<size_t> selected_universe_index;
 
-	unsigned int next_api_key_id = 1;
-	std::map<unsigned int, ApiKeyProfile> api_keys;
+	std::vector<ApiKeyProfile> api_keys;
 };

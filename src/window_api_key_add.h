@@ -21,7 +21,7 @@ class AddApiKeyWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit AddApiKeyWindow(QWidget* parent = nullptr, std::optional<std::pair<unsigned int, ApiKeyProfile>> existing = std::nullopt);
+	explicit AddApiKeyWindow(QWidget* parent = nullptr, std::optional<size_t> existing_key_index = std::nullopt);
 
 private:
 	bool input_is_valid() const;
@@ -30,7 +30,7 @@ private:
 	void add_key();
 	void update_key();
 
-	unsigned int existing_id = 0;
+	std::optional<size_t> existing_key_index = 0;
 
 	QLineEdit* name_edit = nullptr;
 	QLineEdit* key_edit = nullptr;

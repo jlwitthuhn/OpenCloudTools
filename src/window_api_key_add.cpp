@@ -16,12 +16,13 @@
 
 #include "user_settings.h"
 
-AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<unsigned int, ApiKeyProfile>> existing) : QWidget{ parent, Qt::Window }
+AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size_t> existing_key_index_in) : QWidget{ parent, Qt::Window }
 {
-	if (existing)
+	const std::optional<ApiKeyProfile> existing_key_profile = existing_key_index_in.has_value() ? UserSettings::get()->get_api_key(*existing_key_index_in) : std::nullopt;
+	if (existing_key_profile)
 	{
 		setWindowTitle("Edit API Key");
-		existing_id = existing->first;
+		existing_key_index = existing_key_index_in;
 	}
 	else
 	{
@@ -34,29 +35,29 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<unsign
 	QWidget* info_panel = new QWidget{ this };
 	{
 		name_edit = new QLineEdit{ info_panel };
-		if (existing)
+		if (existing_key_profile)
 		{
-			name_edit->setText(existing->second.name());
+			name_edit->setText(existing_key_profile->name());
 		}
 		connect(name_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
 		key_edit = new QLineEdit{ info_panel };
-		if (existing)
+		if (existing_key_profile)
 		{
-			key_edit->setText(existing->second.key());
+			key_edit->setText(existing_key_profile->key());
 		}
 		connect(key_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
 		production_check = new QCheckBox{ "Production key (adds extra confirmations)" };
-		if (existing)
+		if (existing_key_profile)
 		{
-			production_check->setChecked(existing->second.production());
+			production_check->setChecked(existing_key_profile->production());
 		}
 
 		save_to_disk_check = new QCheckBox{ "Save to disk", info_panel };
-		if (existing)
+		if (existing_key_profile)
 		{
-			save_to_disk_check->setChecked(existing->second.save_to_disk());
+			save_to_disk_check->setChecked(existing_key_profile->save_to_disk());
 		}
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };
@@ -76,7 +77,7 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* parent, std::optional<std::pair<unsign
 
 		save_button = new QPushButton{ "Save", button_panel };
 		button_layout->addWidget(save_button);
-		if (existing)
+		if (existing_key_profile)
 		{
 			connect(save_button, &QPushButton::clicked, this, &AddApiKeyWindow::update_key);
 		}
@@ -112,7 +113,7 @@ void AddApiKeyWindow::add_key()
 	if (input_is_valid())
 	{
 		ApiKeyProfile new_key{ name_edit->text(), key_edit->text().trimmed(), production_check->isChecked(), save_to_disk_check->isChecked() };
-		std::optional<unsigned int> new_key_id = UserSettings::get()->add_api_key(new_key);
+		std::optional<size_t> new_key_id = UserSettings::get()->add_api_key(new_key);
 		if (new_key_id)
 		{
 			close();
@@ -129,10 +130,10 @@ void AddApiKeyWindow::add_key()
 
 void AddApiKeyWindow::update_key()
 {
-	if (input_is_valid() && existing_id > 0)
+	if (input_is_valid() && existing_key_index)
 	{
 		ApiKeyProfile new_key{ name_edit->text(), key_edit->text(), production_check->isChecked(), save_to_disk_check->isChecked() };
-		UserSettings::get()->update_api_key(existing_id, new_key);
+		UserSettings::get()->update_api_key(*existing_key_index, new_key);
 		close();
 	}
 }

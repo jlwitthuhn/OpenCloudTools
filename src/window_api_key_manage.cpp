@@ -93,9 +93,9 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
 	if (item)
 	{
 		QVariant data = item->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::UInt)
+		if (data.metaType().id() == QMetaType::ULongLong)
 		{
-			UserSettings::get()->select_api_key(data.toUInt());
+			UserSettings::get()->select_api_key(data.toULongLong());
 			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
@@ -119,12 +119,12 @@ void ManageApiKeysWindow::pressed_edit()
 	if (selected.size() == 1)
 	{
 		QVariant data = selected.first()->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::UInt)
+		if (data.metaType().id() == QMetaType::ULongLong)
 		{
-			unsigned int key_id =  data.toUInt();
-			if (std::optional<ApiKeyProfile> opt_details = UserSettings::get()->get_api_key(key_id))
+			size_t key_index =  data.toULongLong();
+			if (UserSettings::get()->get_api_key(key_index))
 			{
-				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, std::make_pair(key_id, *opt_details) };
+				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, key_index };
 				add_key_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 				add_key_window->show();
 			}
@@ -138,7 +138,7 @@ void ManageApiKeysWindow::pressed_delete()
 	if (selected.size() == 1)
 	{
 		QVariant data = selected.first()->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::UInt)
+		if (data.metaType().id() == QMetaType::ULongLong)
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Confirm deletion");
@@ -147,7 +147,7 @@ void ManageApiKeysWindow::pressed_delete()
 			int result = msg_box->exec();
 			if (result == QMessageBox::Yes)
 			{
-				UserSettings::get()->delete_api_key(data.toUInt());
+				UserSettings::get()->delete_api_key(data.toULongLong());
 			}
 		}
 	}
@@ -159,9 +159,9 @@ void ManageApiKeysWindow::pressed_select()
 	if (selected.size() == 1)
 	{
 		QVariant data = selected.first()->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::UInt)
+		if (data.metaType().id() == QMetaType::ULongLong)
 		{
-			UserSettings::get()->select_api_key(data.toUInt());
+			UserSettings::get()->select_api_key(data.toULongLong());
 			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
@@ -180,12 +180,13 @@ void ManageApiKeysWindow::rebuild_slots()
 		delete this_item;
 	}
 
-	std::map<unsigned int, ApiKeyProfile> keys = UserSettings::get()->get_all_api_keys();
-	for (std::pair<unsigned int, ApiKeyProfile> this_pair : keys)
+	std::vector<ApiKeyProfile> keys = UserSettings::get()->get_all_api_keys();
+	size_t this_index = 0;
+	for (const ApiKeyProfile& this_key : keys)
 	{
 		QListWidgetItem* this_item = new QListWidgetItem(list_widget);
-		this_item->setData(Qt::UserRole, this_pair.first);
-		this_item->setText(this_pair.second.name());
+		this_item->setData(Qt::UserRole, static_cast<unsigned long long>(this_index++));
+		this_item->setText(this_key.name());
 		list_widget->addItem(this_item);
 	}
 }
