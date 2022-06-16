@@ -7,6 +7,11 @@
 #include <QString>
 #include <QVariant>
 
+static bool sort_api_key_profile(const ApiKeyProfile& a, const ApiKeyProfile& b)
+{
+	return a.name() < b.name();
+}
+
 std::unique_ptr<UserSettings>& UserSettings::get()
 {
 	static std::unique_ptr<UserSettings> manager = std::unique_ptr<UserSettings>(new UserSettings());
@@ -45,6 +50,7 @@ std::optional<size_t> UserSettings::add_api_key(const ApiKeyProfile& details, co
 	{
 		const size_t this_index = api_keys.size();
 		api_keys.push_back(details);
+		std::sort(api_keys.begin(), api_keys.end(), sort_api_key_profile);
 		if (emit_signal)
 		{
 			emit api_key_list_changed();
@@ -66,6 +72,7 @@ void UserSettings::update_api_key(const size_t index, const ApiKeyProfile& detai
 		}
 
 		api_keys.at(index) = to_insert;
+		std::sort(api_keys.begin(), api_keys.end(), sort_api_key_profile);
 		emit api_key_list_changed();
 	}
 }
