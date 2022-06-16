@@ -43,28 +43,28 @@ DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString&
 					datastore_list->addItem(this_item);
 				}
 
+				QWidget* select_buttons_widget = new QWidget{ left_bar };
+				{
+					QPushButton* select_all_button = new QPushButton{ "Select all", select_buttons_widget };
+					connect(select_all_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_select_all);
+
+					QPushButton* select_none_button = new QPushButton{ "Select none", select_buttons_widget };
+					connect(select_none_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_select_none);
+
+					QHBoxLayout* select_buttons_layout = new QHBoxLayout{ select_buttons_widget };
+					select_buttons_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					select_buttons_layout->addWidget(select_all_button);
+					select_buttons_layout->addWidget(select_none_button);
+				}
+
 				QVBoxLayout* datastore_group_layout = new QVBoxLayout{ datastore_group };
 				datastore_group_layout->addWidget(datastore_list);
-			}
-
-			QWidget* select_buttons_widget = new QWidget{ left_bar };
-			{
-				QPushButton* select_all_button = new QPushButton{ "Select all", select_buttons_widget };
-				connect(select_all_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_select_all);
-
-				QPushButton* select_none_button = new QPushButton{ "Select none", select_buttons_widget };
-				connect(select_none_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_select_none);
-
-				QHBoxLayout* select_buttons_layout = new QHBoxLayout{ select_buttons_widget };
-				select_buttons_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				select_buttons_layout->addWidget(select_all_button);
-				select_buttons_layout->addWidget(select_none_button);
+				datastore_group_layout->addWidget(select_buttons_widget);
 			}
 
 			QVBoxLayout* left_bar_layout = new QVBoxLayout{ left_bar };
 			left_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 			left_bar_layout->addWidget(datastore_group);
-			left_bar_layout->addWidget(select_buttons_widget);
 		}
 
 		QWidget* right_bar = new QWidget{ main_panel };
