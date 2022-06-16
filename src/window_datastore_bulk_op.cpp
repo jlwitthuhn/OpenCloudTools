@@ -20,7 +20,7 @@
 #include "sqlite_wrapper.h"
 #include "window_datastore_bulk_op_progress.h"
 
-DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
+DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
 	universe_id{ universe_id }
@@ -46,10 +46,10 @@ DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString&
 				QWidget* select_buttons_widget = new QWidget{ left_bar };
 				{
 					QPushButton* select_all_button = new QPushButton{ "Select all", select_buttons_widget };
-					connect(select_all_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_select_all);
+					connect(select_all_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_select_all);
 
 					QPushButton* select_none_button = new QPushButton{ "Select none", select_buttons_widget };
-					connect(select_none_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_select_none);
+					connect(select_none_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_select_none);
 
 					QHBoxLayout* select_buttons_layout = new QHBoxLayout{ select_buttons_widget };
 					select_buttons_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -72,7 +72,7 @@ DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString&
 			QGroupBox* filter_box = new QGroupBox{ "Filter", right_bar };
 			{
 				filter_enabled_check = new QCheckBox{ "Filter Enabled", filter_box};
-				connect(filter_enabled_check, &QCheckBox::stateChanged, this, &DownloadDatastoreWindow::pressed_toggle_filter);
+				connect(filter_enabled_check, &QCheckBox::stateChanged, this, &DatastoreBulkOperationWindow::pressed_toggle_filter);
 
 				QWidget* filter_form = new QWidget{ filter_box };
 				filter_form->setMinimumWidth(220);
@@ -103,7 +103,7 @@ DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString&
 	}
 
 	QPushButton* save_button = new QPushButton{ "Save as...", this };
-	connect(save_button, &QPushButton::clicked, this, &DownloadDatastoreWindow::pressed_save);
+	connect(save_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_save);
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(main_panel);
@@ -112,7 +112,7 @@ DownloadDatastoreWindow::DownloadDatastoreWindow(QWidget* parent, const QString&
 	pressed_toggle_filter();
 }
 
-std::vector<QString> DownloadDatastoreWindow::get_selected_datastores() const
+std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() const
 {
 	std::vector<QString> result;
 	for (int i = 0; i < datastore_list->count(); i++)
@@ -126,7 +126,7 @@ std::vector<QString> DownloadDatastoreWindow::get_selected_datastores() const
 	return result;
 }
 
-void DownloadDatastoreWindow::pressed_save()
+void DatastoreBulkOperationWindow::pressed_save()
 {
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
@@ -162,7 +162,7 @@ void DownloadDatastoreWindow::pressed_save()
 	}
 }
 
-void DownloadDatastoreWindow::pressed_select_all()
+void DatastoreBulkOperationWindow::pressed_select_all()
 {
 	for (int i = 0; i < datastore_list->count(); i++)
 	{
@@ -170,7 +170,7 @@ void DownloadDatastoreWindow::pressed_select_all()
 	}
 }
 
-void DownloadDatastoreWindow::pressed_select_none()
+void DatastoreBulkOperationWindow::pressed_select_none()
 {
 	for (int i = 0; i < datastore_list->count(); i++)
 	{
@@ -178,7 +178,7 @@ void DownloadDatastoreWindow::pressed_select_none()
 	}
 }
 
-void DownloadDatastoreWindow::pressed_toggle_filter()
+void DatastoreBulkOperationWindow::pressed_toggle_filter()
 {
 	const bool filter_enabled = filter_enabled_check->isChecked();
 	filter_scope_edit->setEnabled(filter_enabled);

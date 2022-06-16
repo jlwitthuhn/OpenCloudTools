@@ -10,11 +10,11 @@ class QCheckBox;
 class QLineEdit;
 class QListWidget;
 
-class DownloadDatastoreWindow : public QWidget
+class DatastoreBulkOperationWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	DownloadDatastoreWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+	DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
 
 private:
 	std::vector<QString> get_selected_datastores() const;
