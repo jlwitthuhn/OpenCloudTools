@@ -9,6 +9,7 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QMargins>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QString>
 #include <QVBoxLayout>
@@ -111,8 +112,18 @@ void AddApiKeyWindow::add_key()
 	if (input_is_valid())
 	{
 		ApiKeyProfile new_key{ name_edit->text(), key_edit->text().trimmed(), production_check->isChecked(), save_to_disk_check->isChecked() };
-		UserSettings::get()->add_api_key(new_key);
-		close();
+		std::optional<unsigned int> new_key_id = UserSettings::get()->add_api_key(new_key);
+		if (new_key_id)
+		{
+			close();
+		}
+		else
+		{
+			QMessageBox* msg_box = new QMessageBox{ this };
+			msg_box->setWindowTitle("Error");
+			msg_box->setText("Failed to add API key. A key with that name already exists.");
+			msg_box->exec();
+		}
 	}
 }
 

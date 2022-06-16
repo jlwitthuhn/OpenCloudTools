@@ -36,12 +36,21 @@ std::optional<ApiKeyProfile> UserSettings::get_api_key(const unsigned int id) co
 	}
 }
 
-void UserSettings::add_api_key(const ApiKeyProfile& details, const bool emit_signal)
+std::optional<unsigned int> UserSettings::add_api_key(const ApiKeyProfile& details, const bool emit_signal)
 {
-	api_keys.insert(std::pair{ next_api_key_id++, details });
-	if (emit_signal)
+	if (universe_name_in_use( details.name() ))
 	{
-		emit api_key_list_changed();
+		return std::nullopt;
+	}
+	else
+	{
+		const unsigned int this_id = next_api_key_id++;
+		api_keys.insert(std::pair{ this_id, details });
+		if (emit_signal)
+		{
+			emit api_key_list_changed();
+		}
+		return this_id;
 	}
 }
 
@@ -171,6 +180,16 @@ std::optional<UniverseProfile> UserSettings::get_selected_universe() const
 		}
 	}
 	return std::nullopt;
+}
+
+bool UserSettings::universe_name_in_use(const QString& name) const
+{
+	bool result = false;
+	for (const std::pair<unsigned int, ApiKeyProfile>& this_pair : api_keys)
+	{
+		result = result || (name == this_pair.second.name());
+	}
+	return result;
 }
 
 void UserSettings::sort_universes()

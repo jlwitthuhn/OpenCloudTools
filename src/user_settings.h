@@ -22,7 +22,7 @@ public:
 	std::map<unsigned int, ApiKeyProfile> get_all_api_keys() const { return api_keys; };
 	std::optional<ApiKeyProfile> get_api_key(unsigned int id) const;
 
-	void add_api_key(const ApiKeyProfile& details, bool emit_signal = true);
+	std::optional<unsigned int> add_api_key(const ApiKeyProfile& details, bool emit_signal = true);
 	void update_api_key(unsigned int id, const ApiKeyProfile& details);
 	void delete_api_key(unsigned int id);
 
@@ -43,6 +43,8 @@ signals:
 
 private:
 	explicit UserSettings(QObject* parent = nullptr);
+
+	bool universe_name_in_use(const QString& name) const;
 
 	void sort_universes();
 
