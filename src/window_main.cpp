@@ -22,6 +22,7 @@
 #include <QWidget>
 
 #include "api_key.h"
+#include "http_wrangler.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_explore.h"
 #include "panel_http_log.h"
@@ -166,6 +167,7 @@ void MyMainWindow::pressed_remove_universe()
 
 void MyMainWindow::pressed_change_key()
 {
+	HttpWrangler::clear_log();
 	ManageApiKeysWindow* api_window = new ManageApiKeysWindow{ nullptr };
 	api_window->show();
 	close();
