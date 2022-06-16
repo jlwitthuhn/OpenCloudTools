@@ -21,11 +21,11 @@ class QTextEdit;
 class GetStandardDatastoreEntriesRequest;
 class GetStandardDatastoreEntryRequest;
 
-class DownloadDatastoreProgressWindow : public QWidget
+class DatastoreBulkOperationProgressWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	DownloadDatastoreProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer);
+	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer);
 
 private:
 	void update_ui();

@@ -139,7 +139,7 @@ void DatastoreBulkOperationWindow::pressed_save()
 			{
 				const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
 				const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
-				DownloadDatastoreProgressWindow* progress_window = new DownloadDatastoreProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, std::move(writer) };
+				DatastoreBulkOperationProgressWindow* progress_window = new DatastoreBulkOperationProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, std::move(writer) };
 				close();
 				progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 				progress_window->show();
