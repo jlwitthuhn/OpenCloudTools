@@ -12,6 +12,7 @@
 
 #include "api_response.h"
 #include "sqlite_wrapper.h"
+#include "util_enum.h"
 
 class QLabel;
 class QProgressBar;
@@ -24,18 +25,21 @@ class GetStandardDatastoreEntryRequest;
 class DatastoreBulkOperationProgressWindow : public QWidget
 {
 	Q_OBJECT
-public:
-	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer);
+protected:
+	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names);
 
-private:
+	virtual QString progress_label_done() const = 0;
+	virtual QString progress_label_working(size_t total) const = 0;
+
+	virtual void send_next_entry_request() = 0;
+	virtual void handle_entry_response() = 0;
+
 	void update_ui();
 
-	void send_next_list_keys_request();
-	void send_next_details_request();
+	void send_next_enumerate_keys_request();
 
 	void handle_status_message(QString message);
-	void handle_list_keys_complete();
-	void handle_get_entry_details_complete();
+	void handle_enumerate_keys_response();
 	void handle_received_http_429();
 
 	class DownloadProgress
@@ -73,7 +77,6 @@ private:
 	size_t http_429_count = 0;
 
 	DownloadProgress progress;
-	std::unique_ptr<SqliteDatastoreWriter> writer;
 	std::vector<QString> datastore_names;
 
 	std::vector<StandardDatastoreEntry> pending_entries;
@@ -87,4 +90,20 @@ private:
 	QTextEdit* text_box = nullptr;
 
 	QPushButton* close_button = nullptr;
+};
+
+class DatastoreBulkDownloadProgressWindow : public DatastoreBulkOperationProgressWindow
+{
+	Q_OBJECT
+public:
+	DatastoreBulkDownloadProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer);
+
+private:
+	virtual QString progress_label_done() const override;
+	virtual QString progress_label_working(size_t total) const override;
+
+	virtual void send_next_entry_request() override;
+	virtual void handle_entry_response() override;
+
+	std::unique_ptr<SqliteDatastoreWriter> writer;
 };

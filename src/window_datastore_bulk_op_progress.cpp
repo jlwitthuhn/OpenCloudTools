@@ -11,18 +11,15 @@
 
 #include "data_request.h"
 
-DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWriter> writer) :
+DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
 	universe_id{ universe_id },
 	scope{ scope },
 	key_prefix{ key_prefix },
 	progress{ datastore_names.size() },
-	writer{ std::move(writer) },
 	datastore_names{ datastore_names }
 {
-	setWindowTitle("Download Progress");
-
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };
 	progress_bar->setMinimumWidth(360);
@@ -43,19 +40,19 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	layout->addWidget(text_box);
 	layout->addWidget(close_button);
 
-	send_next_list_keys_request();
+	send_next_enumerate_keys_request();
 }
 
 void DatastoreBulkOperationProgressWindow::update_ui()
 {
 	if (progress.is_done()) {
-		progress_label->setText("Download complete");
+		progress_label->setText(progress_label_done());
 		progress_bar->setMaximum(1);
 		progress_bar->setValue(1);
 	}
 	else if (progress.is_enumerating())
 	{
-		progress_label->setText("Enumerating objects...");
+		progress_label->setText("Enumerating entries...");
 		progress_bar->setMaximum(0);
 		progress_bar->setValue(0);
 	}
@@ -64,19 +61,18 @@ void DatastoreBulkOperationProgressWindow::update_ui()
 		const std::optional<size_t> opt_entry_total = progress.get_entry_total();
 		if (opt_entry_total)
 		{
-			const QString progress_text = QString{ "Downloading entry %1/%2..." }.arg(progress.get_current_entry_index() + 1).arg(*opt_entry_total);
-			progress_label->setText(progress_text);
+			progress_label->setText(progress_label_working(*opt_entry_total));
 			progress_bar->setValue(static_cast<int>(progress.get_progress()));
 			progress_bar->setMaximum(static_cast<int>(DownloadProgress::MAXIMUM));
 		}
 		else
 		{
-			progress_label->setText("Download error");
+			progress_label->setText("Error");
 		}
 	}
 }
 
-void DatastoreBulkOperationProgressWindow::send_next_list_keys_request()
+void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 {
 	const size_t current_index = progress.get_current_datastore_index();
 	if (current_index < datastore_names.size())
@@ -87,35 +83,14 @@ void DatastoreBulkOperationProgressWindow::send_next_list_keys_request()
 		get_entries_request->set_http_429_count(http_429_count);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_message, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
-		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::request_complete, this, &DatastoreBulkOperationProgressWindow::handle_list_keys_complete);
+		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::request_complete, this, &DatastoreBulkOperationProgressWindow::handle_enumerate_keys_response);
 		get_entries_request->send_request();
 
 		update_ui();
 	}
 	else
 	{
-		send_next_details_request();
-	}
-}
-
-void DatastoreBulkOperationProgressWindow::send_next_details_request()
-{
-	if (pending_entries.size() > 0)
-	{
-		StandardDatastoreEntry entry = pending_entries.back();
-		pending_entries.pop_back();
-
-		get_entry_details_request = new GetStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
-		get_entry_details_request->set_http_429_count(http_429_count);
-		connect(get_entry_details_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
-		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
-		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkOperationProgressWindow::handle_get_entry_details_complete);
-		get_entry_details_request->send_request();
-	}
-	else
-	{
-		close_button->setText("Close");
-		handle_status_message("Download complete");
+		send_next_entry_request();
 	}
 }
 
@@ -125,7 +100,7 @@ void DatastoreBulkOperationProgressWindow::handle_status_message(const QString m
 	update_ui();
 }
 
-void DatastoreBulkOperationProgressWindow::handle_list_keys_complete()
+void DatastoreBulkOperationProgressWindow::handle_enumerate_keys_response()
 {
 	if (get_entries_request)
 	{
@@ -137,23 +112,7 @@ void DatastoreBulkOperationProgressWindow::handle_list_keys_complete()
 		get_entries_request->deleteLater();
 		get_entries_request = nullptr;
 
-		send_next_list_keys_request();
-	}
-}
-
-void DatastoreBulkOperationProgressWindow::handle_get_entry_details_complete()
-{
-	if (get_entry_details_request)
-	{
-		std::optional<GetStandardDatastoreEntryDetailsResponse> response = get_entry_details_request->get_response();
-		if (response)
-		{
-			writer->write(response->get_details());
-		}
-		progress.advance_entry_done();
-		get_entry_details_request->deleteLater();
-		get_entry_details_request = nullptr;
-		send_next_details_request();
+		send_next_enumerate_keys_request();
 	}
 }
 
@@ -218,4 +177,65 @@ void DatastoreBulkOperationProgressWindow::DownloadProgress::set_entry_total(con
 std::optional<size_t> DatastoreBulkOperationProgressWindow::DownloadProgress::get_entry_total() const
 {
 	return entry_total;
+}
+
+DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
+	QWidget* parent,
+	const QString& api_key,
+	long long universe_id,
+	const QString& scope,
+	const QString& key_prefix,
+	std::vector<QString> datastore_names,
+	std::unique_ptr<SqliteDatastoreWriter> writer) :
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
+	writer{ std::move(writer) }
+{
+	setWindowTitle("Download Progress");
+}
+
+QString DatastoreBulkDownloadProgressWindow::progress_label_done() const
+{
+	return "Download complete";
+}
+
+QString DatastoreBulkDownloadProgressWindow::progress_label_working(const size_t total) const
+{
+	return QString{ "Downloading entry %1/%2..." }.arg(progress.get_current_entry_index() + 1).arg(total);
+}
+
+void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
+{
+	if (pending_entries.size() > 0)
+	{
+		StandardDatastoreEntry entry = pending_entries.back();
+		pending_entries.pop_back();
+
+		get_entry_details_request = new GetStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+		get_entry_details_request->set_http_429_count(http_429_count);
+		connect(get_entry_details_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkDownloadProgressWindow::handle_received_http_429);
+		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
+		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDownloadProgressWindow::handle_entry_response);
+		get_entry_details_request->send_request();
+	}
+	else
+	{
+		close_button->setText("Close");
+		handle_status_message("Download complete");
+	}
+}
+
+void DatastoreBulkDownloadProgressWindow::handle_entry_response()
+{
+	if (get_entry_details_request)
+	{
+		std::optional<GetStandardDatastoreEntryDetailsResponse> response = get_entry_details_request->get_response();
+		if (response)
+		{
+			writer->write(response->get_details());
+		}
+		progress.advance_entry_done();
+		get_entry_details_request->deleteLater();
+		get_entry_details_request = nullptr;
+		send_next_entry_request();
+	}
 }
