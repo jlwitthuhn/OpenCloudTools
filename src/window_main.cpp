@@ -140,6 +140,7 @@ void MyMainWindow::selected_universe_combo_changed()
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	explore_datastore_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
+	universe_preferences_panel->selected_universe_changed();
 }
 
 void MyMainWindow::pressed_add_universe()

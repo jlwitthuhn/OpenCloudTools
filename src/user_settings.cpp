@@ -179,6 +179,32 @@ std::optional<UniverseProfile> UserSettings::get_selected_universe() const
 	return std::nullopt;
 }
 
+void UserSettings::add_ignored_datastore(const QString& datastore_name)
+{
+	if (selected_key_index && *selected_key_index < api_keys.size())
+	{
+		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
+		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
+		{
+			this_profile.add_ignored_datastore(*selected_universe_index, datastore_name);
+			emit ignored_datastores_changed();
+		}
+	}
+}
+
+void UserSettings::remove_ignored_datastore(const QString& datastore_name)
+{
+	if (selected_key_index && *selected_key_index < api_keys.size())
+	{
+		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
+		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
+		{
+			this_profile.remove_ignored_datastore(*selected_universe_index, datastore_name);
+			emit ignored_datastores_changed();
+		}
+	}
+}
+
 bool UserSettings::universe_name_in_use(const QString& name) const
 {
 	bool result = false;

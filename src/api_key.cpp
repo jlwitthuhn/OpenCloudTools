@@ -40,7 +40,7 @@ void ApiKeyProfile::remove_universe(const size_t universe_index)
 	}
 }
 
-bool ApiKeyProfile::update_universe_details(size_t universe_index, const QString& name, long long universe_id)
+bool ApiKeyProfile::update_universe_details(const size_t universe_index, const QString& name, long long universe_id)
 {
 	if (universe_index < _universes.size())
 	{
@@ -49,6 +49,20 @@ bool ApiKeyProfile::update_universe_details(size_t universe_index, const QString
 		return true;
 	}
 	return false;
+}
+void ApiKeyProfile::add_ignored_datastore(const size_t universe_index, const QString& datastore_name)
+{
+	if (universe_index < _universes.size())
+	{
+		_universes.at(universe_index).add_ignored_datastore(datastore_name);
+	}
+}
+void ApiKeyProfile::remove_ignored_datastore(const size_t universe_index, const QString& datastore_name)
+{
+	if (universe_index < _universes.size())
+	{
+		_universes.at(universe_index).remove_ignored_datastore(datastore_name);
+	}
 }
 
 const std::vector<UniverseProfile>& ApiKeyProfile::universes() const
