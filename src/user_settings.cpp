@@ -250,14 +250,14 @@ void UserSettings::load_from_disk()
 	if (settings_version.toUInt() == 1)
 	{
 		settings.beginGroup("keys");
-		QVariant keys_version = settings.value("version");
+		const QVariant keys_version = settings.value("version");
 
 		const int key_list_size = settings.beginReadArray("list");
 		for (int i = 0; i < key_list_size; i++)
 		{
 			settings.setArrayIndex(i);
-			QString name = settings.value("name").toString();
-			QString key = settings.value("key").toString();
+			const QString name = settings.value("name").toString();
+			const QString key = settings.value("key").toString();
 			bool production = settings.value("production").toBool();
 			if (name.size() > 0 && key.size() > 0)
 			{
@@ -275,7 +275,18 @@ void UserSettings::load_from_disk()
 						name = maybe_name.toString();
 					}
 
-					loaded_key.add_universe(UniverseProfile{ name, this_universe_id });
+					UniverseProfile new_profile{ name, this_universe_id };
+
+					const int hidden_list_size = settings.beginReadArray("hidden_datastores");
+					for (int k = 0; k < hidden_list_size; k++)
+					{
+						settings.setArrayIndex(k);
+						const QString datastore_name = settings.value("name").toString();
+						new_profile.add_ignored_datastore(datastore_name);
+					}
+					settings.endArray();
+
+					loaded_key.add_universe(new_profile);
 				}
 				settings.endArray();
 				add_api_key(loaded_key, false);
@@ -325,6 +336,16 @@ void UserSettings::save_to_disk()
 						settings.setArrayIndex(next_universe_array_index++);
 						settings.setValue("name", this_universe_profile.name());
 						settings.setValue("universe_id", this_universe_profile.universe_id());
+						settings.beginWriteArray("hidden_datastores");
+						{
+							int next_hidden_array_index = 0;
+							for (const QString& this_datastore_name : this_universe_profile.ignored_datastores())
+							{
+								settings.setArrayIndex(next_hidden_array_index++);
+								settings.setValue("name", this_datastore_name);
+							}
+						}
+						settings.endArray();
 					}
 				}
 				settings.endArray();
@@ -341,5 +362,6 @@ UserSettings::UserSettings(QObject* parent) : QObject{ parent }
 {
 	load_from_disk();
 	connect(this, &UserSettings::api_key_list_changed, this, &UserSettings::save_to_disk);
+	connect(this, &UserSettings::ignored_datastores_changed, this, &UserSettings::save_to_disk);
 	connect(this, &UserSettings::universe_list_changed, this, &UserSettings::save_to_disk);
 }
