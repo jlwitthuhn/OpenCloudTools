@@ -8,14 +8,17 @@
 
 #include <Qt>
 #include <QAbstractItemModel>
+#include <QClipboard>
 #include <QFrame>
 #include <QGroupBox>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidget>
 #include <QMargins>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSizePolicy>
@@ -47,6 +50,8 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 		QGroupBox* select_datastore_widget = new QGroupBox{ "Datastores", left_bar_widget };
 		{
 			select_datastore_list = new QListWidget{ select_datastore_widget };
+			select_datastore_list->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+			connect(select_datastore_list, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_datastore_list);
 			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_changed);
 
 			select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
@@ -399,6 +404,36 @@ void ExploreDatastorePanel::pressed_find_prefix()
 			datastore_entry_tree->setColumnWidth(0, 280);
 
 			handle_selected_datastore_entry_changed();
+		}
+	}
+}
+
+void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos)
+{
+	const QModelIndex the_index = select_datastore_list->indexAt(pos);
+	if (the_index.isValid())
+	{
+		if (QListWidgetItem* the_item = select_datastore_list->item(the_index.row()))
+		{
+			QString the_datastore_name = the_item->text();
+
+			QAction* copy_name = new QAction{ "Copy name", select_datastore_list };
+			connect(copy_name, &QAction::triggered, [the_datastore_name]() {
+				QClipboard* clipboard = QGuiApplication::clipboard();
+				clipboard->setText(the_datastore_name);
+			});
+
+			QAction* hide_datastore = new QAction{ "Hide datastore", select_datastore_list };
+			connect(hide_datastore, &QAction::triggered, [the_datastore_name]() {
+				UserSettings::get()->add_ignored_datastore(the_datastore_name);
+			});
+
+			QMenu* context_menu = new QMenu{ select_datastore_list };
+			context_menu->addAction(copy_name);
+			context_menu->addSeparator();
+			context_menu->addAction(hide_datastore);
+
+			context_menu->exec(select_datastore_list->mapToGlobal(pos));
 		}
 	}
 }

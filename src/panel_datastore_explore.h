@@ -31,6 +31,7 @@ private:
 	void pressed_fetch_datastores();
 	void pressed_find_all();
 	void pressed_find_prefix();
+	void pressed_right_click_datastore_list(const QPoint& pos);
 	void pressed_view_entry();
 	void pressed_view_versions();
 
