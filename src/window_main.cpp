@@ -26,6 +26,7 @@
 #include "panel_bulk_data.h"
 #include "panel_datastore_explore.h"
 #include "panel_http_log.h"
+#include "panel_universe_prefs.h"
 #include "user_settings.h"
 #include "window_api_key_manage.h"
 #include "window_datastore_universe_add.h"
@@ -105,6 +106,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 			http_log_panel = new HttpLogPanel{ panel_tabs };
 			panel_tabs->addTab(http_log_panel, "HTTP Log");
+
+			universe_preferences_panel = new UniversePreferencesPanel{ panel_tabs };
+			panel_tabs->addTab(universe_preferences_panel, "Universe Preferences");
 
 			connect(panel_tabs, &QTabWidget::currentChanged, this, &MyMainWindow::handle_tab_changed);
 		}

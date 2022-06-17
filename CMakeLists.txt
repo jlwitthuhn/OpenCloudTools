@@ -37,6 +37,8 @@ add_executable(OpenCloudTools
 	./src/panel_datastore_explore.h
 	./src/panel_http_log.cpp
 	./src/panel_http_log.h
+	./src/panel_universe_prefs.cpp
+	./src/panel_universe_prefs.h
 	./src/sqlite_wrapper.cpp
 	./src/sqlite_wrapper.h
 	./src/user_settings.cpp

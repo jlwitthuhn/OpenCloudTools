@@ -15,6 +15,7 @@ class QWidget;
 class BulkDataPanel;
 class ExploreDatastorePanel;
 class HttpLogPanel;
+class UniversePreferencesPanel;
 
 class MyMainWindow : public QMainWindow
 {
@@ -49,4 +50,5 @@ private:
 	ExploreDatastorePanel* explore_datastore_panel = nullptr;
 	BulkDataPanel* bulk_data_panel = nullptr;
 	HttpLogPanel* http_log_panel = nullptr;
+	UniversePreferencesPanel* universe_preferences_panel = nullptr;
 };
