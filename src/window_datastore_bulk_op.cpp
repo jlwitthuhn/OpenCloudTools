@@ -25,8 +25,6 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 	api_key{ api_key },
 	universe_id{ universe_id }
 {
-	setWindowTitle("Download Datastores");
-
 	QWidget* main_panel = new QWidget{ this };
 	{
 		QWidget* left_bar = new QWidget{ main_panel };
@@ -102,14 +100,19 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 		main_panel_layout->addWidget(right_bar);
 	}
 
-	QPushButton* save_button = new QPushButton{ "Save as...", this };
-	connect(save_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_save);
+	QPushButton* save_button = new QPushButton{ get_submit_button_label(), this};
+	connect(save_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_submit);
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(main_panel);
 	layout->addWidget(save_button);
 
 	pressed_toggle_filter();
+}
+
+QString DatastoreBulkOperationWindow::get_submit_button_label() const
+{
+	return "Submit";
 }
 
 std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() const
@@ -126,7 +129,41 @@ std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() con
 	return result;
 }
 
-void DatastoreBulkOperationWindow::pressed_save()
+void DatastoreBulkOperationWindow::pressed_select_all()
+{
+	for (int i = 0; i < datastore_list->count(); i++)
+	{
+		datastore_list->item(i)->setCheckState(Qt::Checked);
+	}
+}
+
+void DatastoreBulkOperationWindow::pressed_select_none()
+{
+	for (int i = 0; i < datastore_list->count(); i++)
+	{
+		datastore_list->item(i)->setCheckState(Qt::Unchecked);
+	}
+}
+
+void DatastoreBulkOperationWindow::pressed_toggle_filter()
+{
+	const bool filter_enabled = filter_enabled_check->isChecked();
+	filter_scope_edit->setEnabled(filter_enabled);
+	filter_key_prefix_edit->setEnabled(filter_enabled);
+}
+
+DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
+	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
+{
+	setWindowTitle("Download Datastores");
+}
+
+QString DatastoreBulkDownloadWindow::get_submit_button_label() const
+{
+	return "Save as...";
+}
+
+void DatastoreBulkDownloadWindow::pressed_submit()
 {
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
@@ -160,27 +197,4 @@ void DatastoreBulkOperationWindow::pressed_save()
 		msg_box->setText("You must select at least one datastore.");
 		msg_box->exec();
 	}
-}
-
-void DatastoreBulkOperationWindow::pressed_select_all()
-{
-	for (int i = 0; i < datastore_list->count(); i++)
-	{
-		datastore_list->item(i)->setCheckState(Qt::Checked);
-	}
-}
-
-void DatastoreBulkOperationWindow::pressed_select_none()
-{
-	for (int i = 0; i < datastore_list->count(); i++)
-	{
-		datastore_list->item(i)->setCheckState(Qt::Unchecked);
-	}
-}
-
-void DatastoreBulkOperationWindow::pressed_toggle_filter()
-{
-	const bool filter_enabled = filter_enabled_check->isChecked();
-	filter_scope_edit->setEnabled(filter_enabled);
-	filter_key_prefix_edit->setEnabled(filter_enabled);
 }

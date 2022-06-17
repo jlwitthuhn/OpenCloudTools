@@ -69,7 +69,7 @@ void BulkDataPanel::pressed_download()
 		const std::vector<QString> datastores = req.get_datastore_names();
 		if (datastores.size() > 0)
 		{
-			DatastoreBulkOperationWindow* download_window = new DatastoreBulkOperationWindow{ this, api_key, universe_id, datastores };
+			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_id, datastores };
 			download_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			download_window->show();
 		}

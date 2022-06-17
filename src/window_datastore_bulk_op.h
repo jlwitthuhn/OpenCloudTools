@@ -13,13 +13,14 @@ class QListWidget;
 class DatastoreBulkOperationWindow : public QWidget
 {
 	Q_OBJECT
-public:
+protected:
 	DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
 
-private:
+	virtual QString get_submit_button_label() const;
+	virtual void pressed_submit() = 0;
+
 	std::vector<QString> get_selected_datastores() const;
 
-	void pressed_save();
 	void pressed_select_all();
 	void pressed_select_none();
 	void pressed_toggle_filter();
@@ -33,4 +34,15 @@ private:
 
 	QLineEdit* filter_scope_edit = nullptr;
 	QLineEdit* filter_key_prefix_edit = nullptr;
+};
+
+class DatastoreBulkDownloadWindow : public DatastoreBulkOperationWindow
+{
+	Q_OBJECT
+public:
+	DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+
+private:
+	virtual QString get_submit_button_label() const override;
+	virtual void pressed_submit() override;
 };
