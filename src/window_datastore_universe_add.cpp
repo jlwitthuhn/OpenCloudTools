@@ -33,9 +33,6 @@ AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent
 		setWindowTitle("Add universe");
 	}
 
-	QVBoxLayout* layout = new QVBoxLayout{ this };
-	layout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
-
 	QWidget* info_panel = new QWidget{ this };
 	{
 		name_edit = new QLineEdit{ info_panel };
@@ -58,26 +55,29 @@ AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent
 		info_layout->addRow("Name", name_edit);
 		info_layout->addRow("Universe ID", id_edit);
 	}
-	layout->addWidget(info_panel);
 
 	QWidget* button_panel = new QWidget{ this };
 	button_panel->setMinimumWidth(280);
 	{
-		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
-
 		add_button = new QPushButton{ "Add", button_panel };
 		if (edit_mode)
 		{
 			add_button->setText("Update");
 		}
-		button_layout->addWidget(add_button);
 		connect(add_button, &QPushButton::clicked, this, &AddUniverseToDatastoreWindow::pressed_add);
 
 		QPushButton* cancel_button = new QPushButton{ "Cancel", button_panel };
+
+		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
+		button_layout->addWidget(add_button);
 		button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 		button_layout->addWidget(cancel_button);
 		connect(cancel_button, &QPushButton::clicked, this, &QWidget::close);
 	}
+
+	QVBoxLayout* layout = new QVBoxLayout{ this };
+	layout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
+	layout->addWidget(info_panel);
 	layout->addWidget(button_panel);
 
 	text_changed();
