@@ -425,7 +425,7 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 
 			QAction* hide_datastore = new QAction{ "Hide datastore", select_datastore_list };
 			connect(hide_datastore, &QAction::triggered, [the_datastore_name]() {
-				UserSettings::get()->add_ignored_datastore(the_datastore_name);
+				UserSettings::get()->add_hidden_datastore(the_datastore_name);
 			});
 
 			QMenu* context_menu = new QMenu{ select_datastore_list };

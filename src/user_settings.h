@@ -36,12 +36,12 @@ public:
 	bool update_selected_universe(const QString& name, long long universe_id);
 	std::optional<UniverseProfile> get_selected_universe() const;
 
-	void add_ignored_datastore(const QString& datastore_name);
-	void remove_ignored_datastore(const QString& datastore_name);
+	void add_hidden_datastore(const QString& datastore_name);
+	void remove_hidden_datastore(const QString& datastore_name);
 
 signals:
 	void api_key_list_changed();
-	void ignored_datastores_changed();
+	void hidden_datastores_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void autoclose_changed();
 

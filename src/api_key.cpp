@@ -50,18 +50,18 @@ bool ApiKeyProfile::update_universe_details(const size_t universe_index, const Q
 	}
 	return false;
 }
-void ApiKeyProfile::add_ignored_datastore(const size_t universe_index, const QString& datastore_name)
+void ApiKeyProfile::add_hidden_datastore(const size_t universe_index, const QString& datastore_name)
 {
 	if (universe_index < _universes.size())
 	{
-		_universes.at(universe_index).add_ignored_datastore(datastore_name);
+		_universes.at(universe_index).add_hidden_datastore(datastore_name);
 	}
 }
-void ApiKeyProfile::remove_ignored_datastore(const size_t universe_index, const QString& datastore_name)
+void ApiKeyProfile::remove_hidden_datastore(const size_t universe_index, const QString& datastore_name)
 {
 	if (universe_index < _universes.size())
 	{
-		_universes.at(universe_index).remove_ignored_datastore(datastore_name);
+		_universes.at(universe_index).remove_hidden_datastore(datastore_name);
 	}
 }
 

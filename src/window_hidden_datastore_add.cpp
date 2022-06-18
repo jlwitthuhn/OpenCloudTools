@@ -53,6 +53,6 @@ void AddHiddenDatastoreWindow::handle_text_changed()
 
 void AddHiddenDatastoreWindow::pressed_add()
 {
-	UserSettings::get()->add_ignored_datastore(name_edit->text());
+	UserSettings::get()->add_hidden_datastore(name_edit->text());
 	close();
 }

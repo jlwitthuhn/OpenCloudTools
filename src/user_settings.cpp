@@ -179,28 +179,28 @@ std::optional<UniverseProfile> UserSettings::get_selected_universe() const
 	return std::nullopt;
 }
 
-void UserSettings::add_ignored_datastore(const QString& datastore_name)
+void UserSettings::add_hidden_datastore(const QString& datastore_name)
 {
 	if (selected_key_index && *selected_key_index < api_keys.size())
 	{
 		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
 		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
 		{
-			this_profile.add_ignored_datastore(*selected_universe_index, datastore_name);
-			emit ignored_datastores_changed();
+			this_profile.add_hidden_datastore(*selected_universe_index, datastore_name);
+			emit hidden_datastores_changed();
 		}
 	}
 }
 
-void UserSettings::remove_ignored_datastore(const QString& datastore_name)
+void UserSettings::remove_hidden_datastore(const QString& datastore_name)
 {
 	if (selected_key_index && *selected_key_index < api_keys.size())
 	{
 		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
 		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
 		{
-			this_profile.remove_ignored_datastore(*selected_universe_index, datastore_name);
-			emit ignored_datastores_changed();
+			this_profile.remove_hidden_datastore(*selected_universe_index, datastore_name);
+			emit hidden_datastores_changed();
 		}
 	}
 }
@@ -282,7 +282,7 @@ void UserSettings::load_from_disk()
 					{
 						settings.setArrayIndex(k);
 						const QString datastore_name = settings.value("name").toString();
-						new_profile.add_ignored_datastore(datastore_name);
+						new_profile.add_hidden_datastore(datastore_name);
 					}
 					settings.endArray();
 
@@ -339,7 +339,7 @@ void UserSettings::save_to_disk()
 						settings.beginWriteArray("hidden_datastores");
 						{
 							int next_hidden_array_index = 0;
-							for (const QString& this_datastore_name : this_universe_profile.ignored_datastores())
+							for (const QString& this_datastore_name : this_universe_profile.hidden_datastores())
 							{
 								settings.setArrayIndex(next_hidden_array_index++);
 								settings.setValue("name", this_datastore_name);
@@ -362,6 +362,6 @@ UserSettings::UserSettings(QObject* parent) : QObject{ parent }
 {
 	load_from_disk();
 	connect(this, &UserSettings::api_key_list_changed, this, &UserSettings::save_to_disk);
-	connect(this, &UserSettings::ignored_datastores_changed, this, &UserSettings::save_to_disk);
+	connect(this, &UserSettings::hidden_datastores_changed, this, &UserSettings::save_to_disk);
 	connect(this, &UserSettings::universe_list_changed, this, &UserSettings::save_to_disk);
 }

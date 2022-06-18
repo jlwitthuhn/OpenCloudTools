@@ -14,7 +14,7 @@
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
 {
-	connect(UserSettings::get().get(), &UserSettings::ignored_datastores_changed, this, &UniversePreferencesPanel::handle_ignored_datastores_changed);
+	connect(UserSettings::get().get(), &UserSettings::hidden_datastores_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
 
 	QWidget* container_widget = new QWidget{ this };
 	{
@@ -51,17 +51,17 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ p
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(container_widget);
 
-	handle_ignored_datastores_changed();
+	handle_hidden_datastores_changed();
 	handle_list_selection_changed();
 }
 
 void UniversePreferencesPanel::selected_universe_changed()
 {
 	button_add->setEnabled(UserSettings::get()->get_selected_universe().has_value());
-	handle_ignored_datastores_changed();
+	handle_hidden_datastores_changed();
 }
 
-void UniversePreferencesPanel::handle_ignored_datastores_changed()
+void UniversePreferencesPanel::handle_hidden_datastores_changed()
 {
 	while (hidden_datastore_list->count() > 0)
 	{
@@ -71,7 +71,7 @@ void UniversePreferencesPanel::handle_ignored_datastores_changed()
 
 	if (std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe())
 	{
-		std::set<QString> datastore_names = selected_universe->ignored_datastores();
+		std::set<QString> datastore_names = selected_universe->hidden_datastores();
 		for (const QString& this_datastore_name : datastore_names)
 		{
 			QListWidgetItem* this_item = new QListWidgetItem(hidden_datastore_list);
@@ -102,6 +102,6 @@ void UniversePreferencesPanel::pressed_remove()
 	if (selected.size() == 1)
 	{
 		QString to_remove = selected.front()->text();
-		UserSettings::get()->remove_ignored_datastore(to_remove);
+		UserSettings::get()->remove_hidden_datastore(to_remove);
 	}
 }

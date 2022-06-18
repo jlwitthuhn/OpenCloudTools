@@ -15,7 +15,7 @@ public:
 	void selected_universe_changed();
 
 private:
-	void handle_ignored_datastores_changed();
+	void handle_hidden_datastores_changed();
 	void handle_list_selection_changed();
 
 	void pressed_add();

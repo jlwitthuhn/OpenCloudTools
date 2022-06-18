@@ -17,17 +17,17 @@ public:
 
 	QString name() const { return _name; }
 	long long universe_id() const { return _universe_id; }
-	const std::set<QString>& ignored_datastores() const { return _ignored_datastores; }
+	const std::set<QString>& hidden_datastores() const { return _hidden_datastores; }
 
 	void set_name(const QString& name_in) { _name = name_in; }
 	void set_universe_id(const long long universe_id_in) { _universe_id = universe_id_in; }
-	void add_ignored_datastore(const QString& datastore) { _ignored_datastores.insert(datastore); }
-	void remove_ignored_datastore(const QString& datastore) { _ignored_datastores.erase(datastore); }
+	void add_hidden_datastore(const QString& datastore) { _hidden_datastores.insert(datastore); }
+	void remove_hidden_datastore(const QString& datastore) { _hidden_datastores.erase(datastore); }
 
 private:
 	QString _name;
 	long long _universe_id;
-	std::set<QString> _ignored_datastores;
+	std::set<QString> _hidden_datastores;
 };
 
 class ApiKeyProfile
@@ -43,8 +43,8 @@ public:
 	std::optional<size_t> add_universe(const UniverseProfile& universe_profile);
 	void remove_universe(size_t universe_index);
 	bool update_universe_details(size_t universe_index, const QString& name, long long universe_id);
-	void add_ignored_datastore(size_t universe_index, const QString& datastore_name);
-	void remove_ignored_datastore(size_t universe_index, const QString& datastore_name);
+	void add_hidden_datastore(size_t universe_index, const QString& datastore_name);
+	void remove_hidden_datastore(size_t universe_index, const QString& datastore_name);
 	const std::vector<UniverseProfile>& universes() const;
 
 	void sort_universes();
