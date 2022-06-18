@@ -18,7 +18,7 @@ std::unique_ptr<SqliteDatastoreWriter> SqliteDatastoreWriter::from_path(const st
 	}
 
 	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore;", nullptr, nullptr, nullptr);
-	sqlite3_exec(db_handle, "CREATE TABLE datastore (id INTEGER PRIMARY KEY, universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, scope TEXT NOT NULL, key_name TEXT NOT NULL, version TEXT NOT NULL, data_type TEXT NOT NULL, data_raw TEXT NOT NULL, data_str TEXT, data_num REAL, userids TEXT, attributes TEXT)", nullptr, nullptr, nullptr);
+	sqlite3_exec(db_handle, "CREATE TABLE datastore (id INTEGER PRIMARY KEY, universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, scope TEXT NOT NULL, key_name TEXT NOT NULL, version TEXT NOT NULL, data_type TEXT NOT NULL, data_raw TEXT NOT NULL, data_str TEXT, data_num REAL, data_bool INTEGER, userids TEXT, attributes TEXT)", nullptr, nullptr, nullptr);
 
 	return std::make_unique<SqliteDatastoreWriter>(db_handle);
 }
@@ -42,7 +42,7 @@ void SqliteDatastoreWriter::write(const DatastoreEntryWithDetails& details)
 	if (db_handle != nullptr)
 	{
 		sqlite3_stmt* stmt = nullptr;
-		std::string sql = "INSERT INTO datastore (universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, userids, attributes) VALUES (?010, ?020, ?030, ?040, ?050, ?060, ?070, ?080, ?090, ?100, ?110);";
+		std::string sql = "INSERT INTO datastore (universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, data_bool, userids, attributes) VALUES (?010, ?020, ?030, ?040, ?050, ?060, ?070, ?080, ?090, ?095, ?100, ?110);";
 		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 		if (stmt != nullptr)
 		{
@@ -62,6 +62,11 @@ void SqliteDatastoreWriter::write(const DatastoreEntryWithDetails& details)
 			if (is_double)
 			{
 				sqlite3_bind_double(stmt, 90, as_double);
+			}
+			if (details.get_entry_type() == DatastoreEntryType::Bool)
+			{
+				const int value = details.get_data_raw() == "true" ? 1 : 0;
+				sqlite3_bind_int(stmt, 95, value);
 			}
 			if (details.get_userids())
 			{
