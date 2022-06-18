@@ -97,6 +97,7 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 			QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar };
 			right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 			right_bar_layout->addWidget(filter_box);
+			right_bar_layout->addStretch();
 		}
 
 		QHBoxLayout* main_panel_layout = new QHBoxLayout{ main_panel };
