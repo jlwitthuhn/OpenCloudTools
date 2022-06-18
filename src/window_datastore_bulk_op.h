@@ -21,6 +21,8 @@ protected:
 
 	std::vector<QString> get_selected_datastores() const;
 
+	void handle_show_hidden_toggled();
+
 	void pressed_select_all();
 	void pressed_select_none();
 	void pressed_toggle_filter();
@@ -29,6 +31,7 @@ protected:
 	long long universe_id = 0;
 
 	QListWidget* datastore_list = nullptr;
+	QCheckBox* datastore_list_show_hidden_check = nullptr;
 
 	QCheckBox* filter_enabled_check = nullptr;
 

@@ -18,6 +18,7 @@
 #include <QVBoxLayout>
 
 #include "sqlite_wrapper.h"
+#include "user_settings.h"
 #include "window_datastore_bulk_op_progress.h"
 
 DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
@@ -41,6 +42,9 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 					datastore_list->addItem(this_item);
 				}
 
+				datastore_list_show_hidden_check = new QCheckBox{ "Show hidden", datastore_group };
+				connect(datastore_list_show_hidden_check, &QCheckBox::stateChanged, this, &DatastoreBulkOperationWindow::handle_show_hidden_toggled);
+
 				QWidget* select_buttons_widget = new QWidget{ left_bar };
 				{
 					QPushButton* select_all_button = new QPushButton{ "Select all", select_buttons_widget };
@@ -57,6 +61,7 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 
 				QVBoxLayout* datastore_group_layout = new QVBoxLayout{ datastore_group };
 				datastore_group_layout->addWidget(datastore_list);
+				datastore_group_layout->addWidget(datastore_list_show_hidden_check);
 				datastore_group_layout->addWidget(select_buttons_widget);
 			}
 
@@ -107,6 +112,7 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 	layout->addWidget(main_panel);
 	layout->addWidget(save_button);
 
+	handle_show_hidden_toggled();
 	pressed_toggle_filter();
 }
 
@@ -129,11 +135,34 @@ std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() con
 	return result;
 }
 
+void DatastoreBulkOperationWindow::handle_show_hidden_toggled()
+{
+	const std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe();
+	if (selected_universe)
+	{
+		const bool show_hidden = datastore_list_show_hidden_check->isChecked();
+		for (int i = 0; i < datastore_list->count(); i++)
+		{
+			QListWidgetItem* this_item = datastore_list->item(i);
+			const bool hide = show_hidden ? false : static_cast<bool>(selected_universe->hidden_datastores().count(this_item->text()));
+			this_item->setHidden(hide);
+			if (hide)
+			{
+				this_item->setCheckState(Qt::Unchecked);
+			}
+		}
+	}
+}
+
 void DatastoreBulkOperationWindow::pressed_select_all()
 {
 	for (int i = 0; i < datastore_list->count(); i++)
 	{
-		datastore_list->item(i)->setCheckState(Qt::Checked);
+		QListWidgetItem* this_item = datastore_list->item(i);
+		if (this_item->isHidden() == false)
+		{
+			this_item->setCheckState(Qt::Checked);
+		}
 	}
 }
 
