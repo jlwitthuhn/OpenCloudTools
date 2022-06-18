@@ -5,6 +5,7 @@
 
 #include <Qt>
 #include <QCheckBox>
+#include <QFile>
 #include <QFileDialog>
 #include <QFlags>
 #include <QFormLayout>
@@ -192,6 +193,21 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 		QString file_name = QFileDialog::getSaveFileName(this, "Save as...", "datastore.sqlite3", "sqlite3 databases (*.sqlite3)");
 		if (file_name.trimmed().length() > 0)
 		{
+			{
+				QFile existing_file{ file_name };
+				if (existing_file.exists())
+				{
+					if (existing_file.remove() == false)
+					{
+						QMessageBox* msg_box = new QMessageBox{ this };
+						msg_box->setWindowTitle("Error");
+						msg_box->setText("Failed to delete existing file.");
+						msg_box->exec();
+						return;
+					}
+				}
+			}
+
 			std::unique_ptr<SqliteDatastoreWriter> writer = SqliteDatastoreWriter::from_path(file_name.toStdString());
 			if (writer)
 			{
@@ -206,7 +222,7 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 			{
 				QMessageBox* msg_box = new QMessageBox{ this };
 				msg_box->setWindowTitle("Error");
-				msg_box->setText("Failed to create file.");
+				msg_box->setText("Failed to open file for writing.");
 				msg_box->exec();
 			}
 		}
