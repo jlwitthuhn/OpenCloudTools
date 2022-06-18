@@ -54,11 +54,6 @@ void BulkDataPanel::pressed_download()
 {
 	if (UserSettings::get()->get_selected_universe())
 	{
-		QMessageBox* msg_box = new QMessageBox{ this };
-		msg_box->setWindowTitle("Alert");
-		msg_box->setText("The Bulk Download feature may change in the near future. The format of the sqlite database is not final, so don't depend on it too much.");
-		msg_box->exec();
-
 		const long long universe_id = UserSettings::get()->get_selected_universe()->universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
