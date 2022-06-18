@@ -106,20 +106,15 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 		main_panel_layout->addWidget(right_bar);
 	}
 
-	QPushButton* save_button = new QPushButton{ get_submit_button_label(), this};
-	connect(save_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_submit);
+	submit_button = new QPushButton{ "Submit", this };
+	connect(submit_button, &QPushButton::clicked, this, &DatastoreBulkOperationWindow::pressed_submit);
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(main_panel);
-	layout->addWidget(save_button);
+	layout->addWidget(submit_button);
 
 	handle_show_hidden_toggled();
 	pressed_toggle_filter();
-}
-
-QString DatastoreBulkOperationWindow::get_submit_button_label() const
-{
-	return "Submit";
 }
 
 std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() const
@@ -186,11 +181,7 @@ DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const 
 	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
 {
 	setWindowTitle("Download Datastores");
-}
-
-QString DatastoreBulkDownloadWindow::get_submit_button_label() const
-{
-	return "Save as...";
+	submit_button->setText("Save as...");
 }
 
 void DatastoreBulkDownloadWindow::pressed_submit()

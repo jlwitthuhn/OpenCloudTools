@@ -9,6 +9,7 @@
 class QCheckBox;
 class QLineEdit;
 class QListWidget;
+class QPushButton;
 
 class DatastoreBulkOperationWindow : public QWidget
 {
@@ -16,7 +17,6 @@ class DatastoreBulkOperationWindow : public QWidget
 protected:
 	DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
 
-	virtual QString get_submit_button_label() const;
 	virtual void pressed_submit() = 0;
 
 	std::vector<QString> get_selected_datastores() const;
@@ -37,6 +37,8 @@ protected:
 
 	QLineEdit* filter_scope_edit = nullptr;
 	QLineEdit* filter_key_prefix_edit = nullptr;
+
+	QPushButton* submit_button = nullptr;
 };
 
 class DatastoreBulkDownloadWindow : public DatastoreBulkOperationWindow
@@ -46,6 +48,5 @@ public:
 	DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
 
 private:
-	virtual QString get_submit_button_label() const override;
 	virtual void pressed_submit() override;
 };
