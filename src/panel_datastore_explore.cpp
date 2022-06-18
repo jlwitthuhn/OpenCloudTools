@@ -8,6 +8,7 @@
 
 #include <Qt>
 #include <QAbstractItemModel>
+#include <QCheckBox>
 #include <QClipboard>
 #include <QFrame>
 #include <QGroupBox>
@@ -41,6 +42,8 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QWidget{ parent },
 	api_key{ api_key }
 {
+	connect(UserSettings::get().get(), &UserSettings::hidden_datastores_changed, this, &ExploreDatastorePanel::handle_show_hidden_datastores_toggled);
+
 	QWidget* left_bar_widget = new QWidget{ this };
 	{
 		QSizePolicy left_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
@@ -54,11 +57,15 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 			connect(select_datastore_list, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_datastore_list);
 			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_changed);
 
+			select_datastore_show_hidden_check = new QCheckBox{ "Show hidden", select_datastore_widget};
+			connect(select_datastore_show_hidden_check, &QCheckBox::stateChanged, this, &ExploreDatastorePanel::handle_show_hidden_datastores_toggled);
+
 			select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
 			connect(select_datastore_fetch_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_fetch_datastores);
 
 			QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
 			select_datastore_layout->addWidget(select_datastore_list);
+			select_datastore_layout->addWidget(select_datastore_show_hidden_check);
 			select_datastore_layout->addWidget(select_datastore_fetch_button);
 		}
 
@@ -262,6 +269,21 @@ void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
 	delete_entry_button->setEnabled(item_selected);
 }
 
+void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
+{
+	const std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe();
+	if (selected_universe)
+	{
+		const bool show_hidden = select_datastore_show_hidden_check->isChecked();
+		for (int i = 0; i < select_datastore_list->count(); i++)
+		{
+			QListWidgetItem* this_item = select_datastore_list->item(i);
+			const bool hide = show_hidden ? false : static_cast<bool>( selected_universe->hidden_datastores().count(this_item->text()) );
+			this_item->setHidden(hide);
+		}
+	}
+}
+
 void ExploreDatastorePanel::pressed_delete_entry()
 {
 	QModelIndex selected_index = datastore_entry_tree->currentIndex();
@@ -335,6 +357,7 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 				this_item->setText(this_name);
 				select_datastore_list->addItem(this_item);
 			}
+			handle_show_hidden_datastores_toggled();
 		}
 	}
 }
@@ -413,27 +436,42 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 	const QModelIndex the_index = select_datastore_list->indexAt(pos);
 	if (the_index.isValid())
 	{
-		if (QListWidgetItem* the_item = select_datastore_list->item(the_index.row()))
+		const std::optional<UniverseProfile> this_universe = UserSettings::get()->get_selected_universe();
+		if (this_universe)
 		{
-			QString the_datastore_name = the_item->text();
+			if (QListWidgetItem* the_item = select_datastore_list->item(the_index.row()))
+			{
+				QString the_datastore_name = the_item->text();
 
-			QAction* copy_name = new QAction{ "Copy name", select_datastore_list };
-			connect(copy_name, &QAction::triggered, [the_datastore_name]() {
-				QClipboard* clipboard = QGuiApplication::clipboard();
-				clipboard->setText(the_datastore_name);
-			});
+				QAction* copy_name = new QAction{ "Copy name", select_datastore_list };
+				connect(copy_name, &QAction::triggered, [the_datastore_name]() {
+					QClipboard* clipboard = QGuiApplication::clipboard();
+					clipboard->setText(the_datastore_name);
+					});
 
-			QAction* hide_datastore = new QAction{ "Hide datastore", select_datastore_list };
-			connect(hide_datastore, &QAction::triggered, [the_datastore_name]() {
-				UserSettings::get()->add_hidden_datastore(the_datastore_name);
-			});
+				QAction* hide_unhide_action = nullptr;
+				if (this_universe->hidden_datastores().count(the_datastore_name))
+				{
+					hide_unhide_action = new QAction{ "Unhide datastore", select_datastore_list };
+					connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
+						UserSettings::get()->remove_hidden_datastore(the_datastore_name);
+					});
+				}
+				else
+				{
+					hide_unhide_action = new QAction{ "Hide datastore", select_datastore_list };
+					connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
+						UserSettings::get()->add_hidden_datastore(the_datastore_name);
+					});
+				}
 
-			QMenu* context_menu = new QMenu{ select_datastore_list };
-			context_menu->addAction(copy_name);
-			context_menu->addSeparator();
-			context_menu->addAction(hide_datastore);
+				QMenu* context_menu = new QMenu{ select_datastore_list };
+				context_menu->addAction(copy_name);
+				context_menu->addSeparator();
+				context_menu->addAction(hide_unhide_action);
 
-			context_menu->exec(select_datastore_list->mapToGlobal(pos));
+				context_menu->exec(select_datastore_list->mapToGlobal(pos));
+			}
 		}
 	}
 }

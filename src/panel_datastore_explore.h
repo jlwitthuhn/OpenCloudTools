@@ -4,6 +4,7 @@
 #include <QString>
 #include <QWidget>
 
+class QCheckBox;
 class QLineEdit;
 class QListWidget;
 class QModelIndex;
@@ -25,6 +26,7 @@ private:
 	void handle_search_text_changed();
 	void handle_selected_datastore_changed();
 	void handle_selected_datastore_entry_changed();
+	void handle_show_hidden_datastores_toggled();
 
 	void pressed_delete_entry();
 	void pressed_edit_entry();
@@ -39,6 +41,7 @@ private:
 
 	QListWidget* select_datastore_list = nullptr;
 	QPushButton* select_datastore_fetch_button = nullptr;
+	QCheckBox* select_datastore_show_hidden_check = nullptr;
 
 	QLineEdit* datastore_name_edit = nullptr;
 	QLineEdit* datastore_scope_edit = nullptr;
