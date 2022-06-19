@@ -41,6 +41,16 @@ protected:
 	QPushButton* submit_button = nullptr;
 };
 
+class DatastoreBulkDeleteWindow : public DatastoreBulkOperationWindow
+{
+	Q_OBJECT
+public:
+	DatastoreBulkDeleteWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+
+private:
+	virtual void pressed_submit() override;
+};
+
 class DatastoreBulkDownloadWindow : public DatastoreBulkOperationWindow
 {
 	Q_OBJECT

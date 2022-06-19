@@ -31,6 +31,9 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	case ChangeType::Delete:
 		info->setText("This action will delete the selected entry. Are you sure you want to do this?");
 		break;
+	case ChangeType::BulkDelete:
+		info->setText("This action will delete the contents of the selected datastores. Are you sure you want to do this?");
+		break;
 	}
 	info->setWordWrap(true);
 
@@ -62,10 +65,10 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	QWidget* button_panel = new QWidget{ this };
 	{
 		yes_button = new QPushButton{ "&Yes", button_panel };
-		connect(yes_button, &QPushButton::clicked, this, &ConfirmChangeDialog::accept);
+		connect(yes_button, &QPushButton::clicked, this, &QDialog::accept);
 
 		QPushButton* no_button = new QPushButton{ "&No", button_panel };
-		connect(no_button, &QPushButton::clicked, this, &ConfirmChangeDialog::reject);
+		connect(no_button, &QPushButton::clicked, this, &QDialog::reject);
 
 		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
 		button_layout->addWidget(yes_button);

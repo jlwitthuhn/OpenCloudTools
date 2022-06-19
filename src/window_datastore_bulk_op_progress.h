@@ -19,6 +19,7 @@ class QProgressBar;
 class QPushButton;
 class QTextEdit;
 
+class DeleteStandardDatastoreEntryRequest;
 class GetStandardDatastoreEntriesRequest;
 class GetStandardDatastoreEntryRequest;
 
@@ -82,7 +83,6 @@ protected:
 	std::vector<StandardDatastoreEntry> pending_entries;
 
 	GetStandardDatastoreEntriesRequest* get_entries_request = nullptr;
-	GetStandardDatastoreEntryRequest* get_entry_details_request = nullptr;
 
 	QLabel* progress_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
@@ -90,6 +90,22 @@ protected:
 	QTextEdit* text_box = nullptr;
 
 	QPushButton* close_button = nullptr;
+};
+
+class DatastoreBulkDeleteProgressWindow: public DatastoreBulkOperationProgressWindow
+{
+	Q_OBJECT
+public:
+	DatastoreBulkDeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names);
+
+private:
+	virtual QString progress_label_done() const override;
+	virtual QString progress_label_working(size_t total) const override;
+
+	virtual void send_next_entry_request() override;
+	virtual void handle_entry_response() override;
+
+	DeleteStandardDatastoreEntryRequest* delete_entry_request = nullptr;
 };
 
 class DatastoreBulkDownloadProgressWindow : public DatastoreBulkOperationProgressWindow
@@ -106,4 +122,6 @@ private:
 	virtual void handle_entry_response() override;
 
 	std::unique_ptr<SqliteDatastoreWriter> writer;
+
+	GetStandardDatastoreEntryRequest* get_entry_details_request = nullptr;
 };

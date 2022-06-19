@@ -179,6 +179,54 @@ std::optional<size_t> DatastoreBulkOperationProgressWindow::DownloadProgress::ge
 	return entry_total;
 }
 
+DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names) :
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names }
+{
+	setWindowTitle("Delete Progress");
+}
+
+QString DatastoreBulkDeleteProgressWindow::progress_label_done() const
+{
+	return "Delete complete";
+}
+
+QString DatastoreBulkDeleteProgressWindow::progress_label_working(const size_t total) const
+{
+	return QString{ "Deleting entry %1/%2..." }.arg(progress.get_current_entry_index() + 1).arg(total);
+}
+
+void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
+{
+	if (pending_entries.size() > 0)
+	{
+		StandardDatastoreEntry entry = pending_entries.back();
+		pending_entries.pop_back();
+
+		delete_entry_request = new DeleteStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+		delete_entry_request->set_http_429_count(http_429_count);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_entry_response);
+		delete_entry_request->send_request();
+	}
+	else
+	{
+		close_button->setText("Close");
+		handle_status_message("Delete complete");
+	}
+}
+
+void DatastoreBulkDeleteProgressWindow::handle_entry_response()
+{
+	if (delete_entry_request)
+	{
+		progress.advance_entry_done();
+		delete_entry_request->deleteLater();
+		delete_entry_request = nullptr;
+		send_next_entry_request();
+	}
+}
+
 DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	QWidget* parent,
 	const QString& api_key,

@@ -62,6 +62,10 @@ void DataRequest::handle_reply_ready()
 	{
 		handle_http_200(reply_body, headers);
 	}
+	else if (status == "204") // No content, body will be empty
+	{
+		handle_http_200(reply_body, headers);
+	}
 	else if (status == "404") // Not found
 	{
 		handle_http_404(reply_body, headers);
@@ -144,6 +148,12 @@ QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional
 void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	emit status_message(QString{ "Complete" });
+	emit request_complete();
+}
+
+void DeleteStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	emit status_message(QString{ "Entry already deleted, continuing" });
 	emit request_complete();
 }
 

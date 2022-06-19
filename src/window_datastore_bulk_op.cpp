@@ -18,6 +18,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "diag_confirm_change.h"
 #include "sqlite_wrapper.h"
 #include "user_settings.h"
 #include "window_datastore_bulk_op_progress.h"
@@ -177,6 +178,41 @@ void DatastoreBulkOperationWindow::pressed_toggle_filter()
 	filter_scope_edit->setEnabled(filter_enabled);
 	filter_key_prefix_edit->setEnabled(filter_enabled);
 }
+
+DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
+	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
+{
+	setWindowTitle("Delete Datastores");
+	submit_button->setText("Delete");
+	pressed_select_none();
+}
+
+void DatastoreBulkDeleteWindow::pressed_submit()
+{
+	const std::vector<QString> selected_datastores = get_selected_datastores();
+	if (selected_datastores.size() > 0)
+	{
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkDelete };
+		bool confirmed = static_cast<bool>(confirm_dialog->exec());
+		if (confirmed)
+		{
+			const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
+			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
+			DatastoreBulkDeleteProgressWindow* progress_window = new DatastoreBulkDeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores };
+			close();
+			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+			progress_window->show();
+		}
+	}
+	else
+	{
+		QMessageBox* msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Error");
+		msg_box->setText("You must select at least one datastore.");
+		msg_box->exec();
+	}
+}
+
 
 DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
 	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
