@@ -7,9 +7,11 @@
 #include <QWidget>
 
 class QCheckBox;
+class QGroupBox;
 class QLineEdit;
 class QListWidget;
 class QPushButton;
+class QVBoxLayout;
 
 class DatastoreBulkOperationWindow : public QWidget
 {
@@ -29,6 +31,9 @@ protected:
 
 	QString api_key;
 	long long universe_id = 0;
+
+	QWidget* right_bar = nullptr;
+	QVBoxLayout* right_bar_layout = nullptr;
 
 	QListWidget* datastore_list = nullptr;
 	QCheckBox* datastore_list_show_hidden_check = nullptr;

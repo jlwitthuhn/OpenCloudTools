@@ -72,7 +72,7 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 			left_bar_layout->addWidget(datastore_group);
 		}
 
-		QWidget* right_bar = new QWidget{ main_panel };
+		right_bar = new QWidget{ main_panel };
 		{
 			QGroupBox* filter_box = new QGroupBox{ "Filter", right_bar };
 			{
@@ -96,10 +96,9 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 				filter_layout->addWidget(filter_form);
 			}
 
-			QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar };
+			right_bar_layout = new QVBoxLayout{ right_bar };
 			right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 			right_bar_layout->addWidget(filter_box);
-			right_bar_layout->addStretch();
 		}
 
 		QHBoxLayout* main_panel_layout = new QHBoxLayout{ main_panel };
@@ -184,6 +183,11 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 {
 	setWindowTitle("Delete Datastores");
 	submit_button->setText("Delete");
+
+	QGroupBox* options_box = new QGroupBox{ "Delete Options", right_bar };
+	right_bar_layout->addWidget(options_box);
+	right_bar_layout->addStretch();
+
 	pressed_select_none();
 }
 
@@ -213,12 +217,12 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 	}
 }
 
-
 DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
 	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
 {
 	setWindowTitle("Download Datastores");
 	submit_button->setText("Save as...");
+	right_bar_layout->addStretch();
 }
 
 void DatastoreBulkDownloadWindow::pressed_submit()
