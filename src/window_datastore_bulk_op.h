@@ -36,6 +36,7 @@ protected:
 	QVBoxLayout* right_bar_layout = nullptr;
 
 	QListWidget* datastore_list = nullptr;
+	QCheckBox* confirm_count_before_delete_check = nullptr;
 	QCheckBox* datastore_list_show_hidden_check = nullptr;
 
 	QCheckBox* filter_enabled_check = nullptr;

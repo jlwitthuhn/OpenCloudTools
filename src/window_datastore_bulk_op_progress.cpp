@@ -4,6 +4,7 @@
 
 #include <Qt>
 #include <QLabel>
+#include <QMessageBox>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QTextEdit>
@@ -187,8 +188,10 @@ DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(
 	const QString& scope,
 	const QString& key_prefix,
 	const std::vector<QString> datastore_names,
-	const bool hide_datastores_when_done ) :
+	const bool confirm_count_before_delete ,
+	const bool hide_datastores_when_done) :
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
+	confirm_count_before_delete{ confirm_count_before_delete },
 	hide_datastores_when_done{ hide_datastores_when_done }
 {
 	setWindowTitle("Delete Progress");
@@ -206,6 +209,22 @@ QString DatastoreBulkDeleteProgressWindow::progress_label_working(const size_t t
 
 void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 {
+	if (confirm_count_before_delete && first_delete_request_sent == false)
+	{
+		QString message = QString{ "This operation will delete %1 entries. Are you sure you want to proceed?" }.arg(pending_entries.size());
+
+		QMessageBox* msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Confirm deletion");
+		msg_box->setText(message);
+		msg_box->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		if (msg_box->exec() == QMessageBox::No)
+		{
+			handle_status_message("Bulk delete aborted");
+			close_button->setText("Close");
+			return;
+		}
+	}
+
 	if (pending_entries.size() > 0)
 	{
 		StandardDatastoreEntry entry = pending_entries.back();
@@ -217,6 +236,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_entry_response);
 		delete_entry_request->send_request();
+		first_delete_request_sent = true;
 	}
 	else
 	{
