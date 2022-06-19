@@ -153,8 +153,13 @@ void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const 
 
 void DeleteStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	emit status_message(QString{ "Entry already deleted, continuing" });
+	emit status_message(QString{ "Entry already deleted" });
 	emit request_complete();
+}
+
+QString DeleteStandardDatastoreEntryRequest::get_send_message() const
+{
+	return QString{ "Deleting entry '%1'..." }.arg(key_name);
 }
 
 GetStandardDatastoresDataRequest::GetStandardDatastoresDataRequest(QObject* parent, const QString& api_key, const long long universe_id) : DataRequest{ parent, api_key }, universe_id{ universe_id }
@@ -315,7 +320,7 @@ void GetStandardDatastoreEntryRequest::handle_http_404(const QString&, const QLi
 
 QString GetStandardDatastoreEntryRequest::get_send_message() const
 {
-	return QString{ "Sending request for '%1'..." }.arg(key_name);
+	return QString{ "Fetching entry '%1'..." }.arg(key_name);
 }
 
 GetStandardDatastoreEntryAtVersionRequest::GetStandardDatastoreEntryAtVersionRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version) :
