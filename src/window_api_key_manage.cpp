@@ -23,6 +23,15 @@
 #include "window_api_key_add.h"
 #include "window_main.h"
 
+static bool variant_is_ulonglong(const QVariant& variant)
+{
+#ifdef QT5_COMPAT
+	return variant.type() == QVariant::Type::ULongLong;
+#else
+	return variant.metaType().id() == QMetaType::ULongLong;
+#endif
+}
+
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
 	setWindowTitle("API Keys");
@@ -93,7 +102,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
 	if (item)
 	{
 		QVariant data = item->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::ULongLong)
+		if (variant_is_ulonglong(data))
 		{
 			UserSettings::get()->select_api_key(data.toULongLong());
 			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
@@ -119,7 +128,7 @@ void ManageApiKeysWindow::pressed_edit()
 	if (selected.size() == 1)
 	{
 		QVariant data = selected.first()->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::ULongLong)
+		if (variant_is_ulonglong(data))
 		{
 			size_t key_index =  data.toULongLong();
 			if (UserSettings::get()->get_api_key(key_index))
@@ -138,7 +147,7 @@ void ManageApiKeysWindow::pressed_delete()
 	if (selected.size() == 1)
 	{
 		QVariant data = selected.first()->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::ULongLong)
+		if (variant_is_ulonglong(data))
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Confirm deletion");
@@ -159,7 +168,7 @@ void ManageApiKeysWindow::pressed_select()
 	if (selected.size() == 1)
 	{
 		QVariant data = selected.first()->data(Qt::UserRole);
-		if (data.metaType().id() == QMetaType::ULongLong)
+		if (variant_is_ulonglong(data))
 		{
 			UserSettings::get()->select_api_key(data.toULongLong());
 			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())

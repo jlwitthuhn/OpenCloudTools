@@ -9,7 +9,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Network Widgets)
+option(USE_QT5 "Build with Qt 5 instead of Qt 6" FALSE)
+
+if (USE_QT5)
+	find_package(Qt5 REQUIRED COMPONENTS Network Widgets)
+else()
+	find_package(Qt6 REQUIRED COMPONENTS Network Widgets)
+endif()
 
 add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
 
@@ -71,11 +77,21 @@ add_executable(OpenCloudTools
 	./src/window_main.h
 )
 
+if (USE_QT5)
+	target_compile_definitions(OpenCloudTools PRIVATE QT5_COMPAT)
+endif()
+
 target_include_directories(OpenCloudTools PRIVATE ./extern/sqlite)
 
 target_link_libraries(OpenCloudTools PRIVATE extern_sqlite3)
-target_link_libraries(OpenCloudTools PRIVATE Qt6::Network)
-target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)
+if (USE_QT5)
+	target_link_libraries(OpenCloudTools PRIVATE Qt5::Network)
+	target_link_libraries(OpenCloudTools PRIVATE Qt5::Widgets)
+else()
+	target_link_libraries(OpenCloudTools PRIVATE Qt6::Network)
+	target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)
+endif()
+
 
 if (MSVC)
 	target_compile_options(OpenCloudTools PRIVATE /W3)

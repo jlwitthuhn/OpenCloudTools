@@ -70,7 +70,11 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			QGroupBox* select_universe_group = new QGroupBox{ "Select universe", top_bar_widget };
 			{
 				select_universe_combo = new QComboBox{ select_universe_group };
+#ifdef QT5_COMPAT
+				connect(select_universe_combo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MyMainWindow::selected_universe_combo_changed);
+#else
 				connect(select_universe_combo, &QComboBox::currentIndexChanged, this, &MyMainWindow::selected_universe_combo_changed);
+#endif
 
 				QPushButton* add_universe_button = new QPushButton{ "Add...", select_universe_group };
 				add_universe_button->setMaximumWidth(120);
