@@ -96,7 +96,7 @@ class DatastoreBulkDeleteProgressWindow: public DatastoreBulkOperationProgressWi
 {
 	Q_OBJECT
 public:
-	DatastoreBulkDeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names);
+	DatastoreBulkDeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, bool hide_datastores_when_done);
 
 private:
 	virtual QString progress_label_done() const override;
@@ -104,6 +104,8 @@ private:
 
 	virtual void send_next_entry_request() override;
 	virtual void handle_entry_response() override;
+
+	bool hide_datastores_when_done;
 
 	DeleteStandardDatastoreEntryRequest* delete_entry_request = nullptr;
 };

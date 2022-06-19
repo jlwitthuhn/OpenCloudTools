@@ -185,6 +185,13 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 	submit_button->setText("Delete");
 
 	QGroupBox* options_box = new QGroupBox{ "Delete Options", right_bar };
+	{
+		hide_after_delete_check = new QCheckBox{ "Hide datastore after delete", options_box };
+
+		QVBoxLayout* options_layout = new QVBoxLayout{ options_box };
+		options_layout->addWidget(hide_after_delete_check);
+	};
+
 	right_bar_layout->addWidget(options_box);
 	right_bar_layout->addStretch();
 
@@ -202,7 +209,8 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 		{
 			const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
 			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
-			DatastoreBulkDeleteProgressWindow* progress_window = new DatastoreBulkDeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores };
+			const bool hide_datastores_after = hide_after_delete_check->isChecked();
+			DatastoreBulkDeleteProgressWindow* progress_window = new DatastoreBulkDeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, hide_datastores_after };
 			close();
 			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			progress_window->show();

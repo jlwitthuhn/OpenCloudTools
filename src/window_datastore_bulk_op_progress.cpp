@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 
 #include "data_request.h"
+#include "user_settings.h"
 
 DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names) :
 	QWidget{ parent, Qt::Window },
@@ -179,8 +180,16 @@ std::optional<size_t> DatastoreBulkOperationProgressWindow::DownloadProgress::ge
 	return entry_total;
 }
 
-DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names) :
-	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names }
+DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(
+	QWidget* const parent,
+	const QString& api_key,
+	const long long universe_id,
+	const QString& scope,
+	const QString& key_prefix,
+	const std::vector<QString> datastore_names,
+	const bool hide_datastores_when_done ) :
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
+	hide_datastores_when_done{ hide_datastores_when_done }
 {
 	setWindowTitle("Delete Progress");
 }
@@ -211,8 +220,16 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 	}
 	else
 	{
+		if (hide_datastores_when_done)
+		{
+			for (const QString& this_name : datastore_names)
+			{
+				UserSettings::get()->add_hidden_datastore(this_name);
+				handle_status_message( QString{ "Hid datastore: '%1'" }.arg(this_name) );
+			}
+		}
 		close_button->setText("Close");
-		handle_status_message("Delete complete");
+		handle_status_message("Bulk delete complete");
 	}
 }
 

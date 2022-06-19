@@ -54,6 +54,8 @@ public:
 
 private:
 	virtual void pressed_submit() override;
+
+	QCheckBox* hide_after_delete_check = nullptr;
 };
 
 class DatastoreBulkDownloadWindow : public DatastoreBulkOperationWindow
