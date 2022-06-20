@@ -9,7 +9,6 @@
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 

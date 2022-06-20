@@ -1,6 +1,8 @@
 #include "user_settings.h"
 
-#include <utility>
+#include <algorithm>
+#include <memory>
+#include <set>
 #include <vector>
 
 #include <QSettings>

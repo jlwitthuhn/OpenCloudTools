@@ -3,7 +3,6 @@
 #include <cstddef>
 
 #include <optional>
-#include <utility>
 
 #include <QObject>
 #include <QWidget>

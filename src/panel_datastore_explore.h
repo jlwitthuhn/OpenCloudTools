@@ -8,6 +8,7 @@ class QCheckBox;
 class QLineEdit;
 class QListWidget;
 class QModelIndex;
+class QPoint;
 class QPushButton;
 class QTreeView;
 

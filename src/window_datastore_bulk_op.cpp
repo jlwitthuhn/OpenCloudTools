@@ -1,7 +1,9 @@
 #include "window_datastore_bulk_op.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
+#include <set>
 
 #include <Qt>
 #include <QCheckBox>
@@ -18,6 +20,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "api_key.h"
 #include "diag_confirm_change.h"
 #include "sqlite_wrapper.h"
 #include "user_settings.h"

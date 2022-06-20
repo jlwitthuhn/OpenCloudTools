@@ -4,10 +4,12 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include <Qt>
 #include <QAbstractItemModel>
+#include <QAction>
 #include <QCheckBox>
 #include <QClipboard>
 #include <QFrame>

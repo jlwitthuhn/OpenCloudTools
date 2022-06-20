@@ -1,14 +1,19 @@
 #include "panel_universe_prefs.h"
 
+#include <memory>
+#include <optional>
 #include <set>
 
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QList>
 #include <QListWidget>
 #include <QMargins>
 #include <QPushButton>
+#include <QString>
 #include <QVBoxLayout>
 
+#include "api_key.h"
 #include "user_settings.h"
 #include "window_hidden_datastore_add.h"
 

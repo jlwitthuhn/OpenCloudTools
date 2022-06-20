@@ -1,7 +1,12 @@
 #include "window_hidden_datastore_add.h"
 
+#include <memory>
+
+#include <Qt>
 #include <QFormLayout>
+#include <QHBoxLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QPushButton>
 #include <QVBoxLayout>
 

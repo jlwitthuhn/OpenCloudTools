@@ -1,6 +1,10 @@
 #include "panel_http_log.h"
 
+#include <optional>
+
+#include <Qt>
 #include <QAbstractItemModel>
+#include <QAction>
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QMenu>

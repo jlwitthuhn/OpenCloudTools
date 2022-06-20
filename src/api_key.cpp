@@ -1,6 +1,7 @@
 #include "api_key.h"
 
 #include <algorithm>
+#include <memory>
 
 UniverseProfile::UniverseProfile(const QString& name, const long long universe_id) : _name{ name }, _universe_id{ universe_id }
 {

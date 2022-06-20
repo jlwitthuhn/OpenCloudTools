@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QString>
 
 #include "api_key.h"
 

@@ -7,7 +7,6 @@
 #include <QWidget>
 
 class QCheckBox;
-class QGroupBox;
 class QLineEdit;
 class QListWidget;
 class QPushButton;

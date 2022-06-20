@@ -12,7 +12,6 @@
 
 #include "api_response.h"
 #include "sqlite_wrapper.h"
-#include "util_enum.h"
 
 class QLabel;
 class QProgressBar;
