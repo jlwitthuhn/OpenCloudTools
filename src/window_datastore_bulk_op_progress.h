@@ -104,9 +104,14 @@ private:
 	virtual void send_next_entry_request() override;
 	virtual void handle_entry_response() override;
 
+	QString get_summary() const;
+
 	bool confirm_count_before_delete;
 	bool hide_datastores_when_done;
 	bool first_delete_request_sent = false;
+
+	size_t entries_deleted = 0;
+	size_t entries_already_deleted = 0;
 
 	DeleteStandardDatastoreEntryRequest* delete_entry_request = nullptr;
 };

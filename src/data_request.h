@@ -63,6 +63,8 @@ public:
 
 	virtual QString get_title_string() const override;
 
+	const std::optional<bool>& is_delete_success() const { return delete_success; }
+
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
@@ -73,6 +75,8 @@ private:
 	QString datastore_name;
 	QString scope;
 	QString key_name;
+
+	std::optional<bool> delete_success;
 };
 
 class GetStandardDatastoresDataRequest : public DataRequest

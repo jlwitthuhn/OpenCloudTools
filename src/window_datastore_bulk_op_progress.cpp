@@ -250,6 +250,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 		}
 		close_button->setText("Close");
 		handle_status_message("Bulk delete complete");
+		handle_status_message(get_summary());
 	}
 }
 
@@ -258,10 +259,31 @@ void DatastoreBulkDeleteProgressWindow::handle_entry_response()
 	if (delete_entry_request)
 	{
 		progress.advance_entry_done();
+		if (std::optional<bool> succeeded = delete_entry_request->is_delete_success())
+		{
+			if (*succeeded)
+			{
+				entries_deleted++;
+			}
+			else
+			{
+				entries_already_deleted++;
+			}
+		}
 		delete_entry_request->deleteLater();
 		delete_entry_request = nullptr;
 		send_next_entry_request();
 	}
+}
+
+QString DatastoreBulkDeleteProgressWindow::get_summary() const
+{
+	QString result = QString{ "%1 entries deleted" }.arg(entries_deleted);
+	if (entries_already_deleted > 0)
+	{
+		result = result + QString{ ", %1 entries already deleted" }.arg(entries_already_deleted);
+	}
+	return result;
 }
 
 DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(

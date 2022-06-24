@@ -147,12 +147,14 @@ QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional
 
 void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
+	delete_success = true;
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
 }
 
 void DeleteStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
+	delete_success = false;
 	emit status_message(QString{ "Entry already deleted" });
 	emit request_complete();
 }
