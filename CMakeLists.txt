@@ -11,6 +11,13 @@ set(CMAKE_AUTOUIC ON)
 
 option(USE_QT5 "Build with Qt 5 instead of Qt 6" FALSE)
 
+execute_process(
+	COMMAND git describe --tags
+	WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+	OUTPUT_VARIABLE GIT_DESCRIBE
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 if (USE_QT5)
 	find_package(Qt5 REQUIRED COMPONENTS Network Widgets)
 else()
@@ -80,6 +87,8 @@ add_executable(OpenCloudTools
 	./src/window_main.h
 )
 
+target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
+
 if (USE_QT5)
 	target_compile_definitions(OpenCloudTools PRIVATE QT5_COMPAT)
 endif()
@@ -94,7 +103,6 @@ else()
 	target_link_libraries(OpenCloudTools PRIVATE Qt6::Network)
 	target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)
 endif()
-
 
 if (MSVC)
 	target_compile_options(OpenCloudTools PRIVATE /W3)
