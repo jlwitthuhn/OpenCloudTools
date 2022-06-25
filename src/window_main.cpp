@@ -32,6 +32,7 @@
 #include "panel_http_log.h"
 #include "panel_universe_prefs.h"
 #include "user_settings.h"
+#include "util_compiler.h"
 #include "window_api_key_manage.h"
 #include "window_datastore_universe_add.h"
 
@@ -75,6 +76,14 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
 			});
 
+			QMenu* about_build_menu = new QMenu{ "Build information", about_menu };
+			{
+				const QString label_compiler = QString{ "Compiler: %1" }.arg( QString::fromStdString( get_cxx_compiler_version_string() ) );
+				QAction* action_compiler = new QAction{ label_compiler, menu_bar };
+
+				about_build_menu->addAction(action_compiler);
+			}
+
 			QMenu* about_libraries_menu = new QMenu{ "Third-party libraries", about_menu };
 			{
 				const QString label_qt = QString{ "Qt %1" }.arg(qVersion());
@@ -89,6 +98,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 			about_menu->addAction(action_github);
 			about_menu->addSeparator();
+			about_menu->addMenu(about_build_menu);
 			about_menu->addMenu(about_libraries_menu);
 		}
 
