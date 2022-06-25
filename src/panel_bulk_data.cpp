@@ -15,6 +15,7 @@
 #include "api_key.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
+#include "tooltip_text.h"
 #include "user_settings.h"
 #include "window_datastore_bulk_op.h"
 
@@ -27,6 +28,7 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 		QGroupBox* datastore_group = new QGroupBox{ "Datastore", container_widget};
 		{
 			datastore_download_button = new QPushButton{ "Bulk download...", datastore_group };
+			datastore_download_button->setToolTip(ToolTip::BulkDataPanel_Download);
 			datastore_download_button->setMinimumWidth(150);
 			connect(datastore_download_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_download);
 
@@ -38,10 +40,12 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 			connect(danger_buttons_check, &QCheckBox::stateChanged, this, &BulkDataPanel::handle_datastore_danger_toggle);
 
 			datastore_delete_button = new QPushButton{ "Bulk delete...", datastore_group };
+			datastore_delete_button->setToolTip(ToolTip::BulkDataPanel_Delete);
 			datastore_delete_button->setMinimumWidth(150);
 			connect(datastore_delete_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_delete);
 
 			datastore_undelete_button = new QPushButton{ "Bulk undelete...", datastore_group };
+			datastore_undelete_button->setToolTip(ToolTip::BulkDataPanel_Undelete);
 			datastore_undelete_button->setMinimumWidth(150);
 			connect(datastore_undelete_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_undelete);
 

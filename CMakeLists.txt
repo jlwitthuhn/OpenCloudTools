@@ -47,6 +47,7 @@ add_executable(OpenCloudTools
 	./src/panel_universe_prefs.h
 	./src/sqlite_wrapper.cpp
 	./src/sqlite_wrapper.h
+	./src/tooltip_text.h
 	./src/user_settings.cpp
 	./src/user_settings.h
 	./src/util_enum.cpp
