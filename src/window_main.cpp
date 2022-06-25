@@ -73,7 +73,12 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
 			});
 
+			const QString label_qt = QString{"Qt %1"}.arg(qVersion());
+			QAction* action_qt = new QAction{ label_qt, menu_bar };
+
 			about_menu->addAction(action_github);
+			about_menu->addSeparator();
+			about_menu->addAction(action_qt);
 		}
 
 		menu_bar->addMenu(file_menu);
