@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QMargins>
 #include <QPushButton>
+#include <QString>
 #include <QVBoxLayout>
 
 #include "user_settings.h"

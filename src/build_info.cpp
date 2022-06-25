@@ -1,6 +1,6 @@
 #include "build_info.h"
 
-#include <algorithm>
+#include <cstddef>
 
 std::string get_build_date()
 {

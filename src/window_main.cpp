@@ -76,8 +76,10 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
 			});
 
+#ifdef GIT_DESCRIBE
 			const QString label_git_describe = QString{ "Git: %1" }.arg(GIT_DESCRIBE);
 			QAction* action_git_describe = new QAction{ label_git_describe, menu_bar };
+#endif
 
 			QMenu* about_build_menu = new QMenu{ "Build information", about_menu };
 			{
@@ -105,7 +107,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 			about_menu->addAction(action_github);
 			about_menu->addSeparator();
+#ifdef GIT_DESCRIBE
 			about_menu->addAction(action_git_describe);
+#endif
 			about_menu->addMenu(about_build_menu);
 			about_menu->addMenu(about_libraries_menu);
 		}
