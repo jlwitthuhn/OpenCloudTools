@@ -79,7 +79,7 @@ QVariant DatastoreEntryModel::headerData(int section, Qt::Orientation orientatio
 DatastoreEntryVersionModel::DatastoreEntryVersionModel(QObject* parent, const std::vector<StandardDatastoreEntryVersion>& versions) : QAbstractTableModel{ parent }, versions{ versions }
 {
 	std::sort(this->versions.begin(), this->versions.end(), [](const StandardDatastoreEntryVersion& a, const StandardDatastoreEntryVersion& b) {
-		return b.get_created_time() < a.get_created_time();
+		return b.get_version() < a.get_version();
 	});
 }
 

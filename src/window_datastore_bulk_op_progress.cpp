@@ -486,7 +486,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_versions_response()
 		std::sort(versions.begin(), versions.end(),
 			[](const StandardDatastoreEntryVersion& a, const StandardDatastoreEntryVersion& b)
 			{
-				return b.get_created_time() < a.get_created_time();
+				return b.get_version() < a.get_version();
 			}
 		);
 
