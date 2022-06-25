@@ -26,13 +26,13 @@
 #include <sqlite3.h>
 
 #include "api_key.h"
+#include "build_info.h"
 #include "http_wrangler.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_explore.h"
 #include "panel_http_log.h"
 #include "panel_universe_prefs.h"
 #include "user_settings.h"
-#include "util_compiler.h"
 #include "window_api_key_manage.h"
 #include "window_datastore_universe_add.h"
 
@@ -78,9 +78,13 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 			QMenu* about_build_menu = new QMenu{ "Build information", about_menu };
 			{
+				const QString label_date = QString{ "Build date: %1" }.arg(QString::fromStdString(get_build_date()));
+				QAction* action_date = new QAction{ label_date, menu_bar };
+
 				const QString label_compiler = QString{ "Compiler: %1" }.arg( QString::fromStdString( get_cxx_compiler_version_string() ) );
 				QAction* action_compiler = new QAction{ label_compiler, menu_bar };
 
+				about_build_menu->addAction(action_date);
 				about_build_menu->addAction(action_compiler);
 			}
 

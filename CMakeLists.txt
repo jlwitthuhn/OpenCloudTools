@@ -25,6 +25,8 @@ add_executable(OpenCloudTools
 	./src/api_key.h
 	./src/api_response.cpp
 	./src/api_response.h
+	./src/build_info.cpp
+	./src/build_info.h
 	./src/data_request.cpp
 	./src/data_request.h
 	./src/datastore_model.cpp
@@ -50,8 +52,6 @@ add_executable(OpenCloudTools
 	./src/tooltip_text.h
 	./src/user_settings.cpp
 	./src/user_settings.h
-	./src/util_compiler.cpp
-	./src/util_compiler.h
 	./src/util_enum.cpp
 	./src/util_enum.h
 	./src/util_json_string.cpp

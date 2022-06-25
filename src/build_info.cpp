@@ -1,4 +1,17 @@
-#include "util_compiler.h"
+#include "build_info.h"
+
+#include <algorithm>
+
+std::string get_build_date()
+{
+	std::string result{ __DATE__ };
+	const size_t fix_index = result.find("  ");
+	if (fix_index != std::string::npos)
+	{
+		result.at(fix_index + 1) = '0';
+	}
+	return result;
+}
 
 [[deprecated]]
 static std::string get_default_string()
