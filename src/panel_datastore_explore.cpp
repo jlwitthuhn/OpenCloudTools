@@ -215,7 +215,7 @@ void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				GetStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
 				req.send_request();
 				diag.exec();
@@ -322,7 +322,7 @@ void ExploreDatastorePanel::pressed_edit_entry()
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(selected_index.row());
 			if (opt_entry)
 			{
-				GetStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
 				req.send_request();
 				diag.exec();

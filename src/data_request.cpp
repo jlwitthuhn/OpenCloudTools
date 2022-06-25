@@ -262,23 +262,23 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 	}
 }
 
-GetStandardDatastoreEntryRequest::GetStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
+GetStandardDatastoreEntryDetailsRequest::GetStandardDatastoreEntryDetailsRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
 	DataRequest{ parent, api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
 
 }
 
-QString GetStandardDatastoreEntryRequest::get_title_string() const
+QString GetStandardDatastoreEntryDetailsRequest::get_title_string() const
 {
 	return "Fetching datastore entry details...";
 }
 
-QNetworkRequest GetStandardDatastoreEntryRequest::build_request(std::optional<QString>)
+QNetworkRequest GetStandardDatastoreEntryDetailsRequest::build_request(std::optional<QString>)
 {
 	return HttpRequestBuilder::get_standard_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
 }
 
-void GetStandardDatastoreEntryRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
+void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
 {
 	std::optional<QString> version;
 	std::optional<QString> userids;
@@ -312,7 +312,7 @@ void GetStandardDatastoreEntryRequest::handle_http_200(const QString& body, cons
 	emit request_complete();
 }
 
-void GetStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+void GetStandardDatastoreEntryDetailsRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	response = std::nullopt;
 
@@ -320,13 +320,13 @@ void GetStandardDatastoreEntryRequest::handle_http_404(const QString&, const QLi
 	emit request_complete();
 }
 
-QString GetStandardDatastoreEntryRequest::get_send_message() const
+QString GetStandardDatastoreEntryDetailsRequest::get_send_message() const
 {
 	return QString{ "Fetching entry '%1'..." }.arg(key_name);
 }
 
 GetStandardDatastoreEntryAtVersionRequest::GetStandardDatastoreEntryAtVersionRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version) :
-	GetStandardDatastoreEntryRequest{ parent, api_key, universe_id, datastore_name, scope, key_name }, version{ version }
+	GetStandardDatastoreEntryDetailsRequest{ parent, api_key, universe_id, datastore_name, scope, key_name }, version{ version }
 {
 
 }

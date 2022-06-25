@@ -21,7 +21,7 @@ class QTextEdit;
 class DeleteStandardDatastoreEntryRequest;
 class GetStandardDatastoreEntriesRequest;
 class GetStandardDatastoreEntryAtVersionRequest;
-class GetStandardDatastoreEntryRequest;
+class GetStandardDatastoreEntryDetailsRequest;
 class GetStandardDatastoreEntryVersionsRequest;
 class PostStandardDatastoreEntryRequest;
 
@@ -128,7 +128,7 @@ private:
 	size_t entries_deleted = 0;
 	size_t entries_already_deleted = 0;
 
-	GetStandardDatastoreEntryRequest* get_entry_request = nullptr;
+	GetStandardDatastoreEntryDetailsRequest* get_entry_request = nullptr;
 	PostStandardDatastoreEntryRequest* post_entry_request = nullptr;
 	DeleteStandardDatastoreEntryRequest* delete_entry_request = nullptr;
 };
@@ -148,7 +148,7 @@ private:
 
 	std::unique_ptr<SqliteDatastoreWriter> writer;
 
-	GetStandardDatastoreEntryRequest* get_entry_details_request = nullptr;
+	GetStandardDatastoreEntryDetailsRequest* get_entry_details_request = nullptr;
 };
 
 class DatastoreBulkUndeleteProgressWindow : public DatastoreBulkOperationProgressWindow

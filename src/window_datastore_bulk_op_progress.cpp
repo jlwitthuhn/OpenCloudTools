@@ -234,11 +234,11 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 
 		if (rewrite_before_delete)
 		{
-			get_entry_request = new GetStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+			get_entry_request = new GetStandardDatastoreEntryDetailsRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
 			get_entry_request->set_http_429_count(http_429_count);
-			connect(get_entry_request, &GetStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-			connect(get_entry_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-			connect(get_entry_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_get_entry_response);
+			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_get_entry_response);
 			get_entry_request->send_request();
 		}
 		else
@@ -289,9 +289,9 @@ void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
 
 			post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 			post_entry_request->set_http_429_count(http_429_count);
-			connect(post_entry_request, &GetStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-			connect(post_entry_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-			connect(post_entry_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_post_entry_response);
+			connect(post_entry_request, &PostStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+			connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(post_entry_request, &PostStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_post_entry_response);
 			post_entry_request->send_request();
 		}
 		else
@@ -393,11 +393,11 @@ void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
 		StandardDatastoreEntry entry = pending_entries.back();
 		pending_entries.pop_back();
 
-		get_entry_details_request = new GetStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+		get_entry_details_request = new GetStandardDatastoreEntryDetailsRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
 		get_entry_details_request->set_http_429_count(http_429_count);
-		connect(get_entry_details_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkDownloadProgressWindow::handle_received_http_429);
-		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
-		connect(get_entry_details_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDownloadProgressWindow::handle_entry_response);
+		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::received_http_429, this, &DatastoreBulkDownloadProgressWindow::handle_received_http_429);
+		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::status_message, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
+		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::request_complete, this, &DatastoreBulkDownloadProgressWindow::handle_entry_response);
 		get_entry_details_request->send_request();
 	}
 	else

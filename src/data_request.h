@@ -122,10 +122,10 @@ private:
 	std::vector<StandardDatastoreEntry> datastore_entries;
 };
 
-class GetStandardDatastoreEntryRequest : public DataRequest
+class GetStandardDatastoreEntryDetailsRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	GetStandardDatastoreEntryDetailsRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -145,7 +145,7 @@ protected:
 	std::optional<GetStandardDatastoreEntryDetailsResponse> response;
 };
 
-class GetStandardDatastoreEntryAtVersionRequest : public GetStandardDatastoreEntryRequest
+class GetStandardDatastoreEntryAtVersionRequest : public GetStandardDatastoreEntryDetailsRequest
 {
 public:
 	GetStandardDatastoreEntryAtVersionRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version);
