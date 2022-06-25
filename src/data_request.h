@@ -129,7 +129,7 @@ public:
 
 	virtual QString get_title_string() const override;
 
-	const std::optional<GetStandardDatastoreEntryDetailsResponse>& get_response() const { return response; }
+	const std::optional<DatastoreEntryWithDetails>& get_details() const { return details; }
 
 protected:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
@@ -142,7 +142,7 @@ protected:
 	QString scope;
 	QString key_name;
 
-	std::optional<GetStandardDatastoreEntryDetailsResponse> response;
+	std::optional<DatastoreEntryWithDetails> details;
 };
 
 class GetStandardDatastoreEntryAtVersionRequest : public GetStandardDatastoreEntryDetailsRequest

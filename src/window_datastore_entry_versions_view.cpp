@@ -107,10 +107,10 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 				req.send_request();
 				diag.exec();
 
-				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
-				if (opt_response)
+				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+				if (opt_details)
 				{
-					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
+					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
 					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_entry_window->show();
 				}
@@ -177,12 +177,12 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 					req.send_request();
 					diag.exec();
 
-					std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
-					if (opt_response)
+					const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+					if (opt_details)
 					{
-						const std::optional<QString> userids = req.get_response()->get_details().get_userids();
-						const std::optional<QString> attributes = req.get_response()->get_details().get_attributes();
-						const QString body = req.get_response()->get_details().get_data_raw();
+						const std::optional<QString> userids = opt_details->get_userids();
+						const std::optional<QString> attributes = opt_details->get_attributes();
+						const QString body = opt_details->get_data_raw();
 
 						PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 						OperationInProgressDialog diag{ this, &post_req };

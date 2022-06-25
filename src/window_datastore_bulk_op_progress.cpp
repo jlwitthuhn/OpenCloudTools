@@ -272,20 +272,19 @@ void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
 {
 	if (get_entry_request)
 	{
-		const std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = get_entry_request->get_response();
+		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_request->get_details();
 
 		get_entry_request->deleteLater();
 		get_entry_request = nullptr;
 
-		if (opt_response)
+		if (opt_details)
 		{
-			const DatastoreEntryWithDetails details = opt_response->get_details();
-			const QString datastore_name = details.get_datastore_name();
-			const QString scope = details.get_scope();
-			const QString key_name = details.get_key_name();
-			const std::optional<QString> userids = details.get_userids();
-			const std::optional<QString> attributes = details.get_attributes();
-			const QString body = details.get_data_raw();
+			const QString datastore_name = opt_details->get_datastore_name();
+			const QString scope = opt_details->get_scope();
+			const QString key_name = opt_details->get_key_name();
+			const std::optional<QString> userids = opt_details->get_userids();
+			const std::optional<QString> attributes = opt_details->get_attributes();
+			const QString body = opt_details->get_data_raw();
 
 			post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 			post_entry_request->set_http_429_count(http_429_count);
@@ -411,10 +410,10 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 {
 	if (get_entry_details_request)
 	{
-		std::optional<GetStandardDatastoreEntryDetailsResponse> response = get_entry_details_request->get_response();
-		if (response)
+		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_details_request->get_details();
+		if (opt_details)
 		{
-			writer->write(response->get_details());
+			writer->write(*opt_details);
 		}
 		progress.advance_entry_done();
 		get_entry_details_request->deleteLater();
@@ -540,11 +539,11 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
 {
 	if (get_entry_at_version_request)
 	{
-		std::optional<GetStandardDatastoreEntryDetailsResponse> response = get_entry_at_version_request->get_response();
+		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_at_version_request->get_details();
 		get_entry_at_version_request->deleteLater();
 		get_entry_at_version_request = nullptr;
 
-		if (response.has_value() == false)
+		if (opt_details.has_value() == false)
 		{
 			handle_status_message("Failed to fetch version, skipping");
 			entries_errored++;
@@ -553,14 +552,12 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
 			return;
 		}
 
-		const DatastoreEntryWithDetails details = response->get_details();
-
-		const QString datastore_name = details.get_datastore_name();
-		const QString scope = details.get_scope();
-		const QString key_name = details.get_key_name();
-		const std::optional<QString> userids = details.get_userids();
-		const std::optional<QString> attributes = details.get_attributes();
-		const QString body = details.get_data_raw();
+		const QString datastore_name = opt_details->get_datastore_name();
+		const QString scope = opt_details->get_scope();
+		const QString key_name = opt_details->get_key_name();
+		const std::optional<QString> userids = opt_details->get_userids();
+		const std::optional<QString> attributes = opt_details->get_attributes();
+		const QString body = opt_details->get_data_raw();
 
 		post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 		post_entry_request->set_http_429_count(http_429_count);

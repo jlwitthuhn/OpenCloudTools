@@ -306,7 +306,16 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 		return;
 	}
 
-	response = GetStandardDatastoreEntryDetailsResponse::from(universe_id, datastore_name, scope, key_name, *version, userids, attributes, body);
+	std::optional<GetStandardDatastoreEntryDetailsResponse> response = GetStandardDatastoreEntryDetailsResponse::from(universe_id, datastore_name, scope, key_name, *version, userids, attributes, body);
+	if (response)
+	{
+		details = response->get_details();
+	}
+	else
+	{
+		emit status_message(QString{ "Received invalid response, aborting" });
+		return;
+	}
 
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
@@ -314,7 +323,7 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 
 void GetStandardDatastoreEntryDetailsRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	response = std::nullopt;
+	details = std::nullopt;
 
 	emit status_message(QString{ "Complete" });
 	emit request_complete();

@@ -220,16 +220,16 @@ void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 				req.send_request();
 				diag.exec();
 
-				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
-				if (opt_response)
+				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+				if (opt_details)
 				{
-					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details() };
+					ViewDatastoreEntryWindow* const view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
 					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_entry_window->show();
 				}
 				else
 				{
-					QMessageBox* msg_box = new QMessageBox{ this };
+					QMessageBox* const msg_box = new QMessageBox{ this };
 					msg_box->setWindowTitle("Not Found");
 					msg_box->setText("This entry does not exist or has been deleted.");
 					msg_box->exec();
@@ -327,10 +327,10 @@ void ExploreDatastorePanel::pressed_edit_entry()
 				req.send_request();
 				diag.exec();
 
-				std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = req.get_response();
-				if (opt_response)
+				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+				if (opt_details)
 				{
-					ViewDatastoreEntryWindow* edit_entry_window = new ViewDatastoreEntryWindow{ this, api_key, opt_response->get_details(), ViewEditMode::Edit };
+					ViewDatastoreEntryWindow* edit_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details, ViewEditMode::Edit };
 					edit_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					edit_entry_window->show();
 				}
