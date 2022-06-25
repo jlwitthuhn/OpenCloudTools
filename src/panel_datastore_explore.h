@@ -22,6 +22,9 @@ public:
 
 private:
 	void view_entry(const QModelIndex& index);
+	void view_versions(const QModelIndex& index);
+	void edit_entry(const QModelIndex& index);
+	void delete_entry(const QModelIndex& index);
 
 	void handle_datastore_entry_double_clicked(const QModelIndex& index);
 	void handle_search_text_changed();
@@ -35,6 +38,7 @@ private:
 	void pressed_find_all();
 	void pressed_find_prefix();
 	void pressed_right_click_datastore_list(const QPoint& pos);
+	void pressed_right_click_entry_list(const QPoint& pos);
 	void pressed_view_entry();
 	void pressed_view_versions();
 

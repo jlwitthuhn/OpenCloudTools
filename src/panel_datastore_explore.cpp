@@ -135,6 +135,8 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 			}
 
 			datastore_entry_tree = new QTreeView{ right_group_box };
+			datastore_entry_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+			connect(datastore_entry_tree, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_entry_list);
 			connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &ExploreDatastorePanel::handle_datastore_entry_double_clicked);
 			connect(datastore_entry_tree, &QTreeView::pressed, this, &ExploreDatastorePanel::handle_selected_datastore_entry_changed);
 
@@ -239,6 +241,82 @@ void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 	}
 }
 
+void ExploreDatastorePanel::view_versions(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		{
+			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			if (opt_entry)
+			{
+				GetStandardDatastoreEntryVersionsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				OperationInProgressDialog diag{ this, &req };
+				req.send_request();
+				diag.exec();
+
+				if (req.get_versions().size() > 0)
+				{
+					ViewDatastoreEntryVersionsWindow* view_versions_window = new ViewDatastoreEntryVersionsWindow{ this, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key(), req.get_versions() };
+					view_versions_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+					view_versions_window->show();
+				}
+			}
+		}
+	}
+}
+
+void ExploreDatastorePanel::edit_entry(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		{
+			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			if (opt_entry)
+			{
+				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				OperationInProgressDialog diag{ this, &req };
+				req.send_request();
+				diag.exec();
+
+				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+				if (opt_details)
+				{
+					ViewDatastoreEntryWindow* edit_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details, ViewEditMode::Edit };
+					edit_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+					edit_entry_window->show();
+				}
+			}
+		}
+	}
+}
+
+void ExploreDatastorePanel::delete_entry(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		{
+			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			if (opt_entry)
+			{
+				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Delete };
+				bool confirmed = static_cast<bool>(confirm_dialog->exec());
+				if (confirmed == false)
+				{
+					return;
+				}
+
+				DeleteStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				OperationInProgressDialog diag{ this, &req };
+				req.send_request();
+				diag.exec();
+			}
+		}
+	}
+}
+
 void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
 {
 	view_entry(index);
@@ -288,55 +366,12 @@ void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
 
 void ExploreDatastorePanel::pressed_delete_entry()
 {
-	QModelIndex selected_index = datastore_entry_tree->currentIndex();
-	if (selected_index.isValid())
-	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
-		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(selected_index.row());
-			if (opt_entry)
-			{
-				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Delete };
-				bool confirmed = static_cast<bool>(confirm_dialog->exec());
-				if (confirmed == false)
-				{
-					return;
-				}
-
-				DeleteStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
-				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
-				diag.exec();
-			}
-		}
-	}
+	delete_entry(datastore_entry_tree->currentIndex());
 }
 
 void ExploreDatastorePanel::pressed_edit_entry()
 {
-	QModelIndex selected_index = datastore_entry_tree->currentIndex();
-	if (selected_index.isValid())
-	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
-		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(selected_index.row());
-			if (opt_entry)
-			{
-				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
-				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
-				diag.exec();
-
-				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
-				if (opt_details)
-				{
-					ViewDatastoreEntryWindow* edit_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details, ViewEditMode::Edit };
-					edit_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
-					edit_entry_window->show();
-				}
-			}
-		}
-	}
+	edit_entry(datastore_entry_tree->currentIndex());
 }
 
 void ExploreDatastorePanel::pressed_fetch_datastores()
@@ -449,7 +484,7 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 				connect(copy_name, &QAction::triggered, [the_datastore_name]() {
 					QClipboard* clipboard = QGuiApplication::clipboard();
 					clipboard->setText(the_datastore_name);
-					});
+				});
 
 				QAction* hide_unhide_action = nullptr;
 				if (this_universe->hidden_datastores().count(the_datastore_name))
@@ -478,6 +513,58 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 	}
 }
 
+void ExploreDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
+{
+	const QModelIndex the_index = datastore_entry_tree->indexAt(pos);
+	if (the_index.isValid())
+	{
+		DatastoreEntryModel* const the_model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model());
+		if (auto the_entry = the_model->get_entry(the_index.row()))
+		{
+			QString the_key_name = the_entry->get_key();
+			QMenu* context_menu = new QMenu{ datastore_entry_tree };
+			{
+				QAction* copy_action = new QAction{ "Copy name", context_menu };
+				connect(copy_action, &QAction::triggered, [the_key_name]() {
+					QClipboard* clipboard = QGuiApplication::clipboard();
+					clipboard->setText(the_key_name);
+				});
+
+				QAction* view_action = new QAction{ "View entry...", context_menu };
+				connect(view_action, &QAction::triggered, [this, the_index]() {
+					view_entry(the_index);
+				});
+
+				QAction* versions_action = new QAction{ "View versions...", context_menu };
+				connect(versions_action, &QAction::triggered, [this, the_index]() {
+					view_versions(the_index);
+				});
+
+				QAction* edit_action = new QAction{ "Edit entry...", context_menu };
+				connect(edit_action, &QAction::triggered, [this, the_index]() {
+					edit_entry(the_index);
+				});
+
+				QAction* delete_action = new QAction{ "Delete entry", context_menu };
+				connect(delete_action, &QAction::triggered, [this, the_index]() {
+					delete_entry(the_index);
+				});
+
+				context_menu->addAction(copy_action);
+				context_menu->addSeparator();
+				context_menu->addAction(view_action);
+				context_menu->addAction(versions_action);
+				context_menu->addSeparator();
+				context_menu->addAction(edit_action);
+				context_menu->addAction(delete_action);
+			}
+
+			context_menu->exec(datastore_entry_tree->mapToGlobal(pos));
+			context_menu->deleteLater();
+		}
+	}
+}
+
 void ExploreDatastorePanel::pressed_view_entry()
 {
 	view_entry(datastore_entry_tree->currentIndex());
@@ -485,26 +572,5 @@ void ExploreDatastorePanel::pressed_view_entry()
 
 void ExploreDatastorePanel::pressed_view_versions()
 {
-	QModelIndex selected_index = datastore_entry_tree->currentIndex();
-	if (selected_index.isValid())
-	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
-		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(selected_index.row());
-			if (opt_entry)
-			{
-				GetStandardDatastoreEntryVersionsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
-				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
-				diag.exec();
-
-				if (req.get_versions().size() > 0)
-				{
-					ViewDatastoreEntryVersionsWindow* view_versions_window = new ViewDatastoreEntryVersionsWindow{ this, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key(), req.get_versions() };
-					view_versions_window->setWindowModality(Qt::WindowModality::ApplicationModal);
-					view_versions_window->show();
-				}
-			}
-		}
-	}
+	view_versions(datastore_entry_tree->currentIndex());
 }
