@@ -97,24 +97,39 @@ class DatastoreBulkDeleteProgressWindow: public DatastoreBulkOperationProgressWi
 {
 	Q_OBJECT
 public:
-	DatastoreBulkDeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, bool confirm_count_before_delete, bool hide_datastores_when_done);
+	DatastoreBulkDeleteProgressWindow(
+		QWidget* parent,
+		const QString& api_key,
+		long long universe_id,
+		const QString& scope,
+		const QString& key_prefix,
+		std::vector<QString> datastore_names,
+		bool confirm_count_before_delete,
+		bool rewrite_before_delete,
+		bool hide_datastores_when_done
+	);
 
 private:
 	virtual QString progress_label_done() const override;
 	virtual QString progress_label_working(size_t total) const override;
 
 	virtual void send_next_entry_request() override;
-	void handle_entry_response();
+	void handle_get_entry_response();
+	void handle_post_entry_response();
+	void handle_delete_entry_response();
 
 	QString get_summary() const;
 
 	bool confirm_count_before_delete;
+	bool rewrite_before_delete;
 	bool hide_datastores_when_done;
 	bool first_delete_request_sent = false;
 
 	size_t entries_deleted = 0;
 	size_t entries_already_deleted = 0;
 
+	GetStandardDatastoreEntryRequest* get_entry_request = nullptr;
+	PostStandardDatastoreEntryRequest* post_entry_request = nullptr;
 	DeleteStandardDatastoreEntryRequest* delete_entry_request = nullptr;
 };
 

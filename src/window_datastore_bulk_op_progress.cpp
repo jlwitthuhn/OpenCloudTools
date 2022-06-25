@@ -189,9 +189,11 @@ DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(
 	const QString& key_prefix,
 	const std::vector<QString> datastore_names,
 	const bool confirm_count_before_delete ,
+	const bool rewrite_before_delete,
 	const bool hide_datastores_when_done) :
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
 	confirm_count_before_delete{ confirm_count_before_delete },
+	rewrite_before_delete{ rewrite_before_delete },
 	hide_datastores_when_done{ hide_datastores_when_done }
 {
 	setWindowTitle("Delete Progress");
@@ -230,12 +232,24 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 		StandardDatastoreEntry entry = pending_entries.back();
 		pending_entries.pop_back();
 
-		delete_entry_request = new DeleteStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
-		delete_entry_request->set_http_429_count(http_429_count);
-		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_entry_response);
-		delete_entry_request->send_request();
+		if (rewrite_before_delete)
+		{
+			get_entry_request = new GetStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+			get_entry_request->set_http_429_count(http_429_count);
+			connect(get_entry_request, &GetStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+			connect(get_entry_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(get_entry_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_get_entry_response);
+			get_entry_request->send_request();
+		}
+		else
+		{
+			delete_entry_request = new DeleteStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+			delete_entry_request->set_http_429_count(http_429_count);
+			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_delete_entry_response);
+			delete_entry_request->send_request();
+		}
 		first_delete_request_sent = true;
 	}
 	else
@@ -254,24 +268,86 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 	}
 }
 
-void DatastoreBulkDeleteProgressWindow::handle_entry_response()
+void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
+{
+	if (get_entry_request)
+	{
+		const std::optional<GetStandardDatastoreEntryDetailsResponse> opt_response = get_entry_request->get_response();
+
+		get_entry_request->deleteLater();
+		get_entry_request = nullptr;
+
+		if (opt_response)
+		{
+			const DatastoreEntryWithDetails details = opt_response->get_details();
+			const QString datastore_name = details.get_datastore_name();
+			const QString scope = details.get_scope();
+			const QString key_name = details.get_key_name();
+			const std::optional<QString> userids = details.get_userids();
+			const std::optional<QString> attributes = details.get_attributes();
+			const QString body = details.get_data_raw();
+
+			post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
+			post_entry_request->set_http_429_count(http_429_count);
+			connect(post_entry_request, &GetStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+			connect(post_entry_request, &GetStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(post_entry_request, &GetStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_post_entry_response);
+			post_entry_request->send_request();
+		}
+		else
+		{
+			entries_already_deleted++;
+			handle_status_message("Entry was already deleted");
+			progress.advance_entry_done();
+			send_next_entry_request();
+		}
+	}
+}
+
+void DatastoreBulkDeleteProgressWindow::handle_post_entry_response()
+{
+	if (post_entry_request)
+	{
+		const QString datastore_name = post_entry_request->get_datastore_name();
+		const QString scope = post_entry_request->get_scope();
+		const QString key_name = post_entry_request->get_key_name();
+
+		post_entry_request->deleteLater();
+		post_entry_request = nullptr;
+
+		delete_entry_request = new DeleteStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name };
+		delete_entry_request->set_http_429_count(http_429_count);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_delete_entry_response);
+		delete_entry_request->send_request();
+	}
+}
+
+void DatastoreBulkDeleteProgressWindow::handle_delete_entry_response()
 {
 	if (delete_entry_request)
 	{
-		progress.advance_entry_done();
-		if (std::optional<bool> succeeded = delete_entry_request->is_delete_success())
+		const std::optional<bool> success = delete_entry_request->is_delete_success();
+
+		delete_entry_request->deleteLater();
+		delete_entry_request = nullptr;
+
+		if (success)
 		{
-			if (*succeeded)
+			if (*success)
 			{
 				entries_deleted++;
+				handle_status_message("Entry deleted");
 			}
 			else
 			{
 				entries_already_deleted++;
+				handle_status_message("Entry was already deleted");
 			}
 		}
-		delete_entry_request->deleteLater();
-		delete_entry_request = nullptr;
+
+		progress.advance_entry_done();
 		send_next_entry_request();
 	}
 }

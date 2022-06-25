@@ -55,6 +55,7 @@ private:
 	virtual void pressed_submit() override;
 
 	QCheckBox* confirm_count_before_delete_check = nullptr;
+	QCheckBox* rewrite_before_delete_check = nullptr;
 	QCheckBox* hide_after_delete_check = nullptr;
 };
 

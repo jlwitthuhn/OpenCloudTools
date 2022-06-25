@@ -190,6 +190,10 @@ public:
 
 	bool get_success() const { return success; }
 
+	const QString& get_datastore_name() const { return datastore_name; }
+	const QString& get_scope() const { return scope; }
+	const QString& get_key_name() const { return key_name; }
+
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
