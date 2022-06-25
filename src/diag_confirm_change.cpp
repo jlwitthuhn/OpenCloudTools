@@ -34,6 +34,9 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	case ChangeType::BulkDelete:
 		info->setText("This action will delete the contents of the selected datastores. Are you sure you want to do this?");
 		break;
+	case ChangeType::BulkUndelete:
+		info->setText("This action will restore previously deleted data in the selected datastores. Are you sure you want to do this?");
+		break;
 	}
 	info->setWordWrap(true);
 

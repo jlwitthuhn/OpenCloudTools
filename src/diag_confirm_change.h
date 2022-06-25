@@ -13,6 +13,7 @@ enum class ChangeType
 	Update,
 	Delete,
 	BulkDelete,
+	BulkUndelete,
 };
 
 class ConfirmChangeDialog : public QDialog

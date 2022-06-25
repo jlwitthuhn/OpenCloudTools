@@ -163,6 +163,10 @@ public:
 
 	virtual QString get_title_string() const override;
 
+	const QString& get_datastore_name() const { return datastore_name; }
+	const QString& get_scope() const { return scope; }
+	const QString& get_key_name() const { return key_name; }
+
 	const std::vector<StandardDatastoreEntryVersion>& get_versions() const { return versions; }
 
 private:

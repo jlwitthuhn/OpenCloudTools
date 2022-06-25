@@ -13,12 +13,12 @@
 #include "data_request.h"
 #include "user_settings.h"
 
-DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names) :
+DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
 	universe_id{ universe_id },
-	scope{ scope },
-	key_prefix{ key_prefix },
+	find_scope{ find_scope },
+	find_key_prefix{ find_key_prefix },
 	progress{ datastore_names.size() },
 	datastore_names{ datastore_names }
 {
@@ -81,7 +81,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 	{
 		const QString this_datastore_name = datastore_names[current_index];
 
-		get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, scope, key_prefix };
+		get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, find_scope, find_key_prefix };
 		get_entries_request->set_http_429_count(http_429_count);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_message, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
@@ -343,6 +343,177 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 		progress.advance_entry_done();
 		get_entry_details_request->deleteLater();
 		get_entry_details_request = nullptr;
+		send_next_entry_request();
+	}
+}
+
+DatastoreBulkUndeleteProgressWindow::DatastoreBulkUndeleteProgressWindow(
+	QWidget* parent,
+	const QString& api_key,
+	long long universe_id,
+	const QString& scope,
+	const QString& key_prefix,
+	std::vector<QString> datastore_names) :
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names }
+{
+	setWindowTitle("Undelete Progress");
+}
+
+QString DatastoreBulkUndeleteProgressWindow::progress_label_done() const
+{
+	return "Undelete complete";
+}
+
+QString DatastoreBulkUndeleteProgressWindow::progress_label_working(const size_t total) const
+{
+	return QString{ "Undeleting entry %1/%2..." }.arg(progress.get_current_entry_index() + 1).arg(total);
+}
+
+void DatastoreBulkUndeleteProgressWindow::send_next_entry_request()
+{
+	if (pending_entries.size() > 0)
+	{
+		StandardDatastoreEntry entry = pending_entries.back();
+		pending_entries.pop_back();
+
+		get_versions_request = new GetStandardDatastoreEntryVersionsRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
+		get_versions_request->set_http_429_count(http_429_count);
+		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
+		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::status_message, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
+		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::request_complete, this, &DatastoreBulkUndeleteProgressWindow::handle_get_versions_response);
+		get_versions_request->send_request();
+	}
+	else
+	{
+		close_button->setText("Close");
+		handle_status_message("Undelete complete");
+		QString summary = QString{ "%1 entries restored, %2 already existed, %3 could not be restored" }.arg(entries_restored).arg(entries_not_deleted).arg(entries_no_old_version);
+		if (entries_errored > 0)
+		{
+			summary = summary + QString{ ", %1 errors" }.arg(entries_errored);
+		}
+		handle_status_message(summary);
+	}
+}
+
+void DatastoreBulkUndeleteProgressWindow::handle_get_versions_response()
+{
+	if (get_versions_request)
+	{
+		std::vector<StandardDatastoreEntryVersion> versions = get_versions_request->get_versions();
+		const QString datastore_name = get_versions_request->get_datastore_name();
+		const QString scope = get_versions_request->get_scope();
+		const QString key_name = get_versions_request->get_key_name();
+		get_versions_request->deleteLater();
+		get_versions_request = nullptr;
+
+		std::sort(versions.begin(), versions.end(),
+			[](const StandardDatastoreEntryVersion& a, const StandardDatastoreEntryVersion& b)
+			{
+				return b.get_created_time() < a.get_created_time();
+			}
+		);
+
+		if (versions.size() == 0)
+		{
+			handle_status_message("No versions found, skipping");
+			entries_errored++;
+			progress.advance_entry_done();
+			send_next_entry_request();
+			return;
+		}
+
+		if (versions.front().get_deleted() == false)
+		{
+			handle_status_message("Not deleted, skipping");
+			entries_not_deleted++;
+			progress.advance_entry_done();
+			send_next_entry_request();
+			return;
+		}
+
+		std::optional<StandardDatastoreEntryVersion> target_version;
+		for (const StandardDatastoreEntryVersion& this_version : versions)
+		{
+			if (this_version.get_deleted() == false)
+			{
+				target_version = this_version;
+				break;
+			}
+		}
+
+		if (target_version.has_value() == false)
+		{
+			handle_status_message("No old version available, skipping");
+			entries_no_old_version++;
+			progress.advance_entry_done();
+			send_next_entry_request();
+			return;
+		}
+
+		get_entry_at_version_request = new GetStandardDatastoreEntryAtVersionRequest{ this, api_key, universe_id, datastore_name, scope, key_name, target_version->get_version() };
+		get_entry_at_version_request->set_http_429_count(http_429_count);
+		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
+		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::status_message, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
+		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::request_complete, this, &DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response);
+		get_entry_at_version_request->send_request();
+	}
+}
+
+void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
+{
+	if (get_entry_at_version_request)
+	{
+		std::optional<GetStandardDatastoreEntryDetailsResponse> response = get_entry_at_version_request->get_response();
+		get_entry_at_version_request->deleteLater();
+		get_entry_at_version_request = nullptr;
+
+		if (response.has_value() == false)
+		{
+			handle_status_message("Failed to fetch version, skipping");
+			entries_errored++;
+			progress.advance_entry_done();
+			send_next_entry_request();
+			return;
+		}
+
+		const DatastoreEntryWithDetails details = response->get_details();
+
+		const QString datastore_name = details.get_datastore_name();
+		const QString scope = details.get_scope();
+		const QString key_name = details.get_key_name();
+		const std::optional<QString> userids = details.get_userids();
+		const std::optional<QString> attributes = details.get_attributes();
+		const QString body = details.get_data_raw();
+
+		post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
+		post_entry_request->set_http_429_count(http_429_count);
+		connect(post_entry_request, &PostStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
+		connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_message, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
+		connect(post_entry_request, &PostStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkUndeleteProgressWindow::handle_post_entry_response);
+		post_entry_request->send_request();
+	}
+}
+
+void DatastoreBulkUndeleteProgressWindow::handle_post_entry_response()
+{
+	if (post_entry_request)
+	{
+		const bool success = post_entry_request->get_success();
+		post_entry_request->deleteLater();
+		post_entry_request = nullptr;
+
+		if (success)
+		{
+			handle_status_message("Restore complete");
+			entries_restored++;
+		}
+		else
+		{
+			handle_status_message("Restore failed");
+			entries_errored++;
+		}
+		progress.advance_entry_done();
 		send_next_entry_request();
 	}
 }

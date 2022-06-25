@@ -35,7 +35,6 @@ protected:
 	QVBoxLayout* right_bar_layout = nullptr;
 
 	QListWidget* datastore_list = nullptr;
-	QCheckBox* confirm_count_before_delete_check = nullptr;
 	QCheckBox* datastore_list_show_hidden_check = nullptr;
 
 	QCheckBox* filter_enabled_check = nullptr;
@@ -55,6 +54,7 @@ public:
 private:
 	virtual void pressed_submit() override;
 
+	QCheckBox* confirm_count_before_delete_check = nullptr;
 	QCheckBox* hide_after_delete_check = nullptr;
 };
 
@@ -63,6 +63,16 @@ class DatastoreBulkDownloadWindow : public DatastoreBulkOperationWindow
 	Q_OBJECT
 public:
 	DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+
+private:
+	virtual void pressed_submit() override;
+};
+
+class DatastoreBulkUndeleteWindow : public DatastoreBulkOperationWindow
+{
+	Q_OBJECT
+public:
+	DatastoreBulkUndeleteWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
 
 private:
 	virtual void pressed_submit() override;

@@ -20,19 +20,21 @@ class QTextEdit;
 
 class DeleteStandardDatastoreEntryRequest;
 class GetStandardDatastoreEntriesRequest;
+class GetStandardDatastoreEntryAtVersionRequest;
 class GetStandardDatastoreEntryRequest;
+class GetStandardDatastoreEntryVersionsRequest;
+class PostStandardDatastoreEntryRequest;
 
 class DatastoreBulkOperationProgressWindow : public QWidget
 {
 	Q_OBJECT
 protected:
-	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names);
+	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names);
 
 	virtual QString progress_label_done() const = 0;
 	virtual QString progress_label_working(size_t total) const = 0;
 
 	virtual void send_next_entry_request() = 0;
-	virtual void handle_entry_response() = 0;
 
 	void update_ui();
 
@@ -71,8 +73,8 @@ protected:
 
 	QString api_key;
 	long long universe_id;
-	QString scope;
-	QString key_prefix;
+	QString find_scope;
+	QString find_key_prefix;
 
 	size_t http_429_count = 0;
 
@@ -102,7 +104,7 @@ private:
 	virtual QString progress_label_working(size_t total) const override;
 
 	virtual void send_next_entry_request() override;
-	virtual void handle_entry_response() override;
+	void handle_entry_response();
 
 	QString get_summary() const;
 
@@ -127,9 +129,34 @@ private:
 	virtual QString progress_label_working(size_t total) const override;
 
 	virtual void send_next_entry_request() override;
-	virtual void handle_entry_response() override;
+	void handle_entry_response();
 
 	std::unique_ptr<SqliteDatastoreWriter> writer;
 
 	GetStandardDatastoreEntryRequest* get_entry_details_request = nullptr;
+};
+
+class DatastoreBulkUndeleteProgressWindow : public DatastoreBulkOperationProgressWindow
+{
+	Q_OBJECT
+public:
+	DatastoreBulkUndeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names);
+
+private:
+	virtual QString progress_label_done() const override;
+	virtual QString progress_label_working(size_t total) const override;
+
+	virtual void send_next_entry_request() override;
+	void handle_get_versions_response();
+	void handle_get_entry_version_response();
+	void handle_post_entry_response();
+
+	GetStandardDatastoreEntryVersionsRequest* get_versions_request = nullptr;
+	GetStandardDatastoreEntryAtVersionRequest* get_entry_at_version_request = nullptr;
+	PostStandardDatastoreEntryRequest* post_entry_request = nullptr;
+
+	size_t entries_restored = 0;
+	size_t entries_not_deleted = 0;
+	size_t entries_no_old_version = 0;
+	size_t entries_errored = 0;
 };

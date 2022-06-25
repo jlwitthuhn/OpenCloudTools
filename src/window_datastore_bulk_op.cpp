@@ -295,3 +295,39 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 		msg_box->exec();
 	}
 }
+
+DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
+	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
+{
+	setWindowTitle("Undelete");
+	submit_button->setText("Undelete");
+	right_bar_layout->addStretch();
+
+	pressed_select_none();
+}
+
+void DatastoreBulkUndeleteWindow::pressed_submit()
+{
+	const std::vector<QString> selected_datastores = get_selected_datastores();
+	if (selected_datastores.size() > 0)
+	{
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkUndelete };
+		bool confirmed = static_cast<bool>(confirm_dialog->exec());
+		if (confirmed)
+		{
+			const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
+			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
+			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores };
+			close();
+			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+			progress_window->show();
+		}
+	}
+	else
+	{
+		QMessageBox* msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Error");
+		msg_box->setText("You must select at least one datastore.");
+		msg_box->exec();
+	}
+}
