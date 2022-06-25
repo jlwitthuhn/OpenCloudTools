@@ -1,4 +1,6 @@
 [
+	# Clang
+	{ include: [ "<ext/alloc_traits.h>", private, "<vector>", public ] },
 	# Macros
 	{ symbol: [ "emit",     "private", "<QObject>", "public" ] },
 	{ symbol: [ "signals",  "private", "<QObject>", "public" ] },
@@ -36,6 +38,7 @@
 	{ symbol: [ "QNetworkRequest",       "private", "<QNetworkRequest>",       "public" ] },
 	# Qt Gui
 	{ symbol: [ "QClipboard",            "private", "<QClipboard>",            "public" ] },
+	{ symbol: [ "QDesktopServices",      "private", "<QDesktopServices>",      "public" ] },
 	{ symbol: [ "QGuiApplication",       "private", "<QGuiApplication>",       "public" ] },
 	# Qt Widgets
 	{ symbol: [ "QAction",               "private", "<QAction>",               "public" ] },
@@ -67,6 +70,7 @@
 	{ symbol: [ "QVBoxLayout",           "private", "<QVBoxLayout>",           "public" ] },
 	{ symbol: [ "QWidget",               "private", "<QWidget>",               "public" ] },
 	# Qt Headers
+	{ include: [ "@[\"<](QtCore/)?qtcoreexports\\.h[\">]",            "private", "<QtGlobal>",              "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qabstractitemmodel\\.h[\">]",       "private", "<QAbstractItemModel>",    "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qabstractitemmodel\\.h[\">]",       "private", "<QAbstractTableModel>",   "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qbytearray\\.h[\">]",               "private", "<QByteArray>",            "public" ] },
@@ -91,6 +95,7 @@
 	{ include: [ "@[\"<](QtCore/)?qurl\\.h[\">]",                     "private", "<QUrl>",                  "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qvariant\\.h[\">]",                 "private", "<QVariant>",              "public" ] },
 	{ include: [ "@[\"<](QtGui/)?qclipboard\\.h[\">]",                "private", "<QClipboard>",            "public" ] },
+	{ include: [ "@[\"<](QtGui/)?qdesktopservices\\.h[\">]",          "private", "<QDesktopServices>",      "public" ] },
 	{ include: [ "@[\"<](QtGui/)?qguiapplication\\.h[\">]",           "private", "<QGuiApplication>",       "public" ] },
 	{ include: [ "@[\"<](QtNetwork/)?qnetworkaccessmanager\\.h[\">]", "private", "<QNetworkAccessManager>", "public" ] },
 	{ include: [ "@[\"<](QtNetwork/)?qnetworkreply\\.h[\">]",         "private", "<QNetworkReply>",         "public" ] },
