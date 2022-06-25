@@ -382,6 +382,11 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 	}
 }
 
+QString GetStandardDatastoreEntryVersionsRequest::get_send_message() const
+{
+	return QString{ "Fetching versions for '%1'..." }.arg(key_name);
+}
+
 PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body)
 	: DataRequest{ parent, api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, userids{ userids }, attributes{ attributes }
 {
