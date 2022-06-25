@@ -9,6 +9,7 @@
 #include <Qt>
 #include <QAction>
 #include <QComboBox>
+#include <QDesktopServices>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QMargins>
@@ -17,6 +18,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTabWidget>
+#include <QUrl>
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -40,26 +42,43 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 	QMenuBar* menu_bar = new QMenuBar{ this };
 	{
-		QAction* action_change_key = new QAction{ "Change API &key", menu_bar };
-		connect(action_change_key, &QAction::triggered, this, &MyMainWindow::pressed_change_key);
-
-		QAction* action_exit = new QAction{ "E&xit", menu_bar };
-		connect(action_exit, &QAction::triggered, this, &MyMainWindow::close);
 
 		QMenu* file_menu = new QMenu{ "&File", menu_bar };
-		file_menu->addAction(action_change_key);
-		file_menu->addSeparator();
-		file_menu->addAction(action_exit);
-		menu_bar->addMenu(file_menu);
+		{
+			QAction* action_change_key = new QAction{ "Change API &key", menu_bar };
+			connect(action_change_key, &QAction::triggered, this, &MyMainWindow::pressed_change_key);
 
-		action_toggle_autoclose = new QAction{ "&Automatically close progress window" };
-		action_toggle_autoclose->setCheckable(true);
-		action_toggle_autoclose->setChecked(UserSettings::get()->get_autoclose_progress_window());
-		connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
+			QAction* action_exit = new QAction{ "E&xit", menu_bar };
+			connect(action_exit, &QAction::triggered, this, &MyMainWindow::close);
+
+			file_menu->addAction(action_change_key);
+			file_menu->addSeparator();
+			file_menu->addAction(action_exit);
+		}
 
 		QMenu* preferences_menu = new QMenu{ "&Preferences", menu_bar };
-		preferences_menu->addAction(action_toggle_autoclose);
+		{
+			action_toggle_autoclose = new QAction{ "&Automatically close progress window", menu_bar };
+			action_toggle_autoclose->setCheckable(true);
+			action_toggle_autoclose->setChecked(UserSettings::get()->get_autoclose_progress_window());
+			connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
+
+			preferences_menu->addAction(action_toggle_autoclose);
+		}
+
+		QMenu* about_menu = new QMenu{ "&About", menu_bar };
+		{
+			QAction* action_github = new QAction{ "Visit repository on Github", menu_bar };
+			connect(action_github, &QAction::triggered, []() {
+				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
+			});
+
+			about_menu->addAction(action_github);
+		}
+
+		menu_bar->addMenu(file_menu);
 		menu_bar->addMenu(preferences_menu);
+		menu_bar->addMenu(about_menu);
 	}
 	setMenuBar(menu_bar);
 
