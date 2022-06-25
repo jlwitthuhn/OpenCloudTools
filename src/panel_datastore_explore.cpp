@@ -480,34 +480,37 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 			{
 				QString the_datastore_name = the_item->text();
 
-				QAction* copy_name = new QAction{ "Copy name", select_datastore_list };
-				connect(copy_name, &QAction::triggered, [the_datastore_name]() {
-					QClipboard* clipboard = QGuiApplication::clipboard();
-					clipboard->setText(the_datastore_name);
-				});
-
-				QAction* hide_unhide_action = nullptr;
-				if (this_universe->hidden_datastores().count(the_datastore_name))
-				{
-					hide_unhide_action = new QAction{ "Unhide datastore", select_datastore_list };
-					connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-						UserSettings::get()->remove_hidden_datastore(the_datastore_name);
-					});
-				}
-				else
-				{
-					hide_unhide_action = new QAction{ "Hide datastore", select_datastore_list };
-					connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-						UserSettings::get()->add_hidden_datastore(the_datastore_name);
-					});
-				}
-
 				QMenu* context_menu = new QMenu{ select_datastore_list };
-				context_menu->addAction(copy_name);
-				context_menu->addSeparator();
-				context_menu->addAction(hide_unhide_action);
+				{
+					QAction* copy_name = new QAction{ "Copy name", context_menu };
+					connect(copy_name, &QAction::triggered, [the_datastore_name]() {
+						QClipboard* clipboard = QGuiApplication::clipboard();
+						clipboard->setText(the_datastore_name);
+						});
+
+					QAction* hide_unhide_action = nullptr;
+					if (this_universe->hidden_datastores().count(the_datastore_name))
+					{
+						hide_unhide_action = new QAction{ "Unhide datastore", context_menu };
+						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
+							UserSettings::get()->remove_hidden_datastore(the_datastore_name);
+						});
+					}
+					else
+					{
+						hide_unhide_action = new QAction{ "Hide datastore", context_menu };
+						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
+							UserSettings::get()->add_hidden_datastore(the_datastore_name);
+						});
+					}
+
+					context_menu->addAction(copy_name);
+					context_menu->addSeparator();
+					context_menu->addAction(hide_unhide_action);
+				}
 
 				context_menu->exec(select_datastore_list->mapToGlobal(pos));
+				context_menu->deleteLater();
 			}
 		}
 	}

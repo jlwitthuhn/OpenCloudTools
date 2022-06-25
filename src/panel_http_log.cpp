@@ -65,16 +65,19 @@ void HttpLogPanel::pressed_right_click(const QPoint& pos)
 		{
 			if ( std::optional<HttpLogEntry> log_entry = log_model->get_entry( the_index.row() ) )
 			{
-				QAction* copy_url = new QAction{ "Copy URL", tree_view };
-				connect(copy_url, &QAction::triggered, [log_entry]() {
-					QClipboard* clipboard = QGuiApplication::clipboard();
-					clipboard->setText(log_entry->url());
-				});
-
 				QMenu* context_menu = new QMenu{ tree_view };
-				context_menu->addAction(copy_url);
+				{
+					QAction* copy_url = new QAction{ "Copy URL", context_menu };
+					connect(copy_url, &QAction::triggered, [log_entry]() {
+						QClipboard* clipboard = QGuiApplication::clipboard();
+						clipboard->setText(log_entry->url());
+					});
+
+					context_menu->addAction(copy_url);
+				}
 
 				context_menu->exec(tree_view->mapToGlobal(pos));
+				context_menu->deleteLater();
 			}
 		}
 	}
