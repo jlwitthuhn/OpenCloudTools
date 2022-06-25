@@ -13,16 +13,24 @@ std::string get_build_date()
 	return result;
 }
 
+#if !defined(_MSC_FULL_VER) && !defined(__clang_version__) && !defined(__GNUC__)
 [[deprecated]]
 static std::string get_default_string()
 {
 	return "Unknown Compiler";
 }
+#endif
 
 std::string get_cxx_compiler_version_string()
 {
-#ifdef _MSC_FULL_VER
+#if defined(_MSC_FULL_VER)
 	return "MSVC " + std::to_string(_MSC_FULL_VER);
+#elif defined(__clang_version__) && defined(__apple_build_version__)
+	return std::string{ "Apple Clang " } + __clang_version__;
+#elif defined(__clang_version__)
+	return std::string{ "Clang " } + __clang_version__;
+#elif defined(__GNUC__)
+	return std::string{ "GCC " } + std::to_string(__GNUC__) + '.' + std::to_string(__GNUC_MINOR__) + '.' + std::to_string(__GNUC_PATCHLEVEL__);
 #else
 	return get_default_string();
 #endif
