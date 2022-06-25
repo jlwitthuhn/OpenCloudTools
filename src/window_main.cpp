@@ -23,6 +23,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include <sqlite3.h>
+
 #include "api_key.h"
 #include "http_wrangler.h"
 #include "panel_bulk_data.h"
@@ -73,12 +75,21 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
 			});
 
-			const QString label_qt = QString{"Qt %1"}.arg(qVersion());
-			QAction* action_qt = new QAction{ label_qt, menu_bar };
+			QMenu* about_libraries_menu = new QMenu{ "Third-party libraries", about_menu };
+			{
+				const QString label_qt = QString{ "Qt %1" }.arg(qVersion());
+				QAction* action_qt = new QAction{ label_qt, menu_bar };
+
+				const QString label_sqlite = QString{ "SQLite %1" }.arg(sqlite3_libversion());
+				QAction* action_sqlite = new QAction{ label_sqlite, menu_bar };
+
+				about_libraries_menu->addAction(action_qt);
+				about_libraries_menu->addAction(action_sqlite);
+			}
 
 			about_menu->addAction(action_github);
 			about_menu->addSeparator();
-			about_menu->addAction(action_qt);
+			about_menu->addMenu(about_libraries_menu);
 		}
 
 		menu_bar->addMenu(file_menu);
