@@ -135,10 +135,10 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 			}
 
 			datastore_entry_tree = new QTreeView{ right_group_box };
+			datastore_entry_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
 			datastore_entry_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 			connect(datastore_entry_tree, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_entry_list);
 			connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &ExploreDatastorePanel::handle_datastore_entry_double_clicked);
-			connect(datastore_entry_tree, &QTreeView::pressed, this, &ExploreDatastorePanel::handle_selected_datastore_entry_changed);
 
 			QWidget* right_read_buttons = new QWidget{ right_group_box };
 			{
@@ -194,6 +194,8 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QHBoxLayout* layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
+	set_datastore_entry_model(nullptr);
+
 	handle_search_text_changed();
 	handle_selected_datastore_changed();
 	handle_selected_datastore_entry_changed();
@@ -204,7 +206,34 @@ void ExploreDatastorePanel::selected_universe_changed()
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(UserSettings::get()->get_selected_universe().has_value());
 	handle_search_text_changed();
-	datastore_entry_tree->setModel(nullptr);
+	set_datastore_entry_model(nullptr);
+}
+
+QModelIndex ExploreDatastorePanel::get_selected_entry_single_index() const
+{
+	if (const QItemSelectionModel* select_model = datastore_entry_tree->selectionModel())
+	{
+		if (select_model->selectedRows().count() == 1)
+		{
+			return select_model->selectedRows().front();
+		}
+	}
+
+	return QModelIndex{};
+}
+
+void ExploreDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* const entry_model)
+{
+	if (entry_model)
+	{
+		datastore_entry_tree->setModel(entry_model);
+	}
+	else
+	{
+		datastore_entry_tree->setModel(new DatastoreEntryModel{ datastore_entry_tree, std::vector<StandardDatastoreEntry>{} });
+	}
+	datastore_entry_tree->setColumnWidth(0, 280);
+	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_entry_changed);
 	handle_selected_datastore_entry_changed();
 }
 
@@ -342,11 +371,27 @@ void ExploreDatastorePanel::handle_selected_datastore_changed()
 
 void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
 {
-	const bool item_selected = datastore_entry_tree->model() != nullptr && datastore_entry_tree->currentIndex().isValid();
-	view_entry_button->setEnabled(item_selected);
-	view_versions_button->setEnabled(item_selected);
-	edit_entry_button->setEnabled(item_selected);
-	delete_entry_button->setEnabled(item_selected);
+	size_t count = 0;
+	bool single_selected = false;
+	bool multi_selected = false;
+	if (const QItemSelectionModel* select_model = datastore_entry_tree->selectionModel())
+	{
+		count = select_model->selectedRows().count();
+		single_selected = count == 1;
+		multi_selected = count > 1;
+	}
+	view_entry_button->setEnabled(single_selected);
+	view_versions_button->setEnabled(single_selected);
+	edit_entry_button->setEnabled(single_selected);
+	delete_entry_button->setEnabled(single_selected || multi_selected);
+	if (multi_selected)
+	{
+		delete_entry_button->setText(QString{"Delete %1 entries"}.arg(count));
+	}
+	else
+	{
+		delete_entry_button->setText("Delete entry");
+	}
 }
 
 void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
@@ -366,12 +411,12 @@ void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
 
 void ExploreDatastorePanel::pressed_delete_entry()
 {
-	delete_entry(datastore_entry_tree->currentIndex());
+	delete_entry(get_selected_entry_single_index());
 }
 
 void ExploreDatastorePanel::pressed_edit_entry()
 {
-	edit_entry(datastore_entry_tree->currentIndex());
+	edit_entry(get_selected_entry_single_index());
 }
 
 void ExploreDatastorePanel::pressed_fetch_datastores()
@@ -423,10 +468,7 @@ void ExploreDatastorePanel::pressed_find_all()
 			diag.exec();
 
 			DatastoreEntryModel* datastore_model = new DatastoreEntryModel{ datastore_entry_tree, req.get_datastore_entries() };
-			datastore_entry_tree->setModel(datastore_model);
-			datastore_entry_tree->setColumnWidth(0, 280);
-
-			handle_selected_datastore_entry_changed();
+			set_datastore_entry_model(datastore_model);
 		}
 	}
 }
@@ -460,10 +502,7 @@ void ExploreDatastorePanel::pressed_find_prefix()
 			diag.exec();
 
 			DatastoreEntryModel* datastore_model = new DatastoreEntryModel{ datastore_entry_tree, req.get_datastore_entries() };
-			datastore_entry_tree->setModel(datastore_model);
-			datastore_entry_tree->setColumnWidth(0, 280);
-
-			handle_selected_datastore_entry_changed();
+			set_datastore_entry_model(datastore_model);
 		}
 	}
 }
@@ -570,10 +609,10 @@ void ExploreDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
 
 void ExploreDatastorePanel::pressed_view_entry()
 {
-	view_entry(datastore_entry_tree->currentIndex());
+	view_entry(get_selected_entry_single_index());
 }
 
 void ExploreDatastorePanel::pressed_view_versions()
 {
-	view_versions(datastore_entry_tree->currentIndex());
+	view_versions(get_selected_entry_single_index());
 }

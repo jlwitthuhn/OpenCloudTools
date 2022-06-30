@@ -1,16 +1,22 @@
 #pragma once
 
+#include <vector>
+
+#include <QModelIndex>
 #include <QObject>
 #include <QString>
 #include <QWidget>
 
+#include "api_response.h"
+
 class QCheckBox;
 class QLineEdit;
 class QListWidget;
-class QModelIndex;
 class QPoint;
 class QPushButton;
 class QTreeView;
+
+class DatastoreEntryModel;
 
 class ExploreDatastorePanel : public QWidget
 {
@@ -21,6 +27,11 @@ public:
 	void selected_universe_changed();
 
 private:
+	std::vector<StandardDatastoreEntry> get_selected_entries();
+	QModelIndex get_selected_entry_single_index() const;
+
+	void set_datastore_entry_model(DatastoreEntryModel* entry_model);
+
 	void view_entry(const QModelIndex& index);
 	void view_versions(const QModelIndex& index);
 	void edit_entry(const QModelIndex& index);
