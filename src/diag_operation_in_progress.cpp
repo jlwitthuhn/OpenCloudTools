@@ -6,6 +6,7 @@
 #include <Qt>
 #include <QCheckBox>
 #include <QLabel>
+#include <QProgressBar>
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
@@ -21,6 +22,11 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	setWindowTitle("Progress");
 
 	QLabel* top_label = new QLabel{ request->get_title_string(), this};
+
+	progress_bar = new QProgressBar{ this };
+	progress_bar->setMaximum(0);
+	progress_bar->setTextVisible(false);
+	progress_bar->setValue(0);
 
 	text_box = new QTextEdit{ this };
 	text_box->setReadOnly(true);
@@ -39,6 +45,7 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(top_label);
+	layout->addWidget(progress_bar);
 	layout->addWidget(text_box);
 	layout->addWidget(close_automatically_box);
 	layout->addWidget(close_button);
@@ -58,6 +65,8 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 
 void OperationInProgressDialog::handle_request_complete()
 {
+	progress_bar->setMaximum(1);
+	progress_bar->setValue(1);
 	close_button->setText("Close");
 	if (close_automatically_box->isChecked())
 	{

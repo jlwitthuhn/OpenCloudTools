@@ -4,11 +4,13 @@
 #include <QObject>
 #include <QString>
 
-class DataRequest;
 class QCheckBox;
+class QProgressBar;
 class QPushButton;
 class QTextEdit;
 class QWidget;
+
+class DataRequest;
 
 class OperationInProgressDialog : public QDialog
 {
@@ -22,6 +24,8 @@ private:
 	void handle_checkbox_changed();
 
 	DataRequest* request = nullptr;
+
+	QProgressBar* progress_bar = nullptr;
 	QTextEdit* text_box = nullptr;
 	QCheckBox* close_automatically_box = nullptr;
 	QPushButton* close_button = nullptr;
