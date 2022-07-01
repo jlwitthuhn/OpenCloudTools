@@ -209,6 +209,34 @@ void ExploreDatastorePanel::selected_universe_changed()
 	set_datastore_entry_model(nullptr);
 }
 
+std::vector<StandardDatastoreEntry> ExploreDatastorePanel::get_selected_entries() const
+{
+	if ( DatastoreEntryModel* const entry_model = dynamic_cast<DatastoreEntryModel*>( datastore_entry_tree->model() ) )
+	{
+		if (QItemSelectionModel* const select_model = datastore_entry_tree->selectionModel())
+		{
+			if (select_model->selectedRows().count() > 0)
+			{
+				std::vector<StandardDatastoreEntry> result;
+				QList<QModelIndex> indices{ select_model->selectedRows() };
+				for (const QModelIndex& this_index : indices)
+				{
+					if (this_index.isValid())
+					{
+						if ( std::optional<StandardDatastoreEntry> opt_entry = entry_model->get_entry( this_index.row() ) )
+						{
+							result.push_back(*opt_entry);
+						}
+					}
+				}
+				return result;
+			}
+		}
+	}
+
+	return std::vector<StandardDatastoreEntry>{};
+}
+
 QModelIndex ExploreDatastorePanel::get_selected_entry_single_index() const
 {
 	if (const QItemSelectionModel* select_model = datastore_entry_tree->selectionModel())
@@ -342,6 +370,20 @@ void ExploreDatastorePanel::delete_entry(const QModelIndex& index)
 	}
 }
 
+
+void ExploreDatastorePanel::delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list)
+{
+	if (entry_list.size() > 1)
+	{
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::MultiDelete };
+		bool confirmed = static_cast<bool>(confirm_dialog->exec());
+		if (confirmed == false)
+		{
+			return;
+		}
+	}
+}
+
 void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
 {
 	view_entry(index);
@@ -407,7 +449,17 @@ void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
 
 void ExploreDatastorePanel::pressed_delete_entry()
 {
-	delete_entry(get_selected_entry_single_index());
+	QModelIndex single_entry = get_selected_entry_single_index();
+	if (single_entry.isValid())
+	{
+		delete_entry(single_entry);
+	}
+
+	std::vector<StandardDatastoreEntry> entry_list = get_selected_entries();
+	if (entry_list.size() > 1)
+	{
+		delete_entry_list(entry_list);
+	}
 }
 
 void ExploreDatastorePanel::pressed_edit_entry()

@@ -31,6 +31,9 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	case ChangeType::Delete:
 		info->setText("This action will delete the selected entry. Are you sure you want to do this?");
 		break;
+	case ChangeType::MultiDelete:
+		info->setText("This action will delete all of the selected entries. Are you sure you want to do this?");
+		break;
 	case ChangeType::BulkDelete:
 		info->setText("This action will delete the contents of the selected datastores. Are you sure you want to do this?");
 		break;

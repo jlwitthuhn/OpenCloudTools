@@ -27,7 +27,7 @@ public:
 	void selected_universe_changed();
 
 private:
-	std::vector<StandardDatastoreEntry> get_selected_entries();
+	std::vector<StandardDatastoreEntry> get_selected_entries() const;
 	QModelIndex get_selected_entry_single_index() const;
 
 	void set_datastore_entry_model(DatastoreEntryModel* entry_model);
@@ -36,6 +36,7 @@ private:
 	void view_versions(const QModelIndex& index);
 	void edit_entry(const QModelIndex& index);
 	void delete_entry(const QModelIndex& index);
+	void delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list);
 
 	void handle_datastore_entry_double_clicked(const QModelIndex& index);
 	void handle_search_text_changed();
