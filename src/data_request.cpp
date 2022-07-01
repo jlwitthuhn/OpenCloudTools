@@ -11,6 +11,7 @@
 #include "api_response.h"
 #include "http_req_builder.h"
 #include "http_wrangler.h"
+#include "roblox_time.h"
 #include "util_enum.h"
 
 void DataRequest::send_request(std::optional<QString> cursor)
@@ -54,6 +55,7 @@ void DataRequest::handle_reply_ready()
 	QString status = pending_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 	QString reply_body = pending_reply->readAll();
 	QList<QNetworkReply::RawHeaderPair> headers = pending_reply->rawHeaderPairs();
+	RobloxTime::update_time_from_headers(headers);
 
 	pending_reply->deleteLater();
 	pending_reply = nullptr;

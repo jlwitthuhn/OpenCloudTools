@@ -54,6 +54,8 @@ add_executable(OpenCloudTools
 	./src/panel_http_log.h
 	./src/panel_universe_prefs.cpp
 	./src/panel_universe_prefs.h
+	./src/roblox_time.cpp
+	./src/roblox_time.h
 	./src/sqlite_wrapper.cpp
 	./src/sqlite_wrapper.h
 	./src/tooltip_text.h
