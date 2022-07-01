@@ -381,6 +381,20 @@ void ExploreDatastorePanel::delete_entry_list(const std::vector<StandardDatastor
 		{
 			return;
 		}
+
+		std::vector<std::shared_ptr<DataRequest>> shared_request_list;
+		std::vector<DataRequest*> request_list;
+		for (const StandardDatastoreEntry& this_entry : entry_list)
+		{
+			std::shared_ptr<DeleteStandardDatastoreEntryRequest> this_request =
+				std::make_shared<DeleteStandardDatastoreEntryRequest>(nullptr, api_key, this_entry.get_universe_id(), this_entry.get_datastore_name(), this_entry.get_scope(), this_entry.get_key());
+
+			shared_request_list.push_back(this_request);
+			request_list.push_back(this_request.get());
+		}
+
+		OperationInProgressDialog diag{ this, request_list };
+		diag.exec();
 	}
 }
 
