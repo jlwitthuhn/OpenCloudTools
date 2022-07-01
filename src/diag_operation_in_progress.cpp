@@ -63,6 +63,12 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	handle_checkbox_changed();
 }
 
+int OperationInProgressDialog::exec()
+{
+	request->send_request();
+	return QDialog::exec();
+}
+
 void OperationInProgressDialog::handle_request_complete()
 {
 	progress_bar->setMaximum(1);

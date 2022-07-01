@@ -98,7 +98,6 @@ void BulkDataPanel::pressed_delete()
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
-		req.send_request();
 		diag.exec();
 
 		const std::vector<QString> datastores = req.get_datastore_names();
@@ -119,7 +118,6 @@ void BulkDataPanel::pressed_download()
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
-		req.send_request();
 		diag.exec();
 
 		const std::vector<QString> datastores = req.get_datastore_names();
@@ -140,7 +138,6 @@ void BulkDataPanel::pressed_undelete()
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
-		req.send_request();
 		diag.exec();
 
 		const std::vector<QString> datastores = req.get_datastore_names();

@@ -104,7 +104,6 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 
 				GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
 				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
 				diag.exec();
 
 				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
@@ -140,7 +139,6 @@ void ViewDatastoreEntryVersionsWindow::pressed_refresh()
 
 	GetStandardDatastoreEntryVersionsRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name };
 	OperationInProgressDialog diag{ this, &req };
-	req.send_request();
 	diag.exec();
 
 	if (req.get_versions().size() > 0)
@@ -174,7 +172,6 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 				{
 					GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
 					OperationInProgressDialog diag{ this, &req };
-					req.send_request();
 					diag.exec();
 
 					const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
@@ -186,7 +183,6 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 
 						PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 						OperationInProgressDialog diag{ this, &post_req };
-						post_req.send_request();
 						diag.exec();
 
 						if (post_req.get_success())

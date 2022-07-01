@@ -248,7 +248,6 @@ void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 			{
 				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
 				diag.exec();
 
 				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
@@ -281,7 +280,6 @@ void ExploreDatastorePanel::view_versions(const QModelIndex& index)
 			{
 				GetStandardDatastoreEntryVersionsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
 				diag.exec();
 
 				if (req.get_versions().size() > 0)
@@ -306,7 +304,6 @@ void ExploreDatastorePanel::edit_entry(const QModelIndex& index)
 			{
 				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
 				diag.exec();
 
 				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
@@ -339,7 +336,6 @@ void ExploreDatastorePanel::delete_entry(const QModelIndex& index)
 
 				DeleteStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
-				req.send_request();
 				diag.exec();
 			}
 		}
@@ -429,7 +425,6 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 		{
 			GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 			OperationInProgressDialog diag{ this, &req };
-			req.send_request();
 			diag.exec();
 
 			select_datastore_list->clear();
@@ -464,7 +459,6 @@ void ExploreDatastorePanel::pressed_find_all()
 				req.set_result_limit(result_limit);
 			}
 			OperationInProgressDialog diag{ this, &req };
-			req.send_request();
 			diag.exec();
 
 			DatastoreEntryModel* datastore_model = new DatastoreEntryModel{ datastore_entry_tree, req.get_datastore_entries() };
@@ -498,7 +492,6 @@ void ExploreDatastorePanel::pressed_find_prefix()
 				req.set_result_limit(result_limit);
 			}
 			OperationInProgressDialog diag{ this, &req };
-			req.send_request();
 			diag.exec();
 
 			DatastoreEntryModel* datastore_model = new DatastoreEntryModel{ datastore_entry_tree, req.get_datastore_entries() };

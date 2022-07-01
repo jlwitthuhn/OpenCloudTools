@@ -18,6 +18,8 @@ class OperationInProgressDialog : public QDialog
 public:
 	OperationInProgressDialog(QWidget* parent, DataRequest* request);
 
+	virtual int exec() override;
+
 private:
 	void handle_request_complete();
 	void handle_status_message(QString message);
