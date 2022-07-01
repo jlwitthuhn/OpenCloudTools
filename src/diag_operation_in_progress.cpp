@@ -104,7 +104,6 @@ void OperationInProgressDialog::handle_request_complete()
 {
 	if (pending_request)
 	{
-		pending_request->deleteLater();
 		pending_request = nullptr;
 
 		send_next_request();
