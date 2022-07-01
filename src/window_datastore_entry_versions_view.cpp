@@ -4,10 +4,13 @@
 
 #include <Qt>
 #include <QAbstractItemModel>
+#include <QClipboard>
 #include <QFormLayout>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QMargins>
+#include <QMenu>
 #include <QPushButton>
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -44,6 +47,8 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 		key_name_edit->setText(key_name);
 
 		versions_tree = new QTreeView{ info_panel };
+		versions_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+		connect(versions_tree, &QTreeView::customContextMenuRequested, this, &ViewDatastoreEntryVersionsWindow::pressed_right_click);
 		DatastoreEntryVersionModel* version_model = new DatastoreEntryVersionModel{ versions_tree, versions };
 		versions_tree->setModel(version_model);
 		for (int i = 0; i < version_model->columnCount(); i++)
@@ -86,6 +91,50 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 	layout->addWidget(button_panel);
 
 	handle_selected_version_changed();
+}
+
+void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		{
+			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(index.row()))
+			{
+				const long long universe_id = universe_id_edit->text().toLongLong();
+				const QString datastore_name = datastore_name_edit->text();
+				const QString scope = scope_edit->text();
+				const QString key_name = key_name_edit->text();
+				const QString version = opt_version->get_version();
+
+				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Revert };
+				bool confirmed = static_cast<bool>(confirm_dialog->exec());
+				if (confirmed)
+				{
+					GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
+					OperationInProgressDialog diag{ this, &req };
+					diag.exec();
+
+					const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+					if (opt_details)
+					{
+						const std::optional<QString> userids = opt_details->get_userids();
+						const std::optional<QString> attributes = opt_details->get_attributes();
+						const QString body = opt_details->get_data_raw();
+
+						PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
+						OperationInProgressDialog diag{ this, &post_req };
+						diag.exec();
+
+						if (post_req.get_success())
+						{
+							pressed_refresh();
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
@@ -191,6 +240,53 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+void ViewDatastoreEntryVersionsWindow::pressed_right_click(const QPoint& pos)
+{
+	const QModelIndex the_index = versions_tree->indexAt(pos);
+	if (the_index.isValid())
+	{
+		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		{
+			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(the_index.row()))
+			{
+				QMenu* context_menu = new QMenu{ versions_tree };
+				{
+					QAction* act_view = new QAction{ "View...", context_menu };
+					connect(act_view, &QAction::triggered, [this, the_index]() {
+						view_version(the_index);
+					});
+
+					QAction* act_revert = new QAction{ "Revert to", context_menu };
+					connect(act_revert, &QAction::triggered, [this, the_index]() {
+						revert_to_version(the_index);
+					});
+
+					QAction* copy_version = new QAction{ "Copy Version", context_menu };
+					connect(copy_version, &QAction::triggered, [opt_version]() {
+						QClipboard* clipboard = QGuiApplication::clipboard();
+						clipboard->setText(opt_version->get_version());
+					});
+
+					QAction* copy_timestamp = new QAction{ "Copy Timestamp", context_menu };
+					connect(copy_timestamp, &QAction::triggered, [opt_version]() {
+						QClipboard* clipboard = QGuiApplication::clipboard();
+						clipboard->setText(opt_version->get_created_time());
+					});
+
+					context_menu->addAction(act_view);
+					context_menu->addAction(act_revert);
+					context_menu->addSeparator();
+					context_menu->addAction(copy_version);
+					context_menu->addAction(copy_timestamp);
+				}
+
+				context_menu->exec(versions_tree->mapToGlobal(pos));
+				context_menu->deleteLater();
 			}
 		}
 	}

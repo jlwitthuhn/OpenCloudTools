@@ -8,6 +8,7 @@
 
 class QLineEdit;
 class QModelIndex;
+class QPoint;
 class QPushButton;
 class QTreeView;
 
@@ -31,6 +32,7 @@ public:
 	QPushButton* revert_button = nullptr;
 
 private:
+	void revert_to_version(const QModelIndex& index);
 	void view_version(const QModelIndex& index);
 
 	void handle_selected_version_changed();
@@ -38,6 +40,7 @@ private:
 
 	void pressed_refresh();
 	void pressed_revert();
+	void pressed_right_click(const QPoint& pos);
 	void pressed_view();
 
 	QString api_key;
