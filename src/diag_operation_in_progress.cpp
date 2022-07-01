@@ -42,7 +42,7 @@ void OperationInProgressDialog::constructor_common()
 
 	setWindowTitle("Progress");
 
-	QLabel* top_label = new QLabel{ "Preparing...", this };
+	top_label = new QLabel{ "Preparing...", this };
 
 	progress_bar = new QProgressBar{ this };
 	progress_bar->setMaximum(0);
@@ -106,6 +106,7 @@ void OperationInProgressDialog::send_next_request()
 		request_list.pop_back();
 
 		pending_request->set_http_429_count(http_429_count);
+		top_label->setText(pending_request->get_title_string());
 
 		connect(pending_request, &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
 		connect(pending_request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);

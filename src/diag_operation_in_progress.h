@@ -8,6 +8,7 @@
 #include <QString>
 
 class QCheckBox;
+class QLabel;
 class QProgressBar;
 class QPushButton;
 class QTextEdit;
@@ -43,6 +44,7 @@ private:
 
 	size_t http_429_count = 0;
 
+	QLabel* top_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
 	QTextEdit* text_box = nullptr;
 	QCheckBox* close_automatically_box = nullptr;
