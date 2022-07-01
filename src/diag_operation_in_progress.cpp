@@ -89,6 +89,9 @@ void OperationInProgressDialog::send_next_request()
 		pending_request = request_list.back();
 		request_list.pop_back();
 
+		pending_request->set_http_429_count(http_429_count);
+
+		connect(pending_request, &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
 		connect(pending_request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
 		connect(pending_request, &DataRequest::status_message, this, &OperationInProgressDialog::handle_status_message);
 
@@ -129,4 +132,9 @@ void OperationInProgressDialog::handle_status_message(const QString message)
 void OperationInProgressDialog::handle_checkbox_changed()
 {
 	UserSettings::get()->set_autoclose_progress_window(close_automatically_box->isChecked());
+}
+
+void OperationInProgressDialog::handle_received_http_429()
+{
+	http_429_count++;
 }

@@ -32,9 +32,12 @@ private:
 	void handle_all_requests_complete();
 	void handle_status_message(QString message);
 	void handle_checkbox_changed();
+	void handle_received_http_429();
 
 	std::vector<DataRequest*> request_list;
 	DataRequest* pending_request = nullptr;
+
+	size_t http_429_count = 0;
 
 	QProgressBar* progress_bar = nullptr;
 	QTextEdit* text_box = nullptr;
