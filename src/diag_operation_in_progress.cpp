@@ -82,8 +82,24 @@ void OperationInProgressDialog::constructor_common()
 	handle_checkbox_changed();
 }
 
+std::pair<int, int> OperationInProgressDialog::get_progress() const
+{
+	const size_t total = request_list.size() + requests_complete + (pending_request ? 1 : 0);
+	if (total > 1)
+	{
+		return std::make_pair(static_cast<int>(requests_complete), static_cast<int>(total));
+	}
+	else
+	{
+		return std::make_pair<int, int>(0, 0);
+	}
+}
+
 void OperationInProgressDialog::send_next_request()
 {
+	const std::pair<int, int> progress = get_progress();
+	progress_bar->setValue(progress.first);
+	progress_bar->setMaximum(progress.second);
 	if (request_list.size() > 0)
 	{
 		pending_request = request_list.back();
@@ -108,6 +124,7 @@ void OperationInProgressDialog::handle_request_complete()
 	if (pending_request)
 	{
 		pending_request = nullptr;
+		requests_complete++;
 
 		send_next_request();
 	}

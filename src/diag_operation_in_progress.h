@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include <QDialog>
@@ -26,6 +27,8 @@ public:
 private:
 	void constructor_common();
 
+	std::pair<int, int> get_progress() const;
+
 	void send_next_request();
 
 	void handle_request_complete();
@@ -36,6 +39,7 @@ private:
 
 	std::vector<DataRequest*> request_list;
 	DataRequest* pending_request = nullptr;
+	size_t requests_complete = 0;
 
 	size_t http_429_count = 0;
 
