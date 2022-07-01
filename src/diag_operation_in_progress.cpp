@@ -1,5 +1,6 @@
 #include "diag_operation_in_progress.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -17,11 +18,31 @@
 
 class QWidget;
 
-OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataRequest* request) : QDialog{ parent }, request{ request }
+OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataRequest* const request) : QDialog{ parent }
 {
+	request_list.push_back(request);
+	constructor_common();
+}
+
+OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, const std::vector<DataRequest*>& request_list) : QDialog{ parent }, request_list{ request_list }
+{
+	constructor_common();
+}
+
+int OperationInProgressDialog::exec()
+{
+	send_next_request();
+	return QDialog::exec();
+}
+
+void OperationInProgressDialog::constructor_common()
+{
+	// We are going to pop from the back, so reverse the vector we get
+	std::reverse(request_list.begin(), request_list.end());
+
 	setWindowTitle("Progress");
 
-	QLabel* top_label = new QLabel{ request->get_title_string(), this};
+	QLabel* top_label = new QLabel{ "Preparing...", this };
 
 	progress_bar = new QProgressBar{ this };
 	progress_bar->setMaximum(0);
@@ -33,7 +54,7 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	text_box->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	text_box->setText("");
 
-	close_automatically_box = new QCheckBox{ "Close this window automatically", this};
+	close_automatically_box = new QCheckBox{ "Close this window automatically", this };
 	close_automatically_box->setChecked(UserSettings::get()->get_autoclose_progress_window());
 	connect(close_automatically_box, &QCheckBox::stateChanged, this, &OperationInProgressDialog::handle_checkbox_changed);
 
@@ -50,8 +71,6 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	layout->addWidget(close_automatically_box);
 	layout->addWidget(close_button);
 
-	connect(request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
-	connect(request, &DataRequest::status_message, this, &OperationInProgressDialog::handle_status_message);
 
 	resize(330, 280);
 
@@ -63,13 +82,36 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	handle_checkbox_changed();
 }
 
-int OperationInProgressDialog::exec()
+void OperationInProgressDialog::send_next_request()
 {
-	request->send_request();
-	return QDialog::exec();
+	if (request_list.size() > 0)
+	{
+		pending_request = request_list.back();
+		request_list.pop_back();
+
+		connect(pending_request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
+		connect(pending_request, &DataRequest::status_message, this, &OperationInProgressDialog::handle_status_message);
+
+		pending_request->send_request();
+	}
+	else
+	{
+		handle_all_requests_complete();
+	}
 }
 
 void OperationInProgressDialog::handle_request_complete()
+{
+	if (pending_request)
+	{
+		pending_request->deleteLater();
+		pending_request = nullptr;
+
+		send_next_request();
+	}
+}
+
+void OperationInProgressDialog::handle_all_requests_complete()
 {
 	progress_bar->setMaximum(1);
 	progress_bar->setValue(1);
