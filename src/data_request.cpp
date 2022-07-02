@@ -422,3 +422,8 @@ void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QL
 	emit status_message(QString{ "Complete" });
 	emit request_complete();
 }
+
+QString PostStandardDatastoreEntryRequest::get_send_message() const
+{
+	return QString{ "Setting key '%1'..." }.arg(key_name);
+}
