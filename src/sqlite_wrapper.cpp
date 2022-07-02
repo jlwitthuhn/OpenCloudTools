@@ -42,7 +42,7 @@ void SqliteDatastoreWriter::write(const DatastoreEntryWithDetails& details)
 	if (db_handle != nullptr)
 	{
 		sqlite3_stmt* stmt = nullptr;
-		std::string sql = "INSERT INTO datastore (universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, data_bool, userids, attributes) VALUES (?010, ?020, ?030, ?040, ?050, ?060, ?070, ?080, ?090, ?095, ?100, ?110);";
+		const std::string sql = "INSERT INTO datastore (universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, data_bool, userids, attributes) VALUES (?010, ?020, ?030, ?040, ?050, ?060, ?070, ?080, ?090, ?095, ?100, ?110);";
 		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 		if (stmt != nullptr)
 		{
@@ -80,6 +80,95 @@ void SqliteDatastoreWriter::write(const DatastoreEntryWithDetails& details)
 			sqlite3_step(stmt);
 
 			sqlite3_finalize(stmt);
+		}
+	}
+}
+
+std::optional<std::vector<DatastoreEntryWithDetails>> SqliteDatastoreReader::read_all(const std::string& file_path)
+{
+	sqlite3* db_handle = nullptr;
+	if (sqlite3_open(file_path.c_str(), &db_handle) != SQLITE_OK)
+	{
+		return std::nullopt;
+	}
+
+	std::vector<DatastoreEntryWithDetails> result;
+	{
+		const std::string sql = "SELECT universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, data_bool, userids, attributes FROM datastore;";
+
+		sqlite3_stmt* stmt = nullptr;
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+
+		while (true)
+		{
+			const int sqlite_result = sqlite3_step(stmt);
+			if (sqlite_result == SQLITE_ROW)
+			{
+				std::optional<long long> opt_universe_id;
+				if (sqlite3_column_type(stmt, 0) == SQLITE_INTEGER)
+				{
+					opt_universe_id = sqlite3_column_int64(stmt, 0);
+				}
+
+				std::optional<QString> opt_datastore_name;
+				if (sqlite3_column_type(stmt, 1) == SQLITE_TEXT)
+				{
+					opt_datastore_name = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) };
+				}
+
+				std::optional<QString> opt_scope;
+				if (sqlite3_column_type(stmt, 2) == SQLITE_TEXT)
+				{
+					opt_scope = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) };
+				}
+
+				std::optional<QString> opt_key_name;
+				if (sqlite3_column_type(stmt, 3) == SQLITE_TEXT)
+				{
+					opt_key_name = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)) };
+				}
+
+				std::optional<QString> opt_version;
+				if (sqlite3_column_type(stmt, 4) == SQLITE_TEXT)
+				{
+					opt_version = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)) };
+				}
+
+				// Slot 5 is data_type
+
+				std::optional<QString> opt_data_raw;
+				if (sqlite3_column_type(stmt, 6) == SQLITE_TEXT)
+				{
+					opt_data_raw = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6)) };
+				}
+
+				std::optional<QString> opt_userids;
+				if (sqlite3_column_type(stmt, 10) == SQLITE_TEXT)
+				{
+					opt_userids = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 10)) };
+				}
+
+				std::optional<QString> opt_attributes;
+				if (sqlite3_column_type(stmt, 11) == SQLITE_TEXT)
+				{
+					opt_attributes = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 11)) };
+				}
+
+				if (opt_universe_id && opt_datastore_name && opt_scope && opt_key_name && opt_version && opt_data_raw)
+				{
+					result.push_back(DatastoreEntryWithDetails{
+						*opt_universe_id, *opt_datastore_name, *opt_scope, *opt_key_name, *opt_version, opt_userids, opt_attributes, *opt_data_raw
+					});
+				}
+			}
+			else if (sqlite_result == SQLITE_DONE)
+			{
+				return result;
+			}
+			else
+			{
+				return std::nullopt;
+			}
 		}
 	}
 }

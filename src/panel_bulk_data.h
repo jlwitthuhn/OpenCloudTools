@@ -21,6 +21,7 @@ private:
 	void pressed_delete();
 	void pressed_download();
 	void pressed_undelete();
+	void pressed_upload();
 
 	QString api_key;
 
@@ -29,4 +30,5 @@ private:
 	QCheckBox* danger_buttons_check = nullptr;
 	QPushButton* datastore_delete_button = nullptr;
 	QPushButton* datastore_undelete_button = nullptr;
+	QPushButton* datastore_upload_button = nullptr;
 };

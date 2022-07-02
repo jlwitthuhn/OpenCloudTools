@@ -40,6 +40,9 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	case ChangeType::BulkUndelete:
 		info->setText("This action will restore previously deleted data in the selected datastores. Are you sure you want to do this?");
 		break;
+	case ChangeType::BulkUpload:
+		info->setText("This action will load the entire contents of a sqlite dump into this universe's datastore(s). Are you sure you want to do this?");
+		break;
 	}
 	info->setWordWrap(true);
 

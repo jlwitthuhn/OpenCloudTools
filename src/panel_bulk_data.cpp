@@ -6,15 +6,20 @@
 
 #include <Qt>
 #include <QCheckBox>
+#include <QFileDialog>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 
 #include "api_key.h"
+#include "api_response.h"
 #include "data_request.h"
+#include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "sqlite_wrapper.h"
 #include "tooltip_text.h"
 #include "user_settings.h"
 #include "window_datastore_bulk_op.h"
@@ -49,12 +54,18 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 			datastore_undelete_button->setMinimumWidth(150);
 			connect(datastore_undelete_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_undelete);
 
+			datastore_upload_button = new QPushButton{ "Bulk upload...", datastore_group };
+			datastore_upload_button->setToolTip(ToolTip::BulkDataPanel_Upload);
+			datastore_upload_button->setMinimumWidth(150);
+			connect(datastore_upload_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_upload);
+
 			QVBoxLayout* group_layout = new QVBoxLayout{ datastore_group };
 			group_layout->addWidget(datastore_download_button);
 			group_layout->addWidget(separator);
 			group_layout->addWidget(danger_buttons_check);
 			group_layout->addWidget(datastore_delete_button);
 			group_layout->addWidget(datastore_undelete_button);
+			group_layout->addWidget(datastore_upload_button);
 		}
 
 		QHBoxLayout* container_layout = new QHBoxLayout{ container_widget };
@@ -78,8 +89,6 @@ void BulkDataPanel::selected_universe_changed()
 	datastore_download_button->setEnabled(enabled);
 	danger_buttons_check->setEnabled(enabled);
 	danger_buttons_check->setCheckState(Qt::Unchecked);
-	datastore_delete_button->setEnabled(enabled);
-	datastore_undelete_button->setEnabled(enabled);
 	handle_datastore_danger_toggle();
 }
 
@@ -88,11 +97,12 @@ void BulkDataPanel::handle_datastore_danger_toggle()
 	const bool enabled = danger_buttons_check->isEnabled() && danger_buttons_check->isChecked();
 	datastore_delete_button->setEnabled(enabled);
 	datastore_undelete_button->setEnabled(enabled);
+	datastore_upload_button->setEnabled(enabled);
 }
 
 void BulkDataPanel::pressed_delete()
 {
-	if (UserSettings::get()->get_selected_universe())
+	if (UserSettings::get()->get_selected_universe() && danger_buttons_check->isChecked())
 	{
 		const long long universe_id = UserSettings::get()->get_selected_universe()->universe_id();
 
@@ -132,7 +142,7 @@ void BulkDataPanel::pressed_download()
 
 void BulkDataPanel::pressed_undelete()
 {
-	if (UserSettings::get()->get_selected_universe())
+	if (UserSettings::get()->get_selected_universe() && danger_buttons_check->isChecked())
 	{
 		const long long universe_id = UserSettings::get()->get_selected_universe()->universe_id();
 
@@ -146,6 +156,56 @@ void BulkDataPanel::pressed_undelete()
 			DatastoreBulkUndeleteWindow* undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_id, datastores };
 			undelete_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			undelete_window->show();
+		}
+	}
+}
+
+#include <iostream>
+
+void BulkDataPanel::pressed_upload()
+{
+	if (UserSettings::get()->get_selected_universe() && danger_buttons_check->isChecked())
+	{
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkUpload };
+		bool confirmed = static_cast<bool>(confirm_dialog->exec());
+		if (confirmed)
+		{
+			const QString load_file_path = QFileDialog::getOpenFileName(this, "Select dump to upload...", "", "sqlite3 databases (*.sqlite3)");
+			if (load_file_path.trimmed().size() > 0)
+			{
+				std::optional<std::vector<DatastoreEntryWithDetails>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
+				if (loaded_data)
+				{
+					std::vector<std::shared_ptr<PostStandardDatastoreEntryRequest>> shared_requests;
+					std::vector<DataRequest*> requests;
+
+					for (const DatastoreEntryWithDetails& this_entry : *loaded_data)
+					{
+						shared_requests.push_back(std::make_shared<PostStandardDatastoreEntryRequest>(
+							nullptr,
+							api_key,
+							this_entry.get_universe_id(),
+							this_entry.get_datastore_name(),
+							this_entry.get_scope(),
+							this_entry.get_key_name(),
+							this_entry.get_userids(),
+							this_entry.get_attributes(),
+							this_entry.get_data_raw()
+						));
+						requests.push_back(shared_requests.back().get());
+					}
+
+					OperationInProgressDialog diag{ this, requests };
+					diag.exec();
+				}
+				else
+				{
+					QMessageBox* msg_box = new QMessageBox{ this };
+					msg_box->setWindowTitle("Error");
+					msg_box->setText("Failed to open database.");
+					msg_box->exec();
+				}
+			}
 		}
 	}
 }
