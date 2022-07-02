@@ -109,7 +109,7 @@ endif()
 if (MSVC)
 	target_compile_options(OpenCloudTools PRIVATE /W3)
 else()
-	target_compile_options(OpenCloudTools PRIVATE -Wall -Wextra)
+	target_compile_options(OpenCloudTools PRIVATE -Wall -Wextra -pedantic)
 endif()
 
 install(TARGETS OpenCloudTools)
