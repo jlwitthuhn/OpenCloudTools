@@ -12,6 +12,8 @@ class RobloxTime
 public:
 	static void update_time_from_headers(const QList<QNetworkReply::RawHeaderPair>& headers);
 
+	static bool is_initialized() { return last_parsed_time.has_value(); }
+
 	// Gets the current time according to roblox servers
 	static std::optional<QDateTime> get_roblox_time();
 	// Parses a date in the format used by standard datastore entry versions

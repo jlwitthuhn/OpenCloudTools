@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 
+#include <QDateTime>
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -155,7 +156,7 @@ class DatastoreBulkUndeleteProgressWindow : public DatastoreBulkOperationProgres
 {
 	Q_OBJECT
 public:
-	DatastoreBulkUndeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names);
+	DatastoreBulkUndeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::optional<QDateTime> undelete_after);
 
 private:
 	virtual QString progress_label_done() const override;
@@ -166,6 +167,8 @@ private:
 	void handle_get_entry_version_response();
 	void handle_post_entry_response();
 
+	std::optional<QDateTime> undelete_after;
+
 	GetStandardDatastoreEntryVersionsRequest* get_versions_request = nullptr;
 	GetStandardDatastoreEntryAtVersionRequest* get_entry_at_version_request = nullptr;
 	PostStandardDatastoreEntryRequest* post_entry_request = nullptr;
@@ -173,5 +176,6 @@ private:
 	size_t entries_restored = 0;
 	size_t entries_not_deleted = 0;
 	size_t entries_no_old_version = 0;
+	size_t entries_not_in_time_range = 0;
 	size_t entries_errored = 0;
 };

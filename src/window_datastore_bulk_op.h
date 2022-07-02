@@ -77,4 +77,13 @@ public:
 
 private:
 	virtual void pressed_submit() override;
+
+	void pressed_toggle_time_filter();
+
+	std::optional<QDateTime> get_undelete_after_time() const;
+
+	QCheckBox* time_filter_check = nullptr;
+	QLineEdit* day_edit = nullptr;
+	QLineEdit* hour_edit = nullptr;
+	QLineEdit* min_edit = nullptr;
 };

@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 
 #include "data_request.h"
+#include "roblox_time.h"
 #include "user_settings.h"
 
 DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names) :
@@ -429,8 +430,10 @@ DatastoreBulkUndeleteProgressWindow::DatastoreBulkUndeleteProgressWindow(
 	long long universe_id,
 	const QString& scope,
 	const QString& key_prefix,
-	std::vector<QString> datastore_names) :
-	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names }
+	std::vector<QString> datastore_names,
+	std::optional<QDateTime> undelete_after) :
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
+	undelete_after{ undelete_after }
 {
 	setWindowTitle("Undelete Progress");
 }
@@ -464,6 +467,10 @@ void DatastoreBulkUndeleteProgressWindow::send_next_entry_request()
 		close_button->setText("Close");
 		handle_status_message("Undelete complete");
 		QString summary = QString{ "%1 entries restored, %2 already existed, %3 could not be restored" }.arg(entries_restored).arg(entries_not_deleted).arg(entries_no_old_version);
+		if (entries_not_in_time_range > 0)
+		{
+			summary = summary + QString{ ", %1 not in selected time range" }.arg(entries_not_in_time_range);
+		}
 		if (entries_errored > 0)
 		{
 			summary = summary + QString{ ", %1 errors" }.arg(entries_errored);
@@ -506,6 +513,34 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_versions_response()
 			progress.advance_entry_done();
 			send_next_entry_request();
 			return;
+		}
+
+		if (undelete_after)
+		{
+			const std::optional<QDateTime> opt_front_date = RobloxTime::parse_version_date(versions.front().get_created_time());
+			if (opt_front_date)
+			{
+				if (*opt_front_date < *undelete_after)
+				{
+					handle_status_message("Deleted outside of selected time range, skipping");
+					entries_not_in_time_range++;
+					progress.advance_entry_done();
+					send_next_entry_request();
+					return;
+				}
+				else
+				{
+					// Advance
+				}
+			}
+			else
+			{
+				handle_status_message("Failed to parse version timestamp, skipping");
+				entries_errored++;
+				progress.advance_entry_done();
+				send_next_entry_request();
+				return;
+			}
 		}
 
 		std::optional<StandardDatastoreEntryVersion> target_version;

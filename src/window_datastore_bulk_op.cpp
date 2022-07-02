@@ -13,6 +13,7 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMargins>
@@ -22,6 +23,7 @@
 
 #include "api_key.h"
 #include "diag_confirm_change.h"
+#include "roblox_time.h"
 #include "sqlite_wrapper.h"
 #include "user_settings.h"
 #include "window_datastore_bulk_op_progress.h"
@@ -305,9 +307,70 @@ DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const 
 {
 	setWindowTitle("Undelete");
 	submit_button->setText("Undelete");
+
+	QGroupBox* options_box = new QGroupBox{ "Undelete Options", right_bar };
+	{
+		time_filter_check = new QCheckBox{ "Only entries deleted in the last", options_box };
+		connect(time_filter_check, &QCheckBox::stateChanged, this, &DatastoreBulkUndeleteWindow::pressed_toggle_time_filter);
+
+		if (RobloxTime::is_initialized() == false)
+		{
+			time_filter_check->setEnabled(false);
+		}
+
+		QWidget* time_filter_bar = new QWidget{ options_box };
+		{
+			day_edit = new QLineEdit{ time_filter_bar };
+			day_edit->setFixedWidth(32);
+			day_edit->setText("0");
+			day_edit->setValidator(new QIntValidator{ 0, 999, day_edit });
+
+			QLabel* day_label = new QLabel{ "days", time_filter_bar };
+
+			QFrame* separator1 = new QFrame{ time_filter_bar };
+			separator1->setFrameShape(QFrame::VLine);
+			separator1->setFrameShadow(QFrame::Sunken);
+
+			hour_edit = new QLineEdit{ time_filter_bar };
+			hour_edit->setFixedWidth(32);
+			hour_edit->setText("0");
+			hour_edit->setValidator(new QIntValidator{ 0, 99, hour_edit });
+
+			QLabel* hour_label = new QLabel{ "hours", time_filter_bar };
+
+			QFrame* separator2 = new QFrame{ time_filter_bar };
+			separator2->setFrameShape(QFrame::VLine);
+			separator2->setFrameShadow(QFrame::Sunken);
+
+			min_edit = new QLineEdit{ time_filter_bar };
+			min_edit->setFixedWidth(32);
+			min_edit->setText("0");
+			min_edit->setValidator(new QIntValidator{ 0, 99, min_edit });
+
+			QLabel* min_label = new QLabel{ "min", time_filter_bar };
+
+			QHBoxLayout* time_filter_layout = new QHBoxLayout{ time_filter_bar };
+			time_filter_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+			time_filter_layout->addWidget(day_edit);
+			time_filter_layout->addWidget(day_label);
+			time_filter_layout->addWidget(separator1);
+			time_filter_layout->addWidget(hour_edit);
+			time_filter_layout->addWidget(hour_label);
+			time_filter_layout->addWidget(separator2);
+			time_filter_layout->addWidget(min_edit);
+			time_filter_layout->addWidget(min_label);
+		}
+
+		QVBoxLayout* options_layout = new QVBoxLayout{ options_box };
+		options_layout->addWidget(time_filter_check);
+		options_layout->addWidget(time_filter_bar);
+	};
+
+	right_bar_layout->addWidget(options_box);
 	right_bar_layout->addStretch();
 
 	pressed_select_none();
+	pressed_toggle_time_filter();
 }
 
 void DatastoreBulkUndeleteWindow::pressed_submit()
@@ -321,7 +384,7 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 		{
 			const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
 			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
-			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores };
+			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, get_undelete_after_time() };
 			close();
 			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			progress_window->show();
@@ -334,4 +397,58 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 		msg_box->setText("You must select at least one datastore.");
 		msg_box->exec();
 	}
+}
+
+void DatastoreBulkUndeleteWindow::pressed_toggle_time_filter()
+{
+	const bool enabled = time_filter_check->isChecked();
+	day_edit->setEnabled(enabled);
+	hour_edit->setEnabled(enabled);
+	min_edit->setEnabled(enabled);
+}
+
+std::optional<QDateTime> DatastoreBulkUndeleteWindow::get_undelete_after_time() const
+{
+	if (time_filter_check->isChecked())
+	{
+		if (const std::optional<QDateTime> roblox_time = RobloxTime::get_roblox_time())
+		{
+			QDateTime result{ *roblox_time };
+
+			{
+				bool success = false;
+				const qlonglong days = day_edit->text().toLongLong(&success);
+				if (success)
+				{
+					result = result.addDays(-1 * days);
+				}
+			}
+
+			{
+				qlonglong seconds_to_subtract = 0;
+
+				{
+					bool hours_success = false;
+					const qlonglong hours = hour_edit->text().toLongLong(&hours_success);
+					if (hours_success)
+					{
+						seconds_to_subtract += hours * 60 * 60;
+					}
+				}
+
+				{
+					bool minutes_success = false;
+					const qlonglong minutes = min_edit->text().toLongLong(&minutes_success);
+					if (minutes_success)
+					{
+						seconds_to_subtract += minutes * 60;
+					}
+				}
+
+				return result.addSecs(-1 * seconds_to_subtract);
+			}
+		}
+	}
+
+	return std::nullopt;
 }
