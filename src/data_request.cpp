@@ -408,7 +408,7 @@ PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(QObject* pa
 
 QString PostStandardDatastoreEntryRequest::get_title_string() const
 {
-	return "Uploading new entry...";
+	return "Setting entry...";
 }
 
 QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>)
