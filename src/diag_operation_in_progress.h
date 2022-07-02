@@ -38,6 +38,8 @@ private:
 	void handle_checkbox_changed();
 	void handle_received_http_429();
 
+	bool respect_close_automatically = true;
+
 	std::vector<DataRequest*> request_list;
 	DataRequest* pending_request = nullptr;
 	size_t requests_complete = 0;

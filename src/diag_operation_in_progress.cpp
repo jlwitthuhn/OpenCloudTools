@@ -24,7 +24,7 @@ OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataReques
 	constructor_common();
 }
 
-OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, const std::vector<DataRequest*>& request_list) : QDialog{ parent }, request_list{ request_list }
+OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, const std::vector<DataRequest*>& request_list) : QDialog{ parent }, respect_close_automatically{ false }, request_list{ request_list }
 {
 	constructor_common();
 }
@@ -57,6 +57,10 @@ void OperationInProgressDialog::constructor_common()
 	close_automatically_box = new QCheckBox{ "Close this window automatically", this };
 	close_automatically_box->setChecked(UserSettings::get()->get_autoclose_progress_window());
 	connect(close_automatically_box, &QCheckBox::stateChanged, this, &OperationInProgressDialog::handle_checkbox_changed);
+	if (respect_close_automatically == false)
+	{
+		close_automatically_box->setHidden(true);
+	}
 
 	close_button = new QPushButton{ "Cancel", this };
 	connect(close_button, &QPushButton::clicked, this, &OperationInProgressDialog::close);
@@ -136,7 +140,7 @@ void OperationInProgressDialog::handle_all_requests_complete()
 	progress_bar->setMaximum(1);
 	progress_bar->setValue(1);
 	close_button->setText("Close");
-	if (close_automatically_box->isChecked())
+	if (respect_close_automatically && close_automatically_box->isChecked())
 	{
 		close();
 	}
