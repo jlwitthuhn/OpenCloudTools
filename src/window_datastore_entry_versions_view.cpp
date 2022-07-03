@@ -4,6 +4,7 @@
 
 #include <Qt>
 #include <QAbstractItemModel>
+#include <QAction>
 #include <QClipboard>
 #include <QFormLayout>
 #include <QGuiApplication>
@@ -11,6 +12,7 @@
 #include <QLineEdit>
 #include <QMargins>
 #include <QMenu>
+#include <QModelIndex>
 #include <QPushButton>
 #include <QTreeView>
 #include <QVBoxLayout>

@@ -160,8 +160,6 @@ void BulkDataPanel::pressed_undelete()
 	}
 }
 
-#include <iostream>
-
 void BulkDataPanel::pressed_upload()
 {
 	if (UserSettings::get()->get_selected_universe() && danger_buttons_check->isChecked())

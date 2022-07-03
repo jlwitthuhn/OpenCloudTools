@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -9,6 +10,7 @@
 
 #include <Qt>
 #include <QAbstractItemModel>
+#include <QAbstractItemView>
 #include <QAction>
 #include <QCheckBox>
 #include <QClipboard>
@@ -16,6 +18,7 @@
 #include <QGroupBox>
 #include <QGuiApplication>
 #include <QHBoxLayout>
+#include <QItemSelectionModel>
 #include <QLabel>
 #include <QLineEdit>
 #include <QList>

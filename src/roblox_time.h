@@ -3,9 +3,11 @@
 #include <chrono>
 #include <optional>
 
-#include <QDateTime>
 #include <QList>
 #include <QNetworkReply>
+#include <QString>
+
+class QDateTime;
 
 class RobloxTime
 {

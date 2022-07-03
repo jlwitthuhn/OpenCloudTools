@@ -8,6 +8,7 @@
 #include <Qt>
 #include <QAbstractTableModel>
 #include <QDateTime>
+#include <QModelIndex>
 #include <QObject>
 #include <QString>
 #include <QVariant>

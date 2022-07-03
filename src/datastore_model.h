@@ -7,6 +7,7 @@
 
 #include <Qt>
 #include <QAbstractTableModel>
+#include <QModelIndex>
 #include <QObject>
 #include <QVariant>
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 
 #include <QObject>
@@ -7,6 +8,7 @@
 #include <QWidget>
 
 class QCheckBox;
+class QDateTime;
 class QLineEdit;
 class QListWidget;
 class QPushButton;

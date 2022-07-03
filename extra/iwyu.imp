@@ -1,5 +1,6 @@
 [
 	# Clang
+	{ include: [ "<bits/chrono.h>",      private, "<chrono>", public ] },
 	{ include: [ "<ext/alloc_traits.h>", private, "<vector>", public ] },
 	# Macros
 	{ symbol: [ "emit",     "private", "<QObject>", "public" ] },
@@ -10,6 +11,7 @@
 	{ symbol: [ "DisplayRole", "private", "<Qt>", "public" ] },
 	{ symbol: [ "Orientation", "private", "<Qt>", "public" ] },
 	# Qt Core
+	{ symbol: [ "qVersion",              "private", "<QtGlobal>",            "public" ] },
 	{ symbol: [ "QAbstractItemModel",    "private", "<QAbstractItemModel>",  "public" ] },
 	{ symbol: [ "QAbstractTableModel",   "private", "<QAbstractTableModel>", "public" ] },
 	{ symbol: [ "QByteArray",            "private", "<QByteArray>",          "public" ] },
@@ -19,6 +21,7 @@
 	{ symbol: [ "QDateTime",             "private", "<QDateTime>",           "public" ] },
 	{ symbol: [ "QFile",                 "private", "<QFile>",               "public" ] },
 	{ symbol: [ "QFlags",                "private", "<QFlags>",              "public" ] },
+	{ symbol: [ "QItemSelectionModel",   "private", "<QItemSelectionModel>", "public" ] },
 	{ symbol: [ "QJsonArray",            "private", "<QJsonArray>",          "public" ] },
 	{ symbol: [ "QJsonDocument",         "private", "<QJsonDocument>",       "public" ] },
 	{ symbol: [ "QJsonObject",           "private", "<QJsonObject>",         "public" ] },
@@ -40,7 +43,9 @@
 	{ symbol: [ "QClipboard",            "private", "<QClipboard>",            "public" ] },
 	{ symbol: [ "QDesktopServices",      "private", "<QDesktopServices>",      "public" ] },
 	{ symbol: [ "QGuiApplication",       "private", "<QGuiApplication>",       "public" ] },
+	{ symbol: [ "QIntValidator",         "private", "<QIntValidator>",         "public" ] },
 	# Qt Widgets
+	{ symbol: [ "QAbstractItemView",     "private", "<QAbstractItemView>",     "public" ] },
 	{ symbol: [ "QAction",               "private", "<QAction>",               "public" ] },
 	{ symbol: [ "QApplication",          "private", "<QApplication>",          "public" ] },
 	{ symbol: [ "QCheckBox",             "private", "<QCheckBox>",             "public" ] },
@@ -59,6 +64,7 @@
 	{ symbol: [ "QMenu",                 "private", "<QMenu>",                 "public" ] },
 	{ symbol: [ "QMenuBar",              "private", "<QMenuBar>",              "public" ] },
 	{ symbol: [ "QMessageBox",           "private", "<QMessageBox>",           "public" ] },
+	{ symbol: [ "QModelIndex",           "private", "<QModelIndex>",           "public" ] },
 	{ symbol: [ "QProgressBar",          "private", "<QProgressBar>",          "public" ] },
 	{ symbol: [ "QPushButton",           "private", "<QPushButton>",           "public" ] },
 	{ symbol: [ "QRadioButton",          "private", "<QRadioButton>",          "public" ] },
@@ -73,6 +79,7 @@
 	{ include: [ "@[\"<](QtCore/)?qtcoreexports\\.h[\">]",            "private", "<QtGlobal>",              "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qabstractitemmodel\\.h[\">]",       "private", "<QAbstractItemModel>",    "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qabstractitemmodel\\.h[\">]",       "private", "<QAbstractTableModel>",   "public" ] },
+	{ include: [ "@[\"<](QtCore/)?qabstractitemmodel\\.h[\">]",       "private", "<QModelIndex>",           "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qbytearray\\.h[\">]",               "private", "<QByteArray>",            "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qchar\\.h[\">]",                    "private", "<QChar>",                 "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qcryptographichash\\.h[\">]",       "private", "<QCryptographicHash>",    "public" ] },
@@ -80,6 +87,7 @@
 	{ include: [ "@[\"<](QtCore/)?qdatetime\\.h[\">]",                "private", "<QDateTime>",             "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qfile\\.h[\">]",                    "private", "<QFile>",                 "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qglobal\\.h[\">]",                  "private", "<QFlags>",                "public" ] },
+	{ include: [ "@[\"<](QtCore/)?qitemselectionmodel\\.h[\">]",      "private", "<QItemSelectionModel>",   "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qjsonarray\\.h[\">]",               "private", "<QJsonArray>",            "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qjsondocument\\.h[\">]",            "private", "<QJsonDocument>",         "public" ] },
 	{ include: [ "@[\"<](QtCore/)?qjsonobject\\.h[\">]",              "private", "<QJsonObject>",           "public" ] },
@@ -97,9 +105,11 @@
 	{ include: [ "@[\"<](QtGui/)?qclipboard\\.h[\">]",                "private", "<QClipboard>",            "public" ] },
 	{ include: [ "@[\"<](QtGui/)?qdesktopservices\\.h[\">]",          "private", "<QDesktopServices>",      "public" ] },
 	{ include: [ "@[\"<](QtGui/)?qguiapplication\\.h[\">]",           "private", "<QGuiApplication>",       "public" ] },
+	{ include: [ "@[\"<](QtGui/)?qvalidator\\.h[\">]",                "private", "<QIntValidator>",         "public" ] },
 	{ include: [ "@[\"<](QtNetwork/)?qnetworkaccessmanager\\.h[\">]", "private", "<QNetworkAccessManager>", "public" ] },
 	{ include: [ "@[\"<](QtNetwork/)?qnetworkreply\\.h[\">]",         "private", "<QNetworkReply>",         "public" ] },
 	{ include: [ "@[\"<](QtNetwork/)?qnetworkrequest\\.h[\">]",       "private", "<QNetworkRequest>",       "public" ] },
+	{ include: [ "@[\"<](QtWidgets/)?qabstractitemview\\.h[\">]",     "private", "<QAbstractItemView>",     "public" ] },
 	{ include: [ "@[\"<](QtWidgets/)?qaction\\.h[\">]",               "private", "<QAction>",               "public" ] },
 	{ include: [ "@[\"<](QtWidgets/)?qapplication\\.h[\">]",          "private", "<QApplication>",          "public" ] },
 	{ include: [ "@[\"<](QtWidgets/)?qboxlayout\\.h[\">]",            "private", "<QHBoxLayout>",           "public" ] },

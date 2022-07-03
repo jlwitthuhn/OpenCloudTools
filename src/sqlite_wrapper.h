@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "api_response.h"
-
 struct sqlite3;
 
 class DatastoreEntryWithDetails;

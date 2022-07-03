@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QAction>
 #include <QComboBox>
 #include <QDesktopServices>

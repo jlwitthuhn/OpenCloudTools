@@ -7,12 +7,15 @@
 
 #include <Qt>
 #include <QCheckBox>
+#include <QDateTime>
 #include <QFile>
 #include <QFileDialog>
 #include <QFlags>
+#include <QFrame>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QIntValidator>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>

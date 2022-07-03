@@ -1,5 +1,9 @@
 #include "roblox_time.h"
 
+#include <string>
+#include <utility>
+
+#include <QByteArray>
 #include <QDateTime>
 
 std::chrono::steady_clock::time_point RobloxTime::last_updated;

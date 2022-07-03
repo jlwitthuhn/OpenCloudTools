@@ -7,8 +7,6 @@
 #include <QString>
 #include <QWidget>
 
-#include "api_response.h"
-
 class QCheckBox;
 class QLineEdit;
 class QListWidget;
@@ -17,6 +15,7 @@ class QPushButton;
 class QTreeView;
 
 class DatastoreEntryModel;
+class StandardDatastoreEntry;
 
 class ExploreDatastorePanel : public QWidget
 {

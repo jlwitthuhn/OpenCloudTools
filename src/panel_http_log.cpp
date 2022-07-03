@@ -8,6 +8,7 @@
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QMenu>
+#include <QModelIndex>
 #include <QPushButton>
 #include <QTreeView>
 #include <QVBoxLayout>
