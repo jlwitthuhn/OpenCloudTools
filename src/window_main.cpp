@@ -182,7 +182,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	setCentralWidget(central_widget);
 
 	setMinimumWidth(700);
-	setMinimumHeight(500);
+	setMinimumHeight(520);
 
 	handle_universe_list_changed(std::nullopt);
 }
