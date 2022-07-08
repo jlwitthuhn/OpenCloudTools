@@ -20,6 +20,9 @@ public:
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
 
+	bool get_less_verbose_bulk_operations() const { return less_verbose_bulk_operations; }
+	void set_less_verbose_bulk_operations(bool less_verbose);
+
 	std::vector<ApiKeyProfile> get_all_api_keys() const { return api_keys; };
 	std::optional<ApiKeyProfile> get_api_key(size_t key_index) const;
 
@@ -57,6 +60,7 @@ private:
 	void save_to_disk();
 
 	bool autoclose_progress_window = true;
+	bool less_verbose_bulk_operations = true;
 
 	std::optional<size_t> selected_key_index;
 	std::optional<size_t> selected_universe_index;

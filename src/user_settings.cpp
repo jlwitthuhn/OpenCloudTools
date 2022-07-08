@@ -30,6 +30,15 @@ void UserSettings::set_autoclose_progress_window(const bool autoclose)
 	}
 }
 
+void UserSettings::set_less_verbose_bulk_operations(const bool less_verbose)
+{
+	if (less_verbose_bulk_operations != less_verbose)
+	{
+		less_verbose_bulk_operations = less_verbose;
+		save_to_disk();
+	}
+}
+
 std::optional<ApiKeyProfile> UserSettings::get_api_key(const size_t key_index) const
 {
 	if (key_index < api_keys.size())
@@ -244,6 +253,10 @@ void UserSettings::load_from_disk()
 
 	settings.beginGroup("prefs");
 	autoclose_progress_window = settings.value("autoclose_progress_window").toBool();
+	if (settings.value("less_verbose_bulk_operations").isValid())
+	{
+		less_verbose_bulk_operations = settings.value("less_verbose_bulk_operations").toBool();
+	}
 	settings.endGroup();
 
 	settings.beginGroup("api_keys");
@@ -310,6 +323,7 @@ void UserSettings::save_to_disk()
 
 	settings.beginGroup("prefs");
 	settings.setValue("autoclose_progress_window", autoclose_progress_window);
+	settings.setValue("less_verbose_bulk_operations", less_verbose_bulk_operations);
 	settings.endGroup();
 
 	settings.beginGroup("api_keys");

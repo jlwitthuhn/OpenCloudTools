@@ -33,6 +33,7 @@ private:
 	void pressed_remove_universe();
 	void pressed_change_key();
 	void pressed_toggle_autoclose();
+	void pressed_toggle_less_verbose_bulk();
 
 	void handle_autoclose_changed();
 	void handle_tab_changed(int index);
@@ -41,6 +42,7 @@ private:
 	QString api_key;
 
 	QAction* action_toggle_autoclose = nullptr;
+	QAction* action_toggle_less_verbose_bulk = nullptr;
 
 	QComboBox* select_universe_combo = nullptr;
 

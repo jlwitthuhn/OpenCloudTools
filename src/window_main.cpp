@@ -67,12 +67,18 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			action_toggle_autoclose->setChecked(UserSettings::get()->get_autoclose_progress_window());
 			connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
 
+			action_toggle_less_verbose_bulk = new QAction{ "Less &verbose bulk data operations", menu_bar };
+			action_toggle_less_verbose_bulk->setCheckable(true);
+			action_toggle_less_verbose_bulk->setChecked(UserSettings::get()->get_less_verbose_bulk_operations());
+			connect(action_toggle_less_verbose_bulk, &QAction::triggered, this, &MyMainWindow::pressed_toggle_less_verbose_bulk);
+
 			preferences_menu->addAction(action_toggle_autoclose);
+			preferences_menu->addAction(action_toggle_less_verbose_bulk);
 		}
 
 		QMenu* about_menu = new QMenu{ "&About", menu_bar };
 		{
-			QAction* action_github = new QAction{ "Visit repository on Github", menu_bar };
+			QAction* action_github = new QAction{ "Visit repository on &Github", menu_bar };
 			connect(action_github, &QAction::triggered, []() {
 				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
 			});
@@ -243,6 +249,11 @@ void MyMainWindow::pressed_change_key()
 void MyMainWindow::pressed_toggle_autoclose()
 {
 	UserSettings::get()->set_autoclose_progress_window(action_toggle_autoclose->isChecked());
+}
+
+void MyMainWindow::pressed_toggle_less_verbose_bulk()
+{
+	UserSettings::get()->set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
 }
 
 void MyMainWindow::handle_autoclose_changed()
