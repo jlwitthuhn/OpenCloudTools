@@ -29,7 +29,7 @@ QString get_enum_string(const DatastoreEntryType enum_in)
 	case DatastoreEntryType::String:
 		return "String";
 	case DatastoreEntryType::Json:
-		return "Json";
+		return "Table (Json)";
 	}
 	return "Big Error";
 }
