@@ -34,6 +34,8 @@ static bool variant_is_ulonglong(const QVariant& variant)
 
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	setWindowTitle("API Keys");
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };

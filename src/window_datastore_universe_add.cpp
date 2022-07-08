@@ -21,6 +21,8 @@
 
 AddUniverseToDatastoreWindow::AddUniverseToDatastoreWindow(QWidget* const parent, const bool edit_current) : QWidget{ parent, Qt::Window }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	std::optional<UniverseProfile> existing_universe = edit_current ? UserSettings::get()->get_selected_universe() : std::nullopt;
 	edit_mode = existing_universe.has_value();
 

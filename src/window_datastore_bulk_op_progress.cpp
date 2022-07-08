@@ -24,6 +24,8 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	progress{ datastore_names.size() },
 	datastore_names{ datastore_names }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };
 	progress_bar->setMinimumWidth(360);

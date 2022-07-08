@@ -36,6 +36,8 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 	api_key{ api_key },
 	universe_id{ universe_id }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	QWidget* main_panel = new QWidget{ this };
 	{
 		QWidget* left_bar = new QWidget{ main_panel };

@@ -18,6 +18,8 @@
 
 AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size_t> existing_key_index_in) : QWidget{ parent, Qt::Window }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	const std::optional<ApiKeyProfile> existing_key_profile = existing_key_index_in.has_value() ? UserSettings::get()->get_api_key(*existing_key_index_in) : std::nullopt;
 	if (existing_key_profile)
 	{

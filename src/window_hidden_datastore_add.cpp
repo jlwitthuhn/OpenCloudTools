@@ -15,6 +15,8 @@
 
 AddHiddenDatastoreWindow::AddHiddenDatastoreWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	setWindowTitle("Hide datastore");
 	setWindowModality(Qt::WindowModality::ApplicationModal);
 

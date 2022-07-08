@@ -27,6 +27,8 @@
 ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const std::vector<StandardDatastoreEntryVersion>& versions)
 	: QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	setWindowTitle("View Versions");
 	setMinimumWidth(725);
 
