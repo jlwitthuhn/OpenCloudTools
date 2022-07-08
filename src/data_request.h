@@ -27,7 +27,8 @@ public:
 
 signals:
 	void request_complete();
-	void status_message(QString message);
+	void status_error(QString message);
+	void status_info(QString message);
 	void received_http_429();
 
 protected:

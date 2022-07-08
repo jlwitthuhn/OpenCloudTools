@@ -114,7 +114,8 @@ void OperationInProgressDialog::send_next_request()
 
 		connect(pending_request, &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
 		connect(pending_request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
-		connect(pending_request, &DataRequest::status_message, this, &OperationInProgressDialog::handle_status_message);
+		connect(pending_request, &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_message);
+		connect(pending_request, &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_message);
 
 		pending_request->send_request();
 	}

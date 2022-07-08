@@ -31,7 +31,7 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
-	emit status_message(get_send_message());
+	emit status_info(get_send_message());
 }
 
 DataRequest::DataRequest(QObject* const parent, const QString& api_key) : QObject{ parent }, api_key{ api_key }
@@ -41,8 +41,8 @@ DataRequest::DataRequest(QObject* const parent, const QString& api_key) : QObjec
 
 void DataRequest::handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	emit status_message(QString{ "Received HTTP 404, aborting" });
-	emit status_message(body);
+	emit status_error(QString{ "Received HTTP 404, aborting" });
+	emit status_error(body);
 }
 
 QString DataRequest::get_send_message() const
@@ -74,7 +74,7 @@ void DataRequest::handle_reply_ready()
 	}
 	else if (status == "429") // Too many requests
 	{
-		emit status_message(QString{ "Received HTTP 429, briefly pausing..." });
+		emit status_info(QString{ "Received HTTP 429, briefly pausing..." });
 		emit received_http_429();
 
 		QTimer* timer = new QTimer(this);
@@ -84,23 +84,23 @@ void DataRequest::handle_reply_ready()
 	}
 	else if (status == "500") // Internal server error
 	{
-		emit status_message(QString{ "Received HTTP 500 Internal Server Error, retrying..." });
+		emit status_info(QString{ "Received HTTP 500 Internal Server Error, retrying..." });
 		resend();
 	}
 	else if (status == "502") // Bad gateway
 	{
-		emit status_message(QString{ "Received HTTP 502 Bad Gateway, retrying..." });
+		emit status_info(QString{ "Received HTTP 502 Bad Gateway, retrying..." });
 		resend();
 	}
 	else if (status == "504") // Gateway timeout
 	{
-		emit status_message(QString{ "Received HTTP 504 Gateway Timeout, retrying..." });
+		emit status_info(QString{ "Received HTTP 504 Gateway Timeout, retrying..." });
 		resend();
 	}
 	else
 	{
-		emit status_message(QString{ "Received HTTP %1, aborting" }.arg(status));
-		emit status_message(reply_body);
+		emit status_error(QString{ "Received HTTP %1, aborting" }.arg(status));
+		emit status_error(reply_body);
 	}
 }
 
@@ -108,7 +108,7 @@ void DataRequest::resend()
 {
 	if (pending_request)
 	{
-		emit status_message("Resending...");
+		emit status_info("Resending...");
 		pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
 		connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 	}
@@ -150,14 +150,14 @@ QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional
 void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	delete_success = true;
-	emit status_message(QString{ "Complete" });
+	emit status_info(QString{ "Complete" });
 	emit request_complete();
 }
 
 void DeleteStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	delete_success = false;
-	emit status_message(QString{ "Entry already deleted" });
+	emit status_info(QString{ "Entry already deleted" });
 	emit request_complete();
 }
 
@@ -191,7 +191,7 @@ void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, cons
 			datastore_names.push_back(this_name);
 		}
 
-		emit status_message(QString{ "Received %1 datastore name(s), %2 total" }.arg(QString::number(response->get_datastores_vec().size()), QString::number(datastore_names.size())));
+		emit status_info(QString{ "Received %1 datastore name(s), %2 total" }.arg(QString::number(response->get_datastores_vec().size()), QString::number(datastore_names.size())));
 
 		std::optional<QString> cursor{ response->get_cursor() };
 		if (cursor && cursor->size() > 0)
@@ -200,13 +200,13 @@ void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, cons
 		}
 		else
 		{
-			emit status_message(QString{ "Complete" });
+			emit status_info(QString{ "Complete" });
 			emit request_complete();
 		}
 	}
 	else
 	{
-		emit status_message(QString{ "Complete" });
+		emit status_info(QString{ "Complete" });
 		emit request_complete();
 	}
 }
@@ -242,7 +242,7 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 			datastore_entries.push_back(this_entry);
 		}
 
-		emit status_message(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_entries().size()), QString::number(datastore_entries.size())));
+		emit status_info(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_entries().size()), QString::number(datastore_entries.size())));
 
 		const bool limit_reached = result_limit && datastore_entries.size() >= *result_limit;
 
@@ -253,13 +253,13 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 		}
 		else
 		{
-			emit status_message(QString{ "Complete" });
+			emit status_info(QString{ "Complete" });
 			emit request_complete();
 		}
 	}
 	else
 	{
-		emit status_message(QString{ "Complete" });
+		emit status_info(QString{ "Complete" });
 		emit request_complete();
 	}
 }
@@ -304,7 +304,7 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 
 	if (!version)
 	{
-		emit status_message("Error, response did not contain version");
+		emit status_error("Error, response did not contain version");
 		return;
 	}
 
@@ -315,11 +315,11 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 	}
 	else
 	{
-		emit status_message(QString{ "Received invalid response, aborting" });
+		emit status_error(QString{ "Received invalid response, aborting" });
 		return;
 	}
 
-	emit status_message(QString{ "Complete" });
+	emit status_info(QString{ "Complete" });
 	emit request_complete();
 }
 
@@ -327,7 +327,7 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_404(const QString&, co
 {
 	details = std::nullopt;
 
-	emit status_message(QString{ "Complete" });
+	emit status_info(QString{ "Complete" });
 	emit request_complete();
 }
 
@@ -373,7 +373,7 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 			versions.push_back(this_version);
 		}
 
-		emit status_message(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_versions().size()), QString::number(versions.size())));
+		emit status_info(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_versions().size()), QString::number(versions.size())));
 
 		std::optional<QString> cursor{ response->get_cursor() };
 		if (cursor && cursor->size() > 0)
@@ -382,13 +382,13 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 		}
 		else
 		{
-			emit status_message(QString{ "Complete" });
+			emit status_info(QString{ "Complete" });
 			emit request_complete();
 		}
 	}
 	else
 	{
-		emit status_message(QString{ "Complete" });
+		emit status_info(QString{ "Complete" });
 		emit request_complete();
 	}
 }
@@ -419,7 +419,7 @@ QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<Q
 void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	success = true;
-	emit status_message(QString{ "Complete" });
+	emit status_info(QString{ "Complete" });
 	emit request_complete();
 }
 
