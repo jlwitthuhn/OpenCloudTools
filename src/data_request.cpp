@@ -4,6 +4,8 @@
 
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QNetworkReply>
 #include <QTimer>
 #include <QVariant>
@@ -396,6 +398,75 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 QString GetStandardDatastoreEntryVersionsRequest::get_send_message() const
 {
 	return QString{ "Fetching versions for '%1'..." }.arg(key_name);
+}
+
+PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, DatastoreEntryType entry_type, QString unencoded_message)
+	: DataRequest{ parent, api_key }, universe_id{ universe_id }, topic{ topic }
+{
+	request_type = HttpRequestType::Post;
+
+	QJsonObject send_object;
+	switch (entry_type)
+	{
+		case DatastoreEntryType::Json:
+		{
+			const QJsonDocument doc = QJsonDocument::fromJson(unencoded_message.toUtf8());
+			if (doc.isNull())
+			{
+				// Error, probably should do something
+				return;
+			}
+			send_object.insert("message", doc.object());
+			break;
+		}
+		case DatastoreEntryType::String:
+		{
+			send_object.insert("message", unencoded_message);
+			break;
+		}
+		case DatastoreEntryType::Number:
+		{
+			send_object.insert("message", unencoded_message.toDouble());
+			break;
+		}
+		case DatastoreEntryType::Bool:
+		{
+			if (unencoded_message.toLower() == "true")
+			{
+				send_object.insert("message", true);
+			}
+			else if (unencoded_message.toLower() == "false")
+			{
+				send_object.insert("message", false);
+			}
+			break;
+		}
+	}
+
+	const QJsonDocument doc{ send_object };
+	post_body = doc.toJson(QJsonDocument::Compact);
+}
+
+QString PostMessagingServiceMessageRequest::get_title_string() const
+{
+	return "Setting message...";
+}
+
+QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<QString>)
+{
+	return HttpRequestBuilder::post_messaging_service_message(api_key, universe_id, topic);
+}
+
+void PostMessagingServiceMessageRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	success = true;
+	emit status_info(QString{ "Sent" });
+	emit request_complete();
+}
+
+QString PostMessagingServiceMessageRequest::get_send_message() const
+{
+	return QString{ "Sending message to '%1'..." }.arg(topic);
 }
 
 PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body)

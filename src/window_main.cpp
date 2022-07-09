@@ -32,6 +32,7 @@
 #include "panel_bulk_data.h"
 #include "panel_datastore_explore.h"
 #include "panel_http_log.h"
+#include "panel_messaging_service.h"
 #include "panel_universe_prefs.h"
 #include "user_settings.h"
 #include "window_api_key_manage.h"
@@ -172,6 +173,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key };
 			panel_tabs->addTab(bulk_data_panel, "Bulk Data");
 
+			messaging_service_panel = new MessagingServicePanel{ panel_tabs, api_key };
+			panel_tabs->addTab(messaging_service_panel, "Messaging");
+
 			http_log_panel = new HttpLogPanel{ panel_tabs };
 			panel_tabs->addTab(http_log_panel, "HTTP Log");
 
@@ -208,6 +212,7 @@ void MyMainWindow::selected_universe_combo_changed()
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
 	explore_datastore_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
+	messaging_service_panel->selected_universe_changed();
 	universe_preferences_panel->selected_universe_changed();
 }
 

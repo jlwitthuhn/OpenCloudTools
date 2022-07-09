@@ -183,6 +183,26 @@ private:
 	std::vector<StandardDatastoreEntryVersion> versions;
 };
 
+class PostMessagingServiceMessageRequest : public DataRequest
+{
+public:
+	PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, DatastoreEntryType entry_type, QString unencoded_message);
+
+	virtual QString get_title_string() const override;
+
+	bool get_success() const { return success; }
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+	virtual QString get_send_message() const override;
+
+	long long universe_id;
+	QString topic;
+
+	bool success = false;
+};
+
 class PostStandardDatastoreEntryRequest : public DataRequest
 {
 public:
