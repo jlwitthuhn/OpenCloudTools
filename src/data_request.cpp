@@ -216,7 +216,7 @@ void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, cons
 GetStandardDatastoreEntriesRequest::GetStandardDatastoreEntriesRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix) :
 	DataRequest{ parent, api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, prefix{ prefix }
 {
-	
+
 }
 
 QString GetStandardDatastoreEntriesRequest::get_title_string() const
@@ -439,6 +439,11 @@ PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(QObject* 
 			{
 				send_object.insert("message", false);
 			}
+			break;
+		}
+		case DatastoreEntryType::Error:
+		{
+			// Do nothing
 			break;
 		}
 	}
