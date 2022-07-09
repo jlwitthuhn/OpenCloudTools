@@ -1,15 +1,20 @@
 #include "panel_messaging_service.h"
 
+#include <memory>
+#include <optional>
+
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QTextEdit>
 #include <QVBoxLayout>
 
+#include "api_key.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "user_settings.h"
