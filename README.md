@@ -1,6 +1,6 @@
 # Open Cloud Tools
 
-Open Cloud Tools is a desktop application for Windows and MacOS that allows you to interact with Roblox's [Open Cloud](https://create.roblox.com/docs/open-cloud/index) API. Open Cloud Tools supports viewing, editing, reverting, bulk downloading, bulk deleting, and much more.
+Open Cloud Tools is a desktop application for Windows and MacOS that allows you to interact with Roblox's [Open Cloud](https://create.roblox.com/docs/open-cloud/index) API. Open Cloud Tools supports the DataStore and MessagingService APIs.
 
 ## Screenshots
 
@@ -10,6 +10,10 @@ Open Cloud Tools is a desktop application for Windows and MacOS that allows you 
 ![Bulk Delete](./extra/img/bulk_delete.png)
 
 ## Features
+
+### Messaging Service
+
+Send messages that your game servers can consume using [MessagingService](https://create.roblox.com/docs/reference/engine/classes/MessagingService).
 
 ### Basic Datastore Operations
 
@@ -35,6 +39,10 @@ Open Cloud Tools is a desktop application for Windows and MacOS that allows you 
 ## Creating an API Key
 
 To create an API key, go to the [Credentials page of the Roblox Creator Dashboard](https://create.roblox.com/credentials) and click the "Create API Key" button.
+
+### Messaing Permissions
+
+The only permission available for Messaging is 'Publish', which is required to send messages.
 
 ### DataStore Access Permissions
 
