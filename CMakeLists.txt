@@ -71,8 +71,6 @@ add_executable(OpenCloudTools
 	./src/util_validator.h
 	./src/util_wed.cpp
 	./src/util_wed.h
-	./src/window_api_key_add.cpp
-	./src/window_api_key_add.h
 	./src/window_api_key_manage.cpp
 	./src/window_api_key_manage.h
 	./src/window_datastore_bulk_op.cpp
