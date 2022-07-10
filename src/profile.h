@@ -32,10 +32,11 @@ private:
 	std::set<QString> _hidden_datastores;
 };
 
-class ApiKeyProfile
+class ApiKeyProfile : public QObject
 {
+	Q_OBJECT
 public:
-	ApiKeyProfile(const QString& name, const QString& key, bool production, bool save_to_disk);
+	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk);
 
 	QString name() const { return _name; };
 	QString key() const { return _key; };
@@ -72,15 +73,15 @@ public:
 	bool get_less_verbose_bulk_operations() const { return less_verbose_bulk_operations; }
 	void set_less_verbose_bulk_operations(bool less_verbose);
 
-	std::vector<ApiKeyProfile> get_all_api_keys() const { return api_keys; };
-	std::optional<ApiKeyProfile> get_api_key(size_t key_index) const;
+	const std::vector<ApiKeyProfile*>& get_api_key_list() const { return api_key_list; };
+	ApiKeyProfile* get_api_key_by_index(size_t key_index);
+	ApiKeyProfile* get_api_key_selected();
 
-	std::optional<size_t> add_api_key(const ApiKeyProfile& details, bool emit_signal = true);
-	void update_api_key(size_t index, const ApiKeyProfile& details);
+	std::optional<size_t> add_api_key(ApiKeyProfile* details, bool emit_signal = true);
+	void update_api_key(size_t index, const QString& name, const QString& key, bool production, bool save_key_to_disk);
 	void delete_api_key(size_t index);
 
 	void select_api_key(std::optional<size_t> index);
-	std::optional<ApiKeyProfile> get_selected_profile() const;
 
 	std::optional<size_t> selected_profile_add_universe(const UniverseProfile& universe_profile);
 
@@ -101,7 +102,7 @@ signals:
 private:
 	explicit UserProfile(QObject* parent = nullptr);
 
-	bool universe_name_in_use(const QString& name) const;
+	bool profile_name_in_use(const QString& name) const;
 
 	void sort_universes();
 
@@ -114,5 +115,5 @@ private:
 	std::optional<size_t> selected_key_index;
 	std::optional<size_t> selected_universe_index;
 
-	std::vector<ApiKeyProfile> api_keys;
+	std::vector<ApiKeyProfile*> api_key_list;
 };

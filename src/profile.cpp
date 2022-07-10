@@ -9,9 +9,9 @@
 #include <QString>
 #include <QVariant>
 
-static bool sort_api_key_profile(const ApiKeyProfile& a, const ApiKeyProfile& b)
+static bool sort_api_key_profile(const ApiKeyProfile* a, const ApiKeyProfile* b)
 {
-	return a.name() < b.name();
+	return a->name() < b->name();
 }
 
 UniverseProfile::UniverseProfile(const QString& name, const long long universe_id) : _name{ name }, _universe_id{ universe_id }
@@ -24,7 +24,7 @@ bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 	return _name == other._name && _universe_id == other._universe_id;
 }
 
-ApiKeyProfile::ApiKeyProfile(const QString& name, const QString& key, const bool production, const bool save_to_disk) : _name{ name }, _key{ key }, _production{ production }, _save_to_disk{ save_to_disk }
+ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk) : QObject{ parent }, _name { name }, _key{key}, _production{production}, _save_to_disk{save_to_disk}
 {
 
 }
@@ -126,29 +126,41 @@ void UserProfile::set_less_verbose_bulk_operations(const bool less_verbose)
 	}
 }
 
-std::optional<ApiKeyProfile> UserProfile::get_api_key(const size_t key_index) const
+ApiKeyProfile* UserProfile::get_api_key_by_index(const size_t key_index)
 {
-	if (key_index < api_keys.size())
+	if (key_index < api_key_list.size())
 	{
-		return api_keys.at(key_index);
+		return api_key_list.at(key_index);
 	}
 	else
 	{
-		return std::nullopt;
+		return nullptr;
 	}
 }
 
-std::optional<size_t> UserProfile::add_api_key(const ApiKeyProfile& details, const bool emit_signal)
+ApiKeyProfile* UserProfile::get_api_key_selected()
 {
-	if (universe_name_in_use( details.name() ))
+	if (selected_key_index)
+	{
+		return get_api_key_by_index(*selected_key_index);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+std::optional<size_t> UserProfile::add_api_key(ApiKeyProfile* details, const bool emit_signal)
+{
+	if (profile_name_in_use( details->name() ))
 	{
 		return std::nullopt;
 	}
 	else
 	{
-		const size_t this_index = api_keys.size();
-		api_keys.push_back(details);
-		std::sort(api_keys.begin(), api_keys.end(), sort_api_key_profile);
+		const size_t this_index = api_key_list.size();
+		api_key_list.push_back(details);
+		std::sort(api_key_list.begin(), api_key_list.end(), sort_api_key_profile);
 		if (emit_signal)
 		{
 			emit api_key_list_changed();
@@ -157,29 +169,30 @@ std::optional<size_t> UserProfile::add_api_key(const ApiKeyProfile& details, con
 	}
 }
 
-void UserProfile::update_api_key(const size_t index, const ApiKeyProfile& details)
+void UserProfile::update_api_key(const size_t index, const QString& name, const QString& key, bool production, bool save_key_to_disk)
 {
-	std::optional<ApiKeyProfile> existing = get_api_key(index);
+	ApiKeyProfile* existing = get_api_key_by_index(index);
 	if (existing)
 	{
 		// Copy existing universe list, this operation only effects top-level params
-		ApiKeyProfile to_insert{ details };
+		ApiKeyProfile* to_insert = new ApiKeyProfile{ this, name, key, production, save_key_to_disk };
 		for (const UniverseProfile& this_universe_profile : existing->universes())
 		{
-			to_insert.add_universe(this_universe_profile);
+			to_insert->add_universe(this_universe_profile);
 		}
 
-		api_keys.at(index) = to_insert;
-		std::sort(api_keys.begin(), api_keys.end(), sort_api_key_profile);
+		api_key_list.erase(api_key_list.begin() + index);
+		api_key_list.push_back(to_insert);
+		std::sort(api_key_list.begin(), api_key_list.end(), sort_api_key_profile);
 		emit api_key_list_changed();
 	}
 }
 
 void UserProfile::delete_api_key(const size_t index)
 {
-	if (index < api_keys.size())
+	if (index < api_key_list.size())
 	{
-		api_keys.erase(api_keys.begin() + index);
+		api_key_list.erase(api_key_list.begin() + index);
 		emit api_key_list_changed();
 	}
 }
@@ -197,24 +210,12 @@ void UserProfile::select_api_key(const std::optional<size_t> index)
 	selected_universe_index = std::nullopt;
 }
 
-std::optional<ApiKeyProfile> UserProfile::get_selected_profile() const
-{
-	if (selected_key_index)
-	{
-		return get_api_key(*selected_key_index);
-	}
-	else
-	{
-		return std::nullopt;
-	}
-}
-
 std::optional<size_t> UserProfile::selected_profile_add_universe(const UniverseProfile& universe_profile)
 {
-	if (selected_key_index && *selected_key_index < api_keys.size())
+	if (selected_key_index && *selected_key_index < api_key_list.size())
 	{
-		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		const std::optional<size_t> new_universe_index = this_profile.add_universe(universe_profile);
+		ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		const std::optional<size_t> new_universe_index = this_profile->add_universe(universe_profile);
 		if (new_universe_index)
 		{
 			selected_universe_index = *new_universe_index;
@@ -233,27 +234,27 @@ void UserProfile::select_universe(const std::optional<size_t> universe_index)
 
 void UserProfile::remove_selected_universe()
 {
-	if (selected_key_index && *selected_key_index < api_keys.size() && selected_universe_index)
+	if (selected_key_index && *selected_key_index < api_key_list.size() && selected_universe_index)
 	{
-		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		this_profile.remove_universe(*selected_universe_index);
+		ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		this_profile->remove_universe(*selected_universe_index);
 		emit universe_list_changed(std::nullopt);
 	}
 }
 
 bool UserProfile::update_selected_universe(const QString& name, const long long universe_id)
 {
-	if (selected_key_index && *selected_key_index < api_keys.size() && selected_universe_index)
+	if (selected_key_index && *selected_key_index < api_key_list.size() && selected_universe_index)
 	{
-		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		for (const UniverseProfile& this_profile : this_profile.universes())
+		ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		for (const UniverseProfile& this_profile : this_profile->universes())
 		{
 			if (this_profile.name() == name && this_profile.universe_id() == universe_id)
 			{
 				return false;
 			}
 		}
-		const bool success = this_profile.update_universe_details(*selected_universe_index, name, universe_id);
+		const bool success = this_profile->update_universe_details(*selected_universe_index, name, universe_id);
 		if (success)
 		{
 			sort_universes();
@@ -266,12 +267,12 @@ bool UserProfile::update_selected_universe(const QString& name, const long long 
 
 std::optional<UniverseProfile> UserProfile::get_selected_universe() const
 {
-	if (selected_key_index && *selected_key_index < api_keys.size())
+	if (selected_key_index && *selected_key_index < api_key_list.size())
 	{
-		const ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
+		const ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		if (selected_universe_index && *selected_universe_index < this_profile->universes().size())
 		{
-			return this_profile.universes().at(*selected_universe_index);
+			return this_profile->universes().at(*selected_universe_index);
 		}
 	}
 	return std::nullopt;
@@ -279,12 +280,12 @@ std::optional<UniverseProfile> UserProfile::get_selected_universe() const
 
 void UserProfile::add_hidden_datastore(const QString& datastore_name)
 {
-	if (selected_key_index && *selected_key_index < api_keys.size())
+	if (selected_key_index && *selected_key_index < api_key_list.size())
 	{
-		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
+		ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		if (selected_universe_index && *selected_universe_index < this_profile->universes().size())
 		{
-			this_profile.add_hidden_datastore(*selected_universe_index, datastore_name);
+			this_profile->add_hidden_datastore(*selected_universe_index, datastore_name);
 			emit hidden_datastores_changed();
 		}
 	}
@@ -292,23 +293,23 @@ void UserProfile::add_hidden_datastore(const QString& datastore_name)
 
 void UserProfile::remove_hidden_datastore(const QString& datastore_name)
 {
-	if (selected_key_index && *selected_key_index < api_keys.size())
+	if (selected_key_index && *selected_key_index < api_key_list.size())
 	{
-		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		if (selected_universe_index && *selected_universe_index < this_profile.universes().size())
+		ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		if (selected_universe_index && *selected_universe_index < this_profile->universes().size())
 		{
-			this_profile.remove_hidden_datastore(*selected_universe_index, datastore_name);
+			this_profile->remove_hidden_datastore(*selected_universe_index, datastore_name);
 			emit hidden_datastores_changed();
 		}
 	}
 }
 
-bool UserProfile::universe_name_in_use(const QString& name) const
+bool UserProfile::profile_name_in_use(const QString& name) const
 {
 	bool result = false;
-	for (const ApiKeyProfile& this_profile : api_keys)
+	for (const ApiKeyProfile* this_profile : api_key_list)
 	{
-		result = result || (name == this_profile.name());
+		result = result || (name == this_profile->name());
 	}
 	return result;
 }
@@ -316,16 +317,16 @@ bool UserProfile::universe_name_in_use(const QString& name) const
 void UserProfile::sort_universes()
 {
 	const std::optional<UniverseProfile> originally_selected = get_selected_universe();
-	if (selected_key_index && *selected_key_index < api_keys.size())
+	if (selected_key_index && *selected_key_index < api_key_list.size())
 	{
-		ApiKeyProfile& this_profile = api_keys.at(*selected_key_index);
-		this_profile.sort_universes();
+		ApiKeyProfile* this_profile = api_key_list.at(*selected_key_index);
+		this_profile->sort_universes();
 
 		if (originally_selected)
 		{
-			for (size_t i = 0; i < this_profile.universes().size(); i++)
+			for (size_t i = 0; i < this_profile->universes().size(); i++)
 			{
-				if (originally_selected->matches_name_and_id(this_profile.universes().at(i)))
+				if (originally_selected->matches_name_and_id(this_profile->universes().at(i)))
 				{
 					selected_universe_index = i;
 				}
@@ -363,7 +364,7 @@ void UserProfile::load_from_disk()
 			bool production = settings.value("production").toBool();
 			if (name.size() > 0 && key.size() > 0)
 			{
-				ApiKeyProfile loaded_key{ name, key, production, true };
+				ApiKeyProfile* loaded_key = new ApiKeyProfile{ this, name, key, production, true };
 				const int universe_list_size = settings.beginReadArray("universe_ids");
 				for (int j = 0; j < universe_list_size; j++)
 				{
@@ -388,7 +389,7 @@ void UserProfile::load_from_disk()
 					}
 					settings.endArray();
 
-					loaded_key.add_universe(new_profile);
+					loaded_key->add_universe(new_profile);
 				}
 				settings.endArray();
 				add_api_key(loaded_key, false);
@@ -422,19 +423,19 @@ void UserProfile::save_to_disk()
 	settings.beginWriteArray("list");
 	{
 		int next_array_index = 0;
-		for (const ApiKeyProfile& this_key : api_keys)
+		for (const ApiKeyProfile* this_key : api_key_list)
 		{
-			if (this_key.save_to_disk())
+			if (this_key->save_to_disk())
 			{
 				settings.setArrayIndex(next_array_index++);
-				settings.setValue("name", this_key.name());
-				settings.setValue("key", this_key.key());
-				settings.setValue("production", this_key.production());
+				settings.setValue("name", this_key->name());
+				settings.setValue("key", this_key->key());
+				settings.setValue("production", this_key->production());
 
 				settings.beginWriteArray("universe_ids");
 				{
 					int next_universe_array_index = 0;
-					for (const UniverseProfile& this_universe_profile : this_key.universes())
+					for (const UniverseProfile& this_universe_profile : this_key->universes())
 					{
 						settings.setArrayIndex(next_universe_array_index++);
 						settings.setValue("name", this_universe_profile.name());
