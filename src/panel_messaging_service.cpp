@@ -3,13 +3,16 @@
 #include <memory>
 #include <optional>
 
+#include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSplitter>
 #include <QTextEdit>
 #include <QVBoxLayout>
 
@@ -22,8 +25,32 @@
 
 MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
 {
+	QGroupBox* topic_history_group_box = new QGroupBox{ "Topic History" };
+	{
+		QSizePolicy topic_history_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
+		topic_history_size_policy.setHorizontalStretch(3);
+		topic_history_group_box->setSizePolicy(topic_history_size_policy);
+
+		QListWidget* topic_history_list = new QListWidget{ topic_history_group_box };
+
+		QCheckBox* add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
+
+		QPushButton* add_topic_button = new QPushButton{ "Add...", topic_history_group_box };
+		QPushButton* remove_topic_button = new QPushButton{ "Remove", topic_history_group_box };
+
+		QVBoxLayout* topic_history_layout = new QVBoxLayout{ topic_history_group_box };
+		topic_history_layout->addWidget(topic_history_list);
+		topic_history_layout->addWidget(add_used_topics_check);
+		topic_history_layout->addWidget(add_topic_button);
+		topic_history_layout->addWidget(remove_topic_button);
+	}
+
 	QGroupBox* send_group_box = new QGroupBox{ "Send Message", this };
 	{
+		QSizePolicy send_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
+		send_size_policy.setHorizontalStretch(7);
+		send_group_box->setSizePolicy(send_size_policy);
+
 		topic_edit = new QLineEdit{ send_group_box };
 
 		message_edit = new QTextEdit{ send_group_box };
@@ -37,8 +64,12 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		send_layout->addRow("", send_button);
 	}
 
+	QSplitter* splitter = new QSplitter{ this };
+	splitter->addWidget(topic_history_group_box);
+	splitter->addWidget(send_group_box);
+
 	QHBoxLayout* layout = new QHBoxLayout{ this };
-	layout->addWidget(send_group_box);
+	layout->addWidget(splitter);
 
 	selected_universe_changed();
 }
