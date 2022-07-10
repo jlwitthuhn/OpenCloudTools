@@ -4,8 +4,10 @@
 #include <optional>
 #include <set>
 
+#include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QLineEdit>
 #include <QList>
 #include <QListWidget>
 #include <QMargins>
@@ -15,7 +17,6 @@
 
 #include "api_key.h"
 #include "user_settings.h"
-#include "window_hidden_datastore_add.h"
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
 {
@@ -96,7 +97,7 @@ void UniversePreferencesPanel::pressed_add()
 {
 	if (std::optional<UniverseProfile> selected_universe = UserSettings::get()->get_selected_universe())
 	{
-		AddHiddenDatastoreWindow* hide_datastore_window = new AddHiddenDatastoreWindow{ this };
+		UniversePreferencesAddHiddenDatastoreWindow* hide_datastore_window = new UniversePreferencesAddHiddenDatastoreWindow{ this };
 		hide_datastore_window->show();
 	}
 }
@@ -109,4 +110,56 @@ void UniversePreferencesPanel::pressed_remove()
 		QString to_remove = selected.front()->text();
 		UserSettings::get()->remove_hidden_datastore(to_remove);
 	}
+}
+
+UniversePreferencesAddHiddenDatastoreWindow::UniversePreferencesAddHiddenDatastoreWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
+{
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	setWindowTitle("Hide datastore");
+	setWindowModality(Qt::WindowModality::ApplicationModal);
+
+	QWidget* info_panel = new QWidget{ this };
+	{
+		name_edit = new QLineEdit{ info_panel };
+		connect(name_edit, &QLineEdit::textChanged, this, &UniversePreferencesAddHiddenDatastoreWindow::handle_text_changed);
+
+		QFormLayout* info_layout = new QFormLayout{ info_panel };
+		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+		info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+		info_layout->addRow("Datastore name", name_edit);
+	}
+
+	QWidget* button_panel = new QWidget{ this };
+	button_panel->setMinimumWidth(280);
+	{
+		add_button = new QPushButton{ "Add", button_panel };
+		connect(add_button, &QPushButton::clicked, this, &UniversePreferencesAddHiddenDatastoreWindow::pressed_add);
+
+		QPushButton* cancel_button = new QPushButton{ "Cancel", button_panel };
+		connect(add_button, &QPushButton::clicked, this, &UniversePreferencesAddHiddenDatastoreWindow::close);
+
+		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
+		button_layout->addWidget(add_button);
+		button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+		button_layout->addWidget(cancel_button);
+		connect(cancel_button, &QPushButton::clicked, this, &QWidget::close);
+	}
+
+	QVBoxLayout* layout = new QVBoxLayout{ this };
+	layout->addWidget(info_panel);
+	layout->addWidget(button_panel);
+
+	handle_text_changed();
+}
+
+void UniversePreferencesAddHiddenDatastoreWindow::handle_text_changed()
+{
+	add_button->setEnabled(name_edit->text().size() > 0);
+}
+
+void UniversePreferencesAddHiddenDatastoreWindow::pressed_add()
+{
+	UserSettings::get()->add_hidden_datastore(name_edit->text());
+	close();
 }
