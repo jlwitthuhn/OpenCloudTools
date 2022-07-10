@@ -28,8 +28,6 @@ add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
 
 add_executable(OpenCloudTools
 	./src/main.cpp
-	./src/api_key.cpp
-	./src/api_key.h
 	./src/api_response.cpp
 	./src/api_response.h
 	./src/build_info.cpp

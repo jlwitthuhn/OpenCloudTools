@@ -21,7 +21,6 @@
 #include <QVariant>
 #include <QVBoxLayout>
 
-#include "api_key.h"
 #include "profile.h"
 #include "window_main.h"
 

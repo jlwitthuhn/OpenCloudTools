@@ -28,7 +28,6 @@
 
 #include <sqlite3.h>
 
-#include "api_key.h"
 #include "build_info.h"
 #include "http_wrangler.h"
 #include "panel_bulk_data.h"

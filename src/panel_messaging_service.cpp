@@ -16,7 +16,6 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
-#include "api_key.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "profile.h"

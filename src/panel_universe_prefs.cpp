@@ -15,7 +15,6 @@
 #include <QString>
 #include <QVBoxLayout>
 
-#include "api_key.h"
 #include "profile.h"
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }

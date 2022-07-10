@@ -14,7 +14,6 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "api_key.h"
 #include "api_response.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
