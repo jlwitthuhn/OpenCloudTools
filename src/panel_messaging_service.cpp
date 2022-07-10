@@ -76,15 +76,15 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 
 void MessagingServicePanel::selected_universe_changed()
 {
-	const bool enabled = UserSettings::get()->get_selected_universe().has_value();
+	const bool enabled = UserProfile::get()->get_selected_universe().has_value();
 	send_button->setEnabled(enabled);
 }
 
 void MessagingServicePanel::pressed_send()
 {
-	if (UserSettings::get()->get_selected_universe())
+	if (UserProfile::get()->get_selected_universe())
 	{
-		const long long universe_id = UserSettings::get()->get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get()->get_selected_universe()->universe_id();
 
 		const QString topic = topic_edit->text();
 		if (topic.size() == 0)

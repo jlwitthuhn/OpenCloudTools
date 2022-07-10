@@ -90,7 +90,7 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 	}
 	layout->addWidget(button_panel_bot);
 
-	connect(UserSettings::get().get(), &UserSettings::api_key_list_changed, this, &ManageApiKeysWindow::rebuild_slots);
+	connect(UserProfile::get().get(), &UserProfile::api_key_list_changed, this, &ManageApiKeysWindow::rebuild_slots);
 
 	rebuild_slots();
 	selection_changed();
@@ -108,8 +108,8 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
 		QVariant data = item->data(Qt::UserRole);
 		if (variant_is_ulonglong(data))
 		{
-			UserSettings::get()->select_api_key(data.toULongLong());
-			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
+			UserProfile::get()->select_api_key(data.toULongLong());
+			if (std::optional<ApiKeyProfile> details = UserProfile::get()->get_selected_profile())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
 				main_window->show();
@@ -135,7 +135,7 @@ void ManageApiKeysWindow::pressed_edit()
 		if (variant_is_ulonglong(data))
 		{
 			size_t key_index =  data.toULongLong();
-			if (UserSettings::get()->get_api_key(key_index))
+			if (UserProfile::get()->get_api_key(key_index))
 			{
 				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, key_index };
 				add_key_window->setWindowModality(Qt::WindowModality::ApplicationModal);
@@ -160,7 +160,7 @@ void ManageApiKeysWindow::pressed_delete()
 			int result = msg_box->exec();
 			if (result == QMessageBox::Yes)
 			{
-				UserSettings::get()->delete_api_key(data.toULongLong());
+				UserProfile::get()->delete_api_key(data.toULongLong());
 			}
 		}
 	}
@@ -174,8 +174,8 @@ void ManageApiKeysWindow::pressed_select()
 		QVariant data = selected.first()->data(Qt::UserRole);
 		if (variant_is_ulonglong(data))
 		{
-			UserSettings::get()->select_api_key(data.toULongLong());
-			if (std::optional<ApiKeyProfile> details = UserSettings::get()->get_selected_profile())
+			UserProfile::get()->select_api_key(data.toULongLong());
+			if (std::optional<ApiKeyProfile> details = UserProfile::get()->get_selected_profile())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
 				main_window->show();
@@ -193,7 +193,7 @@ void ManageApiKeysWindow::rebuild_slots()
 		delete this_item;
 	}
 
-	std::vector<ApiKeyProfile> keys = UserSettings::get()->get_all_api_keys();
+	std::vector<ApiKeyProfile> keys = UserProfile::get()->get_all_api_keys();
 	size_t this_index = 0;
 	for (const ApiKeyProfile& this_key : keys)
 	{
@@ -225,7 +225,7 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	const std::optional<ApiKeyProfile> existing_key_profile = existing_key_index_in.has_value() ? UserSettings::get()->get_api_key(*existing_key_index_in) : std::nullopt;
+	const std::optional<ApiKeyProfile> existing_key_profile = existing_key_index_in.has_value() ? UserProfile::get()->get_api_key(*existing_key_index_in) : std::nullopt;
 	if (existing_key_profile)
 	{
 		setWindowTitle("Edit API Key");
@@ -320,7 +320,7 @@ void AddApiKeyWindow::add_key()
 	if (input_is_valid())
 	{
 		ApiKeyProfile new_key{ name_edit->text(), key_edit->text().trimmed(), production_check->isChecked(), save_to_disk_check->isChecked() };
-		std::optional<size_t> new_key_id = UserSettings::get()->add_api_key(new_key);
+		std::optional<size_t> new_key_id = UserProfile::get()->add_api_key(new_key);
 		if (new_key_id)
 		{
 			close();
@@ -340,7 +340,7 @@ void AddApiKeyWindow::update_key()
 	if (input_is_valid() && existing_key_index)
 	{
 		ApiKeyProfile new_key{ name_edit->text(), key_edit->text(), production_check->isChecked(), save_to_disk_check->isChecked() };
-		UserSettings::get()->update_api_key(*existing_key_index, new_key);
+		UserProfile::get()->update_api_key(*existing_key_index, new_key);
 		close();
 	}
 }

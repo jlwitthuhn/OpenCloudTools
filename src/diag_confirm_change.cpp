@@ -47,7 +47,7 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	info->setWordWrap(true);
 
 	QGroupBox* prod_box = nullptr;
-	if (std::optional<ApiKeyProfile> profile = UserSettings::get()->get_selected_profile())
+	if (std::optional<ApiKeyProfile> profile = UserProfile::get()->get_selected_profile())
 	{
 		if (profile->production())
 		{

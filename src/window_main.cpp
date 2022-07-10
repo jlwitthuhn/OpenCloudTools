@@ -43,8 +43,8 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
 
-	connect(UserSettings::get().get(), &UserSettings::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
-	connect(UserSettings::get().get(), &UserSettings::autoclose_changed, this, &MyMainWindow::handle_autoclose_changed);
+	connect(UserProfile::get().get(), &UserProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
+	connect(UserProfile::get().get(), &UserProfile::autoclose_changed, this, &MyMainWindow::handle_autoclose_changed);
 
 	QMenuBar* menu_bar = new QMenuBar{ this };
 	{
@@ -66,12 +66,12 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 		{
 			action_toggle_autoclose = new QAction{ "&Automatically close progress window", menu_bar };
 			action_toggle_autoclose->setCheckable(true);
-			action_toggle_autoclose->setChecked(UserSettings::get()->get_autoclose_progress_window());
+			action_toggle_autoclose->setChecked(UserProfile::get()->get_autoclose_progress_window());
 			connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
 
 			action_toggle_less_verbose_bulk = new QAction{ "Less &verbose bulk data operations", menu_bar };
 			action_toggle_less_verbose_bulk->setCheckable(true);
-			action_toggle_less_verbose_bulk->setChecked(UserSettings::get()->get_less_verbose_bulk_operations());
+			action_toggle_less_verbose_bulk->setChecked(UserProfile::get()->get_less_verbose_bulk_operations());
 			connect(action_toggle_less_verbose_bulk, &QAction::triggered, this, &MyMainWindow::pressed_toggle_less_verbose_bulk);
 
 			preferences_menu->addAction(action_toggle_autoclose);
@@ -203,11 +203,11 @@ void MyMainWindow::selected_universe_combo_changed()
 	if (select_universe_combo->count() > 0)
 	{
 		const size_t universe_index = select_universe_combo->currentData().toULongLong();
-		UserSettings::get()->select_universe(universe_index);
+		UserProfile::get()->select_universe(universe_index);
 	}
 	else
 	{
-		UserSettings::get()->select_universe(std::nullopt);
+		UserProfile::get()->select_universe(std::nullopt);
 	}
 	edit_universe_button->setEnabled(select_universe_combo->count() > 0);
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
@@ -240,7 +240,7 @@ void MyMainWindow::pressed_remove_universe()
 	int result = msg_box->exec();
 	if (result == QMessageBox::Yes)
 	{
-		UserSettings::get()->remove_selected_universe();
+		UserProfile::get()->remove_selected_universe();
 	}
 }
 
@@ -254,17 +254,17 @@ void MyMainWindow::pressed_change_key()
 
 void MyMainWindow::pressed_toggle_autoclose()
 {
-	UserSettings::get()->set_autoclose_progress_window(action_toggle_autoclose->isChecked());
+	UserProfile::get()->set_autoclose_progress_window(action_toggle_autoclose->isChecked());
 }
 
 void MyMainWindow::pressed_toggle_less_verbose_bulk()
 {
-	UserSettings::get()->set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
+	UserProfile::get()->set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
 }
 
 void MyMainWindow::handle_autoclose_changed()
 {
-	const bool autoclose = UserSettings::get()->get_autoclose_progress_window();
+	const bool autoclose = UserProfile::get()->get_autoclose_progress_window();
 	if (autoclose != action_toggle_autoclose->isChecked())
 	{
 		action_toggle_autoclose->setChecked(autoclose);
@@ -285,7 +285,7 @@ void MyMainWindow::handle_tab_changed(const int index)
 
 void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_index)
 {
-	std::optional<ApiKeyProfile> this_profile{ UserSettings::get()->get_selected_profile() };
+	std::optional<ApiKeyProfile> this_profile{ UserProfile::get()->get_selected_profile() };
 	if (this_profile)
 	{
 		select_universe_combo->clear();
@@ -315,7 +315,7 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	std::optional<UniverseProfile> existing_universe = edit_current ? UserSettings::get()->get_selected_universe() : std::nullopt;
+	std::optional<UniverseProfile> existing_universe = edit_current ? UserProfile::get()->get_selected_universe() : std::nullopt;
 	edit_mode = existing_universe.has_value();
 
 	if (edit_mode)
@@ -394,7 +394,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 	const long long universe_id = id_edit->text().trimmed().toLongLong();
 	if (edit_mode)
 	{
-		if (UserSettings::get()->update_selected_universe(name, universe_id))
+		if (UserProfile::get()->update_selected_universe(name, universe_id))
 		{
 			close();
 		}
@@ -408,7 +408,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 	}
 	else
 	{
-		const std::optional<size_t> new_id = UserSettings::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
+		const std::optional<size_t> new_id = UserProfile::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
 		if (new_id)
 		{
 			close();

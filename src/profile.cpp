@@ -14,13 +14,13 @@ static bool sort_api_key_profile(const ApiKeyProfile& a, const ApiKeyProfile& b)
 	return a.name() < b.name();
 }
 
-std::unique_ptr<UserSettings>& UserSettings::get()
+std::unique_ptr<UserProfile>& UserProfile::get()
 {
-	static std::unique_ptr<UserSettings> manager = std::unique_ptr<UserSettings>(new UserSettings());
+	static std::unique_ptr<UserProfile> manager = std::unique_ptr<UserProfile>(new UserProfile());
 	return manager;
 }
 
-void UserSettings::set_autoclose_progress_window(const bool autoclose)
+void UserProfile::set_autoclose_progress_window(const bool autoclose)
 {
 	if (autoclose_progress_window != autoclose)
 	{
@@ -30,7 +30,7 @@ void UserSettings::set_autoclose_progress_window(const bool autoclose)
 	}
 }
 
-void UserSettings::set_less_verbose_bulk_operations(const bool less_verbose)
+void UserProfile::set_less_verbose_bulk_operations(const bool less_verbose)
 {
 	if (less_verbose_bulk_operations != less_verbose)
 	{
@@ -39,7 +39,7 @@ void UserSettings::set_less_verbose_bulk_operations(const bool less_verbose)
 	}
 }
 
-std::optional<ApiKeyProfile> UserSettings::get_api_key(const size_t key_index) const
+std::optional<ApiKeyProfile> UserProfile::get_api_key(const size_t key_index) const
 {
 	if (key_index < api_keys.size())
 	{
@@ -51,7 +51,7 @@ std::optional<ApiKeyProfile> UserSettings::get_api_key(const size_t key_index) c
 	}
 }
 
-std::optional<size_t> UserSettings::add_api_key(const ApiKeyProfile& details, const bool emit_signal)
+std::optional<size_t> UserProfile::add_api_key(const ApiKeyProfile& details, const bool emit_signal)
 {
 	if (universe_name_in_use( details.name() ))
 	{
@@ -70,7 +70,7 @@ std::optional<size_t> UserSettings::add_api_key(const ApiKeyProfile& details, co
 	}
 }
 
-void UserSettings::update_api_key(const size_t index, const ApiKeyProfile& details)
+void UserProfile::update_api_key(const size_t index, const ApiKeyProfile& details)
 {
 	std::optional<ApiKeyProfile> existing = get_api_key(index);
 	if (existing)
@@ -88,7 +88,7 @@ void UserSettings::update_api_key(const size_t index, const ApiKeyProfile& detai
 	}
 }
 
-void UserSettings::delete_api_key(const size_t index)
+void UserProfile::delete_api_key(const size_t index)
 {
 	if (index < api_keys.size())
 	{
@@ -97,7 +97,7 @@ void UserSettings::delete_api_key(const size_t index)
 	}
 }
 
-void UserSettings::select_api_key(const std::optional<size_t> index)
+void UserProfile::select_api_key(const std::optional<size_t> index)
 {
 	if (index)
 	{
@@ -110,7 +110,7 @@ void UserSettings::select_api_key(const std::optional<size_t> index)
 	selected_universe_index = std::nullopt;
 }
 
-std::optional<ApiKeyProfile> UserSettings::get_selected_profile() const
+std::optional<ApiKeyProfile> UserProfile::get_selected_profile() const
 {
 	if (selected_key_index)
 	{
@@ -122,7 +122,7 @@ std::optional<ApiKeyProfile> UserSettings::get_selected_profile() const
 	}
 }
 
-std::optional<size_t> UserSettings::selected_profile_add_universe(const UniverseProfile& universe_profile)
+std::optional<size_t> UserProfile::selected_profile_add_universe(const UniverseProfile& universe_profile)
 {
 	if (selected_key_index && *selected_key_index < api_keys.size())
 	{
@@ -139,12 +139,12 @@ std::optional<size_t> UserSettings::selected_profile_add_universe(const Universe
 	return std::nullopt;
 }
 
-void UserSettings::select_universe(const std::optional<size_t> universe_index)
+void UserProfile::select_universe(const std::optional<size_t> universe_index)
 {
 	selected_universe_index = universe_index;
 }
 
-void UserSettings::remove_selected_universe()
+void UserProfile::remove_selected_universe()
 {
 	if (selected_key_index && *selected_key_index < api_keys.size() && selected_universe_index)
 	{
@@ -154,7 +154,7 @@ void UserSettings::remove_selected_universe()
 	}
 }
 
-bool UserSettings::update_selected_universe(const QString& name, const long long universe_id)
+bool UserProfile::update_selected_universe(const QString& name, const long long universe_id)
 {
 	if (selected_key_index && *selected_key_index < api_keys.size() && selected_universe_index)
 	{
@@ -177,7 +177,7 @@ bool UserSettings::update_selected_universe(const QString& name, const long long
 	return false;
 }
 
-std::optional<UniverseProfile> UserSettings::get_selected_universe() const
+std::optional<UniverseProfile> UserProfile::get_selected_universe() const
 {
 	if (selected_key_index && *selected_key_index < api_keys.size())
 	{
@@ -190,7 +190,7 @@ std::optional<UniverseProfile> UserSettings::get_selected_universe() const
 	return std::nullopt;
 }
 
-void UserSettings::add_hidden_datastore(const QString& datastore_name)
+void UserProfile::add_hidden_datastore(const QString& datastore_name)
 {
 	if (selected_key_index && *selected_key_index < api_keys.size())
 	{
@@ -203,7 +203,7 @@ void UserSettings::add_hidden_datastore(const QString& datastore_name)
 	}
 }
 
-void UserSettings::remove_hidden_datastore(const QString& datastore_name)
+void UserProfile::remove_hidden_datastore(const QString& datastore_name)
 {
 	if (selected_key_index && *selected_key_index < api_keys.size())
 	{
@@ -216,7 +216,7 @@ void UserSettings::remove_hidden_datastore(const QString& datastore_name)
 	}
 }
 
-bool UserSettings::universe_name_in_use(const QString& name) const
+bool UserProfile::universe_name_in_use(const QString& name) const
 {
 	bool result = false;
 	for (const ApiKeyProfile& this_profile : api_keys)
@@ -226,7 +226,7 @@ bool UserSettings::universe_name_in_use(const QString& name) const
 	return result;
 }
 
-void UserSettings::sort_universes()
+void UserProfile::sort_universes()
 {
 	const std::optional<UniverseProfile> originally_selected = get_selected_universe();
 	if (selected_key_index && *selected_key_index < api_keys.size())
@@ -247,7 +247,7 @@ void UserSettings::sort_universes()
 	}
 }
 
-void UserSettings::load_from_disk()
+void UserProfile::load_from_disk()
 {
 	QSettings settings;
 
@@ -317,7 +317,7 @@ void UserSettings::load_from_disk()
 	emit api_key_list_changed();
 }
 
-void UserSettings::save_to_disk()
+void UserProfile::save_to_disk()
 {
 	QSettings settings;
 
@@ -374,10 +374,10 @@ void UserSettings::save_to_disk()
 	settings.endGroup();
 }
 
-UserSettings::UserSettings(QObject* parent) : QObject{ parent }
+UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 {
 	load_from_disk();
-	connect(this, &UserSettings::api_key_list_changed, this, &UserSettings::save_to_disk);
-	connect(this, &UserSettings::hidden_datastores_changed, this, &UserSettings::save_to_disk);
-	connect(this, &UserSettings::universe_list_changed, this, &UserSettings::save_to_disk);
+	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
+	connect(this, &UserProfile::hidden_datastores_changed, this, &UserProfile::save_to_disk);
+	connect(this, &UserProfile::universe_list_changed, this, &UserProfile::save_to_disk);
 }

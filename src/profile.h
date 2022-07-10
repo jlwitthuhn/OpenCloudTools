@@ -11,11 +11,11 @@
 
 #include "api_key.h"
 
-class UserSettings : public QObject
+class UserProfile : public QObject
 {
 	Q_OBJECT
 public:
-	static std::unique_ptr<UserSettings>& get();
+	static std::unique_ptr<UserProfile>& get();
 
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
@@ -50,7 +50,7 @@ signals:
 	void autoclose_changed();
 
 private:
-	explicit UserSettings(QObject* parent = nullptr);
+	explicit UserProfile(QObject* parent = nullptr);
 
 	bool universe_name_in_use(const QString& name) const;
 

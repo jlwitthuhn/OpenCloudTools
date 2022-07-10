@@ -89,7 +89,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 		get_entries_request->set_http_429_count(http_429_count);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
-		if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_info, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
 		}
@@ -246,7 +246,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			get_entry_request->set_http_429_count(http_429_count);
 			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
 			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-			if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+			if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 			{
 				connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 			}
@@ -261,7 +261,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			delete_entry_request->set_http_429_count(http_429_count);
 			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
 			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-			if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+			if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 			{
 				connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 			}
@@ -278,7 +278,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 		{
 			for (const QString& this_name : datastore_names)
 			{
-				UserSettings::get()->add_hidden_datastore(this_name);
+				UserProfile::get()->add_hidden_datastore(this_name);
 				handle_status_message( QString{ "Hid datastore: '%1'" }.arg(this_name) );
 			}
 		}
@@ -310,7 +310,7 @@ void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
 			post_entry_request->set_http_429_count(http_429_count);
 			connect(post_entry_request, &PostStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
 			connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-			if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+			if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 			{
 				connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 			}
@@ -342,7 +342,7 @@ void DatastoreBulkDeleteProgressWindow::handle_post_entry_response()
 		delete_entry_request->set_http_429_count(http_429_count);
 		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
 		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
-		if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 		}
@@ -424,7 +424,7 @@ void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
 		get_entry_details_request->set_http_429_count(http_429_count);
 		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::received_http_429, this, &DatastoreBulkDownloadProgressWindow::handle_received_http_429);
 		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::status_error, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
-		if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::status_info, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
 		}
@@ -491,7 +491,7 @@ void DatastoreBulkUndeleteProgressWindow::send_next_entry_request()
 		get_versions_request->set_http_429_count(http_429_count);
 		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
 		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
-		if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
 		}
@@ -604,7 +604,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_versions_response()
 		get_entry_at_version_request->set_http_429_count(http_429_count);
 		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
 		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
-		if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
 		}
@@ -641,7 +641,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
 		post_entry_request->set_http_429_count(http_429_count);
 		connect(post_entry_request, &PostStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
 		connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
-		if (UserSettings::get()->get_less_verbose_bulk_operations() == false)
+		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
 		}
