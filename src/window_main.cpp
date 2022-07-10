@@ -284,7 +284,7 @@ void MyMainWindow::handle_tab_changed(const int index)
 
 void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_index)
 {
-	ApiKeyProfile* this_profile{ UserProfile::get()->get_api_key_selected() };
+	ApiKeyProfile* this_profile{ UserProfile::get_selected_api_key()};
 	if (this_profile)
 	{
 		select_universe_combo->clear();
@@ -407,7 +407,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 	}
 	else
 	{
-		const std::optional<size_t> new_id = UserProfile::get()->selected_profile_add_universe(UniverseProfile{ name, universe_id });
+		const std::optional<size_t> new_id = UserProfile::get_selected_api_key()->add_universe(UniverseProfile{ name, universe_id });
 		if (new_id)
 		{
 			close();

@@ -52,6 +52,9 @@ public:
 
 	void sort_universes();
 
+signals:
+	void universe_list_changed(std::optional<size_t> selected_universe_index);
+
 private:
 	QString _name;
 	QString _key;
@@ -66,6 +69,7 @@ class UserProfile : public QObject
 	Q_OBJECT
 public:
 	static std::unique_ptr<UserProfile>& get();
+	static ApiKeyProfile* get_selected_api_key();
 
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
@@ -75,15 +79,12 @@ public:
 
 	const std::vector<ApiKeyProfile*>& get_api_key_list() const { return api_key_list; };
 	ApiKeyProfile* get_api_key_by_index(size_t key_index);
-	ApiKeyProfile* get_api_key_selected();
 
-	std::optional<size_t> add_api_key(ApiKeyProfile* details, bool emit_signal = true);
+	std::optional<size_t> add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk);
 	void update_api_key(size_t index, const QString& name, const QString& key, bool production, bool save_key_to_disk);
 	void delete_api_key(size_t index);
 
 	void select_api_key(std::optional<size_t> index);
-
-	std::optional<size_t> selected_profile_add_universe(const UniverseProfile& universe_profile);
 
 	void select_universe(std::optional<size_t> universe_index);
 	void remove_selected_universe();

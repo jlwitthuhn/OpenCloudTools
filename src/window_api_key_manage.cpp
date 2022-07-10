@@ -108,7 +108,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
 		if (variant_is_ulonglong(data))
 		{
 			UserProfile::get()->select_api_key(data.toULongLong());
-			if (ApiKeyProfile* profile = UserProfile::get()->get_api_key_selected())
+			if (ApiKeyProfile* profile = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->name(), profile->key() };
 				main_window->show();
@@ -174,7 +174,7 @@ void ManageApiKeysWindow::pressed_select()
 		if (variant_is_ulonglong(data))
 		{
 			UserProfile::get()->select_api_key(data.toULongLong());
-			if (ApiKeyProfile* details = UserProfile::get()->get_api_key_selected())
+			if (ApiKeyProfile* details = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
 				main_window->show();
@@ -317,8 +317,11 @@ void AddApiKeyWindow::add_key()
 {
 	if (input_is_valid())
 	{
-		ApiKeyProfile* new_key = new ApiKeyProfile{ UserProfile::get().get(), name_edit->text(), key_edit->text().trimmed(), production_check->isChecked(), save_to_disk_check->isChecked()};
-		std::optional<size_t> new_key_id = UserProfile::get()->add_api_key(new_key);
+		const QString& name = name_edit->text();
+		const QString& key = key_edit->text().trimmed();
+		const bool production = production_check->isChecked();
+		const bool save_to_disk = save_to_disk_check->isChecked();
+		std::optional<size_t> new_key_id = UserProfile::get()->add_api_key(name, key, production, save_to_disk);
 		if (new_key_id)
 		{
 			close();
