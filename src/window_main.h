@@ -10,6 +10,7 @@
 
 class QAction;
 class QComboBox;
+class QLineEdit;
 class QPushButton;
 class QTabWidget;
 class QWidget;
@@ -57,4 +58,24 @@ private:
 	HttpLogPanel* http_log_panel = nullptr;
 	MessagingServicePanel* messaging_service_panel = nullptr;
 	UniversePreferencesPanel* universe_preferences_panel = nullptr;
+};
+
+class MainWindowAddUniverseWindow : public QWidget
+{
+	Q_OBJECT
+public:
+	explicit MainWindowAddUniverseWindow(QWidget* parent = nullptr, bool edit_current = false);
+
+private:
+	bool input_is_valid() const;
+
+	void text_changed();
+	void pressed_add();
+
+	bool edit_mode = false;
+
+	QLineEdit* name_edit = nullptr;
+	QLineEdit* id_edit = nullptr;
+
+	QPushButton* add_button = nullptr;
 };
