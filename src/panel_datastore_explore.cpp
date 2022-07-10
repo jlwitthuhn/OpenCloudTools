@@ -38,7 +38,7 @@
 #include "datastore_model.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
-#include "user_settings.h"
+#include "profile.h"
 #include "util_enum.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"

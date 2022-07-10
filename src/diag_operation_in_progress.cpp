@@ -13,7 +13,7 @@
 #include <QVBoxLayout>
 
 #include "data_request.h"
-#include "user_settings.h"
+#include "profile.h"
 #include "util_wed.h"
 
 class QWidget;

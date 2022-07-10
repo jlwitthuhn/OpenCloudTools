@@ -12,8 +12,8 @@
 #include <QVBoxLayout>
 
 #include "data_request.h"
+#include "profile.h"
 #include "roblox_time.h"
-#include "user_settings.h"
 
 DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names) :
 	QWidget{ parent, Qt::Window },

@@ -19,9 +19,9 @@
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "profile.h"
 #include "sqlite_wrapper.h"
 #include "tooltip_text.h"
-#include "user_settings.h"
 #include "window_datastore_bulk_op.h"
 
 BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :

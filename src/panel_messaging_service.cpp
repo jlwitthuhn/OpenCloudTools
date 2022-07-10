@@ -19,7 +19,7 @@
 #include "api_key.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
-#include "user_settings.h"
+#include "profile.h"
 #include "util_enum.h"
 #include "util_validator.h"
 

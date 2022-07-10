@@ -56,13 +56,13 @@ add_executable(OpenCloudTools
 	./src/panel_messaging_service.h
 	./src/panel_universe_prefs.cpp
 	./src/panel_universe_prefs.h
+	./src/profile.cpp
+	./src/profile.h
 	./src/roblox_time.cpp
 	./src/roblox_time.h
 	./src/sqlite_wrapper.cpp
 	./src/sqlite_wrapper.h
 	./src/tooltip_text.h
-	./src/user_settings.cpp
-	./src/user_settings.h
 	./src/util_enum.cpp
 	./src/util_enum.h
 	./src/util_json_string.cpp

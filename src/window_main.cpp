@@ -36,7 +36,7 @@
 #include "panel_http_log.h"
 #include "panel_messaging_service.h"
 #include "panel_universe_prefs.h"
-#include "user_settings.h"
+#include "profile.h"
 #include "window_api_key_manage.h"
 
 MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QMainWindow{ parent, Qt::Window }, api_key { api_key }

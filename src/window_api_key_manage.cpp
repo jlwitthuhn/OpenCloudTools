@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 
 #include "api_key.h"
-#include "user_settings.h"
+#include "profile.h"
 #include "window_main.h"
 
 static bool variant_is_ulonglong(const QVariant& variant)

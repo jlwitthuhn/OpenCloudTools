@@ -26,9 +26,9 @@
 
 #include "api_key.h"
 #include "diag_confirm_change.h"
+#include "profile.h"
 #include "roblox_time.h"
 #include "sqlite_wrapper.h"
-#include "user_settings.h"
 #include "window_datastore_bulk_op_progress.h"
 
 DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :

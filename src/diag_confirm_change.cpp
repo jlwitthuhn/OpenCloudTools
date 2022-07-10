@@ -13,7 +13,7 @@
 #include <QWidget>
 
 #include "api_key.h"
-#include "user_settings.h"
+#include "profile.h"
 
 ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType change_type) : QDialog{ parent }
 {
