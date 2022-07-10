@@ -186,7 +186,7 @@ private:
 class PostMessagingServiceMessageRequest : public DataRequest
 {
 public:
-	PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, DatastoreEntryType entry_type, QString unencoded_message);
+	PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
 
 	virtual QString get_title_string() const override;
 

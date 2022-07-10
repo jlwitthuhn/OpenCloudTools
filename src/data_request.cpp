@@ -400,53 +400,13 @@ QString GetStandardDatastoreEntryVersionsRequest::get_send_message() const
 	return QString{ "Fetching versions for '%1'..." }.arg(key_name);
 }
 
-PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, DatastoreEntryType entry_type, QString unencoded_message)
+PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
 	: DataRequest{ parent, api_key }, universe_id{ universe_id }, topic{ topic }
 {
 	request_type = HttpRequestType::Post;
 
 	QJsonObject send_object;
-	switch (entry_type)
-	{
-		case DatastoreEntryType::Json:
-		{
-			const QJsonDocument doc = QJsonDocument::fromJson(unencoded_message.toUtf8());
-			if (doc.isNull())
-			{
-				// Error, probably should do something
-				return;
-			}
-			send_object.insert("message", doc.object());
-			break;
-		}
-		case DatastoreEntryType::String:
-		{
-			send_object.insert("message", unencoded_message);
-			break;
-		}
-		case DatastoreEntryType::Number:
-		{
-			send_object.insert("message", unencoded_message.toDouble());
-			break;
-		}
-		case DatastoreEntryType::Bool:
-		{
-			if (unencoded_message.toLower() == "true")
-			{
-				send_object.insert("message", true);
-			}
-			else if (unencoded_message.toLower() == "false")
-			{
-				send_object.insert("message", false);
-			}
-			break;
-		}
-		case DatastoreEntryType::Error:
-		{
-			// Do nothing
-			break;
-		}
-	}
+	send_object.insert("message", unencoded_message);
 
 	const QJsonDocument doc{ send_object };
 	post_body = doc.toJson(QJsonDocument::Compact);
