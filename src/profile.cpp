@@ -37,7 +37,8 @@ static bool compare_universe_profile(const UniverseProfile* const a, const Unive
 	return false;
 }
 
-UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id) : QObject{ parent }, name { name }, universe_id{ universe_id }
+UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&, long long)>& name_and_id_available)
+	: QObject{ parent }, name{ name }, universe_id{ universe_id }, name_and_id_available{ name_and_id_available }
 {
 
 }
@@ -45,6 +46,32 @@ UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const lon
 bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 {
 	return name == other.name && universe_id == other.universe_id;
+}
+
+bool UniverseProfile::set_details(const QString& name, long long universe_id)
+{
+	if (name_and_id_available(name, universe_id))
+	{
+		this->name = name;
+		this->universe_id = universe_id;
+		emit details_changed();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void UniverseProfile::add_hidden_datastore(const QString& datastore)
+{
+	hidden_datastore_set.insert(datastore);
+	emit hidden_datastore_list_changed();
+}
+
+void UniverseProfile::remove_hidden_datastore(const QString& datastore) {
+	hidden_datastore_set.erase(datastore);
+	emit hidden_datastore_list_changed();
 }
 
 ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk) : QObject{ parent }, name { name }, key{key}, production{production}, save_to_disk{save_to_disk}
@@ -82,7 +109,12 @@ std::optional<size_t> ApiKeyProfile::add_universe(const QString& name, long long
 			return std::nullopt;
 		}
 	}
-	UniverseProfile* this_universe = new UniverseProfile{ this, name, universe_id };
+	const std::function<bool(const QString&, long long)> name_id_check = [this](const QString& name, long long id) -> bool {
+		return universe_name_and_id_available(name, id);
+	};
+	UniverseProfile* this_universe = new UniverseProfile{ this, name, universe_id, name_id_check };
+	connect(this_universe, &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
+	connect(this_universe, &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
 	universe_list.push_back(this_universe);
 	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
 	for (size_t this_index = 0; this_index < universe_list.size(); this_index++)
@@ -110,9 +142,7 @@ bool ApiKeyProfile::update_universe_details(const size_t universe_index, const Q
 {
 	if (universe_index < universe_list.size())
 	{
-		universe_list.at(universe_index)->set_name(name);
-		universe_list.at(universe_index)->set_universe_id(universe_id);
-		return true;
+		return universe_list.at(universe_index)->set_details(name, universe_id);
 	}
 	return false;
 }
@@ -158,16 +188,14 @@ void ApiKeyProfile::remove_selected_universe()
 
 bool ApiKeyProfile::update_selected_universe(const QString& name, long long universe_id)
 {
-	bool result = false;
 	if (selected_universe_index)
 	{
-		result = update_universe_details(*selected_universe_index, name, universe_id);
-		if (result)
-		{
-			sort_universe_list();
-		}
+		return update_universe_details(*selected_universe_index, name, universe_id);
 	}
-	return result;
+	else
+	{
+		return false;
+	}
 }
 
 void ApiKeyProfile::TMP_add_hidden_datastore_to_selected(const QString& datastore_name)
@@ -206,6 +234,18 @@ void ApiKeyProfile::sort_universe_list()
 		}
 	}
 	emit universe_list_changed(selected_universe_index);
+}
+
+bool ApiKeyProfile::universe_name_and_id_available(const QString& name, const long long universe_id)
+{
+	for (const UniverseProfile* const this_universe : universe_list)
+	{
+		if (this_universe->get_name() == name && this_universe->get_universe_id() == universe_id)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 std::unique_ptr<UserProfile>& UserProfile::get()

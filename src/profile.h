@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -14,7 +15,7 @@ class UniverseProfile : public QObject
 {
 	Q_OBJECT
 public:
-	UniverseProfile(QObject* parent, const QString& name, long long universe_id);
+	UniverseProfile(QObject* parent, const QString& name, long long universe_id, const std::function<bool(const QString&, long long)>& name_and_id_available);
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
@@ -22,15 +23,21 @@ public:
 	long long get_universe_id() const { return universe_id; }
 	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
 
-	void set_name(const QString& name_in) { name = name_in; }
-	void set_universe_id(const long long universe_id_in) { universe_id = universe_id_in; }
-	void add_hidden_datastore(const QString& datastore) { hidden_datastore_set.insert(datastore); }
-	void remove_hidden_datastore(const QString& datastore) { hidden_datastore_set.erase(datastore); }
+	bool set_details(const QString& name, long long universe_id);
+
+	void add_hidden_datastore(const QString& datastore);
+	void remove_hidden_datastore(const QString& datastore);
+
+signals:
+	void details_changed();
+	void hidden_datastore_list_changed();
 
 private:
 	QString name;
 	long long universe_id;
 	std::set<QString> hidden_datastore_set;
+
+	std::function<bool(const QString&, long long)> name_and_id_available;
 };
 
 class ApiKeyProfile : public QObject
@@ -69,6 +76,8 @@ signals:
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 
 private:
+	bool universe_name_and_id_available(const QString& name, long long universe_id);
+
 	QString name;
 	QString key;
 	bool production = false;
