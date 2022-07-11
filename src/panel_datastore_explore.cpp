@@ -593,9 +593,9 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 					{
 						hide_unhide_action = new QAction{ "Unhide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							if (ApiKeyProfile* selected_key = UserProfile::get_selected_api_key())
+							if (UniverseProfile* universe_profile = UserProfile::get_selected_universe())
 							{
-								selected_key->TMP_remove_hidden_datastore_from_selected(the_datastore_name);
+								universe_profile->remove_hidden_datastore(the_datastore_name);
 							}
 						});
 					}
@@ -603,9 +603,9 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 					{
 						hide_unhide_action = new QAction{ "Hide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							if (ApiKeyProfile* selected_key = UserProfile::get_selected_api_key())
+							if (UniverseProfile* universe_profile = UserProfile::get_selected_universe())
 							{
-								selected_key->TMP_add_hidden_datastore_to_selected(the_datastore_name);
+								universe_profile->add_hidden_datastore(the_datastore_name);
 							}
 						});
 					}

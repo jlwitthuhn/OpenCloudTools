@@ -278,7 +278,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 		{
 			for (const QString& this_name : datastore_names)
 			{
-				UserProfile::get_selected_api_key()->TMP_add_hidden_datastore_to_selected(this_name);;
+				UserProfile::get_selected_universe()->add_hidden_datastore(this_name);;
 				handle_status_message( QString{ "Hid datastore: '%1'" }.arg(this_name) );
 			}
 		}

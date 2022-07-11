@@ -107,7 +107,7 @@ void UniversePreferencesPanel::pressed_remove()
 	if (selected.size() == 1)
 	{
 		QString to_remove = selected.front()->text();
-		UserProfile::get_selected_api_key()->TMP_remove_hidden_datastore_from_selected(to_remove);
+		UserProfile::get_selected_universe()->remove_hidden_datastore(to_remove);
 	}
 }
 
@@ -159,6 +159,6 @@ void UniversePreferencesAddHiddenDatastoreWindow::handle_text_changed()
 
 void UniversePreferencesAddHiddenDatastoreWindow::pressed_add()
 {
-	UserProfile::get_selected_api_key()->TMP_add_hidden_datastore_to_selected(name_edit->text());;
+	UserProfile::get_selected_universe()->add_hidden_datastore(name_edit->text());;
 	close();
 }

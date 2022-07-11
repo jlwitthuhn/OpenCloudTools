@@ -393,7 +393,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 	const long long universe_id = id_edit->text().trimmed().toLongLong();
 	if (edit_mode)
 	{
-		if (UserProfile::get_selected_api_key()->update_selected_universe(name, universe_id))
+		if (UserProfile::get_selected_universe()->set_details(name, universe_id))
 		{
 			close();
 		}

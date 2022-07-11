@@ -54,28 +54,21 @@ public:
 	void set_details(const QString& name, const QString& key, bool production, bool save_to_disk);
 
 	const std::vector<UniverseProfile*>& get_universe_list() const { return universe_list; }
+	UniverseProfile* get_universe_profile_by_index(size_t universe_index) const;
 	UniverseProfile* get_selected_universe() const;
 
 	std::optional<size_t> add_universe(const QString& name, long long universe_id);
 	void remove_universe(size_t universe_index);
-	bool update_universe_details(size_t universe_index, const QString& name, long long universe_id);
-	void add_hidden_datastore(size_t universe_index, const QString& datastore_name);
-	void remove_hidden_datastore(size_t universe_index, const QString& datastore_name);
 
 	void select_universe(std::optional<size_t> universe_index);
 	void remove_selected_universe();
-	bool update_selected_universe(const QString& name, long long universe_id);
-
-	void TMP_add_hidden_datastore_to_selected(const QString& datastore_name);
-	void TMP_remove_hidden_datastore_from_selected(const QString& datastore_name);
-
-	void sort_universe_list();
 
 signals:
 	void hidden_datastore_list_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 
 private:
+	void sort_universe_list();
 	bool universe_name_and_id_available(const QString& name, long long universe_id);
 
 	QString name;

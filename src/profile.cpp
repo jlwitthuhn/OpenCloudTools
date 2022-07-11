@@ -87,6 +87,11 @@ void ApiKeyProfile::set_details(const QString& name, const QString& key, const b
 	this->save_to_disk = save_to_disk;
 }
 
+UniverseProfile* ApiKeyProfile::get_universe_profile_by_index(size_t universe_index) const
+{
+	return universe_list.at(universe_index);
+}
+
 UniverseProfile* ApiKeyProfile::get_selected_universe() const
 {
 	if (selected_universe_index && *selected_universe_index < universe_list.size())
@@ -138,33 +143,6 @@ void ApiKeyProfile::remove_universe(const size_t universe_index)
 	}
 }
 
-bool ApiKeyProfile::update_universe_details(const size_t universe_index, const QString& name, long long universe_id)
-{
-	if (universe_index < universe_list.size())
-	{
-		return universe_list.at(universe_index)->set_details(name, universe_id);
-	}
-	return false;
-}
-
-void ApiKeyProfile::add_hidden_datastore(const size_t universe_index, const QString& datastore_name)
-{
-	if (universe_index < universe_list.size())
-	{
-		universe_list.at(universe_index)->add_hidden_datastore(datastore_name);
-		emit hidden_datastore_list_changed();
-	}
-}
-
-void ApiKeyProfile::remove_hidden_datastore(const size_t universe_index, const QString& datastore_name)
-{
-	if (universe_index < universe_list.size())
-	{
-		universe_list.at(universe_index)->remove_hidden_datastore(datastore_name);
-		emit hidden_datastore_list_changed();
-	}
-}
-
 void ApiKeyProfile::select_universe(const std::optional<size_t> universe_index)
 {
 	if (universe_index && *universe_index < universe_list.size())
@@ -184,34 +162,6 @@ void ApiKeyProfile::remove_selected_universe()
 		remove_universe(*selected_universe_index);
 	}
 	emit universe_list_changed(std::nullopt);
-}
-
-bool ApiKeyProfile::update_selected_universe(const QString& name, long long universe_id)
-{
-	if (selected_universe_index)
-	{
-		return update_universe_details(*selected_universe_index, name, universe_id);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void ApiKeyProfile::TMP_add_hidden_datastore_to_selected(const QString& datastore_name)
-{
-	if (selected_universe_index)
-	{
-		add_hidden_datastore(*selected_universe_index, datastore_name);
-	}
-}
-
-void ApiKeyProfile::TMP_remove_hidden_datastore_from_selected(const QString& datastore_name)
-{
-	if (selected_universe_index)
-	{
-		remove_hidden_datastore(*selected_universe_index, datastore_name);
-	}
 }
 
 void ApiKeyProfile::sort_universe_list()
@@ -440,7 +390,10 @@ void UserProfile::load_from_disk()
 								{
 									settings.setArrayIndex(k);
 									const QString datastore_name = settings.value("name").toString();
-									this_api_key->add_hidden_datastore(*new_universe_index, datastore_name);
+									if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
+									{
+										this_universe->add_hidden_datastore(datastore_name);
+									}
 								}
 								settings.endArray();
 							}
