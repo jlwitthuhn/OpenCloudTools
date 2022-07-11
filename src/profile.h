@@ -10,10 +10,11 @@
 #include <QObject>
 #include <QString>
 
-class UniverseProfile
+class UniverseProfile : public QObject
 {
+	Q_OBJECT
 public:
-	UniverseProfile(const QString& name, long long universe_id);
+	UniverseProfile(QObject* parent, const QString& name, long long universe_id);
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
@@ -43,14 +44,16 @@ public:
 	bool get_production() const { return production; }
 	bool get_save_to_disk() const { return save_to_disk; }
 
-	std::optional<UniverseProfile> get_selected_universe() const;
+	void set_details(const QString& name, const QString& key, bool production, bool save_to_disk);
 
-	std::optional<size_t> add_universe(const UniverseProfile& universe_profile);
+	const std::vector<UniverseProfile*>& get_universe_list() const { return universe_list; }
+	UniverseProfile* get_selected_universe() const;
+
+	std::optional<size_t> add_universe(const QString& name, long long universe_id);
 	void remove_universe(size_t universe_index);
 	bool update_universe_details(size_t universe_index, const QString& name, long long universe_id);
 	void add_hidden_datastore(size_t universe_index, const QString& datastore_name);
 	void remove_hidden_datastore(size_t universe_index, const QString& datastore_name);
-	const std::vector<UniverseProfile>& get_universe_list() const { return universe_list; }
 
 	void select_universe(std::optional<size_t> universe_index);
 	void remove_selected_universe();
@@ -71,7 +74,7 @@ private:
 	bool production = false;
 	bool save_to_disk = false;
 
-	std::vector<UniverseProfile> universe_list;
+	std::vector<UniverseProfile*> universe_list;
 	std::optional<size_t> selected_universe_index;
 };
 
@@ -81,7 +84,7 @@ class UserProfile : public QObject
 public:
 	static std::unique_ptr<UserProfile>& get();
 	static ApiKeyProfile* get_selected_api_key(UserProfile* user_profile = nullptr);
-	static std::optional<UniverseProfile> get_selected_universe(UserProfile* user_profile = nullptr);
+	static UniverseProfile* get_selected_universe(UserProfile* user_profile = nullptr);
 
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);

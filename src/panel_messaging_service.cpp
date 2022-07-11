@@ -75,7 +75,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 
 void MessagingServicePanel::selected_universe_changed()
 {
-	const bool enabled = UserProfile::get_selected_universe().has_value();
+	const bool enabled = UserProfile::get_selected_universe() != nullptr;
 	send_button->setEnabled(enabled);
 }
 

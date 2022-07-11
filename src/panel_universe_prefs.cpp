@@ -62,7 +62,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ p
 
 void UniversePreferencesPanel::selected_universe_changed()
 {
-	button_add->setEnabled(UserProfile::get_selected_universe().has_value());
+	button_add->setEnabled(UserProfile::get_selected_universe() != nullptr);
 	handle_hidden_datastores_changed();
 }
 
@@ -74,7 +74,7 @@ void UniversePreferencesPanel::handle_hidden_datastores_changed()
 		delete this_item;
 	}
 
-	if (std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
 	{
 		std::set<QString> datastore_names = selected_universe->get_hidden_datastore_set();
 		for (const QString& this_datastore_name : datastore_names)
@@ -94,7 +94,7 @@ void UniversePreferencesPanel::handle_list_selection_changed()
 
 void UniversePreferencesPanel::pressed_add()
 {
-	if (std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
 	{
 		UniversePreferencesAddHiddenDatastoreWindow* hide_datastore_window = new UniversePreferencesAddHiddenDatastoreWindow{ this };
 		hide_datastore_window->show();

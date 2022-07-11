@@ -290,8 +290,8 @@ void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_i
 		select_universe_combo->clear();
 		for (size_t i = 0; i < this_profile->get_universe_list().size(); i++)
 		{
-			const UniverseProfile& this_universe = this_profile->get_universe_list().at(i);
-			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.get_name()).arg(this_universe.get_universe_id());
+			const UniverseProfile* const this_universe = this_profile->get_universe_list().at(i);
+			QString formatted = QString{ "%1 [%2]" }.arg(this_universe->get_name()).arg(this_universe->get_universe_id());
 			select_universe_combo->addItem(formatted, QVariant{ static_cast<unsigned long long>(i) });
 		}
 		if (universe_index)
@@ -314,8 +314,8 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	std::optional<UniverseProfile> existing_universe = edit_current ? UserProfile::get_selected_universe() : std::nullopt;
-	edit_mode = existing_universe.has_value();
+	const UniverseProfile* const existing_universe = edit_current ? UserProfile::get_selected_universe() : nullptr;
+	edit_mode = existing_universe != nullptr;
 
 	if (edit_mode)
 	{
@@ -407,7 +407,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 	}
 	else
 	{
-		const std::optional<size_t> new_id = UserProfile::get_selected_api_key()->add_universe(UniverseProfile{ name, universe_id });
+		const std::optional<size_t> new_id = UserProfile::get_selected_api_key()->add_universe(name, universe_id);
 		if (new_id)
 		{
 			close();

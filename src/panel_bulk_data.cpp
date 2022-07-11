@@ -84,7 +84,7 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 
 void BulkDataPanel::selected_universe_changed()
 {
-	const bool enabled = UserProfile::get_selected_universe().has_value();
+	const bool enabled = UserProfile::get_selected_universe() != nullptr;
 	datastore_download_button->setEnabled(enabled);
 	danger_buttons_check->setEnabled(enabled);
 	danger_buttons_check->setCheckState(Qt::Unchecked);

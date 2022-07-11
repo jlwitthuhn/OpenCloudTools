@@ -10,34 +10,34 @@
 #include <QString>
 #include <QVariant>
 
-static bool compare_api_key_profile(const ApiKeyProfile* a, const ApiKeyProfile* b)
+static bool compare_api_key_profile(const ApiKeyProfile* const a, const ApiKeyProfile* const b)
 {
 	return a->get_name() < b->get_name();
 }
 
-static bool compare_universe_profile(const UniverseProfile& a, const UniverseProfile& b)
+static bool compare_universe_profile(const UniverseProfile* const a, const UniverseProfile* const b)
 {
-	if (a.get_name() < b.get_name())
+	if (a->get_name() < b->get_name())
 	{
 		return true;
 	}
-	else if (b.get_name() < a.get_name())
+	else if (b->get_name() < a->get_name())
 	{
 		return false;
 	}
 
-	if (a.get_universe_id() < b.get_universe_id())
+	if (a->get_universe_id() < b->get_universe_id())
 	{
 		return true;
 	}
-	else if (b.get_universe_id() < a.get_universe_id())
+	else if (b->get_universe_id() < a->get_universe_id())
 	{
 		return false;
 	}
 	return false;
 }
 
-UniverseProfile::UniverseProfile(const QString& name, const long long universe_id) : name{ name }, universe_id{ universe_id }
+UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id) : QObject{ parent }, name { name }, universe_id{ universe_id }
 {
 
 }
@@ -52,7 +52,15 @@ ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString
 
 }
 
-std::optional<UniverseProfile> ApiKeyProfile::get_selected_universe() const
+void ApiKeyProfile::set_details(const QString& name, const QString& key, const bool production, const bool save_to_disk)
+{
+	this->name = name;
+	this->key = key;
+	this->production = production;
+	this->save_to_disk = save_to_disk;
+}
+
+UniverseProfile* ApiKeyProfile::get_selected_universe() const
 {
 	if (selected_universe_index && *selected_universe_index < universe_list.size())
 	{
@@ -60,25 +68,26 @@ std::optional<UniverseProfile> ApiKeyProfile::get_selected_universe() const
 	}
 	else
 	{
-		return std::nullopt;
+		return nullptr;
 	}
 }
 
-std::optional<size_t> ApiKeyProfile::add_universe(const UniverseProfile& universe_profile)
+std::optional<size_t> ApiKeyProfile::add_universe(const QString& name, long long universe_id)
 {
-	for (const UniverseProfile& existing_profile : universe_list)
+	for (const UniverseProfile* existing_profile : universe_list)
 	{
-		if (universe_profile.matches_name_and_id(existing_profile))
+		if (existing_profile->get_name() == name && existing_profile->get_universe_id() == universe_id)
 		{
 			// Name + ID should uniquely identify a given slot
 			return std::nullopt;
 		}
 	}
-	universe_list.push_back(universe_profile);
+	UniverseProfile* this_universe = new UniverseProfile{ this, name, universe_id };
+	universe_list.push_back(this_universe);
 	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
 	for (size_t this_index = 0; this_index < universe_list.size(); this_index++)
 	{
-		if (universe_list.at(this_index).matches_name_and_id(universe_profile))
+		if (universe_list.at(this_index)->matches_name_and_id(*this_universe))
 		{
 			emit universe_list_changed(this_index);
 			return this_index;
@@ -101,8 +110,8 @@ bool ApiKeyProfile::update_universe_details(const size_t universe_index, const Q
 {
 	if (universe_index < universe_list.size())
 	{
-		universe_list.at(universe_index).set_name(name);
-		universe_list.at(universe_index).set_universe_id(universe_id);
+		universe_list.at(universe_index)->set_name(name);
+		universe_list.at(universe_index)->set_universe_id(universe_id);
 		return true;
 	}
 	return false;
@@ -112,7 +121,7 @@ void ApiKeyProfile::add_hidden_datastore(const size_t universe_index, const QStr
 {
 	if (universe_index < universe_list.size())
 	{
-		universe_list.at(universe_index).add_hidden_datastore(datastore_name);
+		universe_list.at(universe_index)->add_hidden_datastore(datastore_name);
 		emit hidden_datastore_list_changed();
 	}
 }
@@ -121,7 +130,7 @@ void ApiKeyProfile::remove_hidden_datastore(const size_t universe_index, const Q
 {
 	if (universe_index < universe_list.size())
 	{
-		universe_list.at(universe_index).remove_hidden_datastore(datastore_name);
+		universe_list.at(universe_index)->remove_hidden_datastore(datastore_name);
 		emit hidden_datastore_list_changed();
 	}
 }
@@ -179,7 +188,7 @@ void ApiKeyProfile::TMP_remove_hidden_datastore_from_selected(const QString& dat
 
 void ApiKeyProfile::sort_universe_list()
 {
-	std::optional<UniverseProfile> selected_universe = std::nullopt;
+	UniverseProfile* selected_universe = nullptr;
 	if (selected_universe_index)
 	{
 		selected_universe = universe_list.at(*selected_universe_index);
@@ -189,7 +198,7 @@ void ApiKeyProfile::sort_universe_list()
 	{
 		for (size_t i = 0; i < universe_list.size(); i++)
 		{
-			if ( selected_universe->matches_name_and_id( universe_list.at(i) ) )
+			if (selected_universe == universe_list.at(i))
 			{
 				selected_universe_index = i;
 				break;
@@ -221,7 +230,7 @@ ApiKeyProfile* UserProfile::get_selected_api_key(UserProfile* user_profile)
 	return nullptr;
 }
 
-std::optional<UniverseProfile> UserProfile::get_selected_universe(UserProfile* user_profile)
+UniverseProfile* UserProfile::get_selected_universe(UserProfile* const user_profile)
 {
 	if (ApiKeyProfile* selected_key = get_selected_api_key(user_profile))
 	{
@@ -229,7 +238,7 @@ std::optional<UniverseProfile> UserProfile::get_selected_universe(UserProfile* u
 	}
 	else
 	{
-		return std::nullopt;
+		return nullptr;
 	}
 }
 
@@ -295,18 +304,8 @@ void UserProfile::update_api_key(const size_t index, const QString& name, const 
 	ApiKeyProfile* existing = get_api_key_by_index(index);
 	if (existing)
 	{
-		// Copy existing universe list, this operation only effects top-level params
-		ApiKeyProfile* to_insert = new ApiKeyProfile{ this, name, key, production, save_key_to_disk };
-		connect(to_insert, &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
-		connect(to_insert, &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
-		for (const UniverseProfile& this_universe_profile : existing->get_universe_list())
-		{
-			to_insert->add_universe(this_universe_profile);
-		}
+		existing->set_details(name, key, production, save_key_to_disk);
 
-		delete api_key_list.at(index);
-		api_key_list.erase(api_key_list.begin() + index);
-		api_key_list.push_back(to_insert);
 		std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
 		emit api_key_list_changed();
 	}
@@ -392,21 +391,19 @@ void UserProfile::load_from_disk()
 							name = maybe_name.toString();
 						}
 
-						UniverseProfile new_profile{ name, this_universe_id };
-
-						const int hidden_list_size = settings.beginReadArray("hidden_datastores");
-						for (int k = 0; k < hidden_list_size; k++)
-						{
-							settings.setArrayIndex(k);
-							const QString datastore_name = settings.value("name").toString();
-							new_profile.add_hidden_datastore(datastore_name);
-						}
-						settings.endArray();
-
-						// Remove this
 						if (ApiKeyProfile* const this_api_key = get_api_key_by_index(*opt_key_index))
 						{
-							this_api_key->add_universe(new_profile);
+							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(name, this_universe_id))
+							{
+								const int hidden_list_size = settings.beginReadArray("hidden_datastores");
+								for (int k = 0; k < hidden_list_size; k++)
+								{
+									settings.setArrayIndex(k);
+									const QString datastore_name = settings.value("name").toString();
+									this_api_key->add_hidden_datastore(*new_universe_index, datastore_name);
+								}
+								settings.endArray();
+							}
 						}
 					}
 					settings.endArray();
@@ -453,15 +450,15 @@ void UserProfile::save_to_disk()
 				settings.beginWriteArray("universe_ids");
 				{
 					int next_universe_array_index = 0;
-					for (const UniverseProfile& this_universe_profile : this_key->get_universe_list())
+					for (const UniverseProfile* this_universe_profile : this_key->get_universe_list())
 					{
 						settings.setArrayIndex(next_universe_array_index++);
-						settings.setValue("name", this_universe_profile.get_name());
-						settings.setValue("universe_id", this_universe_profile.get_universe_id());
+						settings.setValue("name", this_universe_profile->get_name());
+						settings.setValue("universe_id", this_universe_profile->get_universe_id());
 						settings.beginWriteArray("hidden_datastores");
 						{
 							int next_hidden_array_index = 0;
-							for (const QString& this_datastore_name : this_universe_profile.get_hidden_datastore_set())
+							for (const QString& this_datastore_name : this_universe_profile->get_hidden_datastore_set())
 							{
 								settings.setArrayIndex(next_hidden_array_index++);
 								settings.setValue("name", this_datastore_name);
