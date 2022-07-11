@@ -48,7 +48,7 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	QGroupBox* prod_box = nullptr;
 	if (ApiKeyProfile* profile = UserProfile::get_selected_api_key())
 	{
-		if (profile->production())
+		if (profile->get_production())
 		{
 			prod_box = new QGroupBox{ "Production Warning", this };
 

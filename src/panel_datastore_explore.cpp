@@ -46,7 +46,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QWidget{ parent },
 	api_key{ api_key }
 {
-	connect(UserProfile::get().get(), &UserProfile::hidden_datastores_changed, this, &ExploreDatastorePanel::handle_show_hidden_datastores_toggled);
+	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &ExploreDatastorePanel::handle_show_hidden_datastores_toggled);
 
 	QWidget* left_bar_widget = new QWidget{ this };
 	{
@@ -206,7 +206,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 void ExploreDatastorePanel::selected_universe_changed()
 {
 	select_datastore_list->clear();
-	select_datastore_fetch_button->setEnabled(UserProfile::get()->get_selected_universe().has_value());
+	select_datastore_fetch_button->setEnabled(UserProfile::get_selected_universe().has_value());
 	handle_search_text_changed();
 	set_datastore_entry_model(nullptr);
 }
@@ -407,7 +407,7 @@ void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIn
 
 void ExploreDatastorePanel::handle_search_text_changed()
 {
-	const std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe();
+	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && selected_universe.has_value();
 	const bool find_prefix_enabled = find_all_enabled && datastore_key_name_edit->text().size() > 0 && datastore_key_name_edit->text().size() > 0;
 	find_all_button->setEnabled(find_all_enabled);
@@ -450,7 +450,7 @@ void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
 
 void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
 {
-	const std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe();
+	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		const bool show_hidden = select_datastore_show_hidden_check->isChecked();
@@ -485,7 +485,7 @@ void ExploreDatastorePanel::pressed_edit_entry()
 
 void ExploreDatastorePanel::pressed_fetch_datastores()
 {
-	const std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe();
+	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		const long long universe_id = selected_universe->universe_id();
@@ -509,7 +509,7 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 
 void ExploreDatastorePanel::pressed_find_all()
 {
-	const std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe();
+	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->universe_id();
@@ -537,7 +537,7 @@ void ExploreDatastorePanel::pressed_find_all()
 
 void ExploreDatastorePanel::pressed_find_prefix()
 {
-	const std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe();
+	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->universe_id();
@@ -573,7 +573,7 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 	const QModelIndex the_index = select_datastore_list->indexAt(pos);
 	if (the_index.isValid())
 	{
-		const std::optional<UniverseProfile> this_universe = UserProfile::get()->get_selected_universe();
+		const std::optional<UniverseProfile> this_universe = UserProfile::get_selected_universe();
 		if (this_universe)
 		{
 			if (QListWidgetItem* the_item = select_datastore_list->item(the_index.row()))
@@ -593,14 +593,20 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 					{
 						hide_unhide_action = new QAction{ "Unhide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							UserProfile::get()->remove_hidden_datastore(the_datastore_name);
+							if (ApiKeyProfile* selected_key = UserProfile::get_selected_api_key())
+							{
+								selected_key->TMP_remove_hidden_datastore_from_selected(the_datastore_name);
+							}
 						});
 					}
 					else
 					{
 						hide_unhide_action = new QAction{ "Hide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							UserProfile::get()->add_hidden_datastore(the_datastore_name);
+							if (ApiKeyProfile* selected_key = UserProfile::get_selected_api_key())
+							{
+								selected_key->TMP_add_hidden_datastore_to_selected(the_datastore_name);
+							}
 						});
 					}
 

@@ -19,7 +19,7 @@
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
 {
-	connect(UserProfile::get().get(), &UserProfile::hidden_datastores_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
+	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
 
 	QWidget* container_widget = new QWidget{ this };
 	{
@@ -62,7 +62,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ p
 
 void UniversePreferencesPanel::selected_universe_changed()
 {
-	button_add->setEnabled(UserProfile::get()->get_selected_universe().has_value());
+	button_add->setEnabled(UserProfile::get_selected_universe().has_value());
 	handle_hidden_datastores_changed();
 }
 
@@ -74,7 +74,7 @@ void UniversePreferencesPanel::handle_hidden_datastores_changed()
 		delete this_item;
 	}
 
-	if (std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe())
+	if (std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		std::set<QString> datastore_names = selected_universe->hidden_datastores();
 		for (const QString& this_datastore_name : datastore_names)
@@ -94,7 +94,7 @@ void UniversePreferencesPanel::handle_list_selection_changed()
 
 void UniversePreferencesPanel::pressed_add()
 {
-	if (std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe())
+	if (std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		UniversePreferencesAddHiddenDatastoreWindow* hide_datastore_window = new UniversePreferencesAddHiddenDatastoreWindow{ this };
 		hide_datastore_window->show();
@@ -107,7 +107,7 @@ void UniversePreferencesPanel::pressed_remove()
 	if (selected.size() == 1)
 	{
 		QString to_remove = selected.front()->text();
-		UserProfile::get()->remove_hidden_datastore(to_remove);
+		UserProfile::get_selected_api_key()->TMP_remove_hidden_datastore_from_selected(to_remove);
 	}
 }
 
@@ -159,6 +159,6 @@ void UniversePreferencesAddHiddenDatastoreWindow::handle_text_changed()
 
 void UniversePreferencesAddHiddenDatastoreWindow::pressed_add()
 {
-	UserProfile::get()->add_hidden_datastore(name_edit->text());
+	UserProfile::get_selected_api_key()->TMP_add_hidden_datastore_to_selected(name_edit->text());;
 	close();
 }

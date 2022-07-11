@@ -110,7 +110,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
 			UserProfile::get()->select_api_key(data.toULongLong());
 			if (ApiKeyProfile* profile = UserProfile::get_selected_api_key())
 			{
-				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->name(), profile->key() };
+				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->get_name(), profile->get_key() };
 				main_window->show();
 				close();
 			}
@@ -176,7 +176,7 @@ void ManageApiKeysWindow::pressed_select()
 			UserProfile::get()->select_api_key(data.toULongLong());
 			if (ApiKeyProfile* details = UserProfile::get_selected_api_key())
 			{
-				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->name(), details->key() };
+				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->get_name(), details->get_key() };
 				main_window->show();
 				close();
 			}
@@ -197,7 +197,7 @@ void ManageApiKeysWindow::rebuild_slots()
 	{
 		QListWidgetItem* this_item = new QListWidgetItem(list_widget);
 		this_item->setData(Qt::UserRole, static_cast<unsigned long long>(this_index++));
-		this_item->setText(this_key->name());
+		this_item->setText(this_key->get_name());
 		list_widget->addItem(this_item);
 	}
 }
@@ -242,27 +242,27 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size
 		name_edit = new QLineEdit{ info_panel };
 		if (existing_key_profile)
 		{
-			name_edit->setText(existing_key_profile->name());
+			name_edit->setText(existing_key_profile->get_name());
 		}
 		connect(name_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
 		key_edit = new QLineEdit{ info_panel };
 		if (existing_key_profile)
 		{
-			key_edit->setText(existing_key_profile->key());
+			key_edit->setText(existing_key_profile->get_key());
 		}
 		connect(key_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
 		production_check = new QCheckBox{ "Production key (adds extra confirmations)" };
 		if (existing_key_profile)
 		{
-			production_check->setChecked(existing_key_profile->production());
+			production_check->setChecked(existing_key_profile->get_production());
 		}
 
 		save_to_disk_check = new QCheckBox{ "Save to disk", info_panel };
 		if (existing_key_profile)
 		{
-			save_to_disk_check->setChecked(existing_key_profile->save_to_disk());
+			save_to_disk_check->setChecked(existing_key_profile->get_save_to_disk());
 		}
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };

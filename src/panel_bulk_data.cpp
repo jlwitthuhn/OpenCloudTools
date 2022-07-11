@@ -84,7 +84,7 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 
 void BulkDataPanel::selected_universe_changed()
 {
-	const bool enabled = UserProfile::get()->get_selected_universe().has_value();
+	const bool enabled = UserProfile::get_selected_universe().has_value();
 	datastore_download_button->setEnabled(enabled);
 	danger_buttons_check->setEnabled(enabled);
 	danger_buttons_check->setCheckState(Qt::Unchecked);
@@ -101,9 +101,9 @@ void BulkDataPanel::handle_datastore_danger_toggle()
 
 void BulkDataPanel::pressed_delete()
 {
-	if (UserProfile::get()->get_selected_universe() && danger_buttons_check->isChecked())
+	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
 	{
-		const long long universe_id = UserProfile::get()->get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
@@ -121,9 +121,9 @@ void BulkDataPanel::pressed_delete()
 
 void BulkDataPanel::pressed_download()
 {
-	if (UserProfile::get()->get_selected_universe())
+	if (UserProfile::get_selected_universe())
 	{
-		const long long universe_id = UserProfile::get()->get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
@@ -141,9 +141,9 @@ void BulkDataPanel::pressed_download()
 
 void BulkDataPanel::pressed_undelete()
 {
-	if (UserProfile::get()->get_selected_universe() && danger_buttons_check->isChecked())
+	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
 	{
-		const long long universe_id = UserProfile::get()->get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
@@ -161,7 +161,7 @@ void BulkDataPanel::pressed_undelete()
 
 void BulkDataPanel::pressed_upload()
 {
-	if (UserProfile::get()->get_selected_universe() && danger_buttons_check->isChecked())
+	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
 	{
 		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkUpload };
 		bool confirmed = static_cast<bool>(confirm_dialog->exec());

@@ -143,7 +143,7 @@ std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() con
 
 void DatastoreBulkOperationWindow::handle_show_hidden_toggled()
 {
-	const std::optional<UniverseProfile> selected_universe = UserProfile::get()->get_selected_universe();
+	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		const bool show_hidden = datastore_list_show_hidden_check->isChecked();
@@ -197,7 +197,7 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 	{
 		confirm_count_before_delete_check = new QCheckBox{ "Confirm entry count before deletion", options_box };
 		confirm_count_before_delete_check->setCheckState(Qt::Checked);
-		if (UserProfile::get_selected_api_key() && UserProfile::get_selected_api_key()->production())
+		if (UserProfile::get_selected_api_key() && UserProfile::get_selected_api_key()->get_production())
 		{
 			confirm_count_before_delete_check->setEnabled(false);
 		}

@@ -38,30 +38,42 @@ class ApiKeyProfile : public QObject
 public:
 	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk);
 
-	QString name() const { return _name; };
-	QString key() const { return _key; };
-	bool production() const { return _production; }
-	bool save_to_disk() const { return _save_to_disk; }
+	QString get_name() const { return name; };
+	QString get_key() const { return key; };
+	bool get_production() const { return production; }
+	bool get_save_to_disk() const { return save_to_disk; }
+
+	std::optional<UniverseProfile> get_selected_universe() const;
 
 	std::optional<size_t> add_universe(const UniverseProfile& universe_profile);
 	void remove_universe(size_t universe_index);
 	bool update_universe_details(size_t universe_index, const QString& name, long long universe_id);
 	void add_hidden_datastore(size_t universe_index, const QString& datastore_name);
 	void remove_hidden_datastore(size_t universe_index, const QString& datastore_name);
-	const std::vector<UniverseProfile>& universes() const { return _universes; }
+	const std::vector<UniverseProfile>& get_universe_list() const { return universe_list; }
 
-	void sort_universes();
+	void select_universe(std::optional<size_t> universe_index);
+	void remove_selected_universe();
+	bool update_selected_universe(const QString& name, long long universe_id);
+
+	void TMP_add_hidden_datastore_to_selected(const QString& datastore_name);
+	void TMP_remove_hidden_datastore_from_selected(const QString& datastore_name);
+
+	void sort_universe_list();
 
 signals:
+	void hidden_datastore_list_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 
 private:
-	QString _name;
-	QString _key;
-	bool _production = false;
-	bool _save_to_disk = false;
+	QString name;
+	QString key;
+	bool production = false;
+	bool save_to_disk = false;
 
-	std::vector<UniverseProfile> _universes;
+	std::vector<UniverseProfile> universe_list;
+
+	std::optional<size_t> selected_universe_index;
 };
 
 class UserProfile : public QObject
@@ -69,7 +81,8 @@ class UserProfile : public QObject
 	Q_OBJECT
 public:
 	static std::unique_ptr<UserProfile>& get();
-	static ApiKeyProfile* get_selected_api_key();
+	static ApiKeyProfile* get_selected_api_key(UserProfile* user_profile = nullptr);
+	static std::optional<UniverseProfile> get_selected_universe(UserProfile* user_profile = nullptr);
 
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
@@ -86,17 +99,9 @@ public:
 
 	void select_api_key(std::optional<size_t> index);
 
-	void select_universe(std::optional<size_t> universe_index);
-	void remove_selected_universe();
-	bool update_selected_universe(const QString& name, long long universe_id);
-	std::optional<UniverseProfile> get_selected_universe() const;
-
-	void add_hidden_datastore(const QString& datastore_name);
-	void remove_hidden_datastore(const QString& datastore_name);
-
 signals:
 	void api_key_list_changed();
-	void hidden_datastores_changed();
+	void hidden_datastore_list_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void autoclose_changed();
 
@@ -105,16 +110,13 @@ private:
 
 	bool profile_name_in_use(const QString& name) const;
 
-	void sort_universes();
-
 	void load_from_disk();
 	void save_to_disk();
 
 	bool autoclose_progress_window = true;
 	bool less_verbose_bulk_operations = true;
 
-	std::optional<size_t> selected_key_index;
-	std::optional<size_t> selected_universe_index;
-
 	std::vector<ApiKeyProfile*> api_key_list;
+
+	std::optional<size_t> selected_key_index;
 };
