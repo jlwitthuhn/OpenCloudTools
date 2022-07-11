@@ -340,7 +340,20 @@ void AddApiKeyWindow::update_key()
 {
 	if (input_is_valid() && existing_key_index)
 	{
-		UserProfile::get()->update_api_key(*existing_key_index, name_edit->text(), key_edit->text(), production_check->isChecked(), save_to_disk_check->isChecked());
-		close();
+		if (ApiKeyProfile* api_key_profile = UserProfile::get()->get_api_key_by_index(*existing_key_index))
+		{
+			const bool result = api_key_profile->set_details(name_edit->text(), key_edit->text(), production_check->isChecked(), save_to_disk_check->isChecked());
+			if (result)
+			{
+				close();
+			}
+			else
+			{
+				QMessageBox* msg_box = new QMessageBox{ this };
+				msg_box->setWindowTitle("Error");
+				msg_box->setText("Failed to update API key. A key with that name already exists.");
+				msg_box->exec();
+			}
+		}
 	}
 }

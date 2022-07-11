@@ -74,17 +74,27 @@ void UniverseProfile::remove_hidden_datastore(const QString& datastore) {
 	emit hidden_datastore_list_changed();
 }
 
-ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk) : QObject{ parent }, name { name }, key{key}, production{production}, save_to_disk{save_to_disk}
+ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk, const std::function<bool(const QString&)> api_key_name_available)
+	: QObject{ parent }, name{ name }, key{ key }, production{ production }, save_to_disk{ save_to_disk }, api_key_name_available{ api_key_name_available }
 {
 
 }
 
-void ApiKeyProfile::set_details(const QString& name, const QString& key, const bool production, const bool save_to_disk)
+bool ApiKeyProfile::set_details(const QString& name, const QString& key, const bool production, const bool save_to_disk)
 {
-	this->name = name;
-	this->key = key;
-	this->production = production;
-	this->save_to_disk = save_to_disk;
+	if (api_key_name_available(name))
+	{
+		this->name = name;
+		this->key = key;
+		this->production = production;
+		this->save_to_disk = save_to_disk;
+		emit details_changed();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 UniverseProfile* ApiKeyProfile::get_universe_profile_by_index(size_t universe_index) const
@@ -265,13 +275,13 @@ ApiKeyProfile* UserProfile::get_api_key_by_index(const size_t key_index)
 
 std::optional<size_t> UserProfile::add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk)
 {
-	if (profile_name_in_use(name))
+	if (profile_name_available(name))
 	{
-		return std::nullopt;
-	}
-	else
-	{
-		ApiKeyProfile* this_profile = new ApiKeyProfile{ this, name, key, production, save_key_to_disk };
+		std::function<bool(const QString&)> api_key_name_available = [this](const QString& name) -> bool {
+			return profile_name_available(name);
+		};
+		ApiKeyProfile* this_profile = new ApiKeyProfile{ this, name, key, production, save_key_to_disk, api_key_name_available };
+		connect(this_profile, &ApiKeyProfile::details_changed, this, &UserProfile::sort_api_key_profiles);
 		connect(this_profile, &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
 		connect(this_profile, &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
 		api_key_list.push_back(this_profile);
@@ -284,21 +294,8 @@ std::optional<size_t> UserProfile::add_api_key(const QString& name, const QStrin
 				return this_index;
 			}
 		}
-		// Should never happen
-		return std::nullopt;
 	}
-}
-
-void UserProfile::update_api_key(const size_t index, const QString& name, const QString& key, bool production, bool save_key_to_disk)
-{
-	ApiKeyProfile* existing = get_api_key_by_index(index);
-	if (existing)
-	{
-		existing->set_details(name, key, production, save_key_to_disk);
-
-		std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
-		emit api_key_list_changed();
-	}
+	return std::nullopt;
 }
 
 void UserProfile::delete_api_key(const size_t index)
@@ -322,14 +319,22 @@ void UserProfile::select_api_key(const std::optional<size_t> index)
 	}
 }
 
-bool UserProfile::profile_name_in_use(const QString& name) const
+bool UserProfile::profile_name_available(const QString& name) const
 {
-	bool result = false;
 	for (const ApiKeyProfile* this_profile : api_key_list)
 	{
-		result = result || (name == this_profile->get_name());
+		if (name == this_profile->get_name())
+		{
+			return false;
+		}
 	}
-	return result;
+	return true;
+}
+
+void UserProfile::sort_api_key_profiles()
+{
+	std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
+	emit api_key_list_changed();
 }
 
 void UserProfile::load_from_disk()

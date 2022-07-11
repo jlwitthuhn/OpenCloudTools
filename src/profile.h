@@ -44,14 +44,14 @@ class ApiKeyProfile : public QObject
 {
 	Q_OBJECT
 public:
-	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk);
+	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk, std::function<bool(const QString&)> api_key_name_available);
 
 	QString get_name() const { return name; };
 	QString get_key() const { return key; };
 	bool get_production() const { return production; }
 	bool get_save_to_disk() const { return save_to_disk; }
 
-	void set_details(const QString& name, const QString& key, bool production, bool save_to_disk);
+	bool set_details(const QString& name, const QString& key, bool production, bool save_to_disk);
 
 	const std::vector<UniverseProfile*>& get_universe_list() const { return universe_list; }
 	UniverseProfile* get_universe_profile_by_index(size_t universe_index) const;
@@ -64,6 +64,7 @@ public:
 	void remove_selected_universe();
 
 signals:
+	void details_changed();
 	void hidden_datastore_list_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 
@@ -78,6 +79,8 @@ private:
 
 	std::vector<UniverseProfile*> universe_list;
 	std::optional<size_t> selected_universe_index;
+
+	std::function<bool(const QString&)> api_key_name_available;
 };
 
 class UserProfile : public QObject
@@ -98,7 +101,6 @@ public:
 	ApiKeyProfile* get_api_key_by_index(size_t key_index);
 
 	std::optional<size_t> add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk);
-	void update_api_key(size_t index, const QString& name, const QString& key, bool production, bool save_key_to_disk);
 	void delete_api_key(size_t index);
 
 	void select_api_key(std::optional<size_t> index);
@@ -112,7 +114,9 @@ signals:
 private:
 	explicit UserProfile(QObject* parent = nullptr);
 
-	bool profile_name_in_use(const QString& name) const;
+	bool profile_name_available(const QString& name) const;
+
+	void sort_api_key_profiles();
 
 	void load_from_disk();
 	void save_to_disk();
