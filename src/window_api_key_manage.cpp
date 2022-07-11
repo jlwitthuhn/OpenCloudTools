@@ -91,7 +91,7 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 
 	connect(UserProfile::get().get(), &UserProfile::api_key_list_changed, this, &ManageApiKeysWindow::rebuild_slots);
 
-	rebuild_slots();
+	rebuild_slots(std::nullopt);
 	selection_changed();
 }
 
@@ -184,7 +184,7 @@ void ManageApiKeysWindow::pressed_select()
 	}
 }
 
-void ManageApiKeysWindow::rebuild_slots()
+void ManageApiKeysWindow::rebuild_slots(const std::optional<size_t> selected_index)
 {
 	while (list_widget->count() > 0)
 	{
@@ -199,6 +199,11 @@ void ManageApiKeysWindow::rebuild_slots()
 		this_item->setData(Qt::UserRole, static_cast<unsigned long long>(this_index++));
 		this_item->setText(this_key->get_name());
 		list_widget->addItem(this_item);
+	}
+
+	if (selected_index)
+	{
+		list_widget->setCurrentRow(static_cast<int>(*selected_index));
 	}
 }
 

@@ -290,7 +290,7 @@ std::optional<size_t> UserProfile::add_api_key(const QString& name, const QStrin
 		{
 			if (api_key_list.at(this_index)->get_name() == name)
 			{
-				emit api_key_list_changed();
+				emit api_key_list_changed(this_index);
 				return this_index;
 			}
 		}
@@ -303,7 +303,7 @@ void UserProfile::delete_api_key(const size_t index)
 	if (index < api_key_list.size())
 	{
 		api_key_list.erase(api_key_list.begin() + index);
-		emit api_key_list_changed();
+		emit api_key_list_changed(std::nullopt);
 	}
 }
 
@@ -334,7 +334,7 @@ bool UserProfile::profile_name_available(const QString& name) const
 void UserProfile::sort_api_key_profiles()
 {
 	std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
-	emit api_key_list_changed();
+	emit api_key_list_changed(std::nullopt);
 }
 
 void UserProfile::load_from_disk()
@@ -415,7 +415,7 @@ void UserProfile::load_from_disk()
 
 	settings.endGroup();
 
-	emit api_key_list_changed();
+	emit api_key_list_changed(std::nullopt);
 }
 
 void UserProfile::save_to_disk()

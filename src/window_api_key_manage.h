@@ -22,7 +22,7 @@ private:
 	void pressed_edit();
 	void pressed_delete();
 	void pressed_select();
-	void rebuild_slots();
+	void rebuild_slots(std::optional<size_t> selected_index);
 	void selection_changed();
 
 private:

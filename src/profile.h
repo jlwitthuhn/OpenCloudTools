@@ -106,7 +106,7 @@ public:
 	void select_api_key(std::optional<size_t> index);
 
 signals:
-	void api_key_list_changed();
+	void api_key_list_changed(std::optional<size_t> selected_api_index);
 	void hidden_datastore_list_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void autoclose_changed();
