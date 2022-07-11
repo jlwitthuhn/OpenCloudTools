@@ -457,7 +457,7 @@ void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
 		for (int i = 0; i < select_datastore_list->count(); i++)
 		{
 			QListWidgetItem* this_item = select_datastore_list->item(i);
-			const bool hide = show_hidden ? false : static_cast<bool>( selected_universe->hidden_datastores().count(this_item->text()) );
+			const bool hide = show_hidden ? false : static_cast<bool>( selected_universe->get_hidden_datastore_set().count(this_item->text()) );
 			this_item->setHidden(hide);
 		}
 	}
@@ -488,7 +488,7 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
-		const long long universe_id = selected_universe->universe_id();
+		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
@@ -512,7 +512,7 @@ void ExploreDatastorePanel::pressed_find_all()
 	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = selected_universe->universe_id();
+		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = datastore_name_edit->text().trimmed();
@@ -540,7 +540,7 @@ void ExploreDatastorePanel::pressed_find_prefix()
 	const std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = selected_universe->universe_id();
+		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = datastore_name_edit->text().trimmed();
@@ -589,7 +589,7 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 						});
 
 					QAction* hide_unhide_action = nullptr;
-					if (this_universe->hidden_datastores().count(the_datastore_name))
+					if (this_universe->get_hidden_datastore_set().count(the_datastore_name))
 					{
 						hide_unhide_action = new QAction{ "Unhide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {

@@ -103,7 +103,7 @@ void BulkDataPanel::pressed_delete()
 {
 	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
@@ -123,7 +123,7 @@ void BulkDataPanel::pressed_download()
 {
 	if (UserProfile::get_selected_universe())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };
@@ -143,7 +143,7 @@ void BulkDataPanel::pressed_undelete()
 {
 	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
 		GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
 		OperationInProgressDialog diag{ this, &req };

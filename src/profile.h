@@ -17,19 +17,19 @@ public:
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
-	QString name() const { return _name; }
-	long long universe_id() const { return _universe_id; }
-	const std::set<QString>& hidden_datastores() const { return _hidden_datastores; }
+	QString get_name() const { return name; }
+	long long get_universe_id() const { return universe_id; }
+	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
 
-	void set_name(const QString& name_in) { _name = name_in; }
-	void set_universe_id(const long long universe_id_in) { _universe_id = universe_id_in; }
-	void add_hidden_datastore(const QString& datastore) { _hidden_datastores.insert(datastore); }
-	void remove_hidden_datastore(const QString& datastore) { _hidden_datastores.erase(datastore); }
+	void set_name(const QString& name_in) { name = name_in; }
+	void set_universe_id(const long long universe_id_in) { universe_id = universe_id_in; }
+	void add_hidden_datastore(const QString& datastore) { hidden_datastore_set.insert(datastore); }
+	void remove_hidden_datastore(const QString& datastore) { hidden_datastore_set.erase(datastore); }
 
 private:
-	QString _name;
-	long long _universe_id;
-	std::set<QString> _hidden_datastores;
+	QString name;
+	long long universe_id;
+	std::set<QString> hidden_datastore_set;
 };
 
 class ApiKeyProfile : public QObject
@@ -72,7 +72,6 @@ private:
 	bool save_to_disk = false;
 
 	std::vector<UniverseProfile> universe_list;
-
 	std::optional<size_t> selected_universe_index;
 };
 
@@ -117,6 +116,5 @@ private:
 	bool less_verbose_bulk_operations = true;
 
 	std::vector<ApiKeyProfile*> api_key_list;
-
 	std::optional<size_t> selected_key_index;
 };

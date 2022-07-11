@@ -150,7 +150,7 @@ void DatastoreBulkOperationWindow::handle_show_hidden_toggled()
 		for (int i = 0; i < datastore_list->count(); i++)
 		{
 			QListWidgetItem* this_item = datastore_list->item(i);
-			const bool hide = show_hidden ? false : static_cast<bool>(selected_universe->hidden_datastores().count(this_item->text()));
+			const bool hide = show_hidden ? false : static_cast<bool>(selected_universe->get_hidden_datastore_set().count(this_item->text()));
 			this_item->setHidden(hide);
 			if (hide)
 			{

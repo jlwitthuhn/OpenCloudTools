@@ -76,7 +76,7 @@ void UniversePreferencesPanel::handle_hidden_datastores_changed()
 
 	if (std::optional<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
-		std::set<QString> datastore_names = selected_universe->hidden_datastores();
+		std::set<QString> datastore_names = selected_universe->get_hidden_datastore_set();
 		for (const QString& this_datastore_name : datastore_names)
 		{
 			QListWidgetItem* this_item = new QListWidgetItem(hidden_datastore_list);

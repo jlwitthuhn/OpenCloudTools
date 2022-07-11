@@ -83,7 +83,7 @@ void MessagingServicePanel::pressed_send()
 {
 	if (UserProfile::get_selected_universe())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->universe_id();
+		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
 		const QString topic = topic_edit->text();
 		if (topic.size() == 0)

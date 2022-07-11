@@ -17,34 +17,34 @@ static bool compare_api_key_profile(const ApiKeyProfile* a, const ApiKeyProfile*
 
 static bool compare_universe_profile(const UniverseProfile& a, const UniverseProfile& b)
 {
-	if (a.name() < b.name())
+	if (a.get_name() < b.get_name())
 	{
 		return true;
 	}
-	else if (b.name() < a.name())
+	else if (b.get_name() < a.get_name())
 	{
 		return false;
 	}
 
-	if (a.universe_id() < b.universe_id())
+	if (a.get_universe_id() < b.get_universe_id())
 	{
 		return true;
 	}
-	else if (b.universe_id() < a.universe_id())
+	else if (b.get_universe_id() < a.get_universe_id())
 	{
 		return false;
 	}
 	return false;
 }
 
-UniverseProfile::UniverseProfile(const QString& name, const long long universe_id) : _name{ name }, _universe_id{ universe_id }
+UniverseProfile::UniverseProfile(const QString& name, const long long universe_id) : name{ name }, universe_id{ universe_id }
 {
 
 }
 
 bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 {
-	return _name == other._name && _universe_id == other._universe_id;
+	return name == other.name && universe_id == other.universe_id;
 }
 
 ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk) : QObject{ parent }, name { name }, key{key}, production{production}, save_to_disk{save_to_disk}
@@ -456,12 +456,12 @@ void UserProfile::save_to_disk()
 					for (const UniverseProfile& this_universe_profile : this_key->get_universe_list())
 					{
 						settings.setArrayIndex(next_universe_array_index++);
-						settings.setValue("name", this_universe_profile.name());
-						settings.setValue("universe_id", this_universe_profile.universe_id());
+						settings.setValue("name", this_universe_profile.get_name());
+						settings.setValue("universe_id", this_universe_profile.get_universe_id());
 						settings.beginWriteArray("hidden_datastores");
 						{
 							int next_hidden_array_index = 0;
-							for (const QString& this_datastore_name : this_universe_profile.hidden_datastores())
+							for (const QString& this_datastore_name : this_universe_profile.get_hidden_datastore_set())
 							{
 								settings.setArrayIndex(next_hidden_array_index++);
 								settings.setValue("name", this_datastore_name);

@@ -291,7 +291,7 @@ void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_i
 		for (size_t i = 0; i < this_profile->get_universe_list().size(); i++)
 		{
 			const UniverseProfile& this_universe = this_profile->get_universe_list().at(i);
-			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.name()).arg(this_universe.universe_id());
+			QString formatted = QString{ "%1 [%2]" }.arg(this_universe.get_name()).arg(this_universe.get_universe_id());
 			select_universe_combo->addItem(formatted, QVariant{ static_cast<unsigned long long>(i) });
 		}
 		if (universe_index)
@@ -331,14 +331,14 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 		name_edit = new QLineEdit{ info_panel };
 		if (edit_mode)
 		{
-			name_edit->setText(existing_universe->name());
+			name_edit->setText(existing_universe->get_name());
 		}
 		connect(name_edit, &QLineEdit::textChanged, this, &MainWindowAddUniverseWindow::text_changed);
 
 		id_edit = new QLineEdit{ info_panel };
 		if (edit_mode)
 		{
-			id_edit->setText(QString::number(existing_universe->universe_id()));
+			id_edit->setText(QString::number(existing_universe->get_universe_id()));
 		}
 		connect(id_edit, &QLineEdit::textChanged, this, &MainWindowAddUniverseWindow::text_changed);
 
