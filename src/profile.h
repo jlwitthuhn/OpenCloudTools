@@ -21,20 +21,27 @@ public:
 
 	QString get_name() const { return name; }
 	long long get_universe_id() const { return universe_id; }
+	bool get_save_recent_message_topics() const { return save_recent_message_topics; }
 	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
 
 	bool set_details(const QString& name, long long universe_id);
+
+	void set_save_recent_message_topics(bool save_topics);
 
 	void add_hidden_datastore(const QString& datastore);
 	void remove_hidden_datastore(const QString& datastore);
 
 signals:
+	void force_save();
 	void details_changed();
 	void hidden_datastore_list_changed();
 
 private:
 	QString name;
 	long long universe_id;
+
+	bool save_recent_message_topics = true;
+
 	std::set<QString> hidden_datastore_set;
 
 	std::function<bool(const QString&, long long)> name_and_id_available;
@@ -64,6 +71,7 @@ public:
 	void remove_selected_universe();
 
 signals:
+	void force_save();
 	void details_changed();
 	void hidden_datastore_list_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
@@ -106,10 +114,10 @@ public:
 	void select_api_key(std::optional<size_t> index);
 
 signals:
-	void api_key_list_changed(std::optional<size_t> selected_api_index);
-	void hidden_datastore_list_changed();
-	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void autoclose_changed();
+	void api_key_list_changed(std::optional<size_t> selected_api_index);
+	void universe_list_changed(std::optional<size_t> selected_universe_index);
+	void hidden_datastore_list_changed();
 
 private:
 	explicit UserProfile(QObject* parent = nullptr);

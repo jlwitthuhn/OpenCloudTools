@@ -63,6 +63,15 @@ bool UniverseProfile::set_details(const QString& name, long long universe_id)
 	}
 }
 
+void UniverseProfile::set_save_recent_message_topics(const bool save_topics)
+{
+	if (save_recent_message_topics != save_topics)
+	{
+		save_recent_message_topics = save_topics;
+		emit force_save();
+	}
+}
+
 void UniverseProfile::add_hidden_datastore(const QString& datastore)
 {
 	hidden_datastore_set.insert(datastore);
@@ -128,8 +137,9 @@ std::optional<size_t> ApiKeyProfile::add_universe(const QString& name, long long
 		return universe_name_and_id_available(name, id);
 	};
 	UniverseProfile* this_universe = new UniverseProfile{ this, name, universe_id, name_id_check };
-	connect(this_universe, &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
+	connect(this_universe, &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe, &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
+	connect(this_universe, &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
 	universe_list.push_back(this_universe);
 	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
 	for (size_t this_index = 0; this_index < universe_list.size(); this_index++)
@@ -281,6 +291,7 @@ std::optional<size_t> UserProfile::add_api_key(const QString& name, const QStrin
 			return profile_name_available(name);
 		};
 		ApiKeyProfile* this_profile = new ApiKeyProfile{ this, name, key, production, save_key_to_disk, api_key_name_available };
+		connect(this_profile, &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
 		connect(this_profile, &ApiKeyProfile::details_changed, this, &UserProfile::sort_api_key_profiles);
 		connect(this_profile, &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
 		connect(this_profile, &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
@@ -380,27 +391,36 @@ void UserProfile::load_from_disk()
 						const long long this_universe_id = settings.value("universe_id").toLongLong();
 
 						QString name = "Unnamed";
-						auto maybe_name = settings.value("name");
+						const QVariant maybe_name = settings.value("name");
 						if (maybe_name.isNull() == false)
 						{
 							name = maybe_name.toString();
 						}
 
+						bool save_recent_message_topics = true;
+						const QVariant maybe_save_topics = settings.value("save_recent_message_topics");
+						if (maybe_save_topics.isNull() == false)
+						{
+							save_recent_message_topics = maybe_save_topics.toBool();
+						}
+
+
 						if (ApiKeyProfile* const this_api_key = get_api_key_by_index(*opt_key_index))
 						{
 							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(name, this_universe_id))
 							{
-								const int hidden_list_size = settings.beginReadArray("hidden_datastores");
-								for (int k = 0; k < hidden_list_size; k++)
+								if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
 								{
-									settings.setArrayIndex(k);
-									const QString datastore_name = settings.value("name").toString();
-									if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
+									this_universe->set_save_recent_message_topics(save_recent_message_topics);
+									const int hidden_list_size = settings.beginReadArray("hidden_datastores");
+									for (int k = 0; k < hidden_list_size; k++)
 									{
-										this_universe->add_hidden_datastore(datastore_name);
+										settings.setArrayIndex(k);
+										const QString datastore_name = settings.value("name").toString();
+											this_universe->add_hidden_datastore(datastore_name);
 									}
+									settings.endArray();
 								}
-								settings.endArray();
 							}
 						}
 					}
@@ -453,6 +473,7 @@ void UserProfile::save_to_disk()
 						settings.setArrayIndex(next_universe_array_index++);
 						settings.setValue("name", this_universe_profile->get_name());
 						settings.setValue("universe_id", this_universe_profile->get_universe_id());
+						settings.setValue("save_recent_message_topics", this_universe_profile->get_save_recent_message_topics());
 						settings.beginWriteArray("hidden_datastores");
 						{
 							int next_hidden_array_index = 0;

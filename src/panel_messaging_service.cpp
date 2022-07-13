@@ -32,7 +32,8 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 
 		QListWidget* topic_history_list = new QListWidget{ topic_history_group_box };
 
-		QCheckBox* add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
+		add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
+		connect(add_used_topics_check, &QCheckBox::stateChanged, this, &MessagingServicePanel::handle_add_used_topics_toggled);
 
 		QPushButton* add_topic_button = new QPushButton{ "Add...", topic_history_group_box };
 		QPushButton* remove_topic_button = new QPushButton{ "Remove", topic_history_group_box };
@@ -75,8 +76,26 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 
 void MessagingServicePanel::selected_universe_changed()
 {
-	const bool enabled = UserProfile::get_selected_universe() != nullptr;
+	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const bool enabled = selected_universe != nullptr;
+	if (selected_universe)
+	{
+		add_used_topics_check->setChecked(selected_universe->get_save_recent_message_topics());
+	}
+	else
+	{
+		add_used_topics_check->setChecked(false);
+	}
+	add_used_topics_check->setEnabled(enabled);
 	send_button->setEnabled(enabled);
+}
+
+void MessagingServicePanel::handle_add_used_topics_toggled()
+{
+	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	{
+		selected_universe->set_save_recent_message_topics(add_used_topics_check->isChecked());
+	}
 }
 
 void MessagingServicePanel::pressed_send()
