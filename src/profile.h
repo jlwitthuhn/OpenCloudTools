@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QString>
 
+#include "util_lock.h"
+
 class UniverseProfile : public QObject
 {
 	Q_OBJECT
@@ -134,4 +136,6 @@ private:
 
 	std::vector<ApiKeyProfile*> api_key_list;
 	std::optional<size_t> selected_key_index;
+
+	LockableBool load_flag;
 };

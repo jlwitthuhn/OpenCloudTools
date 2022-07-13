@@ -65,6 +65,7 @@ add_executable(OpenCloudTools
 	./src/util_enum.h
 	./src/util_json_string.cpp
 	./src/util_json_string.h
+	./src/util_lock.h
 	./src/util_validator.cpp
 	./src/util_validator.h
 	./src/util_wed.cpp

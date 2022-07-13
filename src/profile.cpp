@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <vector>
 
@@ -350,6 +351,8 @@ void UserProfile::sort_api_key_profiles()
 
 void UserProfile::load_from_disk()
 {
+	std::lock_guard<LockableBool> load_guard{ load_flag };
+
 	QSettings settings;
 
 	settings.beginGroup("prefs");
@@ -440,6 +443,11 @@ void UserProfile::load_from_disk()
 
 void UserProfile::save_to_disk()
 {
+	if (load_flag)
+	{
+		return;
+	}
+
 	QSettings settings;
 
 	settings.beginGroup("prefs");
