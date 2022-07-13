@@ -24,13 +24,15 @@
 
 MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
 {
+	connect(UserProfile::get().get(), &UserProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
+
 	QGroupBox* topic_history_group_box = new QGroupBox{ "Topic History" };
 	{
 		QSizePolicy topic_history_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
 		topic_history_size_policy.setHorizontalStretch(3);
 		topic_history_group_box->setSizePolicy(topic_history_size_policy);
 
-		QListWidget* topic_history_list = new QListWidget{ topic_history_group_box };
+		topic_history_list = new QListWidget{ topic_history_group_box };
 
 		add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
 		connect(add_used_topics_check, &QCheckBox::stateChanged, this, &MessagingServicePanel::handle_add_used_topics_toggled);
@@ -88,6 +90,7 @@ void MessagingServicePanel::selected_universe_changed()
 	}
 	add_used_topics_check->setEnabled(enabled);
 	send_button->setEnabled(enabled);
+	handle_recent_topic_list_changed();
 }
 
 void MessagingServicePanel::handle_add_used_topics_toggled()
@@ -98,9 +101,25 @@ void MessagingServicePanel::handle_add_used_topics_toggled()
 	}
 }
 
+void MessagingServicePanel::handle_recent_topic_list_changed()
+{
+	if (const UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	{
+		topic_history_list->clear();
+		for (const QString& this_topic : selected_universe->get_recent_topic_set())
+		{
+			topic_history_list->addItem(this_topic);
+		}
+	}
+	else
+	{
+		topic_history_list->clear();
+	}
+}
+
 void MessagingServicePanel::pressed_send()
 {
-	if (UserProfile::get_selected_universe())
+	if (UniverseProfile* this_universe = UserProfile::get_selected_universe())
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
@@ -130,6 +149,11 @@ void MessagingServicePanel::pressed_send()
 			msg_box->setText("Message must be set.");
 			msg_box->exec();
 			return;
+		}
+
+		if (add_used_topics_check->isChecked())
+		{
+			this_universe->add_recent_topic(topic);
 		}
 
 		PostMessagingServiceMessageRequest req{ this, api_key, universe_id, topic, unencoded_message };

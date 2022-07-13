@@ -6,6 +6,7 @@
 
 class QCheckBox;
 class QLineEdit;
+class QListWidget;
 class QPushButton;
 class QTextEdit;
 
@@ -19,11 +20,13 @@ public:
 
 private:
 	void handle_add_used_topics_toggled();
+	void handle_recent_topic_list_changed();
 
 	void pressed_send();
 
 	QString api_key;
 
+	QListWidget* topic_history_list;
 	QCheckBox* add_used_topics_check = nullptr;
 
 	QLineEdit* topic_edit = nullptr;

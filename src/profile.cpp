@@ -79,9 +79,16 @@ void UniverseProfile::add_hidden_datastore(const QString& datastore)
 	emit hidden_datastore_list_changed();
 }
 
-void UniverseProfile::remove_hidden_datastore(const QString& datastore) {
+void UniverseProfile::remove_hidden_datastore(const QString& datastore)
+{
 	hidden_datastore_set.erase(datastore);
 	emit hidden_datastore_list_changed();
+}
+
+void UniverseProfile::add_recent_topic(const QString& topic)
+{
+	recent_topic_set.insert(topic);
+	emit recent_topic_list_changed();
 }
 
 ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk, const std::function<bool(const QString&)> api_key_name_available)
@@ -140,6 +147,7 @@ std::optional<size_t> ApiKeyProfile::add_universe(const QString& name, long long
 	UniverseProfile* this_universe = new UniverseProfile{ this, name, universe_id, name_id_check };
 	connect(this_universe, &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe, &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
+	connect(this_universe, &UniverseProfile::recent_topic_list_changed, this, &ApiKeyProfile::recent_topic_list_changed);
 	connect(this_universe, &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
 	universe_list.push_back(this_universe);
 	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
@@ -295,6 +303,7 @@ std::optional<size_t> UserProfile::add_api_key(const QString& name, const QStrin
 		connect(this_profile, &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
 		connect(this_profile, &ApiKeyProfile::details_changed, this, &UserProfile::sort_api_key_profiles);
 		connect(this_profile, &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
+		connect(this_profile, &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::recent_topic_list_changed);
 		connect(this_profile, &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
 		api_key_list.push_back(this_profile);
 		std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
@@ -509,5 +518,6 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::hidden_datastore_list_changed, this, &UserProfile::save_to_disk);
+	connect(this, &UserProfile::recent_topic_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::universe_list_changed, this, &UserProfile::save_to_disk);
 }
