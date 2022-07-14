@@ -424,12 +424,26 @@ void UserProfile::load_from_disk()
 								if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
 								{
 									this_universe->set_save_recent_message_topics(save_recent_message_topics);
+
 									const int hidden_list_size = settings.beginReadArray("hidden_datastores");
-									for (int k = 0; k < hidden_list_size; k++)
 									{
-										settings.setArrayIndex(k);
-										const QString datastore_name = settings.value("name").toString();
+										for (int k = 0; k < hidden_list_size; k++)
+										{
+											settings.setArrayIndex(k);
+											const QString datastore_name = settings.value("name").toString();
 											this_universe->add_hidden_datastore(datastore_name);
+										}
+									}
+									settings.endArray();
+
+									const int topic_list_size = settings.beginReadArray("message_topics");
+									{
+										for (int k = 0; k < topic_list_size; k++)
+										{
+											settings.setArrayIndex(k);
+											const QString topic_name = settings.value("name").toString();
+											this_universe->add_recent_topic(topic_name);
+										}
 									}
 									settings.endArray();
 								}
@@ -491,6 +505,7 @@ void UserProfile::save_to_disk()
 						settings.setValue("name", this_universe_profile->get_name());
 						settings.setValue("universe_id", this_universe_profile->get_universe_id());
 						settings.setValue("save_recent_message_topics", this_universe_profile->get_save_recent_message_topics());
+
 						settings.beginWriteArray("hidden_datastores");
 						{
 							int next_hidden_array_index = 0;
@@ -498,6 +513,17 @@ void UserProfile::save_to_disk()
 							{
 								settings.setArrayIndex(next_hidden_array_index++);
 								settings.setValue("name", this_datastore_name);
+							}
+						}
+						settings.endArray();
+
+						settings.beginWriteArray("message_topics");
+						{
+							int next_topic_index = 0;
+							for (const QString& this_topic : this_universe_profile->get_recent_topic_set())
+							{
+								settings.setArrayIndex(next_topic_index++);
+								settings.setValue("name", this_topic);
 							}
 						}
 						settings.endArray();
