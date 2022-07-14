@@ -11,6 +11,7 @@
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLayout>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidget>
@@ -18,6 +19,7 @@
 #include <QMessageBox>
 #include <QMetaType>
 #include <QPushButton>
+#include <QString>
 #include <QVariant>
 #include <QVBoxLayout>
 

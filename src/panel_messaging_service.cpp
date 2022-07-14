@@ -1,26 +1,27 @@
 #include "panel_messaging_service.h"
 
 #include <memory>
-#include <optional>
+#include <set>
 
+#include <Qt>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QList>
 #include <QListWidget>
 #include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSplitter>
+#include <QSizePolicy>
 #include <QTextEdit>
 #include <QVBoxLayout>
 
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "profile.h"
-#include "util_enum.h"
-#include "util_validator.h"
 
 MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
 {

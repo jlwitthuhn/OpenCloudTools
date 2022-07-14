@@ -4,16 +4,16 @@
 
 #include <optional>
 
+#include <QMainWindow>
 #include <QObject>
 #include <QString>
-#include <QMainWindow>
+#include <QWidget>
 
 class QAction;
 class QComboBox;
 class QLineEdit;
 class QPushButton;
 class QTabWidget;
-class QWidget;
 
 class BulkDataPanel;
 class ExploreDatastorePanel;

@@ -14,6 +14,7 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QLayout>
 #include <QLineEdit>
 #include <QMargins>
 #include <QMenu>

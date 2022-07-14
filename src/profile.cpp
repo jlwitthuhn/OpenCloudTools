@@ -6,7 +6,6 @@
 #include <set>
 #include <vector>
 
-#include <QPointer>
 #include <QSettings>
 #include <QString>
 #include <QVariant>

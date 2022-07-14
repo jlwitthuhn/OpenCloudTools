@@ -1,9 +1,9 @@
 #include "panel_universe_prefs.h"
 
 #include <memory>
-#include <optional>
 #include <set>
 
+#include <Qt>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>

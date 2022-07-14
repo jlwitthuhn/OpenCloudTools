@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstddef>
+
+#include <optional>
+
 #include <QObject>
 #include <QWidget>
 
