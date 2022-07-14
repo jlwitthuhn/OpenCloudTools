@@ -37,8 +37,11 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
 		connect(add_used_topics_check, &QCheckBox::stateChanged, this, &MessagingServicePanel::handle_add_used_topics_toggled);
 
-		QPushButton* add_topic_button = new QPushButton{ "Add...", topic_history_group_box };
-		QPushButton* remove_topic_button = new QPushButton{ "Remove", topic_history_group_box };
+		add_topic_button = new QPushButton{ "Add...", topic_history_group_box };
+		connect(add_topic_button, &QPushButton::clicked, this, &MessagingServicePanel::pressed_add_topic);
+
+		remove_topic_button = new QPushButton{ "Remove", topic_history_group_box };
+		connect(remove_topic_button, &QPushButton::clicked, this, &MessagingServicePanel::pressed_remove_topic);
 
 		QVBoxLayout* topic_history_layout = new QVBoxLayout{ topic_history_group_box };
 		topic_history_layout->addWidget(topic_history_list);
@@ -89,6 +92,8 @@ void MessagingServicePanel::selected_universe_changed()
 		add_used_topics_check->setChecked(false);
 	}
 	add_used_topics_check->setEnabled(enabled);
+	add_topic_button->setEnabled(enabled);
+	remove_topic_button->setEnabled(enabled);
 	send_button->setEnabled(enabled);
 	handle_recent_topic_list_changed();
 }
@@ -114,6 +119,27 @@ void MessagingServicePanel::handle_recent_topic_list_changed()
 	else
 	{
 		topic_history_list->clear();
+	}
+}
+
+void MessagingServicePanel::pressed_add_topic()
+{
+	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	{
+		MessagingServiceAddTopicWindow* add_window = new MessagingServiceAddTopicWindow{ this };
+		add_window->show();
+	}
+}
+
+void MessagingServicePanel::pressed_remove_topic()
+{
+	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	{
+		QList<QListWidgetItem*> selected = topic_history_list->selectedItems();
+		if (selected.size() == 1)
+		{
+			selected_universe->remove_recent_topic(selected.front()->text());
+		}
 	}
 }
 
@@ -160,4 +186,56 @@ void MessagingServicePanel::pressed_send()
 		OperationInProgressDialog diag{ this, &req };
 		diag.exec();
 	}
+}
+
+MessagingServiceAddTopicWindow::MessagingServiceAddTopicWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
+{
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	setWindowTitle("Add Topic");
+	setWindowModality(Qt::WindowModality::ApplicationModal);
+
+	QWidget* info_panel = new QWidget{ this };
+	{
+		name_edit = new QLineEdit{ info_panel };
+		connect(name_edit, &QLineEdit::textChanged, this, &MessagingServiceAddTopicWindow::handle_text_changed);
+
+		QFormLayout* info_layout = new QFormLayout{ info_panel };
+		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+		info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+		info_layout->addRow("Topic name", name_edit);
+	}
+
+	QWidget* button_panel = new QWidget{ this };
+	button_panel->setMinimumWidth(280);
+	{
+		add_button = new QPushButton{ "Add", button_panel };
+		connect(add_button, &QPushButton::clicked, this, &MessagingServiceAddTopicWindow::pressed_add);
+
+		QPushButton* cancel_button = new QPushButton{ "Cancel", button_panel };
+		connect(add_button, &QPushButton::clicked, this, &MessagingServiceAddTopicWindow::close);
+
+		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
+		button_layout->addWidget(add_button);
+		button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+		button_layout->addWidget(cancel_button);
+		connect(cancel_button, &QPushButton::clicked, this, &QWidget::close);
+	}
+
+	QVBoxLayout* layout = new QVBoxLayout{ this };
+	layout->addWidget(info_panel);
+	layout->addWidget(button_panel);
+
+	handle_text_changed();
+}
+
+void MessagingServiceAddTopicWindow::handle_text_changed()
+{
+	add_button->setEnabled(name_edit->text().size() > 0);
+}
+
+void MessagingServiceAddTopicWindow::pressed_add()
+{
+	UserProfile::get_selected_universe()->add_recent_topic(name_edit->text());;
+	close();
 }

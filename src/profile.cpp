@@ -81,14 +81,24 @@ void UniverseProfile::add_hidden_datastore(const QString& datastore)
 
 void UniverseProfile::remove_hidden_datastore(const QString& datastore)
 {
-	hidden_datastore_set.erase(datastore);
-	emit hidden_datastore_list_changed();
+	if (hidden_datastore_set.erase(datastore))
+	{
+		emit hidden_datastore_list_changed();
+	}
 }
 
 void UniverseProfile::add_recent_topic(const QString& topic)
 {
 	recent_topic_set.insert(topic);
 	emit recent_topic_list_changed();
+}
+
+void UniverseProfile::remove_recent_topic(const QString& topic)
+{
+	if (recent_topic_set.erase(topic))
+	{
+		emit recent_topic_list_changed();
+	}
 }
 
 ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk, const std::function<bool(const QString&)> api_key_name_available)
