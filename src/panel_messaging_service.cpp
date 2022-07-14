@@ -33,6 +33,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		topic_history_group_box->setSizePolicy(topic_history_size_policy);
 
 		topic_history_list = new QListWidget{ topic_history_group_box };
+		connect(topic_history_list, &QListWidget::itemSelectionChanged, this, &MessagingServicePanel::handle_selected_topic_changed);
 
 		add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
 		connect(add_used_topics_check, &QCheckBox::stateChanged, this, &MessagingServicePanel::handle_add_used_topics_toggled);
@@ -119,6 +120,15 @@ void MessagingServicePanel::handle_recent_topic_list_changed()
 	else
 	{
 		topic_history_list->clear();
+	}
+}
+
+void MessagingServicePanel::handle_selected_topic_changed()
+{
+	QList<QListWidgetItem*> selected = topic_history_list->selectedItems();
+	if (selected.size() == 1)
+	{
+		topic_edit->setText(selected.front()->text());
 	}
 }
 

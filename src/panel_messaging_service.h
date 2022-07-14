@@ -21,6 +21,7 @@ public:
 private:
 	void handle_add_used_topics_toggled();
 	void handle_recent_topic_list_changed();
+	void handle_selected_topic_changed();
 
 	void pressed_add_topic();
 	void pressed_remove_topic();
