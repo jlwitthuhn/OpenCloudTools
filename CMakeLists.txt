@@ -26,6 +26,10 @@ endif()
 
 add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
 
+if (WIN32)
+	set(RESOURCE_FILE ./res/win/resource.rc)
+endif()
+
 add_executable(OpenCloudTools
 	./src/main.cpp
 	./src/api_response.cpp
@@ -82,6 +86,7 @@ add_executable(OpenCloudTools
 	./src/window_datastore_entry_view.h
 	./src/window_main.cpp
 	./src/window_main.h
+	${RESOURCE_FILE}
 )
 
 target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
