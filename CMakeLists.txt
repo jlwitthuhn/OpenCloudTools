@@ -63,8 +63,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/tooltip_text.h
 	./src/util_enum.cpp
 	./src/util_enum.h
-	./src/util_json_string.cpp
-	./src/util_json_string.h
+	./src/util_json.cpp
+	./src/util_json.h
 	./src/util_lock.h
 	./src/util_validator.cpp
 	./src/util_validator.h
