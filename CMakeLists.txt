@@ -88,10 +88,17 @@ set(OPENCLOUDTOOLS_SRC
 	./src/window_main.h
 )
 
-add_executable(OpenCloudTools
-	${OPENCLOUDTOOLS_SRC}
-	${WIN_RESOURCE}
-)
+if (APPLE)
+	add_executable(OpenCloudTools
+		MACOSX_BUNDLE
+		${OPENCLOUDTOOLS_SRC}
+	)
+else()
+	add_executable(OpenCloudTools
+		${OPENCLOUDTOOLS_SRC}
+		${WIN_RESOURCE}
+	)
+endif()
 
 target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
 
@@ -116,4 +123,8 @@ else()
 	target_compile_options(OpenCloudTools PRIVATE -Wall -Wextra -pedantic)
 endif()
 
-install(TARGETS OpenCloudTools)
+if (APPLE)
+	install(TARGETS OpenCloudTools BUNDLE DESTINATION .)
+else()
+	install(TARGETS OpenCloudTools)
+endif()
