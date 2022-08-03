@@ -14,6 +14,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QClipboard>
+#include <QFormLayout>
 #include <QFrame>
 #include <QGroupBox>
 #include <QGuiApplication>
@@ -30,6 +31,7 @@
 #include <QSizePolicy>
 #include <QSplitter>
 #include <QTabWidget>
+#include <QTextEdit>
 #include <QTreeView>
 #include <QVBoxLayout>
 
@@ -186,7 +188,50 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 				right_box_layout->addWidget(right_edit_buttons);
 			}
 
+			QWidget* add_entry_panel = new QWidget{ right_bar_widget };
+			{
+				QWidget* add_entry_form = new QWidget{ add_entry_panel };
+				{
+					add_datastore_name_edit = new QLineEdit{ add_entry_form };
+					connect(add_datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+
+					add_datastore_scope_edit = new QLineEdit{ add_entry_form };
+					connect(add_datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+
+					add_datastore_key_name_edit = new QLineEdit{ add_entry_form };
+					connect(add_datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+
+					QTabWidget* data_tab_widget = new QTabWidget{ add_entry_form };
+					{
+						add_entry_data_edit = new QTextEdit{ data_tab_widget };
+						connect(add_entry_data_edit, &QTextEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+
+						add_entry_userids_edit = new QTextEdit{ data_tab_widget };
+						add_entry_attributes_edit = new QTextEdit{ data_tab_widget };
+
+						data_tab_widget->addTab(add_entry_data_edit, "Data");
+						data_tab_widget->addTab(add_entry_userids_edit, "User IDs");
+						data_tab_widget->addTab(add_entry_attributes_edit, "Attributes");
+					}
+
+					add_entry_submit_button = new QPushButton{ "Submit", add_entry_form };
+					add_entry_submit_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
+
+					QFormLayout* add_entry_form_layout = new QFormLayout{ add_entry_form };
+					add_entry_form_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+					add_entry_form_layout->addRow("Datastore", add_datastore_name_edit);
+					add_entry_form_layout->addRow("Scope", add_datastore_scope_edit);
+					add_entry_form_layout->addRow("Key", add_datastore_key_name_edit);
+					add_entry_form_layout->addRow("Data", data_tab_widget);
+					add_entry_form_layout->addRow("", add_entry_submit_button);
+				}
+
+				QVBoxLayout* add_entry_layout = new QVBoxLayout{ add_entry_panel };
+				add_entry_layout->addWidget(add_entry_form);
+			}
+
 			right_tab_widget->addTab(search_panel, "Search");
+			right_tab_widget->addTab(add_entry_panel, "Add Entry");
 		}
 		QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar_widget };
 		right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -203,6 +248,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 
 	set_datastore_entry_model(nullptr);
 
+	handle_add_entry_text_changed();
 	handle_search_text_changed();
 	handle_selected_datastore_changed();
 	handle_selected_datastore_entry_changed();
@@ -212,6 +258,7 @@ void ExploreDatastorePanel::selected_universe_changed()
 {
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(UserProfile::get_selected_universe() != nullptr);
+	handle_add_entry_text_changed();
 	handle_search_text_changed();
 	set_datastore_entry_model(nullptr);
 }
@@ -403,6 +450,13 @@ void ExploreDatastorePanel::delete_entry_list(const std::vector<StandardDatastor
 		OperationInProgressDialog diag{ this, request_list };
 		diag.exec();
 	}
+}
+
+void ExploreDatastorePanel::handle_add_entry_text_changed()
+{
+	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const bool submit_enabled = selected_universe && add_datastore_name_edit->text().size() > 0 && add_datastore_key_name_edit->text().size() > 0 && add_entry_data_edit->toPlainText().size() > 0;
+	add_entry_submit_button->setEnabled(submit_enabled);
 }
 
 void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)

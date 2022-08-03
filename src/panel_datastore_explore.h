@@ -12,6 +12,7 @@ class QLineEdit;
 class QListWidget;
 class QPoint;
 class QPushButton;
+class QTextEdit;
 class QTreeView;
 
 class DatastoreEntryModel;
@@ -37,6 +38,7 @@ private:
 	void delete_entry(const QModelIndex& index);
 	void delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list);
 
+	void handle_add_entry_text_changed();
 	void handle_datastore_entry_double_clicked(const QModelIndex& index);
 	void handle_search_text_changed();
 	void handle_selected_datastore_changed();
@@ -76,4 +78,15 @@ private:
 
 	QPushButton* edit_entry_button = nullptr;
 	QPushButton* delete_entry_button = nullptr;
+
+	// Add panel
+	QLineEdit* add_datastore_name_edit;
+	QLineEdit* add_datastore_scope_edit;
+	QLineEdit* add_datastore_key_name_edit;
+
+	QTextEdit* add_entry_data_edit;
+	QTextEdit* add_entry_userids_edit;
+	QTextEdit* add_entry_attributes_edit;
+
+	QPushButton* add_entry_submit_button;
 };
