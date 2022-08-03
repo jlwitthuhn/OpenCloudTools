@@ -6,10 +6,9 @@ Icon by Roblox user [Loominatrx](https://devforum.roblox.com/u/loominatrx/summar
 
 ## Screenshots
 
-![Explore Datastore](./extra/img/explore_datastore.png)
-![View Entry](./extra/img/view_entry.png)
-![View Versions](./extra/img/view_versions.png)
-![Bulk Delete](./extra/img/bulk_delete.png)
+![Search Datastore](./extra/img/datastores_search.png)
+![View Versions](./extra/img/datastore_entry_versions.png)
+![Messaging](./extra/img/messaging.png)
 
 ## Features
 
