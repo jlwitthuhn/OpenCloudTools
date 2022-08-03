@@ -13,6 +13,7 @@
 #include <QAbstractItemView>
 #include <QAction>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QClipboard>
 #include <QFormLayout>
 #include <QFrame>
@@ -201,6 +202,13 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 					add_datastore_key_name_edit = new QLineEdit{ add_entry_form };
 					connect(add_datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
 
+					add_entry_type_combo = new QComboBox{ add_entry_form };
+					add_entry_type_combo->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
+					add_entry_type_combo->addItem(get_enum_string(DatastoreEntryType::Json), static_cast<int>(DatastoreEntryType::Json));
+					add_entry_type_combo->addItem(get_enum_string(DatastoreEntryType::String), static_cast<int>(DatastoreEntryType::String));
+					add_entry_type_combo->addItem(get_enum_string(DatastoreEntryType::Number), static_cast<int>(DatastoreEntryType::Number));
+					add_entry_type_combo->addItem(get_enum_string(DatastoreEntryType::Bool), static_cast<int>(DatastoreEntryType::Bool));
+
 					QTabWidget* data_tab_widget = new QTabWidget{ add_entry_form };
 					{
 						add_entry_data_edit = new QTextEdit{ data_tab_widget };
@@ -216,12 +224,14 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 
 					add_entry_submit_button = new QPushButton{ "Submit", add_entry_form };
 					add_entry_submit_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
+					connect(add_entry_submit_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_submit_new_entry);
 
 					QFormLayout* add_entry_form_layout = new QFormLayout{ add_entry_form };
 					add_entry_form_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 					add_entry_form_layout->addRow("Datastore", add_datastore_name_edit);
 					add_entry_form_layout->addRow("Scope", add_datastore_scope_edit);
 					add_entry_form_layout->addRow("Key", add_datastore_key_name_edit);
+					add_entry_form_layout->addRow("Type", add_entry_type_combo);
 					add_entry_form_layout->addRow("Data", data_tab_widget);
 					add_entry_form_layout->addRow("", add_entry_submit_button);
 				}
@@ -479,6 +489,7 @@ void ExploreDatastorePanel::handle_selected_datastore_changed()
 	if (selected.size() == 1)
 	{
 		search_datastore_name_edit->setText(selected.first()->text());
+		add_datastore_name_edit->setText(selected.first()->text());
 	}
 }
 
@@ -730,6 +741,11 @@ void ExploreDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
 			context_menu->deleteLater();
 		}
 	}
+}
+
+void ExploreDatastorePanel::pressed_submit_new_entry()
+{
+
 }
 
 void ExploreDatastorePanel::pressed_view_entry()

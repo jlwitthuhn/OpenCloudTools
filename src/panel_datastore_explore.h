@@ -8,6 +8,7 @@
 #include <QWidget>
 
 class QCheckBox;
+class QComboBox;
 class QLineEdit;
 class QListWidget;
 class QPoint;
@@ -52,6 +53,7 @@ private:
 	void pressed_find_prefix();
 	void pressed_right_click_datastore_list(const QPoint& pos);
 	void pressed_right_click_entry_list(const QPoint& pos);
+	void pressed_submit_new_entry();
 	void pressed_view_entry();
 	void pressed_view_versions();
 
@@ -80,13 +82,15 @@ private:
 	QPushButton* delete_entry_button = nullptr;
 
 	// Add panel
-	QLineEdit* add_datastore_name_edit;
-	QLineEdit* add_datastore_scope_edit;
-	QLineEdit* add_datastore_key_name_edit;
+	QLineEdit* add_datastore_name_edit = nullptr;
+	QLineEdit* add_datastore_scope_edit = nullptr;
+	QLineEdit* add_datastore_key_name_edit = nullptr;
 
-	QTextEdit* add_entry_data_edit;
-	QTextEdit* add_entry_userids_edit;
-	QTextEdit* add_entry_attributes_edit;
+	QComboBox* add_entry_type_combo = nullptr;
 
-	QPushButton* add_entry_submit_button;
+	QTextEdit* add_entry_data_edit = nullptr;
+	QTextEdit* add_entry_userids_edit = nullptr;
+	QTextEdit* add_entry_attributes_edit = nullptr;
+
+	QPushButton* add_entry_submit_button = nullptr;
 };
