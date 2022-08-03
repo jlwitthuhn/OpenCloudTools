@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QSplitter>
+#include <QTabWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
 
@@ -84,108 +85,112 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 		right_size_policy.setHorizontalStretch(7);
 		right_bar_widget->setSizePolicy(right_size_policy);
 
-		QGroupBox* right_group_box = new QGroupBox{ "Search", right_bar_widget };
+		QTabWidget* right_tab_widget = new QTabWidget{ right_bar_widget };
 		{
-			QWidget* right_top_widget = new QWidget{ right_group_box };
+			QWidget* search_panel = new QWidget{ right_tab_widget };
 			{
-				QLabel* datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
+				QWidget* right_top_widget = new QWidget{ search_panel };
+				{
+					QLabel* search_datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
 
-				datastore_name_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
+					search_datastore_name_edit = new QLineEdit{ right_top_widget };
+					connect(search_datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
 
-				QLabel* datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
+					QLabel* search_datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
 
-				datastore_scope_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
+					search_datastore_scope_edit = new QLineEdit{ right_top_widget };
+					connect(search_datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
 
-				QLabel* datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
+					QLabel* search_datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
 
-				datastore_key_name_edit = new QLineEdit{ right_top_widget };
-				connect(datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
+					search_datastore_key_name_edit = new QLineEdit{ right_top_widget };
+					connect(search_datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
 
-				QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
-				right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_top_layout->addWidget(datastore_name_label);
-				right_top_layout->addWidget(datastore_name_edit);
-				right_top_layout->addWidget(datastore_scope_label);
-				right_top_layout->addWidget(datastore_scope_edit);
-				right_top_layout->addWidget(datastore_key_name_label);
-				right_top_layout->addWidget(datastore_key_name_edit);
+					QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
+					right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					right_top_layout->addWidget(search_datastore_name_label);
+					right_top_layout->addWidget(search_datastore_name_edit);
+					right_top_layout->addWidget(search_datastore_scope_label);
+					right_top_layout->addWidget(search_datastore_scope_edit);
+					right_top_layout->addWidget(search_datastore_key_name_label);
+					right_top_layout->addWidget(search_datastore_key_name_edit);
+				}
+
+				QWidget* right_top_button_widget = new QWidget{ search_panel };
+				{
+					find_all_button = new QPushButton{ "Find all", right_top_button_widget };
+					connect(find_all_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_find_all);
+
+					find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
+					connect(find_prefix_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_find_prefix);
+
+					QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
+					find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
+
+					find_limit_edit = new QLineEdit{ right_top_button_widget };
+					find_limit_edit->setText("1200");
+					find_limit_edit->setFixedWidth(60);
+
+					QHBoxLayout* right_top_button_layout = new QHBoxLayout{ right_top_button_widget };
+					right_top_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					right_top_button_layout->addWidget(find_all_button);
+					right_top_button_layout->addWidget(find_prefix_button);
+					right_top_button_layout->addWidget(find_limit_label);
+					right_top_button_layout->addWidget(find_limit_edit);
+				}
+
+				datastore_entry_tree = new QTreeView{ search_panel };
+				datastore_entry_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+				datastore_entry_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+				connect(datastore_entry_tree, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_entry_list);
+				connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &ExploreDatastorePanel::handle_datastore_entry_double_clicked);
+
+				QWidget* right_read_buttons = new QWidget{ search_panel };
+				{
+					view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
+					connect(view_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_view_entry);
+
+					view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
+					connect(view_versions_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_view_versions);
+
+					QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
+					right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					right_read_layout->addWidget(view_entry_button);
+					right_read_layout->addWidget(view_versions_button);
+				}
+
+				QFrame* right_separator = new QFrame{ search_panel };
+				right_separator->setFrameShape(QFrame::HLine);
+				right_separator->setFrameShadow(QFrame::Sunken);
+
+				QWidget* right_edit_buttons = new QWidget{ search_panel };
+				{
+					edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
+					connect(edit_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_edit_entry);
+
+					delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
+					connect(delete_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_delete_entry);
+
+					QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
+					right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					right_edit_layout->addWidget(edit_entry_button);
+					right_edit_layout->addWidget(delete_entry_button);
+				}
+
+				QVBoxLayout* right_box_layout = new QVBoxLayout{ search_panel };
+				right_box_layout->addWidget(right_top_widget);
+				right_box_layout->addWidget(right_top_button_widget);
+				right_box_layout->addWidget(datastore_entry_tree);
+				right_box_layout->addWidget(right_read_buttons);
+				right_box_layout->addWidget(right_separator);
+				right_box_layout->addWidget(right_edit_buttons);
 			}
 
-			QWidget* right_top_button_widget = new QWidget{ right_group_box };
-			{
-				find_all_button = new QPushButton{ "Find all", right_top_button_widget };
-				connect(find_all_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_find_all);
-
-				find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
-				connect(find_prefix_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_find_prefix);
-
-				QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
-				find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
-
-				find_limit_edit = new QLineEdit{ right_top_button_widget };
-				find_limit_edit->setText("1200");
-				find_limit_edit->setFixedWidth(60);
-
-				QHBoxLayout* right_top_button_layout = new QHBoxLayout{ right_top_button_widget };
-				right_top_button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_top_button_layout->addWidget(find_all_button);
-				right_top_button_layout->addWidget(find_prefix_button);
-				right_top_button_layout->addWidget(find_limit_label);
-				right_top_button_layout->addWidget(find_limit_edit);
-			}
-
-			datastore_entry_tree = new QTreeView{ right_group_box };
-			datastore_entry_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
-			datastore_entry_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-			connect(datastore_entry_tree, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_entry_list);
-			connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &ExploreDatastorePanel::handle_datastore_entry_double_clicked);
-
-			QWidget* right_read_buttons = new QWidget{ right_group_box };
-			{
-				view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
-				connect(view_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_view_entry);
-
-				view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
-				connect(view_versions_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_view_versions);
-
-				QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
-				right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_read_layout->addWidget(view_entry_button);
-				right_read_layout->addWidget(view_versions_button);
-			}
-
-			QFrame* right_separator = new QFrame{ right_group_box };
-			right_separator->setFrameShape(QFrame::HLine);
-			right_separator->setFrameShadow(QFrame::Sunken);
-
-			QWidget* right_edit_buttons = new QWidget{ right_group_box };
-			{
-				edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
-				connect(edit_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_edit_entry);
-
-				delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
-				connect(delete_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_delete_entry);
-
-				QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
-				right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				right_edit_layout->addWidget(edit_entry_button);
-				right_edit_layout->addWidget(delete_entry_button);
-			}
-
-			QVBoxLayout* right_box_layout = new QVBoxLayout{ right_group_box };
-			right_box_layout->addWidget(right_top_widget);
-			right_box_layout->addWidget(right_top_button_widget);
-			right_box_layout->addWidget(datastore_entry_tree);
-			right_box_layout->addWidget(right_read_buttons);
-			right_box_layout->addWidget(right_separator);
-			right_box_layout->addWidget(right_edit_buttons);
+			right_tab_widget->addTab(search_panel, "Search");
 		}
-
 		QVBoxLayout* right_bar_layout = new QVBoxLayout{ right_bar_widget };
 		right_bar_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-		right_bar_layout->addWidget(right_group_box);
+		right_bar_layout->addWidget(right_tab_widget);
 	}
 
 	QSplitter* splitter = new QSplitter{ this };
@@ -408,8 +413,8 @@ void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIn
 void ExploreDatastorePanel::handle_search_text_changed()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
-	const bool find_all_enabled = datastore_name_edit->text().size() > 0 && selected_universe;
-	const bool find_prefix_enabled = find_all_enabled && datastore_key_name_edit->text().size() > 0 && datastore_key_name_edit->text().size() > 0;
+	const bool find_all_enabled = search_datastore_name_edit->text().size() > 0 && selected_universe;
+	const bool find_prefix_enabled = find_all_enabled && search_datastore_key_name_edit->text().size() > 0;
 	find_all_button->setEnabled(find_all_enabled);
 	find_prefix_button->setEnabled(find_prefix_enabled);
 }
@@ -419,7 +424,7 @@ void ExploreDatastorePanel::handle_selected_datastore_changed()
 	QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
 	if (selected.size() == 1)
 	{
-		datastore_name_edit->setText(selected.first()->text());
+		search_datastore_name_edit->setText(selected.first()->text());
 	}
 }
 
@@ -510,18 +515,17 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 void ExploreDatastorePanel::pressed_find_all()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
+	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
-			QString datastore_name = datastore_name_edit->text().trimmed();
-			QString scope = datastore_scope_edit->text().trimmed();
-			QString key_name; // This is only used for find by prefix
+			QString datastore_name = search_datastore_name_edit->text().trimmed();
+			QString scope = search_datastore_scope_edit->text().trimmed();
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			GetStandardDatastoreEntriesRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name };
+			GetStandardDatastoreEntriesRequest req{ nullptr, api_key, universe_id, datastore_name, scope, "" };
 			if (result_limit > 0)
 			{
 				req.set_result_limit(result_limit);
@@ -538,14 +542,14 @@ void ExploreDatastorePanel::pressed_find_all()
 void ExploreDatastorePanel::pressed_find_prefix()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe && datastore_name_edit->text().trimmed().size() > 0)
+	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
-			QString datastore_name = datastore_name_edit->text().trimmed();
-			QString scope = datastore_scope_edit->text().trimmed();
-			QString key_name = datastore_key_name_edit->text().trimmed();
+			QString datastore_name = search_datastore_name_edit->text().trimmed();
+			QString scope = search_datastore_scope_edit->text().trimmed();
+			QString key_name = search_datastore_key_name_edit->text().trimmed();
 
 			if (scope.size() == 0)
 			{

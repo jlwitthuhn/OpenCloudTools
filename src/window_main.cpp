@@ -169,7 +169,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 		panel_tabs = new QTabWidget{ central_widget };
 		{
 			explore_datastore_panel = new ExploreDatastorePanel{ panel_tabs, api_key };
-			panel_tabs->addTab(explore_datastore_panel, "Explore Datastores");
+			panel_tabs->addTab(explore_datastore_panel, "Datastores");
 
 			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key };
 			panel_tabs->addTab(bulk_data_panel, "Bulk Data");

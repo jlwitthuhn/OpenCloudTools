@@ -59,9 +59,10 @@ private:
 	QPushButton* select_datastore_fetch_button = nullptr;
 	QCheckBox* select_datastore_show_hidden_check = nullptr;
 
-	QLineEdit* datastore_name_edit = nullptr;
-	QLineEdit* datastore_scope_edit = nullptr;
-	QLineEdit* datastore_key_name_edit = nullptr;
+	// Search panel
+	QLineEdit* search_datastore_name_edit = nullptr;
+	QLineEdit* search_datastore_scope_edit = nullptr;
+	QLineEdit* search_datastore_key_name_edit = nullptr;
 
 	QPushButton* find_all_button = nullptr;
 	QPushButton* find_prefix_button = nullptr;
