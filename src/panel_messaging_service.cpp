@@ -63,6 +63,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		message_edit = new QTextEdit{ send_group_box };
 
 		send_button = new QPushButton{ "Send", send_group_box};
+		send_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
 		connect(send_button, &QPushButton::clicked, this, &MessagingServicePanel::pressed_send);
 
 		QFormLayout* send_layout = new QFormLayout{ send_group_box };
