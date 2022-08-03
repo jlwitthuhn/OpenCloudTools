@@ -26,10 +26,6 @@ endif()
 
 add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
 
-if (WIN32)
-	set(WIN_RESOURCE ./res/win/resource.rc)
-endif()
-
 set(OPENCLOUDTOOLS_SRC
 	./src/main.cpp
 	./src/api_response.cpp
@@ -89,14 +85,22 @@ set(OPENCLOUDTOOLS_SRC
 )
 
 if (APPLE)
+	set(MACOSX_BUNDLE_ICON_FILE icon.icns)
+	set(ICON_MACOS "${CMAKE_CURRENT_SOURCE_DIR}/res/mac/icon.icns")
+	set_source_files_properties(${ICON_MACOS} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 	add_executable(OpenCloudTools
 		MACOSX_BUNDLE
 		${OPENCLOUDTOOLS_SRC}
+		${ICON_MACOS}
+	)
+elseif (WIN32)
+	add_executable(OpenCloudTools
+		${OPENCLOUDTOOLS_SRC}
+		./res/win/resource.rc
 	)
 else()
 	add_executable(OpenCloudTools
 		${OPENCLOUDTOOLS_SRC}
-		${WIN_RESOURCE}
 	)
 endif()
 
