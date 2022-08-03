@@ -66,6 +66,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		connect(send_button, &QPushButton::clicked, this, &MessagingServicePanel::pressed_send);
 
 		QFormLayout* send_layout = new QFormLayout{ send_group_box };
+		send_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 		send_layout->addRow("Topic", topic_edit);
 		send_layout->addRow("Message", message_edit);
 		send_layout->addRow("", send_button);
