@@ -251,19 +251,6 @@ static void show_validation_error(QWidget* const parent, const QString& message)
 	message_box->exec();
 }
 
-static std::optional<QString> condense_json(const QString& json_string)
-{
-	QJsonDocument doc = QJsonDocument::fromJson(json_string.toUtf8());
-	if (doc.isNull())
-	{
-		return std::nullopt;
-	}
-	else
-	{
-		return doc.toJson(QJsonDocument::Compact);
-	}
-}
-
 void ViewDatastoreEntryWindow::pressed_save()
 {
 	QString data_raw = new_data_edit->toPlainText();

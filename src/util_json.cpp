@@ -6,6 +6,19 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+std::optional<QString> condense_json(const QString& json_string)
+{
+	QJsonDocument doc = QJsonDocument::fromJson(json_string.toUtf8());
+	if (doc.isNull())
+	{
+		return std::nullopt;
+	}
+	else
+	{
+		return doc.toJson(QJsonDocument::Compact);
+	}
+}
+
 std::optional<QString> decode_json_string(const QString& json_string)
 {
 	if (json_string.size() < 2 || json_string[0] != '"' || json_string[json_string.size() - 1] != '"')
