@@ -43,6 +43,8 @@
 #include "diag_operation_in_progress.h"
 #include "profile.h"
 #include "util_enum.h"
+#include "util_json.h"
+#include "util_validator.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 
@@ -743,9 +745,116 @@ void ExploreDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
 	}
 }
 
+static void show_validation_error(QWidget* const parent, const QString& message)
+{
+	QMessageBox* message_box = new QMessageBox{ parent };
+	message_box->setWindowTitle("Validation Error");
+	message_box->setIcon(QMessageBox::Critical);
+	message_box->setText(message);
+	message_box->exec();
+}
+
 void ExploreDatastorePanel::pressed_submit_new_entry()
 {
+	const QString data_raw = add_entry_data_edit->toPlainText();
+	const QString userids_raw = add_entry_userids_edit->toPlainText().trimmed();
+	const QString attributes_str_raw = add_entry_attributes_edit->toPlainText().trimmed();
 
+	std::optional<QString> attributes;
+	if (attributes_str_raw.size() > 0)
+	{
+		attributes = condense_json(attributes_str_raw);
+	}
+
+	const DatastoreEntryType data_type = static_cast<DatastoreEntryType>(add_entry_type_combo->currentData().toInt());
+	{
+		bool data_valid = false;
+		switch (data_type)
+		{
+		case DatastoreEntryType::Error:
+			data_valid = false;
+			break;
+		case DatastoreEntryType::Bool:
+			data_valid = DataValidator::is_bool(data_raw);
+			break;
+		case DatastoreEntryType::Number:
+			data_valid = DataValidator::is_number(data_raw);
+			break;
+		case DatastoreEntryType::String:
+			data_valid = true;
+			break;
+		case DatastoreEntryType::Json:
+			data_valid = DataValidator::is_json(data_raw);
+			break;
+		}
+
+		if (data_valid == false)
+		{
+			show_validation_error(this, QString{ "New data is not a valid " } + get_enum_string(data_type) + ".");
+			return;
+		}
+	}
+
+	if (userids_raw != "" && DataValidator::is_json_array(userids_raw) == false)
+	{
+		show_validation_error(this, "New user list is not empty or a valid Json array.");
+		return;
+	}
+
+	if (attributes_str_raw != "" && DataValidator::is_json(attributes_str_raw) == false)
+	{
+		show_validation_error(this, "New attributes is not empty or a valid Json object.");
+		return;
+	}
+
+	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Update };
+	bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
+	{
+		return;
+	}
+
+	if (UserProfile::get_selected_universe() == nullptr)
+	{
+		return;
+	}
+
+	const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+	const QString datastore_name = add_datastore_name_edit->text();
+	const QString scope = add_datastore_scope_edit->text();
+	const QString key_name = add_datastore_key_name_edit->text();
+
+	const std::optional<QString> userids = condense_json(userids_raw);
+	std::optional<QString> data;
+	if (data_type == DatastoreEntryType::Json)
+	{
+		data = condense_json(data_raw);
+	}
+	else if (data_type == DatastoreEntryType::String)
+	{
+		data = encode_json_string(data_raw);
+	}
+	else
+	{
+		data = data_raw;
+	}
+
+	if (data.has_value() == false)
+	{
+		show_validation_error(this, "Failed to format data. This probably shouldn't happen.");
+		return;
+	}
+
+	PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data };
+	OperationInProgressDialog diag{ this, &post_req };
+	diag.exec();
+
+	if (post_req.get_success())
+	{
+		add_entry_data_edit->clear();
+		add_entry_userids_edit->clear();
+		add_entry_attributes_edit->clear();
+	}
 }
 
 void ExploreDatastorePanel::pressed_view_entry()
