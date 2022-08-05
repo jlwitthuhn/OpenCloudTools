@@ -95,6 +95,7 @@ if (APPLE)
 	)
 elseif (WIN32)
 	add_executable(OpenCloudTools
+		WIN32
 		${OPENCLOUDTOOLS_SRC}
 		./res/win/resource.rc
 	)
