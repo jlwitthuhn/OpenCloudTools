@@ -6,8 +6,10 @@
 #include <set>
 #include <vector>
 
+#include <QApplication>
 #include <QSettings>
 #include <QString>
+#include <QStyle>
 #include <QVariant>
 
 static bool compare_api_key_profile(const ApiKeyProfile* const a, const ApiKeyProfile* const b)
@@ -270,6 +272,17 @@ UniverseProfile* UserProfile::get_selected_universe(UserProfile* const user_prof
 	}
 }
 
+void UserProfile::set_qt_theme(const QString& theme_name)
+{
+	if (qt_theme != theme_name)
+	{
+		qt_theme = theme_name;
+		QApplication::setStyle(qt_theme);
+		emit qt_theme_changed();
+		save_to_disk();
+	}
+}
+
 void UserProfile::set_autoclose_progress_window(const bool autoclose)
 {
 	if (autoclose_progress_window != autoclose)
@@ -374,6 +387,10 @@ void UserProfile::load_from_disk()
 	QSettings settings;
 
 	settings.beginGroup("prefs");
+	if (settings.value("qt_theme").isValid())
+	{
+		qt_theme = settings.value("qt_theme").toString();
+	}
 	if (settings.value("autoclose_progress_window").isValid())
 	{
 		autoclose_progress_window = settings.value("autoclose_progress_window").toBool();
@@ -470,6 +487,9 @@ void UserProfile::load_from_disk()
 
 	settings.endGroup();
 
+	QApplication::setStyle(qt_theme);
+
+	emit qt_theme_changed();
 	emit api_key_list_changed(std::nullopt);
 }
 
@@ -483,6 +503,7 @@ void UserProfile::save_to_disk()
 	QSettings settings;
 
 	settings.beginGroup("prefs");
+	settings.setValue("qt_theme", qt_theme);
 	settings.setValue("autoclose_progress_window", autoclose_progress_window);
 	settings.setValue("less_verbose_bulk_operations", less_verbose_bulk_operations);
 	settings.endGroup();
@@ -550,6 +571,10 @@ void UserProfile::save_to_disk()
 
 UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 {
+	if (QApplication::style())
+	{
+		qt_theme = QApplication::style()->name();
+	}
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::hidden_datastore_list_changed, this, &UserProfile::save_to_disk);

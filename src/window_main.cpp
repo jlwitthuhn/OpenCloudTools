@@ -9,6 +9,7 @@
 #include <Qt>
 #include <QtGlobal>
 #include <QAction>
+#include <QApplication>
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QFormLayout>
@@ -21,6 +22,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QStyleFactory>
 #include <QTabWidget>
 #include <QUrl>
 #include <QVariant>
@@ -43,6 +45,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
 
+	connect(UserProfile::get().get(), &UserProfile::qt_theme_changed, this, &MyMainWindow::handle_qt_theme_changed);
 	connect(UserProfile::get().get(), &UserProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 	connect(UserProfile::get().get(), &UserProfile::autoclose_changed, this, &MyMainWindow::handle_autoclose_changed);
 
@@ -64,6 +67,17 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 		QMenu* preferences_menu = new QMenu{ "&Preferences", menu_bar };
 		{
+			QMenu* theme_menu = new QMenu{ "Theme", preferences_menu };
+			for (const QString this_theme : QStyleFactory::keys())
+			{
+				QAction* this_action = new QAction{ this_theme, theme_menu };
+				connect(this_action, &QAction::triggered, [this_theme]() {
+					UserProfile::get()->set_qt_theme(this_theme);
+				});
+				theme_actions.push_back(this_action);
+				theme_menu->addAction(this_action);
+			}
+
 			action_toggle_autoclose = new QAction{ "&Automatically close progress window", menu_bar };
 			action_toggle_autoclose->setCheckable(true);
 			action_toggle_autoclose->setChecked(UserProfile::get()->get_autoclose_progress_window());
@@ -74,6 +88,8 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			action_toggle_less_verbose_bulk->setChecked(UserProfile::get()->get_less_verbose_bulk_operations());
 			connect(action_toggle_less_verbose_bulk, &QAction::triggered, this, &MyMainWindow::pressed_toggle_less_verbose_bulk);
 
+			preferences_menu->addMenu(theme_menu);
+			preferences_menu->addSeparator();
 			preferences_menu->addAction(action_toggle_autoclose);
 			preferences_menu->addAction(action_toggle_less_verbose_bulk);
 		}
@@ -195,6 +211,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	setMinimumWidth(700);
 	setMinimumHeight(520);
 
+	handle_qt_theme_changed();
 	handle_universe_list_changed(std::nullopt);
 }
 
@@ -268,6 +285,24 @@ void MyMainWindow::handle_autoclose_changed()
 	if (autoclose != action_toggle_autoclose->isChecked())
 	{
 		action_toggle_autoclose->setChecked(autoclose);
+	}
+}
+
+void MyMainWindow::handle_qt_theme_changed()
+{
+	const QString& selected_theme = UserProfile::get()->get_qt_theme();
+	for (QAction* const this_action : theme_actions)
+	{
+		if (this_action->text() == selected_theme)
+		{
+			this_action->setCheckable(true);
+			this_action->setChecked(true);
+		}
+		else
+		{
+			this_action->setCheckable(false);
+			this_action->setChecked(false);
+		}
 	}
 }
 

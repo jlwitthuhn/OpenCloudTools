@@ -108,6 +108,9 @@ public:
 	static ApiKeyProfile* get_selected_api_key(UserProfile* user_profile = nullptr);
 	static UniverseProfile* get_selected_universe(UserProfile* user_profile = nullptr);
 
+	const QString& get_qt_theme() const { return qt_theme; }
+	void set_qt_theme(const QString& theme_name);
+
 	bool get_autoclose_progress_window() const { return autoclose_progress_window; }
 	void set_autoclose_progress_window(bool autoclose);
 
@@ -123,6 +126,7 @@ public:
 	void select_api_key(std::optional<size_t> index);
 
 signals:
+	void qt_theme_changed();
 	void autoclose_changed();
 	void api_key_list_changed(std::optional<size_t> selected_api_index);
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
@@ -139,6 +143,7 @@ private:
 	void load_from_disk();
 	void save_to_disk();
 
+	QString qt_theme;
 	bool autoclose_progress_window = true;
 	bool less_verbose_bulk_operations = true;
 

@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include <optional>
+#include <vector>
 
 #include <QMainWindow>
 #include <QObject>
@@ -38,11 +39,13 @@ private:
 	void pressed_toggle_less_verbose_bulk();
 
 	void handle_autoclose_changed();
+	void handle_qt_theme_changed();
 	void handle_tab_changed(int index);
 	void handle_universe_list_changed(std::optional<size_t> universe_index);
 
 	QString api_key;
 
+	std::vector<QAction*> theme_actions;
 	QAction* action_toggle_autoclose = nullptr;
 	QAction* action_toggle_less_verbose_bulk = nullptr;
 
