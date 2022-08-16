@@ -44,7 +44,7 @@ Section /o "Desktop Shortcut" SecShortcut
   CreateShortCut "$DESKTOP\Open Cloud Tools.lnk" "$DIR_INSTALL\OpenCloudTools.exe"
 SectionEnd
 
-Section /o "Start Menu Shortcut" SecShortcut
+Section "Start Menu Shortcut" SecShortcut
   CreateShortCut "$SMPROGRAMS\Open Cloud Tools.lnk" "$DIR_INSTALL\OpenCloudTools.exe"
 SectionEnd
 
