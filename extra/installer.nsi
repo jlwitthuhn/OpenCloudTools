@@ -40,11 +40,11 @@ Section /o "Qt 5 Version" SecQt5
   File /r "install_qt5\"
 SectionEnd
 
-Section /o "Desktop Shortcut" SecShortcut
+Section /o "Desktop Shortcut" SecDektopShortcut
   CreateShortCut "$DESKTOP\Open Cloud Tools.lnk" "$DIR_INSTALL\OpenCloudTools.exe"
 SectionEnd
 
-Section "Start Menu Shortcut" SecShortcut
+Section "Start Menu Shortcut" SecStartMenuShortcut
   CreateShortCut "$SMPROGRAMS\Open Cloud Tools.lnk" "$DIR_INSTALL\OpenCloudTools.exe"
 SectionEnd
 
