@@ -9,7 +9,6 @@
 #include <Qt>
 #include <QtGlobal>
 #include <QAction>
-#include <QApplication>
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QFormLayout>
@@ -17,11 +16,13 @@
 #include <QHBoxLayout>
 #include <QLayout>
 #include <QLineEdit>
+#include <QList>
 #include <QMargins>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QStringList>
 #include <QStyleFactory>
 #include <QTabWidget>
 #include <QUrl>
@@ -69,7 +70,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 		{
 			QMenu* theme_menu = new QMenu{ "Theme", preferences_menu };
 			{
-				for (const QString this_theme : QStyleFactory::keys())
+				for (const QString& this_theme : QStyleFactory::keys())
 				{
 					QAction* this_action = new QAction{ this_theme, theme_menu };
 					connect(this_action, &QAction::triggered, [this_theme]() {

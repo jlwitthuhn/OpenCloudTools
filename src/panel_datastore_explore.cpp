@@ -34,6 +34,7 @@
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QTreeView>
+#include <QVariant>
 #include <QVBoxLayout>
 
 #include "api_response.h"

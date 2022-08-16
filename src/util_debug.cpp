@@ -1,10 +1,13 @@
 #include "util_debug.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <QApplication>
+#include <QColor>
 #include <QPalette>
+#include <QString>
 
 void dump_current_palettes()
 {
@@ -30,6 +33,9 @@ void dump_current_palettes()
 					break;
 				case QPalette::Disabled:
 					group_name = "Disabled";
+					break;
+				default:
+					// Do nothing
 					break;
 			}
 

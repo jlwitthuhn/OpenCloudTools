@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <QApplication>
+#include <QPalette>
 #include <QSettings>
 #include <QString>
 #include <QStyle>
