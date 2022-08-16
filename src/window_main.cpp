@@ -68,14 +68,25 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 		QMenu* preferences_menu = new QMenu{ "&Preferences", menu_bar };
 		{
 			QMenu* theme_menu = new QMenu{ "Theme", preferences_menu };
-			for (const QString this_theme : QStyleFactory::keys())
 			{
-				QAction* this_action = new QAction{ this_theme, theme_menu };
-				connect(this_action, &QAction::triggered, [this_theme]() {
-					UserProfile::get()->set_qt_theme(this_theme);
-				});
-				theme_actions.push_back(this_action);
-				theme_menu->addAction(this_action);
+				for (const QString this_theme : QStyleFactory::keys())
+				{
+					QAction* this_action = new QAction{ this_theme, theme_menu };
+					connect(this_action, &QAction::triggered, [this_theme]() {
+						UserProfile::get()->set_qt_theme(this_theme);
+					});
+					theme_actions.push_back(this_action);
+					theme_menu->addAction(this_action);
+					if (this_theme.toLower() == "fusion")
+					{
+						QAction* fusion_dark_action = new QAction{ "Fusion (Dark)", theme_menu };
+						connect(fusion_dark_action, &QAction::triggered, []() {
+							UserProfile::get()->set_qt_theme("_fusion_dark");
+						});
+						theme_actions.push_back(fusion_dark_action);
+						theme_menu->addAction(fusion_dark_action);
+					}
+				}
 			}
 
 			action_toggle_autoclose = new QAction{ "&Automatically close progress window", menu_bar };
@@ -293,7 +304,7 @@ void MyMainWindow::handle_qt_theme_changed()
 	const QString& selected_theme = UserProfile::get()->get_qt_theme();
 	for (QAction* const this_action : theme_actions)
 	{
-		if (this_action->text() == selected_theme)
+		if (this_action->text() == selected_theme || (this_action->text() == "Fusion (Dark)" && selected_theme == "_fusion_dark"))
 		{
 			this_action->setCheckable(true);
 			this_action->setChecked(true);

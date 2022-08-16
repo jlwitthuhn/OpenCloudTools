@@ -274,13 +274,65 @@ UniverseProfile* UserProfile::get_selected_universe(UserProfile* const user_prof
 
 void UserProfile::set_qt_theme(const QString& theme_name)
 {
-	if (qt_theme != theme_name)
+	qt_theme = theme_name;
+	if (qt_theme == "_fusion_dark")
 	{
-		qt_theme = theme_name;
-		QApplication::setStyle(qt_theme);
-		emit qt_theme_changed();
-		save_to_disk();
+		QApplication::setStyle("Fusion");
+
+		QPalette main_palette;
+
+		main_palette.setColor(QPalette::Active, QPalette::Window, "#323232");
+		main_palette.setColor(QPalette::Active, QPalette::WindowText, "#ffffff");
+		main_palette.setColor(QPalette::Active, QPalette::Base, "#171717");
+		main_palette.setColor(QPalette::Active, QPalette::AlternateBase, "#989898");
+		main_palette.setColor(QPalette::Active, QPalette::ToolTipBase, "#ffffff");
+		main_palette.setColor(QPalette::Active, QPalette::ToolTipText, "#000000");
+		main_palette.setColor(QPalette::Active, QPalette::PlaceholderText, "#ffffff");
+		main_palette.setColor(QPalette::Active, QPalette::Text, "#ffffff");
+		main_palette.setColor(QPalette::Active, QPalette::Button, "#323232");
+		main_palette.setColor(QPalette::Active, QPalette::ButtonText, "#ffffff");
+		main_palette.setColor(QPalette::Active, QPalette::BrightText, "#373737");
+
+		main_palette.setColor(QPalette::Inactive, QPalette::Window, "#323232");
+		main_palette.setColor(QPalette::Inactive, QPalette::WindowText, "#ffffff");
+		main_palette.setColor(QPalette::Inactive, QPalette::Base, "#171717");
+		main_palette.setColor(QPalette::Inactive, QPalette::AlternateBase, "#989898");
+		main_palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, "#ffffff");
+		main_palette.setColor(QPalette::Inactive, QPalette::ToolTipText, "#000000");
+		main_palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, "#ffffff");
+		main_palette.setColor(QPalette::Inactive, QPalette::Text, "#ffffff");
+		main_palette.setColor(QPalette::Inactive, QPalette::Button, "#323232");
+		main_palette.setColor(QPalette::Inactive, QPalette::ButtonText, "#808080");
+		main_palette.setColor(QPalette::Inactive, QPalette::BrightText, "#373737");
+
+		main_palette.setColor(QPalette::Disabled, QPalette::Window, "#323232");
+		main_palette.setColor(QPalette::Disabled, QPalette::WindowText, "#ffffff");
+		main_palette.setColor(QPalette::Disabled, QPalette::Base, "#323232");
+		main_palette.setColor(QPalette::Disabled, QPalette::AlternateBase, "#989898");
+		main_palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, "#ffffff");
+		main_palette.setColor(QPalette::Disabled, QPalette::ToolTipText, "#000000");
+		main_palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, "#ffffff");
+		main_palette.setColor(QPalette::Disabled, QPalette::Text, "#ffffff");
+		main_palette.setColor(QPalette::Disabled, QPalette::Button, "#323232");
+		main_palette.setColor(QPalette::Disabled, QPalette::ButtonText, "#ffffff");
+		main_palette.setColor(QPalette::Disabled, QPalette::BrightText, "#373737");
+
+		QPalette menu_bar_palette{ main_palette };
+
+		menu_bar_palette.setColor(QPalette::Active, QPalette::Window, "#2A2A2A");
+		menu_bar_palette.setColor(QPalette::Inactive, QPalette::Window, "#2A2A2A");
+		menu_bar_palette.setColor(QPalette::Disabled, QPalette::Window, "#2A2A2A");
+
+		QApplication::setPalette(main_palette);
+		QApplication::setPalette(menu_bar_palette, "QMenuBar");
 	}
+	else
+	{
+		QApplication::setStyle(qt_theme);
+		QApplication::setPalette(QApplication::style()->standardPalette());
+	}
+	emit qt_theme_changed();
+	save_to_disk();
 }
 
 void UserProfile::set_autoclose_progress_window(const bool autoclose)
@@ -487,9 +539,8 @@ void UserProfile::load_from_disk()
 
 	settings.endGroup();
 
-	QApplication::setStyle(qt_theme);
+	set_qt_theme(qt_theme);
 
-	emit qt_theme_changed();
 	emit api_key_list_changed(std::nullopt);
 }
 
