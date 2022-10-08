@@ -6,6 +6,7 @@
 #include <QCryptographicHash>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaEnum>
 #include <QNetworkReply>
 #include <QTimer>
 #include <QVariant>
@@ -54,6 +55,7 @@ QString DataRequest::get_send_message() const
 
 void DataRequest::handle_reply_ready()
 {
+	QNetworkReply::NetworkError error = pending_reply->error();
 	QString status = pending_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 	QString reply_body = pending_reply->readAll();
 	QList<QNetworkReply::RawHeaderPair> headers = pending_reply->rawHeaderPairs();
@@ -98,6 +100,11 @@ void DataRequest::handle_reply_ready()
 	{
 		emit status_info(QString{ "Received HTTP 504 Gateway Timeout, retrying..." });
 		resend();
+	}
+	else if (status == "")
+	{
+		QMetaEnum meta_enum = QMetaEnum::fromType<QNetworkReply::NetworkError>();
+		emit status_error( QString{ "Network error %1" }.arg( meta_enum.valueToKey( static_cast<int>(error) ) ) );
 	}
 	else
 	{
