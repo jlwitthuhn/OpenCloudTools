@@ -278,6 +278,9 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 	qt_theme = theme_name;
 	if (qt_theme == "_fusion_dark")
 	{
+		QApplication::setStyle("Windows");
+		QApplication::setPalette(QApplication::style()->standardPalette());
+
 		QApplication::setStyle("Fusion");
 
 		QPalette main_palette;
