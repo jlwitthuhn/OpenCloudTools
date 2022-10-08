@@ -642,7 +642,12 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 {
 	if (QApplication::style())
 	{
+#ifdef QT5_COMPAT
+		qt_theme = QApplication::style()->objectName();
+#else
 		qt_theme = QApplication::style()->name();
+#endif
+
 	}
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
