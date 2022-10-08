@@ -338,6 +338,7 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 		menu_bar_palette.setColor(QPalette::Disabled, QPalette::Window, color_background_alt);
 
 		QApplication::setPalette(main_palette);
+		QApplication::setPalette(menu_palette, "QMenu");
 		QApplication::setPalette(menu_bar_palette, "QMenuBar");
 	}
 	else
