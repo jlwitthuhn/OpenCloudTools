@@ -88,7 +88,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 		get_entries_request = new GetStandardDatastoreEntriesRequest{ this, api_key, universe_id, this_datastore_name, find_scope, find_key_prefix };
 		get_entries_request->set_http_429_count(http_429_count);
 		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
-		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
+		connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_entries_request, &GetStandardDatastoreEntriesRequest::status_info, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
@@ -102,6 +102,11 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 	{
 		send_next_entry_request();
 	}
+}
+
+void DatastoreBulkOperationProgressWindow::handle_error_message(const QString message)
+{
+	handle_status_message(message);
 }
 
 void DatastoreBulkOperationProgressWindow::handle_status_message(const QString message)
@@ -245,7 +250,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			get_entry_request = new GetStandardDatastoreEntryDetailsRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
 			get_entry_request->set_http_429_count(http_429_count);
 			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_error_message);
 			if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 			{
 				connect(get_entry_request, &GetStandardDatastoreEntryDetailsRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
@@ -260,7 +265,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			delete_entry_request = new DeleteStandardDatastoreEntryRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
 			delete_entry_request->set_http_429_count(http_429_count);
 			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_error_message);
 			if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 			{
 				connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
@@ -309,7 +314,7 @@ void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
 			post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 			post_entry_request->set_http_429_count(http_429_count);
 			connect(post_entry_request, &PostStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-			connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+			connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_error_message);
 			if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 			{
 				connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
@@ -341,7 +346,7 @@ void DatastoreBulkDeleteProgressWindow::handle_post_entry_response()
 		delete_entry_request = new DeleteStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name };
 		delete_entry_request->set_http_429_count(http_429_count);
 		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkDeleteProgressWindow::handle_received_http_429);
-		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
+		connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkDeleteProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(delete_entry_request, &DeleteStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
@@ -423,7 +428,7 @@ void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
 		get_entry_details_request = new GetStandardDatastoreEntryDetailsRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
 		get_entry_details_request->set_http_429_count(http_429_count);
 		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::received_http_429, this, &DatastoreBulkDownloadProgressWindow::handle_received_http_429);
-		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::status_error, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
+		connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::status_error, this, &DatastoreBulkDownloadProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_entry_details_request, &GetStandardDatastoreEntryDetailsRequest::status_info, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
@@ -490,7 +495,7 @@ void DatastoreBulkUndeleteProgressWindow::send_next_entry_request()
 		get_versions_request = new GetStandardDatastoreEntryVersionsRequest{ this, api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key() };
 		get_versions_request->set_http_429_count(http_429_count);
 		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
-		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
+		connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_versions_request, &GetStandardDatastoreEntryVersionsRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
@@ -603,7 +608,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_versions_response()
 		get_entry_at_version_request = new GetStandardDatastoreEntryAtVersionRequest{ this, api_key, universe_id, datastore_name, scope, key_name, target_version->get_version() };
 		get_entry_at_version_request->set_http_429_count(http_429_count);
 		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
-		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
+		connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(get_entry_at_version_request, &GetStandardDatastoreEntryVersionsRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
@@ -640,7 +645,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
 		post_entry_request = new PostStandardDatastoreEntryRequest{ this, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 		post_entry_request->set_http_429_count(http_429_count);
 		connect(post_entry_request, &PostStandardDatastoreEntryRequest::received_http_429, this, &DatastoreBulkUndeleteProgressWindow::handle_received_http_429);
-		connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
+		connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_error, this, &DatastoreBulkUndeleteProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
 			connect(post_entry_request, &PostStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);

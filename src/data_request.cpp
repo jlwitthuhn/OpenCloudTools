@@ -45,7 +45,7 @@ DataRequest::DataRequest(QObject* const parent, const QString& api_key) : QObjec
 void DataRequest::handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	emit status_error(QString{ "Received HTTP 404, aborting" });
-	emit status_error(body);
+	emit status_info(body);
 }
 
 QString DataRequest::get_send_message() const
@@ -109,7 +109,10 @@ void DataRequest::handle_reply_ready()
 	else
 	{
 		emit status_error(QString{ "Received HTTP %1, aborting" }.arg(status));
-		emit status_error(reply_body);
+		if (reply_body != "")
+		{
+			emit status_info(reply_body);
+		}
 	}
 }
 

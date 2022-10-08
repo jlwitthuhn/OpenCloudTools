@@ -41,6 +41,7 @@ protected:
 
 	void send_next_enumerate_keys_request();
 
+	void handle_error_message(QString message);
 	void handle_status_message(QString message);
 	void handle_enumerate_keys_response();
 	void handle_received_http_429();
