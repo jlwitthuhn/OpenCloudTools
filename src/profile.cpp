@@ -647,7 +647,6 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 #else
 		qt_theme = QApplication::style()->name();
 #endif
-
 	}
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
