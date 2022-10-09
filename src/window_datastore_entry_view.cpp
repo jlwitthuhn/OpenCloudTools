@@ -335,7 +335,7 @@ void ViewDatastoreEntryWindow::pressed_save()
 		return;
 	}
 
-	PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data };
+	PostStandardDatastoreEntryRequest post_req{ api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data };
 	OperationInProgressDialog diag{ this, &post_req };
 	diag.exec();
 

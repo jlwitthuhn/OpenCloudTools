@@ -32,7 +32,7 @@ signals:
 	void received_http_429();
 
 protected:
-	DataRequest(QObject* parent, const QString& api_key);
+	DataRequest(const QString& api_key);
 
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) = 0;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) = 0;
@@ -60,7 +60,7 @@ protected:
 class DeleteStandardDatastoreEntryRequest : public DataRequest
 {
 public:
-	DeleteStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	DeleteStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -83,7 +83,7 @@ private:
 class GetStandardDatastoresDataRequest : public DataRequest
 {
 public:
-	GetStandardDatastoresDataRequest(QObject* parent, const QString& api_key, long long universe_id);
+	GetStandardDatastoresDataRequest(const QString& api_key, long long universe_id);
 
 	virtual QString get_title_string() const override;
 
@@ -101,7 +101,7 @@ private:
 class GetStandardDatastoreEntriesRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntriesRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix);
+	GetStandardDatastoreEntriesRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix);
 
 	virtual QString get_title_string() const override;
 
@@ -126,7 +126,7 @@ private:
 class GetStandardDatastoreEntryDetailsRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntryDetailsRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	GetStandardDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -149,7 +149,7 @@ protected:
 class GetStandardDatastoreEntryAtVersionRequest : public GetStandardDatastoreEntryDetailsRequest
 {
 public:
-	GetStandardDatastoreEntryAtVersionRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version);
+	GetStandardDatastoreEntryAtVersionRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version);
 
 protected:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
@@ -160,7 +160,7 @@ protected:
 class GetStandardDatastoreEntryVersionsRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntryVersionsRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	GetStandardDatastoreEntryVersionsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -186,7 +186,7 @@ private:
 class PostMessagingServiceMessageRequest : public DataRequest
 {
 public:
-	PostMessagingServiceMessageRequest(QObject* parent, const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
+	PostMessagingServiceMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
 
 	virtual QString get_title_string() const override;
 
@@ -206,7 +206,7 @@ private:
 class PostStandardDatastoreEntryRequest : public DataRequest
 {
 public:
-	PostStandardDatastoreEntryRequest(QObject* parent, const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body);
+	PostStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body);
 
 	virtual QString get_title_string() const override;
 

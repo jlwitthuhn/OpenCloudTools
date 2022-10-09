@@ -341,7 +341,7 @@ void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				GetStandardDatastoreEntryDetailsRequest req{ api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
 				diag.exec();
 
@@ -373,7 +373,7 @@ void ExploreDatastorePanel::view_versions(const QModelIndex& index)
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				GetStandardDatastoreEntryVersionsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				GetStandardDatastoreEntryVersionsRequest req{ api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
 				diag.exec();
 
@@ -397,7 +397,7 @@ void ExploreDatastorePanel::edit_entry(const QModelIndex& index)
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				GetStandardDatastoreEntryDetailsRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				GetStandardDatastoreEntryDetailsRequest req{ api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
 				diag.exec();
 
@@ -429,7 +429,7 @@ void ExploreDatastorePanel::delete_entry(const QModelIndex& index)
 					return;
 				}
 
-				DeleteStandardDatastoreEntryRequest req{ nullptr, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
+				DeleteStandardDatastoreEntryRequest req{ api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key() };
 				OperationInProgressDialog diag{ this, &req };
 				diag.exec();
 			}
@@ -454,7 +454,7 @@ void ExploreDatastorePanel::delete_entry_list(const std::vector<StandardDatastor
 		for (const StandardDatastoreEntry& this_entry : entry_list)
 		{
 			std::shared_ptr<DeleteStandardDatastoreEntryRequest> this_request =
-				std::make_shared<DeleteStandardDatastoreEntryRequest>(nullptr, api_key, this_entry.get_universe_id(), this_entry.get_datastore_name(), this_entry.get_scope(), this_entry.get_key());
+				std::make_shared<DeleteStandardDatastoreEntryRequest>(api_key, this_entry.get_universe_id(), this_entry.get_datastore_name(), this_entry.get_scope(), this_entry.get_key());
 
 			shared_request_list.push_back(this_request);
 			request_list.push_back(this_request.get());
@@ -564,7 +564,7 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
-			GetStandardDatastoresDataRequest req{ nullptr, api_key, universe_id };
+			GetStandardDatastoresDataRequest req{ api_key, universe_id };
 			OperationInProgressDialog diag{ this, &req };
 			diag.exec();
 
@@ -593,7 +593,7 @@ void ExploreDatastorePanel::pressed_find_all()
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			GetStandardDatastoreEntriesRequest req{ nullptr, api_key, universe_id, datastore_name, scope, "" };
+			GetStandardDatastoreEntriesRequest req{ api_key, universe_id, datastore_name, scope, "" };
 			if (result_limit > 0)
 			{
 				req.set_result_limit(result_limit);
@@ -626,7 +626,7 @@ void ExploreDatastorePanel::pressed_find_prefix()
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			GetStandardDatastoreEntriesRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name };
+			GetStandardDatastoreEntriesRequest req{ api_key, universe_id, datastore_name, scope, key_name };
 			if (result_limit > 0)
 			{
 				req.set_result_limit(result_limit);
@@ -846,7 +846,7 @@ void ExploreDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data };
+	PostStandardDatastoreEntryRequest post_req{ api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data };
 	OperationInProgressDialog diag{ this, &post_req };
 	diag.exec();
 

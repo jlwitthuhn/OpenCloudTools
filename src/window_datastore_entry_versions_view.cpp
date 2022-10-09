@@ -115,7 +115,7 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed)
 				{
-					GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
+					GetStandardDatastoreEntryAtVersionRequest req{ api_key, universe_id, datastore_name, scope, key_name, version };
 					OperationInProgressDialog diag{ this, &req };
 					diag.exec();
 
@@ -126,7 +126,7 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 						const std::optional<QString> attributes = opt_details->get_attributes();
 						const QString body = opt_details->get_data_raw();
 
-						PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
+						PostStandardDatastoreEntryRequest post_req{ api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 						OperationInProgressDialog diag{ this, &post_req };
 						diag.exec();
 
@@ -155,7 +155,7 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 				const QString key_name = key_name_edit->text();
 				const QString version = opt_version->get_version();
 
-				GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
+				GetStandardDatastoreEntryAtVersionRequest req{ api_key, universe_id, datastore_name, scope, key_name, version };
 				OperationInProgressDialog diag{ this, &req };
 				diag.exec();
 
@@ -190,7 +190,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_refresh()
 	const QString scope = scope_edit->text();
 	const QString key_name = key_name_edit->text();
 
-	GetStandardDatastoreEntryVersionsRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name };
+	GetStandardDatastoreEntryVersionsRequest req{ api_key, universe_id, datastore_name, scope, key_name };
 	OperationInProgressDialog diag{ this, &req };
 	diag.exec();
 
@@ -223,7 +223,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed)
 				{
-					GetStandardDatastoreEntryAtVersionRequest req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, version };
+					GetStandardDatastoreEntryAtVersionRequest req{ api_key, universe_id, datastore_name, scope, key_name, version };
 					OperationInProgressDialog diag{ this, &req };
 					diag.exec();
 
@@ -234,7 +234,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 						const std::optional<QString> attributes = opt_details->get_attributes();
 						const QString body = opt_details->get_data_raw();
 
-						PostStandardDatastoreEntryRequest post_req{ nullptr, api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
+						PostStandardDatastoreEntryRequest post_req{ api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
 						OperationInProgressDialog diag{ this, &post_req };
 						diag.exec();
 
