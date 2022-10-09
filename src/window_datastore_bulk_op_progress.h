@@ -29,6 +29,10 @@ class PostStandardDatastoreEntryRequest;
 class DatastoreBulkOperationProgressWindow : public QWidget
 {
 	Q_OBJECT
+
+public:
+	void start();
+
 protected:
 	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names);
 

@@ -15,6 +15,11 @@
 #include "profile.h"
 #include "roblox_time.h"
 
+void DatastoreBulkOperationProgressWindow::start()
+{
+	send_next_enumerate_keys_request();
+}
+
 DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
@@ -46,7 +51,7 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	layout->addWidget(text_box);
 	layout->addWidget(close_button);
 
-	send_next_enumerate_keys_request();
+	update_ui();
 }
 
 void DatastoreBulkOperationProgressWindow::update_ui()

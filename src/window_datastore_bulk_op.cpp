@@ -236,6 +236,7 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 			close();
 			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			progress_window->show();
+			progress_window->start();
 		}
 	}
 	else
@@ -287,6 +288,7 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 				close();
 				progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 				progress_window->show();
+				progress_window->start();
 			}
 			else
 			{
@@ -392,6 +394,7 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 			close();
 			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			progress_window->show();
+			progress_window->start();
 		}
 	}
 	else
