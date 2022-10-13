@@ -89,7 +89,7 @@ protected:
 
 	std::vector<StandardDatastoreEntry> pending_entries;
 
-	GetStandardDatastoreEntriesRequest* get_entries_request = nullptr;
+	std::shared_ptr<GetStandardDatastoreEntriesRequest> get_entries_request;
 
 	QLabel* progress_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
@@ -134,9 +134,9 @@ private:
 	size_t entries_deleted = 0;
 	size_t entries_already_deleted = 0;
 
-	GetStandardDatastoreEntryDetailsRequest* get_entry_request = nullptr;
-	PostStandardDatastoreEntryRequest* post_entry_request = nullptr;
-	DeleteStandardDatastoreEntryRequest* delete_entry_request = nullptr;
+	std::shared_ptr<GetStandardDatastoreEntryDetailsRequest> get_entry_request;
+	std::shared_ptr<PostStandardDatastoreEntryRequest> post_entry_request;
+	std::shared_ptr<DeleteStandardDatastoreEntryRequest> delete_entry_request;
 };
 
 class DatastoreBulkDownloadProgressWindow : public DatastoreBulkOperationProgressWindow
@@ -154,7 +154,7 @@ private:
 
 	std::unique_ptr<SqliteDatastoreWriter> writer;
 
-	GetStandardDatastoreEntryDetailsRequest* get_entry_details_request = nullptr;
+	std::shared_ptr<GetStandardDatastoreEntryDetailsRequest> get_entry_details_request;
 };
 
 class DatastoreBulkUndeleteProgressWindow : public DatastoreBulkOperationProgressWindow
@@ -174,9 +174,9 @@ private:
 
 	std::optional<QDateTime> undelete_after;
 
-	GetStandardDatastoreEntryVersionsRequest* get_versions_request = nullptr;
-	GetStandardDatastoreEntryAtVersionRequest* get_entry_at_version_request = nullptr;
-	PostStandardDatastoreEntryRequest* post_entry_request = nullptr;
+	std::shared_ptr<GetStandardDatastoreEntryVersionsRequest> get_versions_request;
+	std::shared_ptr<GetStandardDatastoreEntryAtVersionRequest> get_entry_at_version_request;
+	std::shared_ptr<PostStandardDatastoreEntryRequest> post_entry_request;
 
 	size_t entries_restored = 0;
 	size_t entries_not_deleted = 0;
