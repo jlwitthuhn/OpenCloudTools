@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -22,8 +23,8 @@ class OperationInProgressDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	OperationInProgressDialog(QWidget* parent, DataRequest* request);
-	OperationInProgressDialog(QWidget* parent, const std::vector<DataRequest*>& request_list);
+	OperationInProgressDialog(QWidget* parent, const std::shared_ptr<DataRequest>& request);
+	OperationInProgressDialog(QWidget* parent, const std::vector<std::shared_ptr<DataRequest>>& request_list);
 
 	virtual int exec() override;
 
@@ -42,8 +43,8 @@ private:
 
 	bool respect_close_automatically = true;
 
-	std::vector<DataRequest*> request_list;
-	DataRequest* pending_request = nullptr;
+	std::vector<std::shared_ptr<DataRequest>> request_list;
+	std::shared_ptr<DataRequest> pending_request;
 	size_t requests_complete = 0;
 
 	size_t http_429_count = 0;

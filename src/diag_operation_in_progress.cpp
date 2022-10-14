@@ -18,13 +18,13 @@
 
 class QWidget;
 
-OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, DataRequest* const request) : QDialog{ parent }
+OperationInProgressDialog::OperationInProgressDialog(QWidget* const parent, const std::shared_ptr<DataRequest>& request) : QDialog{ parent }
 {
 	request_list.push_back(request);
 	constructor_common();
 }
 
-OperationInProgressDialog::OperationInProgressDialog(QWidget* parent, const std::vector<DataRequest*>& request_list) : QDialog{ parent }, respect_close_automatically{ false }, request_list{ request_list }
+OperationInProgressDialog::OperationInProgressDialog(QWidget* const parent, const std::vector<std::shared_ptr<DataRequest>>& request_list) : QDialog{ parent }, respect_close_automatically{ false }, request_list{ request_list }
 {
 	constructor_common();
 }
@@ -112,10 +112,10 @@ void OperationInProgressDialog::send_next_request()
 		pending_request->set_http_429_count(http_429_count);
 		top_label->setText(pending_request->get_title_string());
 
-		connect(pending_request, &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
-		connect(pending_request, &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
-		connect(pending_request, &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_message);
-		connect(pending_request, &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_message);
+		connect(pending_request.get(), &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
+		connect(pending_request.get(), &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
+		connect(pending_request.get(), &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_message);
+		connect(pending_request.get(), &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_message);
 
 		pending_request->send_request();
 	}
@@ -129,7 +129,7 @@ void OperationInProgressDialog::handle_request_complete()
 {
 	if (pending_request)
 	{
-		pending_request = nullptr;
+		pending_request.reset();
 		requests_complete++;
 
 		send_next_request();

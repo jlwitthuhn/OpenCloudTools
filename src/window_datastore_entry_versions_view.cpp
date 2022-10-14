@@ -115,22 +115,22 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed)
 				{
-					GetStandardDatastoreEntryAtVersionRequest req{ api_key, universe_id, datastore_name, scope, key_name, version };
-					OperationInProgressDialog diag{ this, &req };
+					const auto req = std::make_shared<GetStandardDatastoreEntryAtVersionRequest>(api_key, universe_id, datastore_name, scope, key_name, version);
+					OperationInProgressDialog diag{ this, req };
 					diag.exec();
 
-					const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+					const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
 					if (opt_details)
 					{
 						const std::optional<QString> userids = opt_details->get_userids();
 						const std::optional<QString> attributes = opt_details->get_attributes();
 						const QString body = opt_details->get_data_raw();
 
-						PostStandardDatastoreEntryRequest post_req{ api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
-						OperationInProgressDialog diag{ this, &post_req };
+						const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body);
+						OperationInProgressDialog diag{ this, post_req };
 						diag.exec();
 
-						if (post_req.get_success())
+						if (post_req->get_success())
 						{
 							pressed_refresh();
 						}
@@ -155,11 +155,11 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 				const QString key_name = key_name_edit->text();
 				const QString version = opt_version->get_version();
 
-				GetStandardDatastoreEntryAtVersionRequest req{ api_key, universe_id, datastore_name, scope, key_name, version };
-				OperationInProgressDialog diag{ this, &req };
+				const auto req = std::make_shared<GetStandardDatastoreEntryAtVersionRequest>(api_key, universe_id, datastore_name, scope, key_name, version);
+				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
-				const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+				const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
@@ -190,13 +190,13 @@ void ViewDatastoreEntryVersionsWindow::pressed_refresh()
 	const QString scope = scope_edit->text();
 	const QString key_name = key_name_edit->text();
 
-	GetStandardDatastoreEntryVersionsRequest req{ api_key, universe_id, datastore_name, scope, key_name };
-	OperationInProgressDialog diag{ this, &req };
+	const auto req = std::make_shared<GetStandardDatastoreEntryVersionsRequest>(api_key, universe_id, datastore_name, scope, key_name);
+	OperationInProgressDialog diag{ this, req };
 	diag.exec();
 
-	if (req.get_versions().size() > 0)
+	if (req->get_versions().size() > 0)
 	{
-		ViewDatastoreEntryVersionsWindow* view_versions_window = new ViewDatastoreEntryVersionsWindow{ parentWidget(), api_key, universe_id, datastore_name, scope, key_name, req.get_versions()};
+		ViewDatastoreEntryVersionsWindow* view_versions_window = new ViewDatastoreEntryVersionsWindow{ parentWidget(), api_key, universe_id, datastore_name, scope, key_name, req->get_versions()};
 		view_versions_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 		view_versions_window->show();
 		close();
@@ -223,22 +223,22 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed)
 				{
-					GetStandardDatastoreEntryAtVersionRequest req{ api_key, universe_id, datastore_name, scope, key_name, version };
-					OperationInProgressDialog diag{ this, &req };
+					const auto req = std::make_shared<GetStandardDatastoreEntryAtVersionRequest>(api_key, universe_id, datastore_name, scope, key_name, version);
+					OperationInProgressDialog diag{ this, req };
 					diag.exec();
 
-					const std::optional<DatastoreEntryWithDetails> opt_details = req.get_details();
+					const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
 					if (opt_details)
 					{
 						const std::optional<QString> userids = opt_details->get_userids();
 						const std::optional<QString> attributes = opt_details->get_attributes();
 						const QString body = opt_details->get_data_raw();
 
-						PostStandardDatastoreEntryRequest post_req{ api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body };
-						OperationInProgressDialog diag{ this, &post_req };
+						const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body);
+						OperationInProgressDialog diag{ this, post_req };
 						diag.exec();
 
-						if (post_req.get_success())
+						if (post_req->get_success())
 						{
 							pressed_refresh();
 						}

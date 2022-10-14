@@ -105,11 +105,11 @@ void BulkDataPanel::pressed_delete()
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
-		GetStandardDatastoresDataRequest req{ api_key, universe_id };
-		OperationInProgressDialog diag{ this, &req };
+		const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 
-		const std::vector<QString> datastores = req.get_datastore_names();
+		const std::vector<QString> datastores = req->get_datastore_names();
 		if (datastores.size() > 0)
 		{
 			DatastoreBulkDeleteWindow* delete_window = new DatastoreBulkDeleteWindow{ this, api_key, universe_id, datastores };
@@ -125,11 +125,11 @@ void BulkDataPanel::pressed_download()
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
-		GetStandardDatastoresDataRequest req{ api_key, universe_id };
-		OperationInProgressDialog diag{ this, &req };
+		const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 
-		const std::vector<QString> datastores = req.get_datastore_names();
+		const std::vector<QString> datastores = req->get_datastore_names();
 		if (datastores.size() > 0)
 		{
 			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_id, datastores };
@@ -145,11 +145,11 @@ void BulkDataPanel::pressed_undelete()
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
-		GetStandardDatastoresDataRequest req{ api_key, universe_id };
-		OperationInProgressDialog diag{ this, &req };
+		const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 
-		const std::vector<QString> datastores = req.get_datastore_names();
+		const std::vector<QString> datastores = req->get_datastore_names();
 		if (datastores.size() > 0)
 		{
 			DatastoreBulkUndeleteWindow* undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_id, datastores };
@@ -173,8 +173,7 @@ void BulkDataPanel::pressed_upload()
 				std::optional<std::vector<DatastoreEntryWithDetails>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
 				if (loaded_data)
 				{
-					std::vector<std::shared_ptr<PostStandardDatastoreEntryRequest>> shared_requests;
-					std::vector<DataRequest*> requests;
+					std::vector<std::shared_ptr<DataRequest>> shared_requests;
 
 					for (const DatastoreEntryWithDetails& this_entry : *loaded_data)
 					{
@@ -188,10 +187,9 @@ void BulkDataPanel::pressed_upload()
 							this_entry.get_attributes(),
 							this_entry.get_data_raw()
 						));
-						requests.push_back(shared_requests.back().get());
 					}
 
-					OperationInProgressDialog diag{ this, requests };
+					OperationInProgressDialog diag{ this, shared_requests };
 					diag.exec();
 				}
 				else
