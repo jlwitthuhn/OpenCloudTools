@@ -62,6 +62,10 @@ void OperationInProgressDialog::constructor_common()
 		close_automatically_box->setHidden(true);
 	}
 
+	retry_button = new QPushButton{ "Retry", this };
+	retry_button->setEnabled(false);
+	connect(retry_button, &QPushButton::clicked, this, &OperationInProgressDialog::handle_clicked_retry);
+
 	close_button = new QPushButton{ "Cancel", this };
 	connect(close_button, &QPushButton::clicked, this, &OperationInProgressDialog::close);
 
@@ -73,6 +77,7 @@ void OperationInProgressDialog::constructor_common()
 	layout->addWidget(progress_bar);
 	layout->addWidget(text_box);
 	layout->addWidget(close_automatically_box);
+	layout->addWidget(retry_button);
 	layout->addWidget(close_button);
 
 
@@ -114,14 +119,22 @@ void OperationInProgressDialog::send_next_request()
 
 		connect(pending_request.get(), &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
 		connect(pending_request.get(), &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
-		connect(pending_request.get(), &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_message);
-		connect(pending_request.get(), &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_message);
+		connect(pending_request.get(), &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_error);
+		connect(pending_request.get(), &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_info);
 
 		pending_request->send_request();
 	}
 	else
 	{
 		handle_all_requests_complete();
+	}
+}
+
+void OperationInProgressDialog::handle_clicked_retry()
+{
+	if (retry_button->isEnabled() && pending_request)
+	{
+		retry_button->setEnabled(false);
 	}
 }
 
@@ -147,7 +160,13 @@ void OperationInProgressDialog::handle_all_requests_complete()
 	}
 }
 
-void OperationInProgressDialog::handle_status_message(const QString message)
+void OperationInProgressDialog::handle_status_error(const QString message)
+{
+	handle_status_info(message);
+	retry_button->setEnabled(true);
+}
+
+void OperationInProgressDialog::handle_status_info(const QString message)
 {
 	text_box->append(message);
 }

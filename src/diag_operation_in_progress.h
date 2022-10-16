@@ -35,9 +35,11 @@ private:
 
 	void send_next_request();
 
+	void handle_clicked_retry();
 	void handle_request_complete();
 	void handle_all_requests_complete();
-	void handle_status_message(QString message);
+	void handle_status_error(QString message);
+	void handle_status_info(QString message);
 	void handle_checkbox_changed();
 	void handle_received_http_429();
 
@@ -53,5 +55,6 @@ private:
 	QProgressBar* progress_bar = nullptr;
 	QTextEdit* text_box = nullptr;
 	QCheckBox* close_automatically_box = nullptr;
+	QPushButton* retry_button = nullptr;
 	QPushButton* close_button = nullptr;
 };
