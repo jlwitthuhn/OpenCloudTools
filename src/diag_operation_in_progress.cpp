@@ -118,7 +118,7 @@ void OperationInProgressDialog::send_next_request()
 		top_label->setText(pending_request->get_title_string());
 
 		connect(pending_request.get(), &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
-		connect(pending_request.get(), &DataRequest::request_complete, this, &OperationInProgressDialog::handle_request_complete);
+		connect(pending_request.get(), &DataRequest::request_success, this, &OperationInProgressDialog::handle_request_complete);
 		connect(pending_request.get(), &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_error);
 		connect(pending_request.get(), &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_info);
 
@@ -162,6 +162,7 @@ void OperationInProgressDialog::handle_all_requests_complete()
 
 void OperationInProgressDialog::handle_status_error(const QString message)
 {
+
 	handle_status_info(message);
 	retry_button->setEnabled(true);
 }

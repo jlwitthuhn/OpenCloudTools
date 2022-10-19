@@ -14,19 +14,27 @@
 #include "api_response.h"
 #include "util_enum.h"
 
+enum class DataRequestStatus
+{
+	ReadyToBegin,
+	Waiting,
+	Success,
+	Error,
+};
+
 class DataRequest : public QObject
 {
 	Q_OBJECT
 
 public:
-	virtual void send_request(std::optional<QString> cursor = std::nullopt);
+	void send_request(std::optional<QString> cursor = std::nullopt);
 
 	virtual QString get_title_string() const = 0;
 
 	void set_http_429_count(size_t new_count) { http_429_count = new_count; }
 
 signals:
-	void request_complete();
+	void request_success();
 	void status_error(QString message);
 	void status_info(QString message);
 	void received_http_429();
@@ -45,6 +53,11 @@ protected:
 	void resend();
 
 	int get_next_429_delay();
+
+	void do_error(const QString& message);
+	void do_success(const QString& message);
+
+	DataRequestStatus status;
 
 	QString api_key;
 

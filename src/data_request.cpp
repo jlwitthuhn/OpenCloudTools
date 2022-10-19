@@ -19,6 +19,12 @@
 
 void DataRequest::send_request(std::optional<QString> cursor)
 {
+	if (status != DataRequestStatus::ReadyToBegin && status != DataRequestStatus::Waiting)
+	{
+		status_error("Failed to send request, aborting");
+		return;
+	}
+
 	if (pending_request)
 	{
 		pending_request = std::nullopt;
@@ -34,17 +40,19 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
+	status = DataRequestStatus::Waiting;
+
 	emit status_info(get_send_message());
 }
 
-DataRequest::DataRequest(const QString& api_key) : QObject{ nullptr }, api_key{ api_key }
+DataRequest::DataRequest(const QString& api_key) : QObject{ nullptr }, status{ DataRequestStatus::ReadyToBegin }, api_key { api_key }
 {
 
 }
 
 void DataRequest::handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	emit status_error(QString{ "Received HTTP 404, aborting" });
+	do_error("Received HTTP 404, aborting");
 	emit status_info(body);
 }
 
@@ -55,6 +63,12 @@ QString DataRequest::get_send_message() const
 
 void DataRequest::handle_reply_ready()
 {
+	if (status != DataRequestStatus::Waiting)
+	{
+		do_error("Received reply at unexpected time, aborting");
+		return;
+	}
+
 	QNetworkReply::NetworkError error = pending_reply->error();
 	QString status = pending_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 	QString reply_body = pending_reply->readAll();
@@ -104,11 +118,11 @@ void DataRequest::handle_reply_ready()
 	else if (status == "")
 	{
 		QMetaEnum meta_enum = QMetaEnum::fromType<QNetworkReply::NetworkError>();
-		emit status_error( QString{ "Network error %1" }.arg( meta_enum.valueToKey( static_cast<int>(error) ) ) );
+		do_error( QString{ "Network error %1, aborting" }.arg( meta_enum.valueToKey( static_cast<int>(error) ) ) );
 	}
 	else
 	{
-		emit status_error(QString{ "Received HTTP %1, aborting" }.arg(status));
+		do_error(QString{ "Received HTTP %1, aborting" }.arg(status));
 		if (reply_body != "")
 		{
 			emit status_info(reply_body);
@@ -143,6 +157,19 @@ int DataRequest::get_next_429_delay()
 	}
 }
 
+void DataRequest::do_error(const QString& message)
+{
+	status = DataRequestStatus::Error;
+	emit status_error(message);
+}
+
+void DataRequest::do_success(const QString& message)
+{
+	status = DataRequestStatus::Success;
+	emit status_info(message);
+	emit request_success();
+}
+
 DeleteStandardDatastoreEntryRequest::DeleteStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
@@ -162,15 +189,13 @@ QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional
 void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	delete_success = true;
-	emit status_info(QString{ "Complete" });
-	emit request_complete();
+	do_success("Delete success");
 }
 
 void DeleteStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	delete_success = false;
-	emit status_info(QString{ "Entry already deleted" });
-	emit request_complete();
+	do_success("Entry already deleted");
 }
 
 QString DeleteStandardDatastoreEntryRequest::get_send_message() const
@@ -212,14 +237,12 @@ void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, cons
 		}
 		else
 		{
-			emit status_info(QString{ "Complete" });
-			emit request_complete();
+			do_success("Complete");
 		}
 	}
 	else
 	{
-		emit status_info(QString{ "Complete" });
-		emit request_complete();
+		do_success("Complete");
 	}
 }
 
@@ -265,14 +288,12 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 		}
 		else
 		{
-			emit status_info(QString{ "Complete" });
-			emit request_complete();
+			do_success("Complete");
 		}
 	}
 	else
 	{
-		emit status_info(QString{ "Complete" });
-		emit request_complete();
+		do_success("Complete");
 	}
 }
 
@@ -316,7 +337,7 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 
 	if (!version)
 	{
-		emit status_error("Error, response did not contain version");
+		do_error("Error, response did not contain version");
 		return;
 	}
 
@@ -327,20 +348,18 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 	}
 	else
 	{
-		emit status_error(QString{ "Received invalid response, aborting" });
+		do_error("Received invalid response, aborting");
 		return;
 	}
 
-	emit status_info(QString{ "Complete" });
-	emit request_complete();
+	do_success("Complete");
 }
 
 void GetStandardDatastoreEntryDetailsRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	details = std::nullopt;
 
-	emit status_info(QString{ "Complete" });
-	emit request_complete();
+	do_success("Complete");
 }
 
 QString GetStandardDatastoreEntryDetailsRequest::get_send_message() const
@@ -394,14 +413,12 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 		}
 		else
 		{
-			emit status_info(QString{ "Complete" });
-			emit request_complete();
+			do_success("Complete");
 		}
 	}
 	else
 	{
-		emit status_info(QString{ "Complete" });
-		emit request_complete();
+		do_success("Complete");
 	}
 }
 
@@ -435,8 +452,7 @@ QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<
 void PostMessagingServiceMessageRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	success = true;
-	emit status_info(QString{ "Sent" });
-	emit request_complete();
+	do_success("Sent");
 }
 
 QString PostMessagingServiceMessageRequest::get_send_message() const
@@ -465,8 +481,7 @@ QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<Q
 void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	success = true;
-	emit status_info(QString{ "Complete" });
-	emit request_complete();
+	do_success("Complete");
 }
 
 QString PostStandardDatastoreEntryRequest::get_send_message() const

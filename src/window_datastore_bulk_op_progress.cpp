@@ -98,7 +98,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 		{
 			connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_info, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
 		}
-		connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::request_complete, this, &DatastoreBulkOperationProgressWindow::handle_enumerate_keys_response);
+		connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::request_success, this, &DatastoreBulkOperationProgressWindow::handle_enumerate_keys_response);
 		get_entries_request->send_request();
 
 		handle_status_message(QString{ "Enumerating entries for '%1'..." }.arg(this_datastore_name));
@@ -112,6 +112,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 void DatastoreBulkOperationProgressWindow::handle_error_message(const QString message)
 {
 	handle_status_message(message);
+	update_ui();
 }
 
 void DatastoreBulkOperationProgressWindow::handle_status_message(const QString message)
@@ -259,7 +260,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			{
 				connect(get_entry_request.get(), &GetStandardDatastoreEntryDetailsRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 			}
-			connect(get_entry_request.get(), &GetStandardDatastoreEntryDetailsRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_get_entry_response);
+			connect(get_entry_request.get(), &GetStandardDatastoreEntryDetailsRequest::request_success, this, &DatastoreBulkDeleteProgressWindow::handle_get_entry_response);
 			get_entry_request->send_request();
 
 			handle_status_message( QString{ "Rewriting and deleting '%1'..." }.arg( entry.get_key() ) );
@@ -274,7 +275,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			{
 				connect(delete_entry_request.get(), &DeleteStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 			}
-			connect(delete_entry_request.get(), &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_delete_entry_response);
+			connect(delete_entry_request.get(), &DeleteStandardDatastoreEntryRequest::request_success, this, &DatastoreBulkDeleteProgressWindow::handle_delete_entry_response);
 			delete_entry_request->send_request();
 
 			handle_status_message(QString{ "Deleting '%1'..." }.arg(entry.get_key()));
@@ -322,7 +323,7 @@ void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
 			{
 				connect(post_entry_request.get(), &PostStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 			}
-			connect(post_entry_request.get(), &PostStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_post_entry_response);
+			connect(post_entry_request.get(), &PostStandardDatastoreEntryRequest::request_success, this, &DatastoreBulkDeleteProgressWindow::handle_post_entry_response);
 			post_entry_request->send_request();
 		}
 		else
@@ -353,7 +354,7 @@ void DatastoreBulkDeleteProgressWindow::handle_post_entry_response()
 		{
 			connect(delete_entry_request.get(), &DeleteStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkDeleteProgressWindow::handle_status_message);
 		}
-		connect(delete_entry_request.get(), &DeleteStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkDeleteProgressWindow::handle_delete_entry_response);
+		connect(delete_entry_request.get(), &DeleteStandardDatastoreEntryRequest::request_success, this, &DatastoreBulkDeleteProgressWindow::handle_delete_entry_response);
 		delete_entry_request->send_request();
 	}
 }
@@ -434,7 +435,7 @@ void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
 		{
 			connect(get_entry_details_request.get(), &GetStandardDatastoreEntryDetailsRequest::status_info, this, &DatastoreBulkDownloadProgressWindow::handle_status_message);
 		}
-		connect(get_entry_details_request.get(), &GetStandardDatastoreEntryDetailsRequest::request_complete, this, &DatastoreBulkDownloadProgressWindow::handle_entry_response);
+		connect(get_entry_details_request.get(), &GetStandardDatastoreEntryDetailsRequest::request_success, this, &DatastoreBulkDownloadProgressWindow::handle_entry_response);
 		get_entry_details_request->send_request();
 
 		handle_status_message(QString{ "Downloading '%1'..." }.arg(entry.get_key()));
@@ -500,7 +501,7 @@ void DatastoreBulkUndeleteProgressWindow::send_next_entry_request()
 		{
 			connect(get_versions_request.get(), &GetStandardDatastoreEntryVersionsRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
 		}
-		connect(get_versions_request.get(), &GetStandardDatastoreEntryVersionsRequest::request_complete, this, &DatastoreBulkUndeleteProgressWindow::handle_get_versions_response);
+		connect(get_versions_request.get(), &GetStandardDatastoreEntryVersionsRequest::request_success, this, &DatastoreBulkUndeleteProgressWindow::handle_get_versions_response);
 		get_versions_request->send_request();
 
 		handle_status_message(QString{ "Undeleting '%1'..." }.arg(entry.get_key()));
@@ -612,7 +613,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_versions_response()
 		{
 			connect(get_entry_at_version_request.get(), &GetStandardDatastoreEntryVersionsRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
 		}
-		connect(get_entry_at_version_request.get(), &GetStandardDatastoreEntryVersionsRequest::request_complete, this, &DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response);
+		connect(get_entry_at_version_request.get(), &GetStandardDatastoreEntryVersionsRequest::request_success, this, &DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response);
 		get_entry_at_version_request->send_request();
 	}
 }
@@ -648,7 +649,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
 		{
 			connect(post_entry_request.get(), &PostStandardDatastoreEntryRequest::status_info, this, &DatastoreBulkUndeleteProgressWindow::handle_status_message);
 		}
-		connect(post_entry_request.get(), &PostStandardDatastoreEntryRequest::request_complete, this, &DatastoreBulkUndeleteProgressWindow::handle_post_entry_response);
+		connect(post_entry_request.get(), &PostStandardDatastoreEntryRequest::request_success, this, &DatastoreBulkUndeleteProgressWindow::handle_post_entry_response);
 		post_entry_request->send_request();
 	}
 }
