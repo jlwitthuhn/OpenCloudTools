@@ -77,7 +77,7 @@ public:
 
 	virtual QString get_title_string() const override;
 
-	const std::optional<bool>& is_delete_success() const { return delete_success; }
+	std::optional<bool> is_delete_success() const;
 
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
@@ -90,7 +90,7 @@ private:
 	QString scope;
 	QString key_name;
 
-	std::optional<bool> delete_success;
+	bool delete_success = false;
 };
 
 class GetStandardDatastoresDataRequest : public DataRequest
@@ -143,7 +143,7 @@ public:
 
 	virtual QString get_title_string() const override;
 
-	const std::optional<DatastoreEntryWithDetails>& get_details() const { return details; }
+	std::optional<DatastoreEntryWithDetails> get_details() const;
 
 protected:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
@@ -181,7 +181,7 @@ public:
 	const QString& get_scope() const { return scope; }
 	const QString& get_key_name() const { return key_name; }
 
-	const std::vector<StandardDatastoreEntryVersion>& get_versions() const { return versions; }
+	const std::vector<StandardDatastoreEntryVersion>& get_versions() { return versions; }
 
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
@@ -223,7 +223,7 @@ public:
 
 	virtual QString get_title_string() const override;
 
-	bool get_success() const { return success; }
+	bool get_success() const;
 
 	const QString& get_datastore_name() const { return datastore_name; }
 	const QString& get_scope() const { return scope; }
@@ -241,6 +241,4 @@ private:
 	std::optional<QString> userids;
 	std::optional<QString> attributes;
 	QString body_md5;
-
-	bool success = false;
 };

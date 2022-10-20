@@ -181,6 +181,18 @@ QString DeleteStandardDatastoreEntryRequest::get_title_string() const
 	return "Deleting entry...";
 }
 
+std::optional<bool> DeleteStandardDatastoreEntryRequest::is_delete_success() const
+{
+	if (status == DataRequestStatus::Success)
+	{
+		return delete_success;
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}
+
 QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional<QString>)
 {
 	return HttpRequestBuilder::delete_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name);
@@ -306,6 +318,18 @@ GetStandardDatastoreEntryDetailsRequest::GetStandardDatastoreEntryDetailsRequest
 QString GetStandardDatastoreEntryDetailsRequest::get_title_string() const
 {
 	return "Fetching datastore entry details...";
+}
+
+std::optional<DatastoreEntryWithDetails> GetStandardDatastoreEntryDetailsRequest::get_details() const
+{
+	if (status == DataRequestStatus::Success)
+	{
+		return details;
+	}
+	else
+	{
+		return std::nullopt;
+	}
 }
 
 QNetworkRequest GetStandardDatastoreEntryDetailsRequest::build_request(std::optional<QString>)
@@ -473,6 +497,11 @@ QString PostStandardDatastoreEntryRequest::get_title_string() const
 	return "Setting entry...";
 }
 
+bool PostStandardDatastoreEntryRequest::get_success() const
+{
+	return status == DataRequestStatus::Success;
+}
+
 QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>)
 {
 	return HttpRequestBuilder::post_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name, body_md5, userids, attributes);
@@ -480,7 +509,6 @@ QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<Q
 
 void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	success = true;
 	do_success("Complete");
 }
 
