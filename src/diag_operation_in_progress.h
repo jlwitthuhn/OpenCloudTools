@@ -14,10 +14,10 @@ class QCheckBox;
 class QLabel;
 class QProgressBar;
 class QPushButton;
-class QTextEdit;
 class QWidget;
 
 class DataRequest;
+class TextLogWidget;
 
 class OperationInProgressDialog : public QDialog
 {
@@ -53,7 +53,7 @@ private:
 
 	QLabel* top_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
-	QTextEdit* text_box = nullptr;
+	TextLogWidget* text_log = nullptr;
 	QCheckBox* close_automatically_box = nullptr;
 	QPushButton* retry_button = nullptr;
 	QPushButton* close_button = nullptr;

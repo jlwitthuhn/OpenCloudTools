@@ -9,12 +9,12 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QPushButton>
-#include <QTextEdit>
 #include <QVBoxLayout>
 
 #include "data_request.h"
 #include "profile.h"
 #include "util_wed.h"
+#include "widget_text_log.h"
 
 class QWidget;
 
@@ -49,10 +49,7 @@ void OperationInProgressDialog::constructor_common()
 	progress_bar->setTextVisible(false);
 	progress_bar->setValue(0);
 
-	text_box = new QTextEdit{ this };
-	text_box->setReadOnly(true);
-	text_box->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	text_box->setText("");
+	text_log = new TextLogWidget{ this };
 
 	close_automatically_box = new QCheckBox{ "Close this window automatically", this };
 	close_automatically_box->setChecked(UserProfile::get()->get_autoclose_progress_window());
@@ -75,17 +72,16 @@ void OperationInProgressDialog::constructor_common()
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(top_label);
 	layout->addWidget(progress_bar);
-	layout->addWidget(text_box);
+	layout->addWidget(text_log);
 	layout->addWidget(close_automatically_box);
 	layout->addWidget(retry_button);
 	layout->addWidget(close_button);
-
 
 	resize(330, 280);
 
 	if (std::optional<QString> message = wed())
 	{
-		text_box->append(*message);
+		text_log->append(*message);
 	}
 
 	handle_checkbox_changed();
@@ -173,7 +169,7 @@ void OperationInProgressDialog::handle_status_error(const QString message)
 
 void OperationInProgressDialog::handle_status_info(const QString message)
 {
-	text_box->append(message);
+	text_log->append(message);
 }
 
 void OperationInProgressDialog::handle_checkbox_changed()

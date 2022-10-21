@@ -14,6 +14,7 @@
 #include "data_request.h"
 #include "profile.h"
 #include "roblox_time.h"
+#include "widget_text_log.h"
 
 void DatastoreBulkOperationProgressWindow::start()
 {
@@ -37,10 +38,7 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	progress_bar->setTextVisible(false);
 	progress_bar->setMaximum(DownloadProgress::MAXIMUM);
 
-	text_box = new QTextEdit{ this };
-	text_box->setReadOnly(true);
-	text_box->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	text_box->setText("");
+	text_log = new TextLogWidget{ this };
 
 	close_button = new QPushButton{ "Stop", this };
 	connect(close_button, &QPushButton::clicked, this, &DatastoreBulkOperationProgressWindow::close);
@@ -48,7 +46,7 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	QVBoxLayout* const layout = new QVBoxLayout{ this };
 	layout->addWidget(progress_label);
 	layout->addWidget(progress_bar);
-	layout->addWidget(text_box);
+	layout->addWidget(text_log);
 	layout->addWidget(close_button);
 
 	update_ui();
@@ -117,7 +115,7 @@ void DatastoreBulkOperationProgressWindow::handle_error_message(const QString me
 
 void DatastoreBulkOperationProgressWindow::handle_status_message(const QString message)
 {
-	text_box->append(message);
+	text_log->append(message);
 	update_ui();
 }
 

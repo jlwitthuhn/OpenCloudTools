@@ -17,7 +17,6 @@
 class QLabel;
 class QProgressBar;
 class QPushButton;
-class QTextEdit;
 
 class DeleteStandardDatastoreEntryRequest;
 class GetStandardDatastoreEntriesRequest;
@@ -25,6 +24,7 @@ class GetStandardDatastoreEntryAtVersionRequest;
 class GetStandardDatastoreEntryDetailsRequest;
 class GetStandardDatastoreEntryVersionsRequest;
 class PostStandardDatastoreEntryRequest;
+class TextLogWidget;
 
 class DatastoreBulkOperationProgressWindow : public QWidget
 {
@@ -94,7 +94,7 @@ protected:
 	QLabel* progress_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
 
-	QTextEdit* text_box = nullptr;
+	TextLogWidget* text_log = nullptr;
 
 	QPushButton* close_button = nullptr;
 };
