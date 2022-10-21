@@ -21,20 +21,21 @@ void DataRequest::send_request(std::optional<QString> cursor)
 {
 	if (status != DataRequestStatus::ReadyToBegin && status != DataRequestStatus::Waiting)
 	{
-		status_error("Failed to send request, aborting");
+		emit status_error("Failed to send request, aborting");
 		return;
 	}
 
-	if (pending_request)
-	{
-		pending_request = std::nullopt;
-	}
 	if (pending_reply)
 	{
 		pending_reply->deleteLater();
 		pending_reply = nullptr;
 	}
+	if (pending_request)
+	{
+		pending_request = std::nullopt;
+	}
 
+	pending_request_cursor = cursor;
 	pending_request = build_request(cursor);
 	pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
 
@@ -43,6 +44,15 @@ void DataRequest::send_request(std::optional<QString> cursor)
 	status = DataRequestStatus::Waiting;
 
 	emit status_info(get_send_message());
+}
+
+void DataRequest::force_retry()
+{
+	if (status == DataRequestStatus::Error && pending_request)
+	{
+		status = DataRequestStatus::Waiting;
+		send_request(pending_request_cursor);
+	}
 }
 
 DataRequest::DataRequest(const QString& api_key) : QObject{ nullptr }, status{ DataRequestStatus::ReadyToBegin }, api_key { api_key }

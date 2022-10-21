@@ -132,9 +132,14 @@ void OperationInProgressDialog::send_next_request()
 
 void OperationInProgressDialog::handle_clicked_retry()
 {
-	if (retry_button->isEnabled() && pending_request)
+	if (pending_request && pending_request->request_status() == DataRequestStatus::Error)
 	{
 		retry_button->setEnabled(false);
+		pending_request->force_retry();
+	}
+	else
+	{
+		handle_status_info("This error is not retryable, please report this as a bug in the dev forum thread");
 	}
 }
 
@@ -162,7 +167,6 @@ void OperationInProgressDialog::handle_all_requests_complete()
 
 void OperationInProgressDialog::handle_status_error(const QString message)
 {
-
 	handle_status_info(message);
 	retry_button->setEnabled(true);
 }

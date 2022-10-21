@@ -27,7 +27,10 @@ class DataRequest : public QObject
 	Q_OBJECT
 
 public:
+	DataRequestStatus request_status() const { return status; }
+
 	void send_request(std::optional<QString> cursor = std::nullopt);
+	void force_retry();
 
 	virtual QString get_title_string() const = 0;
 
@@ -61,6 +64,7 @@ protected:
 
 	QString api_key;
 
+	std::optional<QString> pending_request_cursor;
 	std::optional<QNetworkRequest> pending_request;
 	QNetworkReply* pending_reply = nullptr;
 
