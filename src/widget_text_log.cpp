@@ -4,7 +4,7 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
-TextLogWidget::TextLogWidget(QWidget* const parent, const size_t line_limit) : line_limit{ line_limit }
+TextLogWidget::TextLogWidget(QWidget* const parent, const size_t line_limit) : QWidget{ parent }, line_limit { line_limit }
 {
 	text_edit = new QTextEdit{ this };
 
