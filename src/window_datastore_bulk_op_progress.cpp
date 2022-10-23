@@ -99,16 +99,17 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 	{
 		const QString this_datastore_name = datastore_names[current_index];
 
-		get_entries_request = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix);
-		get_entries_request->set_http_429_count(http_429_count);
-		connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
-		connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
+		enumerate_entries_request = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix);
+		enumerate_entries_request->set_http_429_count(http_429_count);
+		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
+		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
+		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
 		if (UserProfile::get()->get_less_verbose_bulk_operations() == false)
 		{
-			connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_info, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
+			connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_info, this, &DatastoreBulkOperationProgressWindow::handle_status_message);
 		}
-		connect(get_entries_request.get(), &GetStandardDatastoreEntriesRequest::request_success, this, &DatastoreBulkOperationProgressWindow::handle_enumerate_keys_response);
-		get_entries_request->send_request();
+		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::request_success, this, &DatastoreBulkOperationProgressWindow::handle_enumerate_keys_success);
+		enumerate_entries_request->send_request();
 
 		handle_status_message(QString{ "Enumerating entries for '%1'..." }.arg(this_datastore_name));
 	}
@@ -136,16 +137,16 @@ void DatastoreBulkOperationProgressWindow::handle_status_message(const QString m
 	update_ui();
 }
 
-void DatastoreBulkOperationProgressWindow::handle_enumerate_keys_response()
+void DatastoreBulkOperationProgressWindow::handle_enumerate_keys_success()
 {
-	if (get_entries_request)
+	if (enumerate_entries_request)
 	{
-		const std::vector<StandardDatastoreEntry>& new_entries = get_entries_request->get_datastore_entries();
+		const std::vector<StandardDatastoreEntry>& new_entries = enumerate_entries_request->get_datastore_entries();
 		pending_entries.insert(pending_entries.end(), new_entries.begin(), new_entries.end());
 		progress.advance_datastore_done();
 		progress.set_entry_total(pending_entries.size());
 
-		get_entries_request.reset();
+		enumerate_entries_request.reset();
 
 		send_next_enumerate_keys_request();
 	}

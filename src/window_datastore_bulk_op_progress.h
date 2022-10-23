@@ -50,7 +50,7 @@ protected:
 	void handle_clicked_retry();
 	void handle_error_message(QString message);
 	void handle_status_message(QString message);
-	void handle_enumerate_keys_response();
+	void handle_enumerate_keys_success();
 	void handle_received_http_429();
 
 	class DownloadProgress
@@ -92,7 +92,7 @@ protected:
 
 	std::vector<StandardDatastoreEntry> pending_entries;
 
-	std::shared_ptr<GetStandardDatastoreEntriesRequest> get_entries_request;
+	std::shared_ptr<GetStandardDatastoreEntriesRequest> enumerate_entries_request;
 
 	QLabel* progress_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
