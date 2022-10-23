@@ -31,14 +31,19 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	datastore_names{ datastore_names }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+	setMinimumHeight(400);
 
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };
-	progress_bar->setMinimumWidth(360);
+	progress_bar->setMinimumWidth(400);
 	progress_bar->setTextVisible(false);
 	progress_bar->setMaximum(DownloadProgress::MAXIMUM);
 
 	text_log = new TextLogWidget{ this };
+
+	retry_button = new QPushButton{ "Retry", this };
+	retry_button->setEnabled(false);
+	connect(retry_button, &QPushButton::clicked, this, &DatastoreBulkOperationProgressWindow::handle_clicked_retry);
 
 	close_button = new QPushButton{ "Stop", this };
 	connect(close_button, &QPushButton::clicked, this, &DatastoreBulkOperationProgressWindow::close);
@@ -47,9 +52,15 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	layout->addWidget(progress_label);
 	layout->addWidget(progress_bar);
 	layout->addWidget(text_log);
+	layout->addWidget(retry_button);
 	layout->addWidget(close_button);
 
 	update_ui();
+}
+
+bool DatastoreBulkOperationProgressWindow::is_retryable() const
+{
+	return false;
 }
 
 void DatastoreBulkOperationProgressWindow::update_ui()
@@ -107,10 +118,16 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 	}
 }
 
+void DatastoreBulkOperationProgressWindow::handle_clicked_retry()
+{
+	retry_button->setEnabled(false);
+}
+
 void DatastoreBulkOperationProgressWindow::handle_error_message(const QString message)
 {
 	handle_status_message(message);
 	update_ui();
+	retry_button->setEnabled(is_retryable());
 }
 
 void DatastoreBulkOperationProgressWindow::handle_status_message(const QString message)

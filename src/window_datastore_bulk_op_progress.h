@@ -41,10 +41,13 @@ protected:
 
 	virtual void send_next_entry_request() = 0;
 
+	virtual bool is_retryable() const;
+
 	void update_ui();
 
 	void send_next_enumerate_keys_request();
 
+	void handle_clicked_retry();
 	void handle_error_message(QString message);
 	void handle_status_message(QString message);
 	void handle_enumerate_keys_response();
@@ -96,6 +99,7 @@ protected:
 
 	TextLogWidget* text_log = nullptr;
 
+	QPushButton* retry_button = nullptr;
 	QPushButton* close_button = nullptr;
 };
 
