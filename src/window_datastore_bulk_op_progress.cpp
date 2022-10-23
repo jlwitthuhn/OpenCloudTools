@@ -60,7 +60,20 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 
 bool DatastoreBulkOperationProgressWindow::is_retryable() const
 {
-	return false;
+	return enumerate_entries_request && enumerate_entries_request->request_status() == DataRequestStatus::Error;
+}
+
+bool DatastoreBulkOperationProgressWindow::do_retry()
+{
+	if (is_retryable())
+	{
+		enumerate_entries_request->force_retry();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void DatastoreBulkOperationProgressWindow::update_ui()
@@ -122,6 +135,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 void DatastoreBulkOperationProgressWindow::handle_clicked_retry()
 {
 	retry_button->setEnabled(false);
+	do_retry();
 }
 
 void DatastoreBulkOperationProgressWindow::handle_error_message(const QString message)

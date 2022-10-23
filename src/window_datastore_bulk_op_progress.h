@@ -42,6 +42,7 @@ protected:
 	virtual void send_next_entry_request() = 0;
 
 	virtual bool is_retryable() const;
+	virtual bool do_retry();
 
 	void update_ui();
 
