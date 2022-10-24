@@ -65,7 +65,7 @@ bool DatastoreBulkOperationProgressWindow::is_retryable() const
 
 bool DatastoreBulkOperationProgressWindow::do_retry()
 {
-	if (is_retryable())
+	if (DatastoreBulkOperationProgressWindow::is_retryable())
 	{
 		enumerate_entries_request->force_retry();
 		return true;
