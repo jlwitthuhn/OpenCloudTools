@@ -125,6 +125,7 @@ public:
 	void set_result_limit(size_t limit);
 
 	const std::vector<StandardDatastoreEntry>& get_datastore_entries() const { return datastore_entries; }
+	std::vector<StandardDatastoreEntry>&& get_datastore_entries_rvalue() { return std::move(datastore_entries); }
 
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;

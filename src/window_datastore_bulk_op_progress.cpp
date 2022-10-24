@@ -155,8 +155,16 @@ void DatastoreBulkOperationProgressWindow::handle_enumerate_keys_success()
 {
 	if (enumerate_entries_request)
 	{
-		const std::vector<StandardDatastoreEntry>& new_entries = enumerate_entries_request->get_datastore_entries();
-		pending_entries.insert(pending_entries.end(), new_entries.begin(), new_entries.end());
+		if (pending_entries.size() == 0)
+		{
+			// When no entries exist yet, move instead of appending
+			pending_entries = std::move(enumerate_entries_request->get_datastore_entries_rvalue());
+		}
+		else
+		{
+			const std::vector<StandardDatastoreEntry>& new_entries = enumerate_entries_request->get_datastore_entries();
+			pending_entries.insert(pending_entries.end(), new_entries.begin(), new_entries.end());
+		}
 		progress.advance_datastore_done();
 		progress.set_entry_total(pending_entries.size());
 
