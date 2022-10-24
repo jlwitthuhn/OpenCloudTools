@@ -8,7 +8,6 @@
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QPushButton>
-#include <QTextEdit>
 #include <QVBoxLayout>
 
 #include "data_request.h"

@@ -1,5 +1,7 @@
 #include "window_datastore_entry_view.h"
 
+#include <memory>
+
 #include <Qt>
 #include <QFormLayout>
 #include <QGroupBox>

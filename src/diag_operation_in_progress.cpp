@@ -4,7 +4,6 @@
 #include <memory>
 #include <optional>
 
-#include <Qt>
 #include <QCheckBox>
 #include <QLabel>
 #include <QProgressBar>

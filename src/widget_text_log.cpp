@@ -1,5 +1,6 @@
 #include "widget_text_log.h"
 
+#include <QMargins>
 #include <QTextCursor>
 #include <QTextEdit>
 #include <QVBoxLayout>

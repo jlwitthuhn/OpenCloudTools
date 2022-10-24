@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 qt_include_base="/usr/include/qt6"
 clang_include_dir="/usr/lib64/clang/14/include"
@@ -12,6 +12,6 @@ flags="$qt_include_base $qt_defines $local_includes $qt_includes $cxxflags"
 
 for filename in ./src/*.cpp; do
 	echo "Checking $filename"
-	/opt/iwyu-14/bin/include-what-you-use -Xiwyu --mapping_file=./extra/iwyu.imp ${flags} ${filename}
+	include-what-you-use -Xiwyu --mapping_file=./extra/iwyu.imp ${flags} ${filename}
 	echo ""
 done

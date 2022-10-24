@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstddef>
+
+#include <QObject>
+#include <QString>
 #include <QWidget>
 
 class QTextEdit;

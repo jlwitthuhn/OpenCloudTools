@@ -1,5 +1,6 @@
 #include "window_datastore_entry_versions_view.h"
 
+#include <memory>
 #include <optional>
 
 #include <Qt>
