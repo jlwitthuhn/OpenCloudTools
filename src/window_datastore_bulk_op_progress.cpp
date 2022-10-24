@@ -85,7 +85,8 @@ void DatastoreBulkOperationProgressWindow::update_ui()
 	}
 	else if (progress.is_enumerating())
 	{
-		progress_label->setText("Enumerating entries...");
+		const size_t total_found = enumerate_entries_request ? enumerate_entries_request->get_datastore_entries().size() + pending_entries.size() : pending_entries.size();
+		progress_label->setText(QString{ "Enumerating entries, found %1..." }.arg(total_found));
 		progress_bar->setMaximum(0);
 		progress_bar->setValue(0);
 	}
