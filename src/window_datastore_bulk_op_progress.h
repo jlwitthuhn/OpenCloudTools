@@ -155,6 +155,10 @@ private:
 	virtual QString progress_label_working(size_t total) const override;
 
 	virtual void send_next_entry_request() override;
+
+	virtual bool is_retryable() const override;
+	virtual bool do_retry() override;
+
 	void handle_entry_response();
 
 	std::unique_ptr<SqliteDatastoreWriter> writer;

@@ -477,6 +477,28 @@ void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
 	}
 }
 
+bool DatastoreBulkDownloadProgressWindow::is_retryable() const
+{
+	return DatastoreBulkOperationProgressWindow::is_retryable() || (get_entry_details_request && get_entry_details_request->request_status() == DataRequestStatus::Error);
+}
+
+bool DatastoreBulkDownloadProgressWindow::do_retry()
+{
+	if (is_retryable())
+	{
+		if (DatastoreBulkOperationProgressWindow::do_retry())
+		{
+			return true;
+		}
+		else if (get_entry_details_request && get_entry_details_request->request_status() == DataRequestStatus::Error)
+		{
+			get_entry_details_request->force_retry();
+			return true;
+		}
+	}
+	return false;
+}
+
 void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 {
 	if (get_entry_details_request)
