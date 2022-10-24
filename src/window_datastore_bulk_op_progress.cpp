@@ -30,11 +30,11 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	datastore_names{ datastore_names }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
-	setMinimumHeight(400);
+	setMinimumHeight(380);
 
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };
-	progress_bar->setMinimumWidth(400);
+	progress_bar->setMinimumWidth(360);
 	progress_bar->setTextVisible(false);
 	progress_bar->setMaximum(DownloadProgress::MAXIMUM);
 
