@@ -174,15 +174,18 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 			QTabWidget* tab_widget = new QTabWidget{ edit_group };
 			{
 				new_data_edit = new QTextEdit{ tab_widget };
+				new_data_edit->setAcceptRichText(false);
 				new_data_edit->setText(displayed_data);
 
 				new_userids_edit = new QTextEdit{ tab_widget };
+				new_userids_edit->setAcceptRichText(false);
 				if (displayed_userids)
 				{
 					new_userids_edit->setText(*displayed_userids);
 				}
 
 				new_attributes_edit = new QTextEdit{ tab_widget };
+				new_attributes_edit->setAcceptRichText(false);
 				if (displayed_attributes)
 				{
 					new_attributes_edit->setText(*displayed_attributes);
