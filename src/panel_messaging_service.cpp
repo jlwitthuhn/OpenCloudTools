@@ -61,6 +61,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		topic_edit = new QLineEdit{ send_group_box };
 
 		message_edit = new QTextEdit{ send_group_box };
+		message_edit->setAcceptRichText(false);
 
 		send_button = new QPushButton{ "Send", send_group_box};
 		send_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
