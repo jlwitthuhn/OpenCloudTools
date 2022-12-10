@@ -215,10 +215,14 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 					QTabWidget* data_tab_widget = new QTabWidget{ add_entry_form };
 					{
 						add_entry_data_edit = new QTextEdit{ data_tab_widget };
+						add_entry_data_edit->setAcceptRichText(false);
 						connect(add_entry_data_edit, &QTextEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
 
 						add_entry_userids_edit = new QTextEdit{ data_tab_widget };
+						add_entry_userids_edit->setAcceptRichText(false);
+
 						add_entry_attributes_edit = new QTextEdit{ data_tab_widget };
+						add_entry_attributes_edit->setAcceptRichText(false);
 
 						data_tab_widget->addTab(add_entry_data_edit, "Data");
 						data_tab_widget->addTab(add_entry_userids_edit, "User IDs");
