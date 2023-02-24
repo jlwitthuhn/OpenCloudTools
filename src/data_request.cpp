@@ -41,6 +41,8 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
+	timeout_begin();
+
 	status = DataRequestStatus::Waiting;
 
 	emit status_info(get_send_message());
@@ -73,6 +75,8 @@ QString DataRequest::get_send_message() const
 
 void DataRequest::handle_reply_ready()
 {
+	timeout_end();
+
 	if (status != DataRequestStatus::Waiting)
 	{
 		do_error("Received reply at unexpected time, aborting");
@@ -84,6 +88,9 @@ void DataRequest::handle_reply_ready()
 	QString reply_body = pending_reply->readAll();
 	QList<QNetworkReply::RawHeaderPair> headers = pending_reply->rawHeaderPairs();
 	RobloxTime::update_time_from_headers(headers);
+
+	// Prevent timeout from firing
+	pending_reply->disconnect(this);
 
 	pending_reply->deleteLater();
 	pending_reply = nullptr;
@@ -140,6 +147,18 @@ void DataRequest::handle_reply_ready()
 	}
 }
 
+void DataRequest::handle_timeout()
+{
+	timeout_end();
+
+	pending_reply->disconnect(this);
+	pending_reply->deleteLater();
+	pending_reply = nullptr;
+
+	emit status_info(QString{ "Request timed out, retrying..." });
+	resend();
+}
+
 void DataRequest::resend()
 {
 	if (pending_request)
@@ -147,6 +166,28 @@ void DataRequest::resend()
 		emit status_info("Resending...");
 		pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
 		connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
+		timeout_begin();
+	}
+}
+
+void DataRequest::timeout_begin()
+{
+	timeout_end();
+
+	request_timeout = new QTimer{ this };
+	request_timeout->setSingleShot(true);
+	request_timeout->start(20000);
+	connect(request_timeout, &QTimer::timeout, this, &DataRequest::handle_timeout);
+}
+
+void DataRequest::timeout_end()
+{
+	if (request_timeout)
+	{
+		request_timeout->stop();
+		request_timeout->disconnect(this);
+		request_timeout->deleteLater();
+		request_timeout = nullptr;
 	}
 }
 

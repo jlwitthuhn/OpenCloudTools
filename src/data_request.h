@@ -53,7 +53,11 @@ protected:
 	virtual QString get_send_message() const;
 
 	void handle_reply_ready();
+	void handle_timeout();
 	void resend();
+
+	void timeout_begin();
+	void timeout_end();
 
 	int get_next_429_delay();
 
@@ -67,6 +71,8 @@ protected:
 	std::optional<QString> pending_request_cursor;
 	std::optional<QNetworkRequest> pending_request;
 	QNetworkReply* pending_reply = nullptr;
+
+	QTimer* request_timeout = nullptr;
 
 	HttpRequestType request_type = HttpRequestType::Get;
 	std::optional<QString> post_body;
