@@ -72,10 +72,13 @@ This project depends on SQLite and Qt 5/6. A recent version of SQLite is bundled
 
 ### Supported Platforms
 
-This program can probably build and run on any platform that supports Qt 5 or 6, but has only been tested in the following configurations:
-* Qt 6.3.1 and OpenCloudTools both built with Visual Studio 2022.
-* Qt 5.15.5 with Visual Studio 2019 and OpenCloudTools built with Visual Studio 2022.
-* Qt 6.3.1 and OpenCloudTools both built with XCode 13.2.1
+This program can probably build and run on any platform that supports Qt 5 or 6, but has only been tested in the following configurations that are used to build the binary distributions:
+
+| Platform | OpenCloudTools Compiler | Qt Version | Qt Compiler | Qt Configure Options |
+|----------|-------------------------|------------|-------------|----------------------|
+| Mac      | XCode 13.2.1            | 6.4.2      | XCode 13.2.1 | `-opensource -opengl desktop` |
+| Win Qt5  | Visual Studio 2022      | 5.15.8     | Visual Studio 2019 | `-opensource -opengl desktop -ssl -schannel -no-openssl` |
+| Win Qt5  | Visual Studio 2022      | 6.4.2      | Visual Studio 2022 | `-opensource -opengl desktop -no-openssl -skip qtsensors` |
 
 ## License
 
