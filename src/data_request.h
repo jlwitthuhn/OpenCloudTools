@@ -14,6 +14,8 @@
 #include "api_response.h"
 #include "util_enum.h"
 
+class QTimer;
+
 enum class DataRequestStatus
 {
 	ReadyToBegin,
