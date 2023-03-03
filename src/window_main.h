@@ -36,6 +36,7 @@ private:
 	void pressed_remove_universe();
 	void pressed_change_key();
 	void pressed_toggle_autoclose();
+	void pressed_toggle_datastore_name_filter();
 	void pressed_toggle_less_verbose_bulk();
 
 	void handle_autoclose_changed();
@@ -47,6 +48,7 @@ private:
 
 	std::vector<QAction*> theme_actions;
 	QAction* action_toggle_autoclose = nullptr;
+	QAction* action_toggle_datastore_name_filter = nullptr;
 	QAction* action_toggle_less_verbose_bulk = nullptr;
 
 	QComboBox* select_universe_combo = nullptr;

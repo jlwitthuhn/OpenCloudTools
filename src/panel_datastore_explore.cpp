@@ -53,7 +53,8 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	QWidget{ parent },
 	api_key{ api_key }
 {
-	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &ExploreDatastorePanel::handle_show_hidden_datastores_toggled);
+	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &ExploreDatastorePanel::refresh_datastore_list);
+	connect(UserProfile::get().get(), &UserProfile::show_datastore_filter_changed, this, &ExploreDatastorePanel::handle_show_datastore_filter_changed);
 
 	QWidget* left_bar_widget = new QWidget{ this };
 	{
@@ -68,14 +69,19 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 			connect(select_datastore_list, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_datastore_list);
 			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_changed);
 
+			select_datastore_name_filter_edit = new QLineEdit{ select_datastore_widget };
+			select_datastore_name_filter_edit->setToolTip("Only datastore names matching this text box will be displayed.");
+			connect(select_datastore_name_filter_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::refresh_datastore_list);
+
 			select_datastore_show_hidden_check = new QCheckBox{ "Show hidden", select_datastore_widget};
-			connect(select_datastore_show_hidden_check, &QCheckBox::stateChanged, this, &ExploreDatastorePanel::handle_show_hidden_datastores_toggled);
+			connect(select_datastore_show_hidden_check, &QCheckBox::stateChanged, this, &ExploreDatastorePanel::refresh_datastore_list);
 
 			select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
 			connect(select_datastore_fetch_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_fetch_datastores);
 
 			QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
 			select_datastore_layout->addWidget(select_datastore_list);
+			select_datastore_layout->addWidget(select_datastore_name_filter_edit);
 			select_datastore_layout->addWidget(select_datastore_show_hidden_check);
 			select_datastore_layout->addWidget(select_datastore_fetch_button);
 		}
@@ -269,6 +275,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	handle_search_text_changed();
 	handle_selected_datastore_changed();
 	handle_selected_datastore_entry_changed();
+	handle_show_datastore_filter_changed();
 }
 
 void ExploreDatastorePanel::selected_universe_changed()
@@ -523,19 +530,14 @@ void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
 	}
 }
 
-void ExploreDatastorePanel::handle_show_hidden_datastores_toggled()
+void ExploreDatastorePanel::handle_show_datastore_filter_changed()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe)
+	const bool active = UserProfile::get()->get_show_datastore_name_filter();
+	if (!active)
 	{
-		const bool show_hidden = select_datastore_show_hidden_check->isChecked();
-		for (int i = 0; i < select_datastore_list->count(); i++)
-		{
-			QListWidgetItem* this_item = select_datastore_list->item(i);
-			const bool hide = show_hidden ? false : static_cast<bool>( selected_universe->get_hidden_datastore_set().count(this_item->text()) );
-			this_item->setHidden(hide);
-		}
+		select_datastore_name_filter_edit->setText("");
 	}
+	select_datastore_name_filter_edit->setVisible(active);
 }
 
 void ExploreDatastorePanel::pressed_delete_entry()
@@ -577,7 +579,9 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 				this_item->setText(this_name);
 				select_datastore_list->addItem(this_item);
 			}
-			handle_show_hidden_datastores_toggled();
+			refresh_datastore_list();
+
+			// TODO: This should store the names in a complete list, then populate the widget based on the filter
 		}
 	}
 }
@@ -868,4 +872,20 @@ void ExploreDatastorePanel::pressed_view_entry()
 void ExploreDatastorePanel::pressed_view_versions()
 {
 	view_versions(get_selected_entry_single_index());
+}
+
+void ExploreDatastorePanel::refresh_datastore_list()
+{
+	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	if (selected_universe)
+	{
+		const bool show_hidden = select_datastore_show_hidden_check->isChecked();
+		for (int i = 0; i < select_datastore_list->count(); i++)
+		{
+			QListWidgetItem* this_item = select_datastore_list->item(i);
+			const bool is_hidden = static_cast<bool>(selected_universe->get_hidden_datastore_set().count(this_item->text()));
+			const bool matches_filter = this_item->text().contains(select_datastore_name_filter_edit->text());
+			this_item->setHidden((!show_hidden && is_hidden) || !matches_filter);
+		}
+	}
 }

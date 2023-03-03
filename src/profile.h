@@ -117,6 +117,9 @@ public:
 	bool get_less_verbose_bulk_operations() const { return less_verbose_bulk_operations; }
 	void set_less_verbose_bulk_operations(bool less_verbose);
 
+	bool get_show_datastore_name_filter() const { return show_datastore_name_filter; }
+	void set_show_datastore_name_filter(bool show_filter);
+
 	const std::vector<ApiKeyProfile*>& get_api_key_list() const { return api_key_list; };
 	ApiKeyProfile* get_api_key_by_index(size_t key_index);
 
@@ -132,6 +135,7 @@ signals:
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void hidden_datastore_list_changed();
 	void recent_topic_list_changed();
+	void show_datastore_filter_changed();
 
 private:
 	explicit UserProfile(QObject* parent = nullptr);
@@ -146,6 +150,7 @@ private:
 	QString qt_theme;
 	bool autoclose_progress_window = true;
 	bool less_verbose_bulk_operations = true;
+	bool show_datastore_name_filter = false;
 
 	std::vector<ApiKeyProfile*> api_key_list;
 	std::optional<size_t> selected_key_index;

@@ -90,20 +90,26 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				}
 			}
 
-			action_toggle_autoclose = new QAction{ "&Automatically close progress window", menu_bar };
+			action_toggle_autoclose = new QAction{ "&Automatically close progress window", preferences_menu };
 			action_toggle_autoclose->setCheckable(true);
 			action_toggle_autoclose->setChecked(UserProfile::get()->get_autoclose_progress_window());
 			connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
 
-			action_toggle_less_verbose_bulk = new QAction{ "Less &verbose bulk data operations", menu_bar };
+			action_toggle_less_verbose_bulk = new QAction{ "Less &verbose bulk data operations", preferences_menu };
 			action_toggle_less_verbose_bulk->setCheckable(true);
 			action_toggle_less_verbose_bulk->setChecked(UserProfile::get()->get_less_verbose_bulk_operations());
 			connect(action_toggle_less_verbose_bulk, &QAction::triggered, this, &MyMainWindow::pressed_toggle_less_verbose_bulk);
+
+			action_toggle_datastore_name_filter = new QAction{ "Show datastore name &filter text box", preferences_menu };
+			action_toggle_datastore_name_filter->setCheckable(true);
+			action_toggle_datastore_name_filter->setChecked(UserProfile::get()->get_show_datastore_name_filter());
+			connect(action_toggle_datastore_name_filter, &QAction::triggered, this, &MyMainWindow::pressed_toggle_datastore_name_filter);
 
 			preferences_menu->addMenu(theme_menu);
 			preferences_menu->addSeparator();
 			preferences_menu->addAction(action_toggle_autoclose);
 			preferences_menu->addAction(action_toggle_less_verbose_bulk);
+			preferences_menu->addAction(action_toggle_datastore_name_filter);
 		}
 
 		QMenu* about_menu = new QMenu{ "&About", menu_bar };
@@ -286,10 +292,16 @@ void MyMainWindow::pressed_toggle_autoclose()
 	UserProfile::get()->set_autoclose_progress_window(action_toggle_autoclose->isChecked());
 }
 
+void MyMainWindow::pressed_toggle_datastore_name_filter()
+{
+	UserProfile::get()->set_show_datastore_name_filter(action_toggle_datastore_name_filter->isChecked());
+}
+
 void MyMainWindow::pressed_toggle_less_verbose_bulk()
 {
 	UserProfile::get()->set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
 }
+
 
 void MyMainWindow::handle_autoclose_changed()
 {

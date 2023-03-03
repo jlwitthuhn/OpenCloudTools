@@ -44,7 +44,7 @@ private:
 	void handle_search_text_changed();
 	void handle_selected_datastore_changed();
 	void handle_selected_datastore_entry_changed();
-	void handle_show_hidden_datastores_toggled();
+	void handle_show_datastore_filter_changed();
 
 	void pressed_delete_entry();
 	void pressed_edit_entry();
@@ -57,9 +57,13 @@ private:
 	void pressed_view_entry();
 	void pressed_view_versions();
 
+	void refresh_datastore_list();
+
 	QString api_key;
 
+	// Left panel
 	QListWidget* select_datastore_list = nullptr;
+	QLineEdit* select_datastore_name_filter_edit = nullptr;
 	QPushButton* select_datastore_fetch_button = nullptr;
 	QCheckBox* select_datastore_show_hidden_check = nullptr;
 

@@ -372,6 +372,16 @@ void UserProfile::set_less_verbose_bulk_operations(const bool less_verbose)
 	}
 }
 
+void UserProfile::set_show_datastore_name_filter(const bool show_filter)
+{
+	if (show_datastore_name_filter != show_filter)
+	{
+		show_datastore_name_filter = show_filter;
+		emit show_datastore_filter_changed();
+		save_to_disk();
+	}
+}
+
 ApiKeyProfile* UserProfile::get_api_key_by_index(const size_t key_index)
 {
 	if (key_index < api_key_list.size())
@@ -468,6 +478,10 @@ void UserProfile::load_from_disk()
 	if (settings.value("less_verbose_bulk_operations").isValid())
 	{
 		less_verbose_bulk_operations = settings.value("less_verbose_bulk_operations").toBool();
+	}
+	if (settings.value("show_datastore_name_filter").isValid())
+	{
+		show_datastore_name_filter = settings.value("show_datastore_name_filter").toBool();
 	}
 	settings.endGroup();
 
@@ -575,6 +589,7 @@ void UserProfile::save_to_disk()
 	settings.setValue("qt_theme", qt_theme);
 	settings.setValue("autoclose_progress_window", autoclose_progress_window);
 	settings.setValue("less_verbose_bulk_operations", less_verbose_bulk_operations);
+	settings.setValue("show_datastore_name_filter", show_datastore_name_filter);
 	settings.endGroup();
 
 	settings.beginGroup("api_keys");
