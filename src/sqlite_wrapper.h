@@ -9,13 +9,13 @@ struct sqlite3;
 
 class DatastoreEntryWithDetails;
 
-class SqliteDatastoreWriter
+class SqliteDatastoreWrapper
 {
 public:
-	static std::unique_ptr<SqliteDatastoreWriter> from_path(const std::string& file_path);
+	static std::unique_ptr<SqliteDatastoreWrapper> new_from_path(const std::string& file_path);
 
-	SqliteDatastoreWriter(sqlite3* db_handle);
-	~SqliteDatastoreWriter();
+	SqliteDatastoreWrapper(sqlite3* db_handle);
+	~SqliteDatastoreWrapper();
 
 	void write(const DatastoreEntryWithDetails& details);
 

@@ -441,9 +441,9 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	const QString& scope,
 	const QString& key_prefix,
 	std::vector<QString> datastore_names,
-	std::unique_ptr<SqliteDatastoreWriter> writer) :
+	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper) :
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
-	writer{ std::move(writer) }
+	db_wrapper{ std::move(db_wrapper) }
 {
 	setWindowTitle("Download Progress");
 }
@@ -514,7 +514,7 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_details_request->get_details();
 		if (opt_details)
 		{
-			writer->write(*opt_details);
+			db_wrapper->write(*opt_details);
 		}
 		progress.advance_entry_done();
 		get_entry_details_request.reset();

@@ -279,7 +279,7 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 				}
 			}
 
-			std::unique_ptr<SqliteDatastoreWriter> writer = SqliteDatastoreWriter::from_path(file_name.toStdString());
+			std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::new_from_path(file_name.toStdString());
 			if (writer)
 			{
 				const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";

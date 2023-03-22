@@ -9,7 +9,7 @@
 #include "api_response.h"
 #include "util_enum.h"
 
-std::unique_ptr<SqliteDatastoreWriter> SqliteDatastoreWriter::from_path(const std::string& file_path)
+std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(const std::string& file_path)
 {
 	sqlite3* db_handle = nullptr;
 	if (sqlite3_open(file_path.c_str(), &db_handle) != SQLITE_OK)
@@ -20,15 +20,15 @@ std::unique_ptr<SqliteDatastoreWriter> SqliteDatastoreWriter::from_path(const st
 	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore;", nullptr, nullptr, nullptr);
 	sqlite3_exec(db_handle, "CREATE TABLE datastore (id INTEGER PRIMARY KEY, universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, scope TEXT NOT NULL, key_name TEXT NOT NULL, version TEXT NOT NULL, data_type TEXT NOT NULL, data_raw TEXT NOT NULL, data_str TEXT, data_num REAL, data_bool INTEGER, userids TEXT, attributes TEXT)", nullptr, nullptr, nullptr);
 
-	return std::make_unique<SqliteDatastoreWriter>(db_handle);
+	return std::make_unique<SqliteDatastoreWrapper>(db_handle);
 }
 
-SqliteDatastoreWriter::SqliteDatastoreWriter(sqlite3* db_handle) : db_handle{ db_handle }
+SqliteDatastoreWrapper::SqliteDatastoreWrapper(sqlite3* db_handle) : db_handle{ db_handle }
 {
 
 }
 
-SqliteDatastoreWriter::~SqliteDatastoreWriter()
+SqliteDatastoreWrapper::~SqliteDatastoreWrapper()
 {
 	if (db_handle != nullptr)
 	{
@@ -37,7 +37,7 @@ SqliteDatastoreWriter::~SqliteDatastoreWriter()
 	}
 }
 
-void SqliteDatastoreWriter::write(const DatastoreEntryWithDetails& details)
+void SqliteDatastoreWrapper::write(const DatastoreEntryWithDetails& details)
 {
 	if (db_handle != nullptr)
 	{
