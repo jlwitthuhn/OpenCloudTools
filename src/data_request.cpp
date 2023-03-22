@@ -335,9 +335,14 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 	std::optional<GetStandardDatastoreEntriesResponse> response = GetStandardDatastoreEntriesResponse::fromJson(body, universe_id, datastore_name);
 	if (response)
 	{
-		for (StandardDatastoreEntry this_entry : response->get_entries())
+		auto locked_callback = entry_found_callback.lock();
+		for (const StandardDatastoreEntry& this_entry : response->get_entries())
 		{
 			datastore_entries.push_back(this_entry);
+			if (locked_callback)
+			{
+				locked_callback->operator()(this_entry);
+			}
 		}
 
 		emit status_info(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_entries().size()), QString::number(datastore_entries.size())));

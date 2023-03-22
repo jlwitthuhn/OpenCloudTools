@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+#include <functional>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -132,6 +134,8 @@ public:
 
 	void set_result_limit(size_t limit);
 
+	void set_entry_found_callback(std::weak_ptr<std::function<void(const StandardDatastoreEntry&)>> callback) { entry_found_callback = callback; }
+
 	const std::vector<StandardDatastoreEntry>& get_datastore_entries() const { return datastore_entries; }
 	std::vector<StandardDatastoreEntry>&& get_datastore_entries_rvalue() { return std::move(datastore_entries); }
 
@@ -147,6 +151,8 @@ private:
 	std::optional<size_t> result_limit;
 
 	std::vector<StandardDatastoreEntry> datastore_entries;
+
+	std::weak_ptr<std::function<void(const StandardDatastoreEntry&)>> entry_found_callback;
 };
 
 class GetStandardDatastoreEntryDetailsRequest : public DataRequest
@@ -157,6 +163,11 @@ public:
 	virtual QString get_title_string() const override;
 
 	std::optional<DatastoreEntryWithDetails> get_details() const;
+
+	long long get_universe_id() const { return universe_id; }
+	QString get_datastore_name() const { return datastore_name; }
+	QString get_scope() const { return scope; }
+	QString get_key_name() const { return key_name; }
 
 protected:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;

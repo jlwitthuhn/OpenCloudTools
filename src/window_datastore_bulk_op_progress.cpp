@@ -114,6 +114,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 
 		enumerate_entries_request = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix);
 		enumerate_entries_request->set_http_429_count(http_429_count);
+		enumerate_entries_request->set_entry_found_callback(entry_found_callback);
 		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
 		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
@@ -446,6 +447,14 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	db_wrapper{ std::move(db_wrapper) }
 {
 	setWindowTitle("Download Progress");
+
+	std::unique_ptr<SqliteDatastoreWrapper>& db_ref = this->db_wrapper;
+
+	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntry&)>> (
+		[&db_ref](const StandardDatastoreEntry& entry) {
+			db_ref->write_pending(entry);
+		}
+	);
 }
 
 QString DatastoreBulkDownloadProgressWindow::progress_label_done() const
@@ -514,7 +523,14 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_details_request->get_details();
 		if (opt_details)
 		{
-			db_wrapper->write(*opt_details);
+			db_wrapper->write_details(*opt_details);
+			db_wrapper->delete_pending(*opt_details);
+		}
+		else
+		{
+			// Entry was deleted
+			const StandardDatastoreEntry entry(get_entry_details_request->get_universe_id(), get_entry_details_request->get_datastore_name(), get_entry_details_request->get_key_name(), get_entry_details_request->get_scope());
+			db_wrapper->delete_pending(entry);
 		}
 		progress.advance_entry_done();
 		get_entry_details_request.reset();

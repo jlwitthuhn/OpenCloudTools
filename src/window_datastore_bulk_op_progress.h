@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -102,6 +103,8 @@ protected:
 
 	QPushButton* retry_button = nullptr;
 	QPushButton* close_button = nullptr;
+
+	std::shared_ptr<std::function<void(const StandardDatastoreEntry&)>> entry_found_callback;
 };
 
 class DatastoreBulkDeleteProgressWindow: public DatastoreBulkOperationProgressWindow

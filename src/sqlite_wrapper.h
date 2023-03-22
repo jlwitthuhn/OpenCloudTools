@@ -8,6 +8,7 @@
 struct sqlite3;
 
 class DatastoreEntryWithDetails;
+class StandardDatastoreEntry;
 
 class SqliteDatastoreWrapper
 {
@@ -17,7 +18,11 @@ public:
 	SqliteDatastoreWrapper(sqlite3* db_handle);
 	~SqliteDatastoreWrapper();
 
-	void write(const DatastoreEntryWithDetails& details);
+	void write_details(const DatastoreEntryWithDetails& details);
+	void write_pending(const StandardDatastoreEntry& entry);
+
+	void delete_pending(const DatastoreEntryWithDetails& entry);
+	void delete_pending(const StandardDatastoreEntry& entry);
 
 private:
 	sqlite3* db_handle = nullptr;

@@ -17,8 +17,13 @@ std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(co
 		return nullptr;
 	}
 
+	// Table to store raw datastore data
 	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore;", nullptr, nullptr, nullptr);
 	sqlite3_exec(db_handle, "CREATE TABLE datastore (id INTEGER PRIMARY KEY, universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, scope TEXT NOT NULL, key_name TEXT NOT NULL, version TEXT NOT NULL, data_type TEXT NOT NULL, data_raw TEXT NOT NULL, data_str TEXT, data_num REAL, data_bool INTEGER, userids TEXT, attributes TEXT)", nullptr, nullptr, nullptr);
+
+	// Table to enumerate what entries remain to be downloaded
+	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore_pending;", nullptr, nullptr, nullptr);
+	sqlite3_exec(db_handle, "CREATE TABLE datastore_pending (id INTEGER PRIMARY KEY, universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, scope TEXT NOT NULL, key_name TEXT NOT NULL)", nullptr, nullptr, nullptr);
 
 	return std::make_unique<SqliteDatastoreWrapper>(db_handle);
 }
@@ -37,7 +42,7 @@ SqliteDatastoreWrapper::~SqliteDatastoreWrapper()
 	}
 }
 
-void SqliteDatastoreWrapper::write(const DatastoreEntryWithDetails& details)
+void SqliteDatastoreWrapper::write_details(const DatastoreEntryWithDetails& details)
 {
 	if (db_handle != nullptr)
 	{
@@ -76,6 +81,54 @@ void SqliteDatastoreWrapper::write(const DatastoreEntryWithDetails& details)
 			{
 				sqlite3_bind_text(stmt, 110, details.get_attributes()->toStdString().c_str(), -1, SQLITE_TRANSIENT);
 			}
+
+			sqlite3_step(stmt);
+
+			sqlite3_finalize(stmt);
+		}
+	}
+}
+
+void SqliteDatastoreWrapper::write_pending(const StandardDatastoreEntry& entry)
+{
+	if (db_handle != nullptr)
+	{
+		sqlite3_stmt* stmt = nullptr;
+		const std::string sql = "INSERT INTO datastore_pending (universe_id, datastore_name, scope, key_name) VALUES (?010, ?020, ?030, ?040);";
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+		if (stmt != nullptr)
+		{
+			sqlite3_bind_int64(stmt, 10, entry.get_universe_id());
+			sqlite3_bind_text(stmt, 20, entry.get_datastore_name().toStdString().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmt, 30, entry.get_scope().toStdString().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmt, 40, entry.get_key().toStdString().c_str(), -1, SQLITE_TRANSIENT);
+
+			sqlite3_step(stmt);
+
+			sqlite3_finalize(stmt);
+		}
+	}
+}
+
+void SqliteDatastoreWrapper::delete_pending(const DatastoreEntryWithDetails& details)
+{
+	const StandardDatastoreEntry entry{ details.get_universe_id(), details.get_datastore_name(), details.get_key_name(), details.get_scope() };
+	delete_pending(entry);
+}
+
+void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntry& entry)
+{
+	if (db_handle != nullptr)
+	{
+		sqlite3_stmt* stmt = nullptr;
+		const std::string sql = "DELETE FROM datastore_pending WHERE universe_id = ?010 AND datastore_name = ?020 AND scope = ?030 AND key_name = ?040;";
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+		if (stmt != nullptr)
+		{
+			sqlite3_bind_int64(stmt, 10, entry.get_universe_id());
+			sqlite3_bind_text(stmt, 20, entry.get_datastore_name().toStdString().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmt, 30, entry.get_scope().toStdString().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmt, 40, entry.get_key().toStdString().c_str(), -1, SQLITE_TRANSIENT);
 
 			sqlite3_step(stmt);
 
