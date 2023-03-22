@@ -268,6 +268,14 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 				QFile existing_file{ file_name };
 				if (existing_file.exists())
 				{
+					const QMessageBox::StandardButton response =
+						QMessageBox::warning(nullptr, "File already exists", "The existing sqlite database will be deleted prior to download, proceed?", QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+
+					if (response != QMessageBox::StandardButton::Yes)
+					{
+						return;
+					}
+
 					if (existing_file.remove() == false)
 					{
 						QMessageBox* msg_box = new QMessageBox{ this };
