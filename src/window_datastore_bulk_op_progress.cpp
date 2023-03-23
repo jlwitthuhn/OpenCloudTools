@@ -550,6 +550,7 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 		{
 			// Entry was deleted
 			const StandardDatastoreEntry entry(get_entry_details_request->get_universe_id(), get_entry_details_request->get_datastore_name(), get_entry_details_request->get_key_name(), get_entry_details_request->get_scope());
+			db_wrapper->write_deleted(entry);
 			db_wrapper->delete_pending(entry);
 		}
 		progress.advance_entry_done();

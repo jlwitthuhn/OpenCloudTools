@@ -18,6 +18,7 @@ public:
 	SqliteDatastoreWrapper(sqlite3* db_handle);
 	~SqliteDatastoreWrapper();
 
+	void write_deleted(const StandardDatastoreEntry& entry);
 	void write_details(const DatastoreEntryWithDetails& details);
 	void write_enumeration(long long universe_id, const std::string& datastore_name, const std::optional<std::string> cursor = std::nullopt);
 	void write_pending(const StandardDatastoreEntry& entry);
