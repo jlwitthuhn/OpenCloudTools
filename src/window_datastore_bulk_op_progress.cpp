@@ -27,7 +27,7 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	find_scope{ find_scope },
 	find_key_prefix{ find_key_prefix },
 	progress{ datastore_names.size() },
-	datastore_names{ datastore_names }
+	datastore_names{ std::move(datastore_names) }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setMinimumHeight(380);
@@ -114,6 +114,8 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 
 		enumerate_entries_request = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix);
 		enumerate_entries_request->set_http_429_count(http_429_count);
+		enumerate_entries_request->set_enumerate_step_callback(datastore_enumerate_step_callback);
+		enumerate_entries_request->set_enumerate_done_callback(datastore_enumerate_done_callback);
 		enumerate_entries_request->set_entry_found_callback(entry_found_callback);
 		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(enumerate_entries_request.get(), &GetStandardDatastoreEntriesRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
@@ -443,18 +445,36 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	const QString& key_prefix,
 	std::vector<QString> datastore_names,
 	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper) :
-	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, std::move(datastore_names) },
 	db_wrapper{ std::move(db_wrapper) }
 {
 	setWindowTitle("Download Progress");
 
 	std::unique_ptr<SqliteDatastoreWrapper>& db_ref = this->db_wrapper;
 
-	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntry&)>> (
+	datastore_enumerate_step_callback = std::make_shared<std::function<void(long long, const std::string&, const std::string&)>>(
+		[&db_ref](const long long universe_id, const std::string& datastore_name, const std::string& cursor) {
+			db_ref->write_enumeration(universe_id, datastore_name, cursor);
+		}
+	);
+
+	datastore_enumerate_done_callback = std::make_shared<std::function<void(long long, const std::string&)>>(
+		[&db_ref](const long long universe_id, const std::string& datastore_name) {
+			db_ref->delete_enumeration(universe_id, datastore_name);
+		}
+	);
+
+	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntry&)>>(
 		[&db_ref](const StandardDatastoreEntry& entry) {
 			db_ref->write_pending(entry);
 		}
 	);
+
+	// Initialize all targeted datastore names in the sqlite db
+	for (const QString& this_datastore : this->datastore_names)
+	{
+		this->db_wrapper->write_enumeration(universe_id, this_datastore.toStdString());
+	}
 }
 
 QString DatastoreBulkDownloadProgressWindow::progress_label_done() const

@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include <QDateTime>
@@ -104,6 +105,8 @@ protected:
 	QPushButton* retry_button = nullptr;
 	QPushButton* close_button = nullptr;
 
+	std::shared_ptr<std::function<void(long long, const std::string&, const std::string&)>> datastore_enumerate_step_callback;
+	std::shared_ptr<std::function<void(long long, const std::string&)>> datastore_enumerate_done_callback;
 	std::shared_ptr<std::function<void(const StandardDatastoreEntry&)>> entry_found_callback;
 };
 

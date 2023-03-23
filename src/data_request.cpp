@@ -335,13 +335,13 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 	std::optional<GetStandardDatastoreEntriesResponse> response = GetStandardDatastoreEntriesResponse::fromJson(body, universe_id, datastore_name);
 	if (response)
 	{
-		auto locked_callback = entry_found_callback.lock();
+		auto locked_entry_found_callback = entry_found_callback.lock();
 		for (const StandardDatastoreEntry& this_entry : response->get_entries())
 		{
 			datastore_entries.push_back(this_entry);
-			if (locked_callback)
+			if (locked_entry_found_callback)
 			{
-				locked_callback->operator()(this_entry);
+				locked_entry_found_callback->operator()(this_entry);
 			}
 		}
 
@@ -352,15 +352,27 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 		std::optional<QString> cursor{ response->get_cursor() };
 		if (cursor && cursor->size() > 0 && limit_reached == false)
 		{
+			if (auto locked_callback = enumerate_step_callback.lock())
+			{
+				locked_callback->operator()(universe_id, datastore_name.toStdString(), cursor->toStdString());
+			}
 			send_request(cursor);
 		}
 		else
 		{
+			if (auto locked_callback = enumerate_done_callback.lock())
+			{
+				locked_callback->operator()(universe_id, datastore_name.toStdString());
+			}
 			do_success("Complete");
 		}
 	}
 	else
 	{
+		if (auto locked_callback = enumerate_done_callback.lock())
+		{
+			locked_callback->operator()(universe_id, datastore_name.toStdString());
+		}
 		do_success("Complete");
 	}
 }

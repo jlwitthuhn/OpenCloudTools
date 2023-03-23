@@ -134,6 +134,8 @@ public:
 
 	void set_result_limit(size_t limit);
 
+	void set_enumerate_step_callback(std::weak_ptr<std::function<void(long long, const std::string&, const std::string&)>> callback) { enumerate_step_callback = callback; }
+	void set_enumerate_done_callback(std::weak_ptr<std::function<void(long long, const std::string&)>> callback) { enumerate_done_callback = callback; }
 	void set_entry_found_callback(std::weak_ptr<std::function<void(const StandardDatastoreEntry&)>> callback) { entry_found_callback = callback; }
 
 	const std::vector<StandardDatastoreEntry>& get_datastore_entries() const { return datastore_entries; }
@@ -152,6 +154,8 @@ private:
 
 	std::vector<StandardDatastoreEntry> datastore_entries;
 
+	std::weak_ptr<std::function<void(long long, const std::string&, const std::string&)>> enumerate_step_callback;
+	std::weak_ptr<std::function<void(long long, const std::string&)>> enumerate_done_callback;
 	std::weak_ptr<std::function<void(const StandardDatastoreEntry&)>> entry_found_callback;
 };
 
