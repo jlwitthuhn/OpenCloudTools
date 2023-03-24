@@ -172,6 +172,8 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 					return false;
 				}
 			}
+
+			sqlite3_finalize(stmt);
 		}
 
 		{
@@ -230,6 +232,8 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 					return false;
 				}
 			}
+
+			sqlite3_finalize(stmt);
 		}
 
 		{
@@ -288,6 +292,8 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 					return false;
 				}
 			}
+
+			sqlite3_finalize(stmt);
 		}
 
 		return true;
@@ -549,10 +555,12 @@ std::optional<std::vector<DatastoreEntryWithDetails>> SqliteDatastoreReader::rea
 			}
 			else if (sqlite_result == SQLITE_DONE)
 			{
+				sqlite3_finalize(stmt);
 				return result;
 			}
 			else
 			{
+				sqlite3_finalize(stmt);
 				return std::nullopt;
 			}
 		}
