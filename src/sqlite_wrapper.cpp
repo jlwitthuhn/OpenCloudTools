@@ -37,6 +37,17 @@ std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(co
 	return std::make_unique<SqliteDatastoreWrapper>(db_handle);
 }
 
+std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::open_from_path(const std::string& file_path)
+{
+	sqlite3* db_handle = nullptr;
+	if (sqlite3_open(file_path.c_str(), &db_handle) != SQLITE_OK)
+	{
+		return nullptr;
+	}
+
+	return std::make_unique<SqliteDatastoreWrapper>(db_handle);
+}
+
 SqliteDatastoreWrapper::SqliteDatastoreWrapper(sqlite3* db_handle) : db_handle{ db_handle }
 {
 
@@ -302,6 +313,70 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 	return false;
 }
 
+bool SqliteDatastoreWrapper::is_resumable(const long long universe_id)
+{
+	if (db_handle != nullptr)
+	{
+		bool has_valid_cursors = false;
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT COUNT(*) FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NOT NULL;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					has_valid_cursors = sqlite3_column_int64(stmt, 0) <= 1;
+				}
+			}
+			sqlite3_finalize(stmt);
+		}
+
+		bool has_entries_pending = false;
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT COUNT(*) FROM datastore_pending WHERE universe_id = ?010;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					has_entries_pending = sqlite3_column_int64(stmt, 0) > 0;
+				}
+			}
+			sqlite3_finalize(stmt);
+		}
+
+		bool has_enumeration_pending = false;
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT COUNT(*) FROM datastore_enumerate WHERE universe_id = ?010;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					has_enumeration_pending = sqlite3_column_int64(stmt, 0) > 0;
+				}
+			}
+			sqlite3_finalize(stmt);
+		}
+
+		return has_valid_cursors && (has_entries_pending || has_enumeration_pending);
+	}
+
+	return false;
+}
+
 void SqliteDatastoreWrapper::write_deleted(const StandardDatastoreEntry& entry)
 {
 	if (db_handle != nullptr)
@@ -322,7 +397,6 @@ void SqliteDatastoreWrapper::write_deleted(const StandardDatastoreEntry& entry)
 		}
 	}
 }
-
 void SqliteDatastoreWrapper::write_details(const DatastoreEntryWithDetails& details)
 {
 	if (db_handle != nullptr)

@@ -14,11 +14,13 @@ class SqliteDatastoreWrapper
 {
 public:
 	static std::unique_ptr<SqliteDatastoreWrapper> new_from_path(const std::string& file_path);
+	static std::unique_ptr<SqliteDatastoreWrapper> open_from_path(const std::string& file_path);
 
 	SqliteDatastoreWrapper(sqlite3* db_handle);
 	~SqliteDatastoreWrapper();
 
 	bool is_correct_schema();
+	bool is_resumable(long long universe_id);
 
 	void write_deleted(const StandardDatastoreEntry& entry);
 	void write_details(const DatastoreEntryWithDetails& details);

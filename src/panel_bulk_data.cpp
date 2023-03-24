@@ -165,10 +165,17 @@ void BulkDataPanel::pressed_download_resume()
 			}
 		}
 
-		std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::new_from_path(file_name.toStdString());
+		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+
+		std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::open_from_path(file_name.toStdString());
 		if (writer->is_correct_schema() == false)
 		{
 			QMessageBox::critical(nullptr, "Error", "Selected file has unexpected database schema, unable to proceed");
+			return;
+		}
+		if (writer->is_resumable(universe_id) == false)
+		{
+			QMessageBox::critical(nullptr, "Error", "Selected file cannot be resumed for the selected universe");
 			return;
 		}
 	}
