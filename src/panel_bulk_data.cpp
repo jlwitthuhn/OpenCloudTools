@@ -36,6 +36,11 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 			datastore_download_button->setMinimumWidth(150);
 			connect(datastore_download_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_download);
 
+			datastore_download_resume_button = new QPushButton{ "Resume download...", datastore_group };
+			datastore_download_resume_button->setToolTip(ToolTip::BulkDataPanel_ResumeDownload);
+			datastore_download_resume_button->setMinimumWidth(150);
+			connect(datastore_download_resume_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_download_resume);
+
 			QFrame* separator = new QFrame{ datastore_group };
 			separator->setFrameShape(QFrame::HLine);
 			separator->setFrameShadow(QFrame::Sunken);
@@ -60,6 +65,7 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 
 			QVBoxLayout* group_layout = new QVBoxLayout{ datastore_group };
 			group_layout->addWidget(datastore_download_button);
+			group_layout->addWidget(datastore_download_resume_button);
 			group_layout->addWidget(separator);
 			group_layout->addWidget(danger_buttons_check);
 			group_layout->addWidget(datastore_delete_button);
@@ -135,6 +141,35 @@ void BulkDataPanel::pressed_download()
 			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_id, datastores };
 			download_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			download_window->show();
+		}
+	}
+}
+
+void BulkDataPanel::pressed_download_resume()
+{
+	if (UserProfile::get_selected_universe())
+	{
+		const QString file_name = QFileDialog::getOpenFileName(this, "Resume download", "", "sqlite3 databases (*.sqlite3)");
+		if (file_name.trimmed().length() == 0)
+		{
+			// User selected nothing, return silently
+			return;
+		}
+
+		{
+			const QFile existing_file{ file_name };
+			if (existing_file.exists() == false)
+			{
+				QMessageBox::critical(nullptr, "Error", "Unable to open file");
+				return;
+			}
+		}
+
+		std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::new_from_path(file_name.toStdString());
+		if (writer->is_correct_schema() == false)
+		{
+			QMessageBox::critical(nullptr, "Error", "Selected file has unexpected database schema, unable to proceed");
+			return;
 		}
 	}
 }
