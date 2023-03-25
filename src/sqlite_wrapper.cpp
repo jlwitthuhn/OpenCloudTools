@@ -335,8 +335,8 @@ bool SqliteDatastoreWrapper::is_resumable(const long long universe_id)
 				{
 					has_valid_cursors = sqlite3_column_int64(stmt, 0) <= 1;
 				}
+				sqlite3_finalize(stmt);
 			}
-			sqlite3_finalize(stmt);
 		}
 
 		bool has_entries_pending = false;
@@ -353,8 +353,8 @@ bool SqliteDatastoreWrapper::is_resumable(const long long universe_id)
 				{
 					has_entries_pending = sqlite3_column_int64(stmt, 0) > 0;
 				}
+				sqlite3_finalize(stmt);
 			}
-			sqlite3_finalize(stmt);
 		}
 
 		bool has_enumeration_pending = false;
@@ -371,8 +371,8 @@ bool SqliteDatastoreWrapper::is_resumable(const long long universe_id)
 				{
 					has_enumeration_pending = sqlite3_column_int64(stmt, 0) > 0;
 				}
+				sqlite3_finalize(stmt);
 			}
-			sqlite3_finalize(stmt);
 		}
 
 		return has_valid_cursors && (has_entries_pending || has_enumeration_pending);
@@ -635,7 +635,7 @@ std::vector<std::string> SqliteDatastoreWrapper::get_pending_datastores(const lo
 			const std::string sql = "SELECT datastore_name FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NULL;";
 			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 			sqlite3_bind_int64(stmt, 10, universe_id);
-			while (true)
+			while (stmt != nullptr)
 			{
 				const int sqlite_result = sqlite3_step(stmt);
 				if (sqlite_result == SQLITE_ROW)
@@ -645,7 +645,8 @@ std::vector<std::string> SqliteDatastoreWrapper::get_pending_datastores(const lo
 				}
 				else
 				{
-					break;
+					sqlite3_finalize(stmt);
+					stmt = nullptr;
 				}
 			}
 		}
@@ -683,7 +684,7 @@ std::vector<StandardDatastoreEntry> SqliteDatastoreWrapper::get_pending_entries(
 			const std::string sql = "SELECT universe_id, datastore_name, scope, key_name FROM datastore_pending WHERE universe_id = ?010;";
 			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 			sqlite3_bind_int64(stmt, 10, universe_id);
-			while (true)
+			while (stmt != nullptr)
 			{
 				const int sqlite_result = sqlite3_step(stmt);
 				if (sqlite_result == SQLITE_ROW)
@@ -698,7 +699,8 @@ std::vector<StandardDatastoreEntry> SqliteDatastoreWrapper::get_pending_entries(
 				}
 				else
 				{
-					break;
+					sqlite3_finalize(stmt);
+					stmt = nullptr;
 				}
 			}
 		}
