@@ -128,7 +128,7 @@ private:
 class GetStandardDatastoreEntriesRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntriesRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix);
+	GetStandardDatastoreEntriesRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor = std::nullopt);
 
 	virtual QString get_title_string() const override;
 
@@ -149,6 +149,8 @@ private:
 	QString datastore_name;
 	QString scope;
 	QString prefix;
+
+	std::optional<QString> initial_cursor;
 
 	std::optional<size_t> result_limit;
 

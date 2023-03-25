@@ -88,6 +88,8 @@ protected:
 	QString find_scope;
 	QString find_key_prefix;
 
+	std::optional<QString> initial_cursor;
+
 	size_t http_429_count = 0;
 
 	DownloadProgress progress;

@@ -112,7 +112,8 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 	{
 		const QString this_datastore_name = datastore_names[current_index];
 
-		enumerate_entries_request = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix);
+		enumerate_entries_request = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix, initial_cursor);
+		initial_cursor = std::nullopt;
 		enumerate_entries_request->set_http_429_count(http_429_count);
 		enumerate_entries_request->set_enumerate_step_callback(datastore_enumerate_step_callback);
 		enumerate_entries_request->set_enumerate_done_callback(datastore_enumerate_done_callback);
@@ -466,6 +467,21 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	db_wrapper{ std::move(db_wrapper) }
 {
 	pending_entries = std::move(this->db_wrapper->get_pending_entries(universe_id));
+
+	datastore_names.clear();
+	if (const std::optional<std::string> opt_name = this->db_wrapper->get_enumarating_datastore(universe_id))
+	{
+		datastore_names.push_back(QString::fromStdString(*opt_name));
+	}
+	if (const std::optional<std::string> opt_cursor = this->db_wrapper->get_enumarating_cursor(universe_id))
+	{
+		initial_cursor = QString::fromStdString(*opt_cursor);
+	}
+	for (const std::string& this_datastore_name : this->db_wrapper->get_pending_datastores(universe_id))
+	{
+		datastore_names.push_back(QString::fromStdString(this_datastore_name));
+	}
+	progress = DownloadProgress{ datastore_names.size() };
 
 	if (datastore_names.size() == 0)
 	{

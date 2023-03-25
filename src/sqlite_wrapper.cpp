@@ -550,6 +550,106 @@ void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntry& entry)
 	}
 }
 
+std::optional<std::string> SqliteDatastoreWrapper::get_enumarating_cursor(const long long universe_id)
+{
+	std::optional<std::string> result;
+
+	if (db_handle != nullptr)
+	{
+		sqlite3_stmt* stmt = nullptr;
+		const std::string sql = "SELECT next_cursor FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NOT NULL;";
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+		if (stmt != nullptr)
+		{
+			sqlite3_bind_int64(stmt, 10, universe_id);
+
+			const int sqlite_result = sqlite3_step(stmt);
+			if (sqlite_result == SQLITE_ROW)
+			{
+				result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			}
+
+			sqlite3_finalize(stmt);
+		}
+	}
+
+	return result;
+}
+
+std::optional<std::string> SqliteDatastoreWrapper::get_enumarating_datastore(const long long universe_id)
+{
+	std::optional<std::string> result;
+
+	if (db_handle != nullptr)
+	{
+		sqlite3_stmt* stmt = nullptr;
+		const std::string sql = "SELECT datastore_name FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NOT NULL;";
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+		if (stmt != nullptr)
+		{
+			sqlite3_bind_int64(stmt, 10, universe_id);
+
+			const int sqlite_result = sqlite3_step(stmt);
+			if (sqlite_result == SQLITE_ROW)
+			{
+				result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			}
+
+			sqlite3_finalize(stmt);
+		}
+	}
+
+	return result;
+}
+
+std::vector<std::string> SqliteDatastoreWrapper::get_pending_datastores(const long long universe_id)
+{
+	std::vector<std::string> result;
+
+	if (db_handle != nullptr)
+	{
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT count(*) FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NULL;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					result.reserve(static_cast<size_t>(sqlite3_column_int64(stmt, 0)));
+				}
+
+				sqlite3_finalize(stmt);
+			}
+		}
+
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT datastore_name FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NULL;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			sqlite3_bind_int64(stmt, 10, universe_id);
+			while (true)
+			{
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					const std::string this_name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+					result.push_back(this_name);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
 std::vector<StandardDatastoreEntry> SqliteDatastoreWrapper::get_pending_entries(const long long universe_id)
 {
 	std::vector<StandardDatastoreEntry> result;

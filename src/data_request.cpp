@@ -309,8 +309,8 @@ void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, cons
 	}
 }
 
-GetStandardDatastoreEntriesRequest::GetStandardDatastoreEntriesRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix) :
-	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, prefix{ prefix }
+GetStandardDatastoreEntriesRequest::GetStandardDatastoreEntriesRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor) :
+	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, prefix{ prefix }, initial_cursor{ initial_cursor }
 {
 
 }
@@ -327,7 +327,18 @@ void GetStandardDatastoreEntriesRequest::set_result_limit(const size_t limit)
 
 QNetworkRequest GetStandardDatastoreEntriesRequest::build_request(std::optional<QString> cursor)
 {
-	return HttpRequestBuilder::get_standard_datastore_entries(api_key, universe_id, datastore_name, scope, prefix, cursor);
+	//assert(!(cursor && initial_cursor))
+	QNetworkRequest request;
+	if (cursor)
+	{
+		request = HttpRequestBuilder::get_standard_datastore_entries(api_key, universe_id, datastore_name, scope, prefix, cursor);
+	}
+	else
+	{
+		request = HttpRequestBuilder::get_standard_datastore_entries(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
+		initial_cursor = std::nullopt;
+	}
+	return request;
 }
 
 void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
