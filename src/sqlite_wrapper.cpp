@@ -248,6 +248,108 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 
 		{
 			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "PRAGMA table_info(datastore_enumerate);";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+
+			std::array<bool, 3> column_valid;
+			column_valid.fill(false);
+			while (true)
+			{
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					switch (sqlite3_column_int64(stmt, 0))
+					{
+					case 0:
+						column_valid[0] =
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "universe_id" &&
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "INTEGER";
+						break;
+					case 1:
+						column_valid[1] =
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "datastore_name" &&
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "TEXT";
+						break;
+					case 2:
+						column_valid[2] =
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "next_cursor" &&
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "TEXT";
+						break;
+						break;
+					default:
+						return false;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			for (const bool this_valid : column_valid)
+			{
+				if (this_valid == false)
+				{
+					return false;
+				}
+			}
+
+			sqlite3_finalize(stmt);
+		}
+
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "PRAGMA table_info(datastore_enumerate_meta);";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+
+			std::array<bool, 3> column_valid;
+			column_valid.fill(false);
+			while (true)
+			{
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					switch (sqlite3_column_int64(stmt, 0))
+					{
+					case 0:
+						column_valid[0] =
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "universe_id" &&
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "INTEGER";
+						break;
+					case 1:
+						column_valid[1] =
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "key" &&
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "TEXT";
+						break;
+					case 2:
+						column_valid[2] =
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "value" &&
+							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "TEXT";
+						break;
+						break;
+					default:
+						return false;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			for (const bool this_valid : column_valid)
+			{
+				if (this_valid == false)
+				{
+					return false;
+				}
+			}
+
+			sqlite3_finalize(stmt);
+		}
+
+		{
+			sqlite3_stmt* stmt = nullptr;
 			const std::string sql = "PRAGMA table_info(datastore_pending);";
 			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 
