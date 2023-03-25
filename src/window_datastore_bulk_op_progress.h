@@ -155,6 +155,7 @@ class DatastoreBulkDownloadProgressWindow : public DatastoreBulkOperationProgres
 	Q_OBJECT
 public:
 	DatastoreBulkDownloadProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWrapper> db_wrapper);
+	DatastoreBulkDownloadProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, std::unique_ptr<SqliteDatastoreWrapper> db_wrapper);
 
 private:
 	virtual QString progress_label_done() const override;
@@ -165,6 +166,7 @@ private:
 	virtual bool is_retryable() const override;
 	virtual bool do_retry() override;
 
+	void common_init();
 	void handle_entry_response();
 
 	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper;

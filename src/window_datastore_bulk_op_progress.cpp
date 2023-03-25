@@ -448,33 +448,31 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, std::move(datastore_names) },
 	db_wrapper{ std::move(db_wrapper) }
 {
-	setWindowTitle("Download Progress");
-
-	std::unique_ptr<SqliteDatastoreWrapper>& db_ref = this->db_wrapper;
-
-	datastore_enumerate_step_callback = std::make_shared<std::function<void(long long, const std::string&, const std::string&)>>(
-		[&db_ref](const long long universe_id, const std::string& datastore_name, const std::string& cursor) {
-			db_ref->write_enumeration(universe_id, datastore_name, cursor);
-		}
-	);
-
-	datastore_enumerate_done_callback = std::make_shared<std::function<void(long long, const std::string&)>>(
-		[&db_ref](const long long universe_id, const std::string& datastore_name) {
-			db_ref->delete_enumeration(universe_id, datastore_name);
-		}
-	);
-
-	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntry&)>>(
-		[&db_ref](const StandardDatastoreEntry& entry) {
-			db_ref->write_pending(entry);
-		}
-	);
-
 	// Initialize all targeted datastore names in the sqlite db
 	for (const QString& this_datastore : this->datastore_names)
 	{
 		this->db_wrapper->write_enumeration(universe_id, this_datastore.toStdString());
 	}
+
+	common_init();
+}
+
+DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
+	QWidget* parent,
+	const QString& api_key,
+	long long universe_id,
+	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper) :
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, "", "", std::vector<QString>{} },
+	db_wrapper{ std::move(db_wrapper) }
+{
+	pending_entries = std::move(this->db_wrapper->get_pending_entries(universe_id));
+
+	if (datastore_names.size() == 0)
+	{
+		progress.set_entry_total(pending_entries.size());
+	}
+
+	common_init();
 }
 
 QString DatastoreBulkDownloadProgressWindow::progress_label_done() const
@@ -534,6 +532,31 @@ bool DatastoreBulkDownloadProgressWindow::do_retry()
 		}
 	}
 	return false;
+}
+
+void DatastoreBulkDownloadProgressWindow::common_init()
+{
+	setWindowTitle("Download Progress");
+
+	std::unique_ptr<SqliteDatastoreWrapper>& db_ref = this->db_wrapper;
+
+	datastore_enumerate_step_callback = std::make_shared<std::function<void(long long, const std::string&, const std::string&)>>(
+		[&db_ref](const long long universe_id, const std::string& datastore_name, const std::string& cursor) {
+			db_ref->write_enumeration(universe_id, datastore_name, cursor);
+		}
+	);
+
+	datastore_enumerate_done_callback = std::make_shared<std::function<void(long long, const std::string&)>>(
+		[&db_ref](const long long universe_id, const std::string& datastore_name) {
+			db_ref->delete_enumeration(universe_id, datastore_name);
+		}
+	);
+
+	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntry&)>>(
+		[&db_ref](const StandardDatastoreEntry& entry) {
+			db_ref->write_pending(entry);
+		}
+	);
 }
 
 void DatastoreBulkDownloadProgressWindow::handle_entry_response()

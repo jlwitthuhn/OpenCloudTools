@@ -550,6 +550,59 @@ void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntry& entry)
 	}
 }
 
+std::vector<StandardDatastoreEntry> SqliteDatastoreWrapper::get_pending_entries(const long long universe_id)
+{
+	std::vector<StandardDatastoreEntry> result;
+
+	if (db_handle != nullptr)
+	{
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT count(*) FROM datastore_pending WHERE universe_id = ?010;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					result.reserve(static_cast<size_t>(sqlite3_column_int64(stmt, 0)));
+				}
+
+				sqlite3_finalize(stmt);
+			}
+		}
+
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "SELECT universe_id, datastore_name, scope, key_name FROM datastore_pending WHERE universe_id = ?010;";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			sqlite3_bind_int64(stmt, 10, universe_id);
+			while (true)
+			{
+				const int sqlite_result = sqlite3_step(stmt);
+				if (sqlite_result == SQLITE_ROW)
+				{
+					const long long this_universe_id = sqlite3_column_int64(stmt, 0);
+					const QString this_datastore_name = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) };
+					const QString this_scope = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) };
+					const QString this_key_name = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)) };
+
+					const StandardDatastoreEntry this_entry{ this_universe_id, this_datastore_name, this_key_name, this_scope };
+					result.push_back(this_entry);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
 std::optional<std::vector<DatastoreEntryWithDetails>> SqliteDatastoreReader::read_all(const std::string& file_path)
 {
 	sqlite3* db_handle = nullptr;

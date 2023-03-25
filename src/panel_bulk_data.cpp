@@ -22,6 +22,7 @@
 #include "sqlite_wrapper.h"
 #include "tooltip_text.h"
 #include "window_datastore_bulk_op.h"
+#include "window_datastore_bulk_op_progress.h"
 
 BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	QWidget{ parent },
@@ -178,6 +179,11 @@ void BulkDataPanel::pressed_download_resume()
 			QMessageBox::critical(nullptr, "Error", "Selected file cannot be resumed for the selected universe");
 			return;
 		}
+
+		DatastoreBulkDownloadProgressWindow* progress_window = new DatastoreBulkDownloadProgressWindow{ this, api_key, universe_id, std::move(writer) };
+		progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+		progress_window->show();
+		progress_window->start();
 	}
 }
 

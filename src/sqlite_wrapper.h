@@ -31,6 +31,11 @@ public:
 	void delete_pending(const DatastoreEntryWithDetails& entry);
 	void delete_pending(const StandardDatastoreEntry& entry);
 
+	std::optional<std::string> get_enumarating_cursor(long long universe_id);
+	std::optional<std::string> get_enumarating_datastore(long long universe_id);
+
+	std::vector<StandardDatastoreEntry> get_pending_entries(long long universe_id);
+
 private:
 	sqlite3* db_handle = nullptr;
 };
