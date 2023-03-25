@@ -78,7 +78,7 @@ This program can probably build and run on any platform that supports Qt 5 or 6,
 |----------|-------------------------|------------|-------------|----------------------|
 | Mac      | XCode 13.2.1            | 6.4.2      | XCode 13.2.1 | `-opensource -opengl desktop` |
 | Win Qt5  | Visual Studio 2022      | 5.15.8     | Visual Studio 2019 | `-opensource -opengl desktop -ssl -schannel -no-openssl` |
-| Win Qt5  | Visual Studio 2022      | 6.4.2      | Visual Studio 2022 | `-opensource -opengl desktop -no-openssl -skip qtsensors` |
+| Win Qt6  | Visual Studio 2022      | 6.4.2      | Visual Studio 2022 | `-opensource -opengl desktop -no-openssl -skip qtsensors` |
 
 ## License
 
