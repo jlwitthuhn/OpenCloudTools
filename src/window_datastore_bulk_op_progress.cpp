@@ -449,6 +449,7 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, std::move(datastore_names) },
 	db_wrapper{ std::move(db_wrapper) }
 {
+	this->db_wrapper->write_enumeration_metadata(universe_id, scope.toStdString(), key_prefix.toStdString());
 	// Initialize all targeted datastore names in the sqlite db
 	for (const QString& this_datastore : this->datastore_names)
 	{

@@ -584,6 +584,42 @@ void SqliteDatastoreWrapper::write_enumeration(long long universe_id, const std:
 	}
 }
 
+void SqliteDatastoreWrapper::write_enumeration_metadata(const long long universe_id, const std::string& scope, const std::string& key_prefix)
+{
+	if (db_handle != nullptr)
+	{
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "INSERT INTO datastore_enumerate_meta (universe_id, key, value) VALUES (?010, 'scope', ?020);";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+				sqlite3_bind_text(stmt, 20, scope.c_str(), -1, SQLITE_TRANSIENT);
+
+				sqlite3_step(stmt);
+
+				sqlite3_finalize(stmt);
+			}
+		}
+
+		{
+			sqlite3_stmt* stmt = nullptr;
+			const std::string sql = "INSERT INTO datastore_enumerate_meta (universe_id, key, value) VALUES (?010, 'key_prefix', ?020);";
+			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+			if (stmt != nullptr)
+			{
+				sqlite3_bind_int64(stmt, 10, universe_id);
+				sqlite3_bind_text(stmt, 20, key_prefix.c_str(), -1, SQLITE_TRANSIENT);
+
+				sqlite3_step(stmt);
+
+				sqlite3_finalize(stmt);
+			}
+		}
+	}
+}
+
 void SqliteDatastoreWrapper::write_pending(const StandardDatastoreEntry& entry)
 {
 	if (db_handle != nullptr)

@@ -25,6 +25,7 @@ public:
 	void write_deleted(const StandardDatastoreEntry& entry);
 	void write_details(const DatastoreEntryWithDetails& details);
 	void write_enumeration(long long universe_id, const std::string& datastore_name, const std::optional<std::string> cursor = std::nullopt);
+	void write_enumeration_metadata(long long universe_id, const std::string& scope, const std::string& key_prefix);
 	void write_pending(const StandardDatastoreEntry& entry);
 
 	void delete_enumeration(long long universe_id, const std::string& datastore_name);
