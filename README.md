@@ -28,8 +28,9 @@ Send messages that your game servers can consume using [MessagingService](https:
 
 ### Advanced Datastore Operations
 
-* Bulk Download
+* [Bulk Download](./doc/bulk_download.md)
   * Dump all of the entries in one or more datastores to a sqlite database. This data can later be uploaded through the 'Bulk Upload' operation.
+  * Large downloads can be stopped and resumed later.
 * Bulk Delete
   * Delete all of the entries in one or more datastores.
 * Bulk Undelete
