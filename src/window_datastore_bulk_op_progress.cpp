@@ -469,6 +469,15 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 {
 	pending_entries = std::move(this->db_wrapper->get_pending_entries(universe_id));
 
+	if (const std::optional<std::string> opt_key_prefix = this->db_wrapper->get_enumeration_search_key_prefix(universe_id))
+	{
+		this->find_key_prefix = QString::fromStdString(*opt_key_prefix);
+	}
+	if (const std::optional<std::string> opt_scope = this->db_wrapper->get_enumeration_search_scope(universe_id))
+	{
+		this->find_scope = QString::fromStdString(*opt_scope);
+	}
+
 	datastore_names.clear();
 	if (const std::optional<std::string> opt_name = this->db_wrapper->get_enumarating_datastore(universe_id))
 	{

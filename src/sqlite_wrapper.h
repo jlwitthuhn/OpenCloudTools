@@ -35,6 +35,9 @@ public:
 	std::optional<std::string> get_enumarating_cursor(long long universe_id);
 	std::optional<std::string> get_enumarating_datastore(long long universe_id);
 
+	std::optional<std::string> get_enumeration_search_key_prefix(long long universe_id);
+	std::optional<std::string> get_enumeration_search_scope(long long universe_id);
+
 	std::vector<std::string> get_pending_datastores(long long universe_id);
 	std::vector<StandardDatastoreEntry> get_pending_entries(long long universe_id);
 

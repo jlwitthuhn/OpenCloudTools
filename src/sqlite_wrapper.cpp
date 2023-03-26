@@ -590,7 +590,7 @@ void SqliteDatastoreWrapper::write_enumeration_metadata(const long long universe
 	{
 		{
 			sqlite3_stmt* stmt = nullptr;
-			const std::string sql = "INSERT INTO datastore_enumerate_meta (universe_id, key, value) VALUES (?010, 'scope', ?020);";
+			const std::string sql = "INSERT INTO datastore_enumerate_meta (universe_id, key, value) VALUES (?010, 'search_scope', ?020);";
 			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 			if (stmt != nullptr)
 			{
@@ -605,7 +605,7 @@ void SqliteDatastoreWrapper::write_enumeration_metadata(const long long universe
 
 		{
 			sqlite3_stmt* stmt = nullptr;
-			const std::string sql = "INSERT INTO datastore_enumerate_meta (universe_id, key, value) VALUES (?010, 'key_prefix', ?020);";
+			const std::string sql = "INSERT INTO datastore_enumerate_meta (universe_id, key, value) VALUES (?010, 'search_key_prefix', ?020);";
 			sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 			if (stmt != nullptr)
 			{
@@ -721,6 +721,58 @@ std::optional<std::string> SqliteDatastoreWrapper::get_enumarating_datastore(con
 	{
 		sqlite3_stmt* stmt = nullptr;
 		const std::string sql = "SELECT datastore_name FROM datastore_enumerate WHERE universe_id = ?010 AND next_cursor IS NOT NULL;";
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+		if (stmt != nullptr)
+		{
+			sqlite3_bind_int64(stmt, 10, universe_id);
+
+			const int sqlite_result = sqlite3_step(stmt);
+			if (sqlite_result == SQLITE_ROW)
+			{
+				result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			}
+
+			sqlite3_finalize(stmt);
+		}
+	}
+
+	return result;
+}
+
+std::optional<std::string> SqliteDatastoreWrapper::get_enumeration_search_key_prefix(const long long universe_id)
+{
+	std::optional<std::string> result;
+
+	if (db_handle != nullptr)
+	{
+		sqlite3_stmt* stmt = nullptr;
+		const std::string sql = "SELECT value FROM datastore_enumerate_meta WHERE universe_id = ?010 AND key = 'search_key_prefix';";
+		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
+		if (stmt != nullptr)
+		{
+			sqlite3_bind_int64(stmt, 10, universe_id);
+
+			const int sqlite_result = sqlite3_step(stmt);
+			if (sqlite_result == SQLITE_ROW)
+			{
+				result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			}
+
+			sqlite3_finalize(stmt);
+		}
+	}
+
+	return result;
+}
+
+std::optional<std::string> SqliteDatastoreWrapper::get_enumeration_search_scope(const long long universe_id)
+{
+	std::optional<std::string> result;
+
+	if (db_handle != nullptr)
+	{
+		sqlite3_stmt* stmt = nullptr;
+		const std::string sql = "SELECT value FROM datastore_enumerate_meta WHERE universe_id = ?010 AND key = 'search_scope';";
 		sqlite3_prepare_v2(db_handle, sql.c_str(), static_cast<int>(sql.size()), &stmt, nullptr);
 		if (stmt != nullptr)
 		{
