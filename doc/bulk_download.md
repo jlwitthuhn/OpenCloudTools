@@ -64,7 +64,7 @@ CREATE TABLE datastore_enumerate (
 )
 ```
 
-### datastore_enumerate
+### datastore_enumerate_meta
 
 This table stores search parameters used in the enumeration step, specifically the scope and key prefix.
 
