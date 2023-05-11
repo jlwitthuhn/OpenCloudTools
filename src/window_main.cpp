@@ -35,7 +35,8 @@
 #include "build_info.h"
 #include "http_wrangler.h"
 #include "panel_bulk_data.h"
-#include "panel_datastore_explore.h"
+#include "panel_datastore_standard.h"
+#include "panel_datastore_ordered.h"
 #include "panel_http_log.h"
 #include "panel_messaging_service.h"
 #include "panel_universe_prefs.h"
@@ -202,8 +203,11 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 		panel_tabs = new QTabWidget{ central_widget };
 		{
-			explore_datastore_panel = new ExploreDatastorePanel{ panel_tabs, api_key };
-			panel_tabs->addTab(explore_datastore_panel, "Datastores");
+			standard_datastore_panel = new StandardDatastorePanel{ panel_tabs, api_key };
+			panel_tabs->addTab(standard_datastore_panel, "Datastore");
+
+			ordered_datastore_panel = new OrderedDatastorePanel{ panel_tabs, api_key };
+			panel_tabs->addTab(ordered_datastore_panel, "Ordered Datastore");
 
 			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key };
 			panel_tabs->addTab(bulk_data_panel, "Bulk Data");
@@ -246,7 +250,7 @@ void MyMainWindow::selected_universe_combo_changed()
 	}
 	edit_universe_button->setEnabled(select_universe_combo->count() > 0);
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
-	explore_datastore_panel->selected_universe_changed();
+	standard_datastore_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
 	messaging_service_panel->selected_universe_changed();
 	universe_preferences_panel->selected_universe_changed();

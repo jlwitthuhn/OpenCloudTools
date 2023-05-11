@@ -46,8 +46,12 @@ set(OPENCLOUDTOOLS_SRC
 	./src/http_wrangler.h
 	./src/panel_bulk_data.cpp
 	./src/panel_bulk_data.h
-	./src/panel_datastore_explore.cpp
-	./src/panel_datastore_explore.h
+	./src/panel_datastore_base.cpp
+	./src/panel_datastore_base.h
+	./src/panel_datastore_ordered.cpp
+	./src/panel_datastore_ordered.h
+	./src/panel_datastore_standard.cpp
+	./src/panel_datastore_standard.h
 	./src/panel_http_log.cpp
 	./src/panel_http_log.h
 	./src/panel_messaging_service.cpp

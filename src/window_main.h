@@ -17,9 +17,10 @@ class QPushButton;
 class QTabWidget;
 
 class BulkDataPanel;
-class ExploreDatastorePanel;
+class StandardDatastorePanel;
 class HttpLogPanel;
 class MessagingServicePanel;
+class OrderedDatastorePanel;
 class UniversePreferencesPanel;
 
 class MyMainWindow : public QMainWindow
@@ -58,7 +59,8 @@ private:
 
 	QTabWidget* panel_tabs = nullptr;
 
-	ExploreDatastorePanel* explore_datastore_panel = nullptr;
+	StandardDatastorePanel* standard_datastore_panel = nullptr;
+	OrderedDatastorePanel* ordered_datastore_panel = nullptr;
 	BulkDataPanel* bulk_data_panel = nullptr;
 	HttpLogPanel* http_log_panel = nullptr;
 	MessagingServicePanel* messaging_service_panel = nullptr;

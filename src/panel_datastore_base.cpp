@@ -1,4 +1,4 @@
-#include "panel_datastore_explore.h"
+#include "panel_datastore_base.h"
 
 #include <cstddef>
 
@@ -49,12 +49,12 @@
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 
-ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api_key) :
+BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) :
 	QWidget{ parent },
 	api_key{ api_key }
 {
-	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &ExploreDatastorePanel::refresh_datastore_list);
-	connect(UserProfile::get().get(), &UserProfile::show_datastore_filter_changed, this, &ExploreDatastorePanel::handle_show_datastore_filter_changed);
+	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &BaseDatastorePanel::refresh_datastore_list);
+	connect(UserProfile::get().get(), &UserProfile::show_datastore_filter_changed, this, &BaseDatastorePanel::handle_show_datastore_filter_changed);
 
 	QWidget* left_bar_widget = new QWidget{ this };
 	{
@@ -66,18 +66,18 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 		{
 			select_datastore_list = new QListWidget{ select_datastore_widget };
 			select_datastore_list->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-			connect(select_datastore_list, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_datastore_list);
-			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_changed);
+			connect(select_datastore_list, &QListWidget::customContextMenuRequested, this, &BaseDatastorePanel::pressed_right_click_datastore_list);
+			connect(select_datastore_list, &QListWidget::itemSelectionChanged, this, &BaseDatastorePanel::handle_selected_datastore_changed);
 
 			select_datastore_name_filter_edit = new QLineEdit{ select_datastore_widget };
 			select_datastore_name_filter_edit->setToolTip("Only datastore names matching this text box will be displayed.");
-			connect(select_datastore_name_filter_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::refresh_datastore_list);
+			connect(select_datastore_name_filter_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::refresh_datastore_list);
 
 			select_datastore_show_hidden_check = new QCheckBox{ "Show hidden", select_datastore_widget};
-			connect(select_datastore_show_hidden_check, &QCheckBox::stateChanged, this, &ExploreDatastorePanel::refresh_datastore_list);
+			connect(select_datastore_show_hidden_check, &QCheckBox::stateChanged, this, &BaseDatastorePanel::refresh_datastore_list);
 
 			select_datastore_fetch_button = new QPushButton{ "Fetch datastores", select_datastore_widget };
-			connect(select_datastore_fetch_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_fetch_datastores);
+			connect(select_datastore_fetch_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_fetch_datastores);
 
 			QVBoxLayout* select_datastore_layout = new QVBoxLayout{ select_datastore_widget };
 			select_datastore_layout->addWidget(select_datastore_list);
@@ -106,17 +106,17 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 					QLabel* search_datastore_name_label = new QLabel{ "Datastore:", right_top_widget };
 
 					search_datastore_name_edit = new QLineEdit{ right_top_widget };
-					connect(search_datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
+					connect(search_datastore_name_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_search_text_changed);
 
 					QLabel* search_datastore_scope_label = new QLabel{ "Scope:", right_top_widget };
 
 					search_datastore_scope_edit = new QLineEdit{ right_top_widget };
-					connect(search_datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
+					connect(search_datastore_scope_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_search_text_changed);
 
 					QLabel* search_datastore_key_name_label = new QLabel{ "Key prefix:", right_top_widget };
 
 					search_datastore_key_name_edit = new QLineEdit{ right_top_widget };
-					connect(search_datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_search_text_changed);
+					connect(search_datastore_key_name_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_search_text_changed);
 
 					QHBoxLayout* right_top_layout = new QHBoxLayout{ right_top_widget };
 					right_top_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -131,10 +131,10 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 				QWidget* right_top_button_widget = new QWidget{ search_panel };
 				{
 					find_all_button = new QPushButton{ "Find all", right_top_button_widget };
-					connect(find_all_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_find_all);
+					connect(find_all_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_find_all);
 
 					find_prefix_button = new QPushButton{ "Find prefix match", right_top_button_widget };
-					connect(find_prefix_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_find_prefix);
+					connect(find_prefix_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_find_prefix);
 
 					QLabel* find_limit_label = new QLabel{ "Limit:", right_top_button_widget };
 					find_limit_label->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
@@ -154,16 +154,16 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 				datastore_entry_tree = new QTreeView{ search_panel };
 				datastore_entry_tree->setSelectionMode(QAbstractItemView::ExtendedSelection);
 				datastore_entry_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-				connect(datastore_entry_tree, &QListWidget::customContextMenuRequested, this, &ExploreDatastorePanel::pressed_right_click_entry_list);
-				connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &ExploreDatastorePanel::handle_datastore_entry_double_clicked);
+				connect(datastore_entry_tree, &QListWidget::customContextMenuRequested, this, &BaseDatastorePanel::pressed_right_click_entry_list);
+				connect(datastore_entry_tree, &QTreeView::doubleClicked, this, &BaseDatastorePanel::handle_datastore_entry_double_clicked);
 
 				QWidget* right_read_buttons = new QWidget{ search_panel };
 				{
 					view_entry_button = new QPushButton{ "View entry...", right_read_buttons };
-					connect(view_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_view_entry);
+					connect(view_entry_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_view_entry);
 
 					view_versions_button = new QPushButton{ "View versions...", right_read_buttons };
-					connect(view_versions_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_view_versions);
+					connect(view_versions_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_view_versions);
 
 					QHBoxLayout* right_read_layout = new QHBoxLayout{ right_read_buttons };
 					right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -178,10 +178,10 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 				QWidget* right_edit_buttons = new QWidget{ search_panel };
 				{
 					edit_entry_button = new QPushButton{ "Edit entry...", right_edit_buttons };
-					connect(edit_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_edit_entry);
+					connect(edit_entry_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_edit_entry);
 
 					delete_entry_button = new QPushButton{ "Delete entry", right_edit_buttons };
-					connect(delete_entry_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_delete_entry);
+					connect(delete_entry_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_delete_entry);
 
 					QHBoxLayout* right_edit_layout = new QHBoxLayout{ right_edit_buttons };
 					right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -203,13 +203,13 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 				QWidget* add_entry_form = new QWidget{ add_entry_panel };
 				{
 					add_datastore_name_edit = new QLineEdit{ add_entry_form };
-					connect(add_datastore_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+					connect(add_datastore_name_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_add_entry_text_changed);
 
 					add_datastore_scope_edit = new QLineEdit{ add_entry_form };
-					connect(add_datastore_scope_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+					connect(add_datastore_scope_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_add_entry_text_changed);
 
 					add_datastore_key_name_edit = new QLineEdit{ add_entry_form };
-					connect(add_datastore_key_name_edit, &QLineEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+					connect(add_datastore_key_name_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_add_entry_text_changed);
 
 					add_entry_type_combo = new QComboBox{ add_entry_form };
 					add_entry_type_combo->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
@@ -222,7 +222,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 					{
 						add_entry_data_edit = new QTextEdit{ data_tab_widget };
 						add_entry_data_edit->setAcceptRichText(false);
-						connect(add_entry_data_edit, &QTextEdit::textChanged, this, &ExploreDatastorePanel::handle_add_entry_text_changed);
+						connect(add_entry_data_edit, &QTextEdit::textChanged, this, &BaseDatastorePanel::handle_add_entry_text_changed);
 
 						add_entry_userids_edit = new QTextEdit{ data_tab_widget };
 						add_entry_userids_edit->setAcceptRichText(false);
@@ -237,7 +237,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 
 					add_entry_submit_button = new QPushButton{ "Submit", add_entry_form };
 					add_entry_submit_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
-					connect(add_entry_submit_button, &QPushButton::clicked, this, &ExploreDatastorePanel::pressed_submit_new_entry);
+					connect(add_entry_submit_button, &QPushButton::clicked, this, &BaseDatastorePanel::pressed_submit_new_entry);
 
 					QFormLayout* add_entry_form_layout = new QFormLayout{ add_entry_form };
 					add_entry_form_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
@@ -278,7 +278,7 @@ ExploreDatastorePanel::ExploreDatastorePanel(QWidget* parent, const QString& api
 	handle_show_datastore_filter_changed();
 }
 
-void ExploreDatastorePanel::selected_universe_changed()
+void BaseDatastorePanel::selected_universe_changed()
 {
 	select_datastore_list->clear();
 	select_datastore_fetch_button->setEnabled(UserProfile::get_selected_universe() != nullptr);
@@ -287,7 +287,7 @@ void ExploreDatastorePanel::selected_universe_changed()
 	set_datastore_entry_model(nullptr);
 }
 
-std::vector<StandardDatastoreEntry> ExploreDatastorePanel::get_selected_entries() const
+std::vector<StandardDatastoreEntry> BaseDatastorePanel::get_selected_entries() const
 {
 	if ( DatastoreEntryModel* const entry_model = dynamic_cast<DatastoreEntryModel*>( datastore_entry_tree->model() ) )
 	{
@@ -315,7 +315,7 @@ std::vector<StandardDatastoreEntry> ExploreDatastorePanel::get_selected_entries(
 	return std::vector<StandardDatastoreEntry>{};
 }
 
-QModelIndex ExploreDatastorePanel::get_selected_entry_single_index() const
+QModelIndex BaseDatastorePanel::get_selected_entry_single_index() const
 {
 	if (const QItemSelectionModel* select_model = datastore_entry_tree->selectionModel())
 	{
@@ -328,7 +328,7 @@ QModelIndex ExploreDatastorePanel::get_selected_entry_single_index() const
 	return QModelIndex{};
 }
 
-void ExploreDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* const entry_model)
+void BaseDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* const entry_model)
 {
 	if (entry_model)
 	{
@@ -339,11 +339,11 @@ void ExploreDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* const
 		datastore_entry_tree->setModel(new DatastoreEntryModel{ datastore_entry_tree, std::vector<StandardDatastoreEntry>{} });
 	}
 	datastore_entry_tree->setColumnWidth(0, 280);
-	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ExploreDatastorePanel::handle_selected_datastore_entry_changed);
+	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &BaseDatastorePanel::handle_selected_datastore_entry_changed);
 	handle_selected_datastore_entry_changed();
 }
 
-void ExploreDatastorePanel::view_entry(const QModelIndex& index)
+void BaseDatastorePanel::view_entry(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
@@ -375,7 +375,7 @@ void ExploreDatastorePanel::view_entry(const QModelIndex& index)
 	}
 }
 
-void ExploreDatastorePanel::view_versions(const QModelIndex& index)
+void BaseDatastorePanel::view_versions(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
@@ -399,7 +399,7 @@ void ExploreDatastorePanel::view_versions(const QModelIndex& index)
 	}
 }
 
-void ExploreDatastorePanel::edit_entry(const QModelIndex& index)
+void BaseDatastorePanel::edit_entry(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
@@ -424,7 +424,7 @@ void ExploreDatastorePanel::edit_entry(const QModelIndex& index)
 	}
 }
 
-void ExploreDatastorePanel::delete_entry(const QModelIndex& index)
+void BaseDatastorePanel::delete_entry(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
@@ -449,7 +449,7 @@ void ExploreDatastorePanel::delete_entry(const QModelIndex& index)
 }
 
 
-void ExploreDatastorePanel::delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list)
+void BaseDatastorePanel::delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list)
 {
 	if (entry_list.size() > 1)
 	{
@@ -474,19 +474,19 @@ void ExploreDatastorePanel::delete_entry_list(const std::vector<StandardDatastor
 	}
 }
 
-void ExploreDatastorePanel::handle_add_entry_text_changed()
+void BaseDatastorePanel::handle_add_entry_text_changed()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
 	const bool submit_enabled = selected_universe && add_datastore_name_edit->text().size() > 0 && add_datastore_key_name_edit->text().size() > 0 && add_entry_data_edit->toPlainText().size() > 0;
 	add_entry_submit_button->setEnabled(submit_enabled);
 }
 
-void ExploreDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
+void BaseDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
 {
 	view_entry(index);
 }
 
-void ExploreDatastorePanel::handle_search_text_changed()
+void BaseDatastorePanel::handle_search_text_changed()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
 	const bool find_all_enabled = search_datastore_name_edit->text().size() > 0 && selected_universe;
@@ -495,7 +495,7 @@ void ExploreDatastorePanel::handle_search_text_changed()
 	find_prefix_button->setEnabled(find_prefix_enabled);
 }
 
-void ExploreDatastorePanel::handle_selected_datastore_changed()
+void BaseDatastorePanel::handle_selected_datastore_changed()
 {
 	QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
 	if (selected.size() == 1)
@@ -505,7 +505,7 @@ void ExploreDatastorePanel::handle_selected_datastore_changed()
 	}
 }
 
-void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
+void BaseDatastorePanel::handle_selected_datastore_entry_changed()
 {
 	size_t count = 0;
 	bool single_selected = false;
@@ -530,7 +530,7 @@ void ExploreDatastorePanel::handle_selected_datastore_entry_changed()
 	}
 }
 
-void ExploreDatastorePanel::handle_show_datastore_filter_changed()
+void BaseDatastorePanel::handle_show_datastore_filter_changed()
 {
 	const bool active = UserProfile::get()->get_show_datastore_name_filter();
 	if (!active)
@@ -540,7 +540,7 @@ void ExploreDatastorePanel::handle_show_datastore_filter_changed()
 	select_datastore_name_filter_edit->setVisible(active);
 }
 
-void ExploreDatastorePanel::pressed_delete_entry()
+void BaseDatastorePanel::pressed_delete_entry()
 {
 	QModelIndex single_entry = get_selected_entry_single_index();
 	if (single_entry.isValid())
@@ -555,12 +555,12 @@ void ExploreDatastorePanel::pressed_delete_entry()
 	}
 }
 
-void ExploreDatastorePanel::pressed_edit_entry()
+void BaseDatastorePanel::pressed_edit_entry()
 {
 	edit_entry(get_selected_entry_single_index());
 }
 
-void ExploreDatastorePanel::pressed_fetch_datastores()
+void BaseDatastorePanel::pressed_fetch_datastores()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
@@ -586,7 +586,7 @@ void ExploreDatastorePanel::pressed_fetch_datastores()
 	}
 }
 
-void ExploreDatastorePanel::pressed_find_all()
+void BaseDatastorePanel::pressed_find_all()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
@@ -613,7 +613,7 @@ void ExploreDatastorePanel::pressed_find_all()
 	}
 }
 
-void ExploreDatastorePanel::pressed_find_prefix()
+void BaseDatastorePanel::pressed_find_prefix()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
@@ -646,7 +646,7 @@ void ExploreDatastorePanel::pressed_find_prefix()
 	}
 }
 
-void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos)
+void BaseDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos)
 {
 	const QModelIndex the_index = select_datastore_list->indexAt(pos);
 	if (the_index.isValid())
@@ -700,7 +700,7 @@ void ExploreDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos
 	}
 }
 
-void ExploreDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
+void BaseDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
 {
 	const QModelIndex the_index = datastore_entry_tree->indexAt(pos);
 	if (the_index.isValid())
@@ -761,7 +761,7 @@ static void show_validation_error(QWidget* const parent, const QString& message)
 	message_box->exec();
 }
 
-void ExploreDatastorePanel::pressed_submit_new_entry()
+void BaseDatastorePanel::pressed_submit_new_entry()
 {
 	const QString data_raw = add_entry_data_edit->toPlainText();
 	const QString userids_raw = add_entry_userids_edit->toPlainText().trimmed();
@@ -864,17 +864,17 @@ void ExploreDatastorePanel::pressed_submit_new_entry()
 	}
 }
 
-void ExploreDatastorePanel::pressed_view_entry()
+void BaseDatastorePanel::pressed_view_entry()
 {
 	view_entry(get_selected_entry_single_index());
 }
 
-void ExploreDatastorePanel::pressed_view_versions()
+void BaseDatastorePanel::pressed_view_versions()
 {
 	view_versions(get_selected_entry_single_index());
 }
 
-void ExploreDatastorePanel::refresh_datastore_list()
+void BaseDatastorePanel::refresh_datastore_list()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)

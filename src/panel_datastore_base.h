@@ -19,15 +19,15 @@ class QTreeView;
 class DatastoreEntryModel;
 class StandardDatastoreEntry;
 
-class ExploreDatastorePanel : public QWidget
+class BaseDatastorePanel : public QWidget
 {
 	Q_OBJECT
 public:
-	ExploreDatastorePanel(QWidget* parent, const QString& api_key);
+	BaseDatastorePanel(QWidget* parent, const QString& api_key);
 
 	void selected_universe_changed();
 
-private:
+protected:
 	std::vector<StandardDatastoreEntry> get_selected_entries() const;
 	QModelIndex get_selected_entry_single_index() const;
 
