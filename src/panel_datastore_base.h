@@ -2,22 +2,17 @@
 
 #include <vector>
 
-#include <QModelIndex>
 #include <QObject>
 #include <QString>
 #include <QWidget>
 
-class QCheckBox;
-class QComboBox;
+class QGroupBox;
 class QLineEdit;
 class QListWidget;
+class QModelIndex;
 class QPoint;
-class QPushButton;
-class QTextEdit;
+class QTabWidget;
 class QTreeView;
-
-class DatastoreEntryModel;
-class StandardDatastoreEntry;
 
 class BaseDatastorePanel : public QWidget
 {
@@ -25,76 +20,44 @@ class BaseDatastorePanel : public QWidget
 public:
 	BaseDatastorePanel(QWidget* parent, const QString& api_key);
 
-	void selected_universe_changed();
+	virtual void selected_universe_changed();
 
 protected:
-	std::vector<StandardDatastoreEntry> get_selected_entries() const;
-	QModelIndex get_selected_entry_single_index() const;
+	QModelIndex get_selected_single_index() const;
 
-	void set_datastore_entry_model(DatastoreEntryModel* entry_model);
+	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) {}
+	virtual void handle_selected_datastore_changed();
+	virtual void handle_selected_datastore_entry_changed() {}
+	virtual void handle_search_text_changed() {}
+	virtual void handle_show_datastore_filter_changed();
 
-	void view_entry(const QModelIndex& index);
-	void view_versions(const QModelIndex& index);
-	void edit_entry(const QModelIndex& index);
-	void delete_entry(const QModelIndex& index);
-	void delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list);
+	virtual void pressed_right_click_datastore_list(const QPoint& pos) {}
+	virtual void pressed_right_click_entry_list(const QPoint& pos) {}
 
-	void handle_add_entry_text_changed();
-	void handle_datastore_entry_double_clicked(const QModelIndex& index);
-	void handle_search_text_changed();
-	void handle_selected_datastore_changed();
-	void handle_selected_datastore_entry_changed();
-	void handle_show_datastore_filter_changed();
-
-	void pressed_delete_entry();
-	void pressed_edit_entry();
-	void pressed_fetch_datastores();
-	void pressed_find_all();
-	void pressed_find_prefix();
-	void pressed_right_click_datastore_list(const QPoint& pos);
-	void pressed_right_click_entry_list(const QPoint& pos);
-	void pressed_submit_new_entry();
-	void pressed_view_entry();
-	void pressed_view_versions();
-
-	void refresh_datastore_list();
+	virtual void clear_model() = 0;
+	virtual void refresh_datastore_list() = 0;
 
 	QString api_key;
 
 	// Left panel
+	QWidget* panel_left = nullptr;
+	QGroupBox* select_datastore_group = nullptr;
 	QListWidget* select_datastore_list = nullptr;
 	QLineEdit* select_datastore_name_filter_edit = nullptr;
-	QPushButton* select_datastore_fetch_button = nullptr;
-	QCheckBox* select_datastore_show_hidden_check = nullptr;
+
+	// Main panel
+	QTabWidget* main_tab_widget = nullptr;
 
 	// Search panel
+	QWidget* search_panel = nullptr;
+
+	QWidget* search_params_widget = nullptr;
 	QLineEdit* search_datastore_name_edit = nullptr;
 	QLineEdit* search_datastore_scope_edit = nullptr;
-	QLineEdit* search_datastore_key_name_edit = nullptr;
 
-	QPushButton* find_all_button = nullptr;
-	QPushButton* find_prefix_button = nullptr;
+	QWidget* search_submit_widget = nullptr;
 
 	QLineEdit* find_limit_edit = nullptr;
 
 	QTreeView* datastore_entry_tree = nullptr;
-
-	QPushButton* view_entry_button = nullptr;
-	QPushButton* view_versions_button = nullptr;
-
-	QPushButton* edit_entry_button = nullptr;
-	QPushButton* delete_entry_button = nullptr;
-
-	// Add panel
-	QLineEdit* add_datastore_name_edit = nullptr;
-	QLineEdit* add_datastore_scope_edit = nullptr;
-	QLineEdit* add_datastore_key_name_edit = nullptr;
-
-	QComboBox* add_entry_type_combo = nullptr;
-
-	QTextEdit* add_entry_data_edit = nullptr;
-	QTextEdit* add_entry_userids_edit = nullptr;
-	QTextEdit* add_entry_attributes_edit = nullptr;
-
-	QPushButton* add_entry_submit_button = nullptr;
 };
