@@ -186,7 +186,7 @@ void StandardDatastorePanel::selected_universe_changed()
 	BaseDatastorePanel::selected_universe_changed();
 }
 
-void StandardDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* const entry_model)
+void StandardDatastorePanel::set_datastore_entry_model(StandardDatastoreEntryQTableModel* const entry_model)
 {
 	if (entry_model)
 	{
@@ -194,7 +194,7 @@ void StandardDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* cons
 	}
 	else
 	{
-		datastore_entry_tree->setModel(new DatastoreEntryModel{ datastore_entry_tree, std::vector<StandardDatastoreEntry>{} });
+		datastore_entry_tree->setModel(new StandardDatastoreEntryQTableModel{ datastore_entry_tree, std::vector<StandardDatastoreEntry>{} });
 	}
 	datastore_entry_tree->setColumnWidth(0, 280);
 	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &StandardDatastorePanel::handle_selected_datastore_entry_changed);
@@ -203,7 +203,7 @@ void StandardDatastorePanel::set_datastore_entry_model(DatastoreEntryModel* cons
 
 std::vector<StandardDatastoreEntry> StandardDatastorePanel::get_selected_entries() const
 {
-	if (DatastoreEntryModel* const entry_model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+	if (StandardDatastoreEntryQTableModel* const entry_model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 	{
 		if (QItemSelectionModel* const select_model = datastore_entry_tree->selectionModel())
 		{
@@ -233,7 +233,7 @@ void StandardDatastorePanel::view_entry(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
@@ -265,7 +265,7 @@ void StandardDatastorePanel::view_versions(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
@@ -289,7 +289,7 @@ void StandardDatastorePanel::edit_entry(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
@@ -314,7 +314,7 @@ void StandardDatastorePanel::delete_entry(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
-		if (DatastoreEntryModel* model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model()))
+		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
 			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
@@ -477,7 +477,7 @@ void StandardDatastorePanel::pressed_right_click_entry_list(const QPoint& pos)
 	const QModelIndex the_index = datastore_entry_tree->indexAt(pos);
 	if (the_index.isValid())
 	{
-		DatastoreEntryModel* const the_model = dynamic_cast<DatastoreEntryModel*>(datastore_entry_tree->model());
+		StandardDatastoreEntryQTableModel* const the_model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model());
 		if (auto the_entry = the_model->get_entry(the_index.row()))
 		{
 			QString the_key_name = the_entry->get_key();
@@ -591,7 +591,7 @@ void StandardDatastorePanel::pressed_find_all()
 			OperationInProgressDialog diag{ this, req };
 			diag.exec();
 
-			DatastoreEntryModel* datastore_model = new DatastoreEntryModel{ datastore_entry_tree, req->get_datastore_entries() };
+			StandardDatastoreEntryQTableModel* datastore_model = new StandardDatastoreEntryQTableModel{ datastore_entry_tree, req->get_datastore_entries() };
 			set_datastore_entry_model(datastore_model);
 		}
 	}
@@ -624,7 +624,7 @@ void StandardDatastorePanel::pressed_find_prefix()
 			OperationInProgressDialog diag{ this, req };
 			diag.exec();
 
-			DatastoreEntryModel* datastore_model = new DatastoreEntryModel{ datastore_entry_tree, req->get_datastore_entries() };
+			StandardDatastoreEntryQTableModel* datastore_model = new StandardDatastoreEntryQTableModel{ datastore_entry_tree, req->get_datastore_entries() };
 			set_datastore_entry_model(datastore_model);
 		}
 	}

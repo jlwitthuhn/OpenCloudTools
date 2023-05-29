@@ -5,7 +5,7 @@
 
 #include <QString>
 
-DatastoreEntryModel::DatastoreEntryModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries) : QAbstractTableModel{ parent } , entries { entries }
+StandardDatastoreEntryQTableModel::StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries) : QAbstractTableModel{ parent } , entries { entries }
 {
 	std::sort(this->entries.begin(), this->entries.end(), [](const StandardDatastoreEntry& a, const StandardDatastoreEntry& b) {
 		if (a.get_key() == b.get_key())
@@ -19,7 +19,7 @@ DatastoreEntryModel::DatastoreEntryModel(QObject* parent, const std::vector<Stan
 	});
 }
 
-std::optional<StandardDatastoreEntry> DatastoreEntryModel::get_entry(const size_t row_index) const
+std::optional<StandardDatastoreEntry> StandardDatastoreEntryQTableModel::get_entry(const size_t row_index) const
 {
 	if (row_index < entries.size())
 	{
@@ -31,7 +31,7 @@ std::optional<StandardDatastoreEntry> DatastoreEntryModel::get_entry(const size_
 	}
 }
 
-QVariant DatastoreEntryModel::data(const QModelIndex& index, const int role) const
+QVariant StandardDatastoreEntryQTableModel::data(const QModelIndex& index, const int role) const
 {
 	if (role == Qt::DisplayRole)
 	{
@@ -50,17 +50,17 @@ QVariant DatastoreEntryModel::data(const QModelIndex& index, const int role) con
 	return QVariant{};
 }
 
-int DatastoreEntryModel::columnCount(const QModelIndex&) const
+int StandardDatastoreEntryQTableModel::columnCount(const QModelIndex&) const
 {
 	return 2;
 }
 
-int DatastoreEntryModel::rowCount(const QModelIndex&) const
+int StandardDatastoreEntryQTableModel::rowCount(const QModelIndex&) const
 {
 	return static_cast<int>(entries.size());
 }
 
-QVariant DatastoreEntryModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant StandardDatastoreEntryQTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
 	{

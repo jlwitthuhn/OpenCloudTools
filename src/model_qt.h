@@ -13,11 +13,11 @@
 
 #include "api_response.h"
 
-class DatastoreEntryModel : public QAbstractTableModel
+class StandardDatastoreEntryQTableModel : public QAbstractTableModel
 {
 	Q_OBJECT
 public:
-	DatastoreEntryModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries);
+	StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries);
 
 	std::optional<StandardDatastoreEntry> get_entry(size_t row_index) const;
 

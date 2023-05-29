@@ -12,8 +12,8 @@ class QString;
 class QTextEdit;
 class QWidget;
 
-class DatastoreEntryModel;
 class StandardDatastoreEntry;
+class StandardDatastoreEntryQTableModel;
 
 class StandardDatastorePanel : public BaseDatastorePanel
 {
@@ -24,7 +24,7 @@ public:
 	virtual void selected_universe_changed() override;
 
 private:
-	void set_datastore_entry_model(DatastoreEntryModel* entry_model);
+	void set_datastore_entry_model(StandardDatastoreEntryQTableModel* entry_model);
 
 	std::vector<StandardDatastoreEntry> get_selected_entries() const;
 
