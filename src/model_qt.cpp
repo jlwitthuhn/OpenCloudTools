@@ -1,4 +1,4 @@
-#include "datastore_model.h"
+#include "model_qt.h"
 
 #include <algorithm>
 #include <memory>

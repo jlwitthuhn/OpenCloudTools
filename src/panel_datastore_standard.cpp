@@ -17,9 +17,9 @@
 #include <QTreeView>
 
 #include "data_request.h"
-#include "datastore_model.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "model_qt.h"
 #include "profile.h"
 #include "util_enum.h"
 #include "util_json.h"

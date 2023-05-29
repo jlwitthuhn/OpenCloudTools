@@ -34,8 +34,6 @@ set(OPENCLOUDTOOLS_SRC
 	./src/build_info.h
 	./src/data_request.cpp
 	./src/data_request.h
-	./src/datastore_model.cpp
-	./src/datastore_model.h
 	./src/diag_confirm_change.cpp
 	./src/diag_confirm_change.h
 	./src/diag_operation_in_progress.cpp
@@ -44,6 +42,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/http_req_builder.h
 	./src/http_wrangler.cpp
 	./src/http_wrangler.h
+	./src/model_qt.cpp
+	./src/model_qt.h
 	./src/panel_bulk_data.cpp
 	./src/panel_bulk_data.h
 	./src/panel_datastore_base.cpp
