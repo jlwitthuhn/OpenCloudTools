@@ -76,14 +76,14 @@ QVariant StandardDatastoreEntryQTableModel::headerData(int section, Qt::Orientat
 	return QVariant{};
 }
 
-DatastoreEntryVersionModel::DatastoreEntryVersionModel(QObject* parent, const std::vector<StandardDatastoreEntryVersion>& versions) : QAbstractTableModel{ parent }, versions{ versions }
+StandardDatastoreEntryVersionQTableModel::StandardDatastoreEntryVersionQTableModel(QObject* parent, const std::vector<StandardDatastoreEntryVersion>& versions) : QAbstractTableModel{ parent }, versions{ versions }
 {
 	std::sort(this->versions.begin(), this->versions.end(), [](const StandardDatastoreEntryVersion& a, const StandardDatastoreEntryVersion& b) {
 		return b.get_version() < a.get_version();
 	});
 }
 
-std::optional<StandardDatastoreEntryVersion> DatastoreEntryVersionModel::get_version(const size_t row_index) const
+std::optional<StandardDatastoreEntryVersion> StandardDatastoreEntryVersionQTableModel::get_version(const size_t row_index) const
 {
 	if (row_index < versions.size())
 	{
@@ -95,7 +95,7 @@ std::optional<StandardDatastoreEntryVersion> DatastoreEntryVersionModel::get_ver
 	}
 }
 
-QVariant DatastoreEntryVersionModel::data(const QModelIndex& index, const int role) const
+QVariant StandardDatastoreEntryVersionQTableModel::data(const QModelIndex& index, const int role) const
 {
 	if (role == Qt::DisplayRole)
 	{
@@ -122,17 +122,17 @@ QVariant DatastoreEntryVersionModel::data(const QModelIndex& index, const int ro
 	return QVariant{};
 }
 
-int DatastoreEntryVersionModel::columnCount(const QModelIndex&) const
+int StandardDatastoreEntryVersionQTableModel::columnCount(const QModelIndex&) const
 {
 	return 4;
 }
 
-int DatastoreEntryVersionModel::rowCount(const QModelIndex&) const
+int StandardDatastoreEntryVersionQTableModel::rowCount(const QModelIndex&) const
 {
 	return static_cast<int>(versions.size());
 }
 
-QVariant DatastoreEntryVersionModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant StandardDatastoreEntryVersionQTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
 	{

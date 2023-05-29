@@ -54,7 +54,7 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 		versions_tree = new QTreeView{ info_panel };
 		versions_tree->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 		connect(versions_tree, &QTreeView::customContextMenuRequested, this, &ViewDatastoreEntryVersionsWindow::pressed_right_click);
-		DatastoreEntryVersionModel* version_model = new DatastoreEntryVersionModel{ versions_tree, versions };
+		StandardDatastoreEntryVersionQTableModel* version_model = new StandardDatastoreEntryVersionQTableModel{ versions_tree, versions };
 		versions_tree->setModel(version_model);
 		for (int i = 0; i < version_model->columnCount(); i++)
 		{
@@ -102,7 +102,7 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 {
 	if (index.isValid())
 	{
-		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		if (StandardDatastoreEntryVersionQTableModel* version_model = dynamic_cast<StandardDatastoreEntryVersionQTableModel*>(versions_tree->model()))
 		{
 			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(index.row()))
 			{
@@ -146,7 +146,7 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
-		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		if (StandardDatastoreEntryVersionQTableModel* version_model = dynamic_cast<StandardDatastoreEntryVersionQTableModel*>(versions_tree->model()))
 		{
 			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(index.row()))
 			{
@@ -210,7 +210,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 	QModelIndex current_index = versions_tree->currentIndex();
 	if (current_index.isValid())
 	{
-		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		if (StandardDatastoreEntryVersionQTableModel* version_model = dynamic_cast<StandardDatastoreEntryVersionQTableModel*>(versions_tree->model()))
 		{
 			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(current_index.row()))
 			{
@@ -255,7 +255,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_right_click(const QPoint& pos)
 	const QModelIndex the_index = versions_tree->indexAt(pos);
 	if (the_index.isValid())
 	{
-		if (DatastoreEntryVersionModel* version_model = dynamic_cast<DatastoreEntryVersionModel*>(versions_tree->model()))
+		if (StandardDatastoreEntryVersionQTableModel* version_model = dynamic_cast<StandardDatastoreEntryVersionQTableModel*>(versions_tree->model()))
 		{
 			if (std::optional<StandardDatastoreEntryVersion> opt_version = version_model->get_version(the_index.row()))
 			{

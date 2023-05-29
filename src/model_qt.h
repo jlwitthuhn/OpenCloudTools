@@ -29,11 +29,11 @@ public:
 	std::vector<StandardDatastoreEntry> entries;
 };
 
-class DatastoreEntryVersionModel : public QAbstractTableModel
+class StandardDatastoreEntryVersionQTableModel : public QAbstractTableModel
 {
 	Q_OBJECT
 public:
-	DatastoreEntryVersionModel(QObject* parent, const std::vector<StandardDatastoreEntryVersion>& versions);
+	StandardDatastoreEntryVersionQTableModel(QObject* parent, const std::vector<StandardDatastoreEntryVersion>& versions);
 
 	std::optional<StandardDatastoreEntryVersion> get_version(size_t row_index) const;
 
