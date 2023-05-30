@@ -28,8 +28,6 @@ add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
 
 set(OPENCLOUDTOOLS_SRC
 	./src/main.cpp
-	./src/api_response.cpp
-	./src/api_response.h
 	./src/build_info.cpp
 	./src/build_info.h
 	./src/data_request.cpp
@@ -42,6 +40,10 @@ set(OPENCLOUDTOOLS_SRC
 	./src/http_req_builder.h
 	./src/http_wrangler.cpp
 	./src/http_wrangler.h
+	./src/model_api_opencloud.cpp
+	./src/model_api_opencloud.h
+	./src/model_common.cpp
+	./src/model_common.h
 	./src/model_qt.cpp
 	./src/model_qt.h
 	./src/panel_bulk_data.cpp

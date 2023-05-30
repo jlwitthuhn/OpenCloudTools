@@ -37,10 +37,10 @@
 #include <QVariant>
 #include <QVBoxLayout>
 
-#include "api_response.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "model_api_opencloud.h"
 #include "model_qt.h"
 #include "profile.h"
 #include "util_enum.h"

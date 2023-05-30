@@ -11,9 +11,9 @@
 #include <QTimer>
 #include <QVariant>
 
-#include "api_response.h"
 #include "http_req_builder.h"
 #include "http_wrangler.h"
+#include "model_api_opencloud.h"
 #include "roblox_time.h"
 #include "util_enum.h"
 

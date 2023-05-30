@@ -14,10 +14,10 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "api_response.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "model_api_opencloud.h"
 #include "profile.h"
 #include "sqlite_wrapper.h"
 #include "tooltip_text.h"

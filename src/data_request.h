@@ -13,7 +13,7 @@
 #include <QObject>
 #include <QString>
 
-#include "api_response.h"
+#include "model_api_opencloud.h"
 #include "util_enum.h"
 
 class QTimer;

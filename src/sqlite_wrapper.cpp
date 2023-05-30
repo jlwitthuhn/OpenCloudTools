@@ -7,7 +7,7 @@
 
 #include <sqlite3.h>
 
-#include "api_response.h"
+#include "model_api_opencloud.h"
 #include "util_enum.h"
 
 std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(const std::string& file_path)

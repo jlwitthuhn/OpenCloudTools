@@ -13,7 +13,7 @@
 #include <QString>
 #include <QWidget>
 
-#include "api_response.h"
+#include "model_api_opencloud.h"
 #include "sqlite_wrapper.h"
 
 class QLabel;

@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QVariant>
 
-#include "api_response.h"
+#include "model_api_opencloud.h"
 
 class StandardDatastoreEntryQTableModel : public QAbstractTableModel
 {
