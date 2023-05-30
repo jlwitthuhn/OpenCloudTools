@@ -581,6 +581,11 @@ void StandardDatastorePanel::pressed_find_all()
 			QString datastore_name = search_datastore_name_edit->text().trimmed();
 			QString scope = search_datastore_scope_edit->text().trimmed();
 
+			if (scope.size() == 0)
+			{
+				scope = "global";
+			}
+
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
 			const auto req = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, datastore_name, scope, "");
