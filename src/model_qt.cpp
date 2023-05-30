@@ -98,11 +98,11 @@ QVariant StandardDatastoreEntryQTableModel::data(const QModelIndex& index, const
 		{
 			if (index.column() == 0)
 			{
-				return entries.at(index.row()).get_key();
+				return entries.at(index.row()).get_scope();
 			}
 			else if (index.column() == 1)
 			{
-				return entries.at(index.row()).get_scope();
+				return entries.at(index.row()).get_key();
 			}
 		}
 	}
@@ -125,11 +125,11 @@ QVariant StandardDatastoreEntryQTableModel::headerData(int section, Qt::Orientat
 	{
 		if (section == 0)
 		{
-			return "Key";
+			return "Scope";
 		}
 		else if (section == 1)
 		{
-			return "Scope";
+			return "Key";
 		}
 	}
 	return QVariant{};

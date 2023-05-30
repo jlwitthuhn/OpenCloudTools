@@ -196,7 +196,7 @@ void StandardDatastorePanel::set_datastore_entry_model(StandardDatastoreEntryQTa
 	{
 		datastore_entry_tree->setModel(new StandardDatastoreEntryQTableModel{ datastore_entry_tree, std::vector<StandardDatastoreEntryName>{} });
 	}
-	datastore_entry_tree->setColumnWidth(0, 280);
+	datastore_entry_tree->setColumnWidth(0, 140);
 	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &StandardDatastorePanel::handle_selected_datastore_entry_changed);
 	handle_selected_datastore_entry_changed();
 }
