@@ -126,6 +126,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 				connect(add_datastore_name_edit, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_add_entry_text_changed);
 
 				add_datastore_scope_edit = new QLineEdit{ add_entry_form };
+				add_datastore_scope_edit->setPlaceholderText("global");
 				connect(add_datastore_scope_edit, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_add_entry_text_changed);
 
 				add_datastore_key_name_edit = new QLineEdit{ add_entry_form };
