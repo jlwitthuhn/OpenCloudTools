@@ -396,6 +396,11 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 		auto locked_entry_found_callback = entry_found_callback.lock();
 		for (const StandardDatastoreEntryName& this_entry : response->get_entries())
 		{
+			if (result_limit && datastore_entries.size() >= *result_limit)
+			{
+				// Limit has been hit
+				break;
+			}
 			datastore_entries.push_back(this_entry);
 			if (locked_entry_found_callback)
 			{
