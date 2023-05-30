@@ -5,9 +5,9 @@
 
 #include <QString>
 
-StandardDatastoreEntryQTableModel::StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries) : QAbstractTableModel{ parent } , entries { entries }
+StandardDatastoreEntryQTableModel::StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntryName>& entries) : QAbstractTableModel{ parent } , entries { entries }
 {
-	std::sort(this->entries.begin(), this->entries.end(), [](const StandardDatastoreEntry& a, const StandardDatastoreEntry& b) {
+	std::sort(this->entries.begin(), this->entries.end(), [](const StandardDatastoreEntryName& a, const StandardDatastoreEntryName& b) {
 		if (a.get_key() == b.get_key())
 		{
 			return a.get_scope() < b.get_scope();
@@ -19,7 +19,7 @@ StandardDatastoreEntryQTableModel::StandardDatastoreEntryQTableModel(QObject* pa
 	});
 }
 
-std::optional<StandardDatastoreEntry> StandardDatastoreEntryQTableModel::get_entry(const size_t row_index) const
+std::optional<StandardDatastoreEntryName> StandardDatastoreEntryQTableModel::get_entry(const size_t row_index) const
 {
 	if (row_index < entries.size())
 	{

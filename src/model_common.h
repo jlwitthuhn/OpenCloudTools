@@ -4,10 +4,10 @@
 
 #include "util_enum.h"
 
-class StandardDatastoreEntry
+class StandardDatastoreEntryName
 {
 public:
-	StandardDatastoreEntry(long long universe_id, const QString& datastore_name, const QString& key, const QString& scope) : universe_id{ universe_id }, datastore_name{ datastore_name }, key{ key }, scope{ scope } {}
+	StandardDatastoreEntryName(long long universe_id, const QString& datastore_name, const QString& key, const QString& scope) : universe_id{ universe_id }, datastore_name{ datastore_name }, key{ key }, scope{ scope } {}
 
 	long long get_universe_id() const { return universe_id; }
 	const QString& get_datastore_name() const { return datastore_name; }

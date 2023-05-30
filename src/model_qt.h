@@ -17,16 +17,16 @@ class StandardDatastoreEntryQTableModel : public QAbstractTableModel
 {
 	Q_OBJECT
 public:
-	StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntry>& entries);
+	StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntryName>& entries);
 
-	std::optional<StandardDatastoreEntry> get_entry(size_t row_index) const;
+	std::optional<StandardDatastoreEntryName> get_entry(size_t row_index) const;
 
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 	virtual int columnCount(const QModelIndex& parent = QModelIndex{}) const override;
 	virtual int rowCount(const QModelIndex& parent = QModelIndex{}) const override;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-	std::vector<StandardDatastoreEntry> entries;
+	std::vector<StandardDatastoreEntryName> entries;
 };
 
 class StandardDatastoreEntryVersionQTableModel : public QAbstractTableModel

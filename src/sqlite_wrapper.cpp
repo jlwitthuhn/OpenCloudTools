@@ -7,7 +7,7 @@
 
 #include <sqlite3.h>
 
-#include "model_api_opencloud.h"
+#include "model_common.h"
 #include "util_enum.h"
 
 std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(const std::string& file_path)
@@ -473,7 +473,7 @@ bool SqliteDatastoreWrapper::is_resumable(const long long universe_id)
 	return false;
 }
 
-void SqliteDatastoreWrapper::write_deleted(const StandardDatastoreEntry& entry)
+void SqliteDatastoreWrapper::write_deleted(const StandardDatastoreEntryName& entry)
 {
 	if (db_handle != nullptr)
 	{
@@ -615,7 +615,7 @@ void SqliteDatastoreWrapper::write_enumeration_metadata(const long long universe
 	}
 }
 
-void SqliteDatastoreWrapper::write_pending(const StandardDatastoreEntry& entry)
+void SqliteDatastoreWrapper::write_pending(const StandardDatastoreEntryName& entry)
 {
 	if (db_handle != nullptr)
 	{
@@ -657,11 +657,11 @@ void SqliteDatastoreWrapper::delete_enumeration(const long long universe_id, con
 
 void SqliteDatastoreWrapper::delete_pending(const DatastoreEntryWithDetails& details)
 {
-	const StandardDatastoreEntry entry{ details.get_universe_id(), details.get_datastore_name(), details.get_key_name(), details.get_scope() };
+	const StandardDatastoreEntryName entry{ details.get_universe_id(), details.get_datastore_name(), details.get_key_name(), details.get_scope() };
 	delete_pending(entry);
 }
 
-void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntry& entry)
+void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntryName& entry)
 {
 	if (db_handle != nullptr)
 	{
@@ -835,9 +835,9 @@ std::vector<std::string> SqliteDatastoreWrapper::get_pending_datastores(const lo
 	return result;
 }
 
-std::vector<StandardDatastoreEntry> SqliteDatastoreWrapper::get_pending_entries(const long long universe_id)
+std::vector<StandardDatastoreEntryName> SqliteDatastoreWrapper::get_pending_entries(const long long universe_id)
 {
-	std::vector<StandardDatastoreEntry> result;
+	std::vector<StandardDatastoreEntryName> result;
 
 	if (db_handle != nullptr)
 	{
@@ -874,7 +874,7 @@ std::vector<StandardDatastoreEntry> SqliteDatastoreWrapper::get_pending_entries(
 					const QString this_scope = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) };
 					const QString this_key_name = QString{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)) };
 
-					const StandardDatastoreEntry this_entry{ this_universe_id, this_datastore_name, this_key_name, this_scope };
+					const StandardDatastoreEntryName this_entry{ this_universe_id, this_datastore_name, this_key_name, this_scope };
 					result.push_back(this_entry);
 				}
 				else

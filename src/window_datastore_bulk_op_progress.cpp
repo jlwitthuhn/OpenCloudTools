@@ -166,7 +166,7 @@ void DatastoreBulkOperationProgressWindow::handle_enumerate_keys_success()
 		}
 		else
 		{
-			const std::vector<StandardDatastoreEntry>& new_entries = enumerate_entries_request->get_datastore_entries();
+			const std::vector<StandardDatastoreEntryName>& new_entries = enumerate_entries_request->get_datastore_entries();
 			pending_entries.insert(pending_entries.end(), new_entries.begin(), new_entries.end());
 		}
 		progress.advance_datastore_done();
@@ -289,7 +289,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 
 	if (pending_entries.size() > 0)
 	{
-		StandardDatastoreEntry entry = pending_entries.back();
+		StandardDatastoreEntryName entry = pending_entries.back();
 		pending_entries.pop_back();
 
 		if (rewrite_before_delete)
@@ -515,7 +515,7 @@ void DatastoreBulkDownloadProgressWindow::send_next_entry_request()
 {
 	if (pending_entries.size() > 0)
 	{
-		StandardDatastoreEntry entry = pending_entries.back();
+		StandardDatastoreEntryName entry = pending_entries.back();
 		pending_entries.pop_back();
 
 		get_entry_details_request = std::make_shared<GetStandardDatastoreEntryDetailsRequest>(api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key());
@@ -578,8 +578,8 @@ void DatastoreBulkDownloadProgressWindow::common_init()
 		}
 	);
 
-	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntry&)>>(
-		[&db_ref](const StandardDatastoreEntry& entry) {
+	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntryName&)>>(
+		[&db_ref](const StandardDatastoreEntryName& entry) {
 			db_ref->write_pending(entry);
 		}
 	);
@@ -598,7 +598,7 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 		else
 		{
 			// Entry was deleted
-			const StandardDatastoreEntry entry(get_entry_details_request->get_universe_id(), get_entry_details_request->get_datastore_name(), get_entry_details_request->get_key_name(), get_entry_details_request->get_scope());
+			const StandardDatastoreEntryName entry(get_entry_details_request->get_universe_id(), get_entry_details_request->get_datastore_name(), get_entry_details_request->get_key_name(), get_entry_details_request->get_scope());
 			db_wrapper->write_deleted(entry);
 			db_wrapper->delete_pending(entry);
 		}
@@ -636,7 +636,7 @@ void DatastoreBulkUndeleteProgressWindow::send_next_entry_request()
 {
 	if (pending_entries.size() > 0)
 	{
-		StandardDatastoreEntry entry = pending_entries.back();
+		StandardDatastoreEntryName entry = pending_entries.back();
 		pending_entries.pop_back();
 
 		get_versions_request = std::make_shared<GetStandardDatastoreEntryVersionsRequest>(api_key, universe_id, entry.get_datastore_name(), entry.get_scope(), entry.get_key());

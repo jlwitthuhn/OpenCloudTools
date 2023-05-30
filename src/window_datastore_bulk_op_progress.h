@@ -95,7 +95,7 @@ protected:
 	DownloadProgress progress;
 	std::vector<QString> datastore_names;
 
-	std::vector<StandardDatastoreEntry> pending_entries;
+	std::vector<StandardDatastoreEntryName> pending_entries;
 
 	std::shared_ptr<GetStandardDatastoreEntriesRequest> enumerate_entries_request;
 
@@ -109,7 +109,7 @@ protected:
 
 	std::shared_ptr<std::function<void(long long, const std::string&, const std::string&)>> datastore_enumerate_step_callback;
 	std::shared_ptr<std::function<void(long long, const std::string&)>> datastore_enumerate_done_callback;
-	std::shared_ptr<std::function<void(const StandardDatastoreEntry&)>> entry_found_callback;
+	std::shared_ptr<std::function<void(const StandardDatastoreEntryName&)>> entry_found_callback;
 };
 
 class DatastoreBulkDeleteProgressWindow: public DatastoreBulkOperationProgressWindow

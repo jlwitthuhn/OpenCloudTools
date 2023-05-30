@@ -347,7 +347,7 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 	if (response)
 	{
 		auto locked_entry_found_callback = entry_found_callback.lock();
-		for (const StandardDatastoreEntry& this_entry : response->get_entries())
+		for (const StandardDatastoreEntryName& this_entry : response->get_entries())
 		{
 			datastore_entries.push_back(this_entry);
 			if (locked_entry_found_callback)

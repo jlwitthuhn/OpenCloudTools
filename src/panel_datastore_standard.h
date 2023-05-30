@@ -12,7 +12,7 @@ class QString;
 class QTextEdit;
 class QWidget;
 
-class StandardDatastoreEntry;
+class StandardDatastoreEntryName;
 class StandardDatastoreEntryQTableModel;
 
 class StandardDatastorePanel : public BaseDatastorePanel
@@ -26,13 +26,13 @@ public:
 private:
 	void set_datastore_entry_model(StandardDatastoreEntryQTableModel* entry_model);
 
-	std::vector<StandardDatastoreEntry> get_selected_entries() const;
+	std::vector<StandardDatastoreEntryName> get_selected_entries() const;
 
 	void view_entry(const QModelIndex& index);
 	void view_versions(const QModelIndex& index);
 	void edit_entry(const QModelIndex& index);
 	void delete_entry(const QModelIndex& index);
-	void delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list);
+	void delete_entry_list(const std::vector<StandardDatastoreEntryName>& entry_list);
 
 	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) override;
 	virtual void handle_search_text_changed() override;

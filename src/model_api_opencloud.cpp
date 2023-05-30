@@ -64,7 +64,7 @@ std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesRe
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
 
-	std::vector<StandardDatastoreEntry> entries_vec;
+	std::vector<StandardDatastoreEntryName> entries_vec;
 	QJsonObject::iterator keys_it = root.find("keys");
 	if (keys_it != root.end())
 	{
@@ -99,7 +99,7 @@ std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesRe
 
 					if (scope_opt && key_opt)
 					{
-						entries_vec.push_back(StandardDatastoreEntry{ universe_id, datastore_name, *key_opt, *scope_opt });
+						entries_vec.push_back(StandardDatastoreEntryName{ universe_id, datastore_name, *key_opt, *scope_opt });
 					}
 				}
 			}

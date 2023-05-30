@@ -30,13 +30,13 @@ class GetStandardDatastoreEntriesResponse
 public:
 	static std::optional<GetStandardDatastoreEntriesResponse> fromJson(const QString& json, long long universe_id, const QString& datastore_name);
 
-	const std::vector<StandardDatastoreEntry>& get_entries() const { return entries; }
+	const std::vector<StandardDatastoreEntryName>& get_entries() const { return entries; }
 	const std::optional<QString>& get_cursor() const { return cursor; }
 
 private:
-	GetStandardDatastoreEntriesResponse(const std::vector<StandardDatastoreEntry>& entries, const std::optional<QString>& cursor) : entries{ entries }, cursor{ cursor } {}
+	GetStandardDatastoreEntriesResponse(const std::vector<StandardDatastoreEntryName>& entries, const std::optional<QString>& cursor) : entries{ entries }, cursor{ cursor } {}
 
-	std::vector<StandardDatastoreEntry> entries;
+	std::vector<StandardDatastoreEntryName> entries;
 	std::optional<QString> cursor;
 };
 

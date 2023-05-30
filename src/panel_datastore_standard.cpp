@@ -194,14 +194,14 @@ void StandardDatastorePanel::set_datastore_entry_model(StandardDatastoreEntryQTa
 	}
 	else
 	{
-		datastore_entry_tree->setModel(new StandardDatastoreEntryQTableModel{ datastore_entry_tree, std::vector<StandardDatastoreEntry>{} });
+		datastore_entry_tree->setModel(new StandardDatastoreEntryQTableModel{ datastore_entry_tree, std::vector<StandardDatastoreEntryName>{} });
 	}
 	datastore_entry_tree->setColumnWidth(0, 280);
 	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &StandardDatastorePanel::handle_selected_datastore_entry_changed);
 	handle_selected_datastore_entry_changed();
 }
 
-std::vector<StandardDatastoreEntry> StandardDatastorePanel::get_selected_entries() const
+std::vector<StandardDatastoreEntryName> StandardDatastorePanel::get_selected_entries() const
 {
 	if (StandardDatastoreEntryQTableModel* const entry_model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 	{
@@ -209,13 +209,13 @@ std::vector<StandardDatastoreEntry> StandardDatastorePanel::get_selected_entries
 		{
 			if (select_model->selectedRows().count() > 0)
 			{
-				std::vector<StandardDatastoreEntry> result;
+				std::vector<StandardDatastoreEntryName> result;
 				QList<QModelIndex> indices{ select_model->selectedRows() };
 				for (const QModelIndex& this_index : indices)
 				{
 					if (this_index.isValid())
 					{
-						if (std::optional<StandardDatastoreEntry> opt_entry = entry_model->get_entry(this_index.row()))
+						if (std::optional<StandardDatastoreEntryName> opt_entry = entry_model->get_entry(this_index.row()))
 						{
 							result.push_back(*opt_entry);
 						}
@@ -226,7 +226,7 @@ std::vector<StandardDatastoreEntry> StandardDatastorePanel::get_selected_entries
 		}
 	}
 
-	return std::vector<StandardDatastoreEntry>{};
+	return std::vector<StandardDatastoreEntryName>{};
 }
 
 void StandardDatastorePanel::view_entry(const QModelIndex& index)
@@ -235,7 +235,7 @@ void StandardDatastorePanel::view_entry(const QModelIndex& index)
 	{
 		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
 				const auto req = std::make_shared<GetStandardDatastoreEntryDetailsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
@@ -267,7 +267,7 @@ void StandardDatastorePanel::view_versions(const QModelIndex& index)
 	{
 		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
 				const auto req = std::make_shared<GetStandardDatastoreEntryVersionsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
@@ -291,7 +291,7 @@ void StandardDatastorePanel::edit_entry(const QModelIndex& index)
 	{
 		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
 				const auto req = std::make_shared<GetStandardDatastoreEntryDetailsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
@@ -316,7 +316,7 @@ void StandardDatastorePanel::delete_entry(const QModelIndex& index)
 	{
 		if (StandardDatastoreEntryQTableModel* model = dynamic_cast<StandardDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
 		{
-			std::optional<StandardDatastoreEntry> opt_entry = model->get_entry(index.row());
+			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
 				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Delete };
@@ -335,7 +335,7 @@ void StandardDatastorePanel::delete_entry(const QModelIndex& index)
 }
 
 
-void StandardDatastorePanel::delete_entry_list(const std::vector<StandardDatastoreEntry>& entry_list)
+void StandardDatastorePanel::delete_entry_list(const std::vector<StandardDatastoreEntryName>& entry_list)
 {
 	if (entry_list.size() > 1)
 	{
@@ -347,7 +347,7 @@ void StandardDatastorePanel::delete_entry_list(const std::vector<StandardDatasto
 		}
 
 		std::vector<std::shared_ptr<DataRequest>> request_list;
-		for (const StandardDatastoreEntry& this_entry : entry_list)
+		for (const StandardDatastoreEntryName& this_entry : entry_list)
 		{
 			std::shared_ptr<DeleteStandardDatastoreEntryRequest> this_request =
 				std::make_shared<DeleteStandardDatastoreEntryRequest>(api_key, this_entry.get_universe_id(), this_entry.get_datastore_name(), this_entry.get_scope(), this_entry.get_key());
@@ -532,7 +532,7 @@ void StandardDatastorePanel::pressed_delete_entry()
 		delete_entry(single_entry);
 	}
 
-	std::vector<StandardDatastoreEntry> entry_list = get_selected_entries();
+	std::vector<StandardDatastoreEntryName> entry_list = get_selected_entries();
 	if (entry_list.size() > 1)
 	{
 		delete_entry_list(entry_list);
