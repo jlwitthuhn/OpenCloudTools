@@ -103,6 +103,7 @@ BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) 
 					QLabel* search_datastore_scope_label = new QLabel{ "Scope:", search_params_widget };
 
 					search_datastore_scope_edit = new QLineEdit{ search_params_widget };
+					search_datastore_scope_edit->setPlaceholderText("global");
 					connect(search_datastore_scope_edit, &QLineEdit::textChanged, this, &BaseDatastorePanel::handle_search_text_changed);
 
 					QHBoxLayout* const main_top_layout = new QHBoxLayout{ search_params_widget };
