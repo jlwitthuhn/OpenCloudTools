@@ -294,11 +294,17 @@ void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, c
 	{
 		for (const OrderedDatastoreEntryFull& this_entry : response->get_entries())
 		{
+			if (result_limit && entries.size() >= *result_limit)
+			{
+				// Limit has been hit
+				break;
+			}
 			entries.push_back(this_entry);
 		}
 
-		std::optional<QString> token{ response->get_next_page_token() };
-		if (token && token->size() > 0)
+		const bool limit_reached = result_limit && entries.size() >= *result_limit;
+		const std::optional<QString> token{ response->get_next_page_token() };
+		if (token && token->size() > 0 && !limit_reached)
 		{
 			send_request(token);
 		}
@@ -413,7 +419,7 @@ void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, co
 		const bool limit_reached = result_limit && datastore_entries.size() >= *result_limit;
 
 		std::optional<QString> cursor{ response->get_cursor() };
-		if (cursor && cursor->size() > 0 && limit_reached == false)
+		if (cursor && cursor->size() > 0 && !limit_reached)
 		{
 			if (auto locked_callback = enumerate_step_callback.lock())
 			{
