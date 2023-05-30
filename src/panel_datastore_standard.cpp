@@ -175,8 +175,8 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 		main_tab_widget->addTab(add_entry_panel, "Add Entry");
 	}
 
-	handle_add_entry_text_changed();
 	clear_model();
+	handle_add_entry_text_changed();
 }
 
 void StandardDatastorePanel::selected_universe_changed()
@@ -746,6 +746,7 @@ void StandardDatastorePanel::pressed_view_versions()
 void StandardDatastorePanel::clear_model()
 {
 	set_datastore_entry_model(nullptr);
+	handle_selected_datastore_entry_changed();
 }
 
 void StandardDatastorePanel::refresh_datastore_list()
