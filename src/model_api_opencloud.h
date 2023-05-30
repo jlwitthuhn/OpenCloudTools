@@ -10,6 +10,22 @@
 #include "model_common.h"
 #include "util_enum.h"
 
+class GetOrderedDatastoreEntryListResponse
+{
+public:
+	static std::optional<GetOrderedDatastoreEntryListResponse> fromJson(long long universe_id, const QString& datastore_name, const QString& scope, const QString& json);
+
+	const std::vector<OrderedDatastoreEntryFull>& get_entries() const { return entries; }
+	const std::optional<QString> get_next_page_token() const { return next_page_token; }
+
+private:
+	GetOrderedDatastoreEntryListResponse(const std::vector<OrderedDatastoreEntryFull>& entries, const std::optional<QString>& next_page_token) :
+		entries{ entries }, next_page_token{ next_page_token } {}
+
+	std::vector<OrderedDatastoreEntryFull> entries;
+	std::optional<QString> next_page_token;
+};
+
 class GetStandardDatastoresResponse
 {
 public:

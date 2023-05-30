@@ -5,6 +5,65 @@
 
 #include <QString>
 
+
+OrderedDatastoreEntryQTableModel::OrderedDatastoreEntryQTableModel(QObject* parent, const std::vector<OrderedDatastoreEntryFull>& entries) : QAbstractTableModel{ parent }, entries{ entries }
+{
+
+}
+
+QVariant OrderedDatastoreEntryQTableModel::data(const QModelIndex& index, const int role) const
+{
+	if (role == Qt::DisplayRole)
+	{
+		if (index.row() < static_cast<int>(entries.size()))
+		{
+			if (index.column() == 0)
+			{
+				return entries.at(index.row()).get_scope();
+			}
+			else if (index.column() == 1)
+			{
+				return entries.at(index.row()).get_key_id();
+			}
+			else if (index.column() == 2)
+			{
+				return entries.at(index.row()).get_value();
+			}
+		}
+	}
+	return QVariant{};
+}
+
+int OrderedDatastoreEntryQTableModel::columnCount(const QModelIndex&) const
+{
+	return 3;
+}
+
+int OrderedDatastoreEntryQTableModel::rowCount(const QModelIndex&) const
+{
+	return static_cast<int>(entries.size());
+}
+
+QVariant OrderedDatastoreEntryQTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+	{
+		if (section == 0)
+		{
+			return "Scope";
+		}
+		else if (section == 1)
+		{
+			return "Key";
+		}
+		else if (section == 2)
+		{
+			return "Value";
+		}
+	}
+	return QVariant{};
+}
+
 StandardDatastoreEntryQTableModel::StandardDatastoreEntryQTableModel(QObject* parent, const std::vector<StandardDatastoreEntryName>& entries) : QAbstractTableModel{ parent } , entries { entries }
 {
 	std::sort(this->entries.begin(), this->entries.end(), [](const StandardDatastoreEntryName& a, const StandardDatastoreEntryName& b) {

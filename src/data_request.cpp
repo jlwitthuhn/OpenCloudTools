@@ -266,6 +266,53 @@ QString DeleteStandardDatastoreEntryRequest::get_send_message() const
 	return QString{ "Deleting entry '%1'..." }.arg(key_name);
 }
 
+GetOrderedDatastoreEntryListRequest::GetOrderedDatastoreEntryListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending, const std::optional<QString>& initial_cursor) :
+	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, ascending{ ascending }, initial_cursor { initial_cursor }
+{
+
+}
+
+QString GetOrderedDatastoreEntryListRequest::get_title_string() const
+{
+	return "Fetching ordered datastore entries...";
+}
+
+void GetOrderedDatastoreEntryListRequest::set_result_limit(const size_t limit)
+{
+	result_limit = limit;
+}
+
+QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional<QString> cursor)
+{
+	return HttpRequestBuilder::get_ordered_datastore_entries(api_key, universe_id, datastore_name, scope, ascending, cursor);
+}
+
+void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	status_info(body);
+	if (const std::optional<GetOrderedDatastoreEntryListResponse> response = GetOrderedDatastoreEntryListResponse::fromJson(universe_id, datastore_name, scope, body))
+	{
+		for (const OrderedDatastoreEntryFull& this_entry : response->get_entries())
+		{
+			entries.push_back(this_entry);
+		}
+
+		std::optional<QString> token{ response->get_next_page_token() };
+		if (token && token->size() > 0)
+		{
+			send_request(token);
+		}
+		else
+		{
+			do_success("Complete");
+		}
+	}
+	else
+	{
+		status_error("Received invalid response with HTTP 200");
+	}
+}
+
 GetStandardDatastoresDataRequest::GetStandardDatastoresDataRequest(const QString& api_key, const long long universe_id) : DataRequest{ api_key }, universe_id{ universe_id }
 {
 

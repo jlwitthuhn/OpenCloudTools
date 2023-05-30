@@ -7,6 +7,67 @@
 
 #include "util_json.h"
 
+std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryListResponse::fromJson(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
+{
+	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	QJsonObject root = doc.object();
+
+	std::vector<OrderedDatastoreEntryFull> entries;
+	QJsonObject::iterator entries_it = root.find("entries");
+	if (entries_it != root.end())
+	{
+		QJsonValueRef entries_value = entries_it.value();
+		if (entries_value.isArray())
+		{
+			for (QJsonValueRef this_entry : entries_value.toArray())
+			{
+				if (this_entry.isObject())
+				{
+					QJsonObject this_entry_obj = this_entry.toObject();
+
+					std::optional<QString> id_opt;
+					QJsonObject::iterator id_it = this_entry_obj.find("id");
+					if (id_it != this_entry_obj.end())
+					{
+						if (id_it.value().isString())
+						{
+							id_opt = id_it.value().toString();
+						}
+					}
+
+					std::optional<long long> value_opt;
+					QJsonObject::iterator value_it = this_entry_obj.find("value");
+					if (value_it != this_entry_obj.end())
+					{
+						if (value_it.value().isDouble())
+						{
+							value_opt = value_it.value().toInteger();
+						}
+					}
+
+					if (id_opt && value_opt)
+					{
+						entries.push_back(OrderedDatastoreEntryFull{ universe_id, datastore_name, scope, *id_opt, *value_opt });
+					}
+				}
+			}
+		}
+	}
+
+	std::optional<QString> page_token;
+	QJsonObject::iterator page_token_it = root.find("nextPageToken");
+	if (page_token_it != root.end())
+	{
+		QJsonValueRef page_token_value = page_token_it.value();
+		if (page_token_value.isString())
+		{
+			page_token = page_token_value.toString();
+		}
+	}
+
+	return GetOrderedDatastoreEntryListResponse{ entries, page_token };
+}
+
 std::optional<GetStandardDatastoresResponse> GetStandardDatastoresResponse::fromJson(const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());

@@ -13,6 +13,20 @@
 
 #include "model_api_opencloud.h"
 
+class OrderedDatastoreEntryQTableModel : public QAbstractTableModel
+{
+	Q_OBJECT
+public:
+	OrderedDatastoreEntryQTableModel(QObject* parent, const std::vector<OrderedDatastoreEntryFull>& entries);
+
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+	virtual int columnCount(const QModelIndex& parent = QModelIndex{}) const override;
+	virtual int rowCount(const QModelIndex& parent = QModelIndex{}) const override;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+	std::vector<OrderedDatastoreEntryFull> entries;
+};
+
 class StandardDatastoreEntryQTableModel : public QAbstractTableModel
 {
 	Q_OBJECT

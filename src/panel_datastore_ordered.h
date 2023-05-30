@@ -6,6 +6,8 @@
 
 class QPushButton;
 
+class OrderedDatastoreEntryQTableModel;
+
 class OrderedDatastorePanel : public BaseDatastorePanel
 {
 	Q_OBJECT
@@ -13,6 +15,8 @@ public:
 	OrderedDatastorePanel(QWidget* parent, const QString& api_key);
 
 private:
+	void set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model);
+
 	virtual void handle_search_text_changed() override;
 
 	virtual void clear_model() override;
