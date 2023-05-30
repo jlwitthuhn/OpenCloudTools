@@ -242,7 +242,7 @@ void StandardDatastorePanel::view_entry(const QModelIndex& index)
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
-				const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
+				const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* const view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
@@ -298,7 +298,7 @@ void StandardDatastorePanel::edit_entry(const QModelIndex& index)
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
-				const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
+				const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* edit_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details, ViewEditMode::Edit };

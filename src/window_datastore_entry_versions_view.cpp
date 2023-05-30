@@ -120,7 +120,7 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 					OperationInProgressDialog diag{ this, req };
 					diag.exec();
 
-					const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
+					const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 					if (opt_details)
 					{
 						const std::optional<QString> userids = opt_details->get_userids();
@@ -160,7 +160,7 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
-				const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
+				const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
@@ -228,7 +228,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 					OperationInProgressDialog diag{ this, req };
 					diag.exec();
 
-					const std::optional<DatastoreEntryWithDetails> opt_details = req->get_details();
+					const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 					if (opt_details)
 					{
 						const std::optional<QString> userids = opt_details->get_userids();

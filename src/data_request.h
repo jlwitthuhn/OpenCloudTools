@@ -168,7 +168,7 @@ public:
 
 	virtual QString get_title_string() const override;
 
-	std::optional<DatastoreEntryWithDetails> get_details() const;
+	std::optional<StandardDatastoreEntryFull> get_details() const;
 
 	long long get_universe_id() const { return universe_id; }
 	QString get_datastore_name() const { return datastore_name; }
@@ -186,7 +186,7 @@ protected:
 	QString scope;
 	QString key_name;
 
-	std::optional<DatastoreEntryWithDetails> details;
+	std::optional<StandardDatastoreEntryFull> details;
 };
 
 class GetStandardDatastoreEntryAtVersionRequest : public GetStandardDatastoreEntryDetailsRequest

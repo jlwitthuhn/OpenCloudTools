@@ -8,16 +8,17 @@
 
 #include "util_enum.h"
 
-class DatastoreEntryWithDetails;
 class QLineEdit;
 class QPushButton;
 class QTextEdit;
+
+class StandardDatastoreEntryFull;
 
 class ViewDatastoreEntryWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	ViewDatastoreEntryWindow(QWidget* parent, const QString& api_key, const DatastoreEntryWithDetails& details, ViewEditMode view_edit_mode = ViewEditMode::View);
+	ViewDatastoreEntryWindow(QWidget* parent, const QString& api_key, const StandardDatastoreEntryFull& details, ViewEditMode view_edit_mode = ViewEditMode::View);
 
 private:
 	static std::optional<QString> format_json(const QString& input_json);

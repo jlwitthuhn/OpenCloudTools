@@ -25,7 +25,7 @@
 #include "util_json.h"
 #include "util_validator.h"
 
-ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QString& api_key, const DatastoreEntryWithDetails& details, const ViewEditMode view_edit_mode) : QWidget{ parent, Qt::Window }, data_type{ details.get_entry_type() }, api_key{ api_key }
+ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QString& api_key, const StandardDatastoreEntryFull& details, const ViewEditMode view_edit_mode) : QWidget{ parent, Qt::Window }, data_type{ details.get_entry_type() }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 

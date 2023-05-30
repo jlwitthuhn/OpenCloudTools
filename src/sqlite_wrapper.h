@@ -7,7 +7,7 @@
 
 struct sqlite3;
 
-class DatastoreEntryWithDetails;
+class StandardDatastoreEntryFull;
 class StandardDatastoreEntryName;
 
 class SqliteDatastoreWrapper
@@ -23,13 +23,13 @@ public:
 	bool is_resumable(long long universe_id);
 
 	void write_deleted(const StandardDatastoreEntryName& entry);
-	void write_details(const DatastoreEntryWithDetails& details);
+	void write_details(const StandardDatastoreEntryFull& details);
 	void write_enumeration(long long universe_id, const std::string& datastore_name, const std::optional<std::string> cursor = std::nullopt);
 	void write_enumeration_metadata(long long universe_id, const std::string& scope, const std::string& key_prefix);
 	void write_pending(const StandardDatastoreEntryName& entry);
 
 	void delete_enumeration(long long universe_id, const std::string& datastore_name);
-	void delete_pending(const DatastoreEntryWithDetails& entry);
+	void delete_pending(const StandardDatastoreEntryFull& entry);
 	void delete_pending(const StandardDatastoreEntryName& entry);
 
 	std::optional<std::string> get_enumarating_cursor(long long universe_id);
@@ -48,5 +48,5 @@ private:
 class SqliteDatastoreReader
 {
 public:
-	static std::optional<std::vector<DatastoreEntryWithDetails>> read_all(const std::string& file_path);
+	static std::optional<std::vector<StandardDatastoreEntryFull>> read_all(const std::string& file_path);
 };

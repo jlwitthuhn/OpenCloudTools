@@ -399,7 +399,7 @@ QString GetStandardDatastoreEntryDetailsRequest::get_title_string() const
 	return "Fetching datastore entry details...";
 }
 
-std::optional<DatastoreEntryWithDetails> GetStandardDatastoreEntryDetailsRequest::get_details() const
+std::optional<StandardDatastoreEntryFull> GetStandardDatastoreEntryDetailsRequest::get_details() const
 {
 	if (status == DataRequestStatus::Success)
 	{

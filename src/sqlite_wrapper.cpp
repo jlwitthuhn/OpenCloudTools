@@ -493,7 +493,7 @@ void SqliteDatastoreWrapper::write_deleted(const StandardDatastoreEntryName& ent
 		}
 	}
 }
-void SqliteDatastoreWrapper::write_details(const DatastoreEntryWithDetails& details)
+void SqliteDatastoreWrapper::write_details(const StandardDatastoreEntryFull& details)
 {
 	if (db_handle != nullptr)
 	{
@@ -655,7 +655,7 @@ void SqliteDatastoreWrapper::delete_enumeration(const long long universe_id, con
 	}
 }
 
-void SqliteDatastoreWrapper::delete_pending(const DatastoreEntryWithDetails& details)
+void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntryFull& details)
 {
 	const StandardDatastoreEntryName entry{ details.get_universe_id(), details.get_datastore_name(), details.get_key_name(), details.get_scope() };
 	delete_pending(entry);
@@ -889,7 +889,7 @@ std::vector<StandardDatastoreEntryName> SqliteDatastoreWrapper::get_pending_entr
 	return result;
 }
 
-std::optional<std::vector<DatastoreEntryWithDetails>> SqliteDatastoreReader::read_all(const std::string& file_path)
+std::optional<std::vector<StandardDatastoreEntryFull>> SqliteDatastoreReader::read_all(const std::string& file_path)
 {
 	sqlite3* db_handle = nullptr;
 	if (sqlite3_open(file_path.c_str(), &db_handle) != SQLITE_OK)
@@ -897,7 +897,7 @@ std::optional<std::vector<DatastoreEntryWithDetails>> SqliteDatastoreReader::rea
 		return std::nullopt;
 	}
 
-	std::vector<DatastoreEntryWithDetails> result;
+	std::vector<StandardDatastoreEntryFull> result;
 	{
 		const std::string sql = "SELECT universe_id, datastore_name, scope, key_name, version, data_type, data_raw, data_str, data_num, data_bool, userids, attributes FROM datastore;";
 
@@ -961,7 +961,7 @@ std::optional<std::vector<DatastoreEntryWithDetails>> SqliteDatastoreReader::rea
 
 				if (opt_universe_id && opt_datastore_name && opt_scope && opt_key_name && opt_version && opt_data_raw)
 				{
-					result.push_back(DatastoreEntryWithDetails{
+					result.push_back(StandardDatastoreEntryFull{
 						*opt_universe_id, *opt_datastore_name, *opt_scope, *opt_key_name, *opt_version, opt_userids, opt_attributes, *opt_data_raw
 					});
 				}

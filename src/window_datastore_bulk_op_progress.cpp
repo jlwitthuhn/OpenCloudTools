@@ -344,7 +344,7 @@ void DatastoreBulkDeleteProgressWindow::handle_get_entry_response()
 {
 	if (get_entry_request)
 	{
-		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_request->get_details();
+		const std::optional<StandardDatastoreEntryFull> opt_details = get_entry_request->get_details();
 
 		get_entry_request.reset();
 
@@ -589,7 +589,7 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 {
 	if (get_entry_details_request)
 	{
-		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_details_request->get_details();
+		const std::optional<StandardDatastoreEntryFull> opt_details = get_entry_details_request->get_details();
 		if (opt_details)
 		{
 			db_wrapper->write_details(*opt_details);
@@ -768,7 +768,7 @@ void DatastoreBulkUndeleteProgressWindow::handle_get_entry_version_response()
 {
 	if (get_entry_at_version_request)
 	{
-		const std::optional<DatastoreEntryWithDetails> opt_details = get_entry_at_version_request->get_details();
+		const std::optional<StandardDatastoreEntryFull> opt_details = get_entry_at_version_request->get_details();
 		get_entry_at_version_request.reset();
 
 		if (opt_details.has_value() == false)

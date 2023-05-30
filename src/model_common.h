@@ -4,27 +4,10 @@
 
 #include "util_enum.h"
 
-class StandardDatastoreEntryName
+class StandardDatastoreEntryFull
 {
 public:
-	StandardDatastoreEntryName(long long universe_id, const QString& datastore_name, const QString& key, const QString& scope) : universe_id{ universe_id }, datastore_name{ datastore_name }, key{ key }, scope{ scope } {}
-
-	long long get_universe_id() const { return universe_id; }
-	const QString& get_datastore_name() const { return datastore_name; }
-	const QString& get_key() const { return key; }
-	const QString& get_scope() const { return scope; }
-
-private:
-	long long universe_id;
-	QString datastore_name;
-	QString key;
-	QString scope;
-};
-
-class DatastoreEntryWithDetails
-{
-public:
-	DatastoreEntryWithDetails(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data);
+	StandardDatastoreEntryFull(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data);
 
 	long long get_universe_id() const { return universe_id; }
 	const QString& get_datastore_name() const { return datastore_name; }
@@ -48,6 +31,23 @@ private:
 	DatastoreEntryType entry_type;
 	QString data_decoded;
 	QString data_raw;
+};
+
+class StandardDatastoreEntryName
+{
+public:
+	StandardDatastoreEntryName(long long universe_id, const QString& datastore_name, const QString& key, const QString& scope) : universe_id{ universe_id }, datastore_name{ datastore_name }, key{ key }, scope{ scope } {}
+
+	long long get_universe_id() const { return universe_id; }
+	const QString& get_datastore_name() const { return datastore_name; }
+	const QString& get_key() const { return key; }
+	const QString& get_scope() const { return scope; }
+
+private:
+	long long universe_id;
+	QString datastore_name;
+	QString key;
+	QString scope;
 };
 
 class StandardDatastoreEntryVersion

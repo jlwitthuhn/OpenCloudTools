@@ -45,12 +45,12 @@ class GetStandardDatastoreEntryDetailsResponse
 public:
 	static std::optional<GetStandardDatastoreEntryDetailsResponse> from(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& body);
 
-	DatastoreEntryWithDetails get_details() const { return details; }
+	StandardDatastoreEntryFull get_details() const { return details; }
 
 private:
 	GetStandardDatastoreEntryDetailsResponse(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data);
 
-	DatastoreEntryWithDetails details;
+	StandardDatastoreEntryFull details;
 };
 
 class GetStandardDatastoreEntryVersionsResponse

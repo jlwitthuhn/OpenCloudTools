@@ -3,7 +3,7 @@
 #include "util_json.h"
 #include "util_validator.h"
 
-DatastoreEntryWithDetails::DatastoreEntryWithDetails(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data) :
+StandardDatastoreEntryFull::StandardDatastoreEntryFull(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version, const std::optional<QString>& userids, const std::optional<QString>& attributes, const QString& data) :
 	universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, version{ version }, userids{ userids }, attributes{ attributes }, data_raw{ data }
 {
 	data_decoded = data_raw;

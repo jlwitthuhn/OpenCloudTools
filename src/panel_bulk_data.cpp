@@ -218,12 +218,12 @@ void BulkDataPanel::pressed_upload()
 			const QString load_file_path = QFileDialog::getOpenFileName(this, "Select dump to upload...", "", "sqlite3 databases (*.sqlite3)");
 			if (load_file_path.trimmed().size() > 0)
 			{
-				std::optional<std::vector<DatastoreEntryWithDetails>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
+				std::optional<std::vector<StandardDatastoreEntryFull>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
 				if (loaded_data)
 				{
 					std::vector<std::shared_ptr<DataRequest>> shared_requests;
 
-					for (const DatastoreEntryWithDetails& this_entry : *loaded_data)
+					for (const StandardDatastoreEntryFull& this_entry : *loaded_data)
 					{
 						shared_requests.push_back(std::make_shared<PostStandardDatastoreEntryRequest>(
 							api_key,
