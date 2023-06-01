@@ -165,7 +165,8 @@ BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) 
 void BaseDatastorePanel::selected_universe_changed()
 {
 	select_datastore_list->clear();
-	handle_search_text_changed();
+	search_datastore_name_edit->setText("");
+	search_datastore_scope_edit->setText("");
 	clear_model();
 }
 

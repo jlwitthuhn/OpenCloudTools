@@ -182,9 +182,22 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 
 void StandardDatastorePanel::selected_universe_changed()
 {
-	select_datastore_fetch_button->setEnabled(UserProfile::get_selected_universe() != nullptr);
-	handle_add_entry_text_changed();
 	BaseDatastorePanel::selected_universe_changed();
+
+	const UniverseProfile* const profile = UserProfile::get_selected_universe();
+	const bool enabled = profile != nullptr;
+	select_datastore_fetch_button->setEnabled(enabled);
+	select_datastore_show_hidden_check->setEnabled(enabled);
+	if (enabled)
+	{
+		select_datastore_show_hidden_check->setChecked(false);
+	}
+	else
+	{
+		// TODO: This should be stored as a universe-level option
+		select_datastore_show_hidden_check->setChecked(false);
+	}
+	handle_add_entry_text_changed();
 }
 
 void StandardDatastorePanel::set_datastore_entry_model(StandardDatastoreEntryQTableModel* const entry_model)
