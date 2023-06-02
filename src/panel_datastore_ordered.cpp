@@ -1,15 +1,25 @@
 #include "panel_datastore_ordered.h"
 
+#include <cstddef>
+
+#include <memory>
+#include <set>
+#include <vector>
+
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QGroupBox>
+#include <QLayout>
 #include <QLineEdit>
+#include <QList>
 #include <QListWidget>
 #include <QPushButton>
 #include <QTreeView>
+#include <QWidget>
 
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
+#include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
 

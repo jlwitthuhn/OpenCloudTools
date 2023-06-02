@@ -1,5 +1,7 @@
 #include "sqlite_wrapper.h"
 
+#include <cstddef>
+
 #include <array>
 #include <optional>
 

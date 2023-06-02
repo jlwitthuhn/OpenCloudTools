@@ -21,7 +21,7 @@
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
-#include "model_api_opencloud.h"
+#include "model_common.h"
 #include "model_qt.h"
 #include "window_datastore_entry_view.h"
 

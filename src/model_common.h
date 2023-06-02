@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstddef>
+#include <optional>
+
 #include <QString>
 
-#include "util_enum.h"
+enum class DatastoreEntryType;
 
 class OrderedDatastoreEntryFull
 {

@@ -1,24 +1,10 @@
 #include "panel_datastore_base.h"
 
-#include <cstddef>
-
-#include <algorithm>
 #include <memory>
-#include <optional>
-#include <set>
-#include <vector>
 
 #include <Qt>
-#include <QAbstractItemModel>
 #include <QAbstractItemView>
-#include <QAction>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QClipboard>
-#include <QFormLayout>
-#include <QFrame>
 #include <QGroupBox>
-#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QItemSelectionModel>
 #include <QLabel>
@@ -26,28 +12,14 @@
 #include <QList>
 #include <QListWidget>
 #include <QMargins>
-#include <QMenu>
-#include <QMessageBox>
-#include <QPushButton>
+#include <QModelIndex>
 #include <QSizePolicy>
 #include <QSplitter>
 #include <QTabWidget>
-#include <QTextEdit>
 #include <QTreeView>
-#include <QVariant>
 #include <QVBoxLayout>
 
-#include "data_request.h"
-#include "diag_confirm_change.h"
-#include "diag_operation_in_progress.h"
-#include "model_api_opencloud.h"
-#include "model_qt.h"
 #include "profile.h"
-#include "util_enum.h"
-#include "util_json.h"
-#include "util_validator.h"
-#include "window_datastore_entry_versions_view.h"
-#include "window_datastore_entry_view.h"
 
 BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) :
 	QWidget{ parent },

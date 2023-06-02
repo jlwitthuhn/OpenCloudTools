@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
 #include <QString>
 #include <QWidget>

@@ -13,7 +13,7 @@
 #include <QString>
 #include <QVariant>
 
-#include "util_enum.h"
+enum class HttpRequestType;
 
 class QNetworkReply;
 class QNetworkRequest;

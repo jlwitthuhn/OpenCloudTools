@@ -8,6 +8,8 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+#include "util_enum.h"
+
 constexpr size_t LOG_MAX_ENTRIES = 1000;
 
 static std::once_flag network_access_once;

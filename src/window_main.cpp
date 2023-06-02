@@ -22,7 +22,6 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QStringList>
 #include <QStyleFactory>
 #include <QTabWidget>
 #include <QUrl>

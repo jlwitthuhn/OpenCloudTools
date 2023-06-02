@@ -1,7 +1,5 @@
 #include "data_request.h"
 
-#include <algorithm>
-
 #include <QByteArray>
 #include <QCryptographicHash>
 #include <QJsonDocument>

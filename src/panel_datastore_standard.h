@@ -1,14 +1,18 @@
 #pragma once
 
+#include <vector>
+
 #include <QObject>
+#include <QString>
 
 #include "panel_datastore_base.h"
 
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
+class QModelIndex;
+class QPoint;
 class QPushButton;
-class QString;
 class QTextEdit;
 class QWidget;
 

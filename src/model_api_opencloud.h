@@ -1,14 +1,11 @@
 #pragma once
 
-#include <cstddef>
-
 #include <optional>
 #include <vector>
 
 #include <QString>
 
 #include "model_common.h"
-#include "util_enum.h"
 
 class GetOrderedDatastoreEntryListResponse
 {

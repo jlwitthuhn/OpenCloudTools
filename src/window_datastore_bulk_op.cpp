@@ -432,7 +432,7 @@ std::optional<QDateTime> DatastoreBulkUndeleteWindow::get_undelete_after_time() 
 
 			{
 				bool success = false;
-				const qlonglong days = day_edit->text().toLongLong(&success);
+				const long long days = day_edit->text().toLongLong(&success);
 				if (success)
 				{
 					result = result.addDays(-1 * days);
@@ -440,11 +440,11 @@ std::optional<QDateTime> DatastoreBulkUndeleteWindow::get_undelete_after_time() 
 			}
 
 			{
-				qlonglong seconds_to_subtract = 0;
+				long long seconds_to_subtract = 0;
 
 				{
 					bool hours_success = false;
-					const qlonglong hours = hour_edit->text().toLongLong(&hours_success);
+					const long long hours = hour_edit->text().toLongLong(&hours_success);
 					if (hours_success)
 					{
 						seconds_to_subtract += hours * 60 * 60;
@@ -453,7 +453,7 @@ std::optional<QDateTime> DatastoreBulkUndeleteWindow::get_undelete_after_time() 
 
 				{
 					bool minutes_success = false;
-					const qlonglong minutes = min_edit->text().toLongLong(&minutes_success);
+					const long long minutes = min_edit->text().toLongLong(&minutes_success);
 					if (minutes_success)
 					{
 						seconds_to_subtract += minutes * 60;

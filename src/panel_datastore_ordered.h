@@ -1,11 +1,13 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
 
 #include "panel_datastore_base.h"
 
 class QCheckBox;
 class QPushButton;
+class QWidget;
 
 class OrderedDatastoreEntryQTableModel;
 

@@ -1,7 +1,6 @@
 #include "model_qt.h"
 
 #include <algorithm>
-#include <memory>
 
 #include <QString>
 

@@ -1,5 +1,6 @@
 #include "model_common.h"
 
+#include "util_enum.h"
 #include "util_json.h"
 #include "util_validator.h"
 

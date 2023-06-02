@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QVariant>
 
-#include "model_api_opencloud.h"
+#include "model_common.h"
 
 class OrderedDatastoreEntryQTableModel : public QAbstractTableModel
 {

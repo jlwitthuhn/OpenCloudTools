@@ -1,24 +1,46 @@
 #include "panel_datastore_standard.h"
 
+#include <cstddef>
+
+#include <memory>
+#include <optional>
+#include <set>
+
+#include <Qt>
+#include <QAbstractItemModel>
+#include <QAction>
+#include <QBoxLayout>
 #include <QCheckBox>
 #include <QClipboard>
 #include <QComboBox>
 #include <QFormLayout>
+#include <QFrame>
 #include <QGroupBox>
 #include <QGuiApplication>
+#include <QHBoxLayout>
+#include <QItemSelectionModel>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QList>
 #include <QListWidget>
+#include <QMargins>
 #include <QMenu>
 #include <QMessageBox>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QSizePolicy>
+#include <QTabWidget>
 #include <QTextEdit>
 #include <QTreeView>
+#include <QVariant>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
 #include "util_enum.h"
