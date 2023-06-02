@@ -113,17 +113,13 @@ void MessagingServicePanel::handle_add_used_topics_toggled()
 
 void MessagingServicePanel::handle_recent_topic_list_changed()
 {
+	topic_history_list->clear();
 	if (const UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
 	{
-		topic_history_list->clear();
 		for (const QString& this_topic : selected_universe->get_recent_topic_set())
 		{
 			topic_history_list->addItem(this_topic);
 		}
-	}
-	else
-	{
-		topic_history_list->clear();
 	}
 }
 
