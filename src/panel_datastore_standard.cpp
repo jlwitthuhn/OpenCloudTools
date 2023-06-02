@@ -220,6 +220,7 @@ void StandardDatastorePanel::selected_universe_changed()
 		select_datastore_show_hidden_check->setChecked(false);
 	}
 	handle_add_entry_text_changed();
+	handle_search_text_changed();
 }
 
 void StandardDatastorePanel::set_datastore_entry_model(StandardDatastoreEntryQTableModel* const entry_model)
