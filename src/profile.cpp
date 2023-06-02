@@ -551,6 +551,12 @@ void UserProfile::load_from_disk()
 							save_recent_message_topics = maybe_save_topics.toBool();
 						}
 
+						bool save_recent_ordered_datastores = true;
+						const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
+						if (maybe_save_datastores.isNull() == false)
+						{
+							save_recent_ordered_datastores = maybe_save_datastores.toBool();
+						}
 
 						if (ApiKeyProfile* const this_api_key = get_api_key_by_index(*opt_key_index))
 						{
@@ -559,6 +565,7 @@ void UserProfile::load_from_disk()
 								if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
 								{
 									this_universe->set_save_recent_message_topics(save_recent_message_topics);
+									this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);
 
 									const int hidden_list_size = settings.beginReadArray("hidden_datastores");
 									{
@@ -578,6 +585,17 @@ void UserProfile::load_from_disk()
 											settings.setArrayIndex(k);
 											const QString topic_name = settings.value("name").toString();
 											this_universe->add_recent_topic(topic_name);
+										}
+									}
+									settings.endArray();
+
+									const int ordered_datastore_list_size = settings.beginReadArray("ordered_datastores");
+									{
+										for (int k = 0; k < ordered_datastore_list_size; k++)
+										{
+											settings.setArrayIndex(k);
+											const QString datastore_name = settings.value("name").toString();
+											this_universe->add_recent_ordered_datastore(datastore_name);
 										}
 									}
 									settings.endArray();
@@ -644,6 +662,7 @@ void UserProfile::save_to_disk()
 						settings.setValue("name", this_universe_profile->get_name());
 						settings.setValue("universe_id", this_universe_profile->get_universe_id());
 						settings.setValue("save_recent_message_topics", this_universe_profile->get_save_recent_message_topics());
+						settings.setValue("save_recent_ordered_datastores", this_universe_profile->get_save_recent_ordered_datastores());
 
 						settings.beginWriteArray("hidden_datastores");
 						{
@@ -663,6 +682,17 @@ void UserProfile::save_to_disk()
 							{
 								settings.setArrayIndex(next_topic_index++);
 								settings.setValue("name", this_topic);
+							}
+						}
+						settings.endArray();
+
+						settings.beginWriteArray("ordered_datastores");
+						{
+							int next_datastore_index = 0;
+							for (const QString& this_datastore_name : this_universe_profile->get_recent_ordered_datastore_set())
+							{
+								settings.setArrayIndex(next_datastore_index++);
+								settings.setValue("name", this_datastore_name);
 							}
 						}
 						settings.endArray();
@@ -691,6 +721,7 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::hidden_datastore_list_changed, this, &UserProfile::save_to_disk);
+	connect(this, &UserProfile::recent_ordered_datastore_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::recent_topic_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::universe_list_changed, this, &UserProfile::save_to_disk);
 }
