@@ -229,7 +229,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	}
 	setCentralWidget(central_widget);
 
-	setMinimumWidth(700);
+	setMinimumWidth(720);
 	setMinimumHeight(520);
 
 	handle_qt_theme_changed();
