@@ -24,15 +24,21 @@ public:
 	QString get_name() const { return name; }
 	long long get_universe_id() const { return universe_id; }
 	bool get_save_recent_message_topics() const { return save_recent_message_topics; }
+	bool get_save_recent_ordered_datastores() const { return save_recent_ordered_datastores; }
 	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
+	const std::set<QString>& get_recent_ordered_datastore_set() const { return recent_ordered_datastore_set; }
 	const std::set<QString>& get_recent_topic_set() const { return recent_topic_set; }
 
 	bool set_details(const QString& name, long long universe_id);
 
 	void set_save_recent_message_topics(bool save_topics);
+	void set_save_recent_ordered_datastores(bool save_datastores);
 
 	void add_hidden_datastore(const QString& datastore);
 	void remove_hidden_datastore(const QString& datastore);
+
+	void add_recent_ordered_datastore(const QString& datastore_name);
+	void remove_recent_ordered_datastore(const QString& datastore_name);
 
 	void add_recent_topic(const QString& topic);
 	void remove_recent_topic(const QString& topic);
@@ -41,6 +47,7 @@ signals:
 	void force_save();
 	void details_changed();
 	void hidden_datastore_list_changed();
+	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 
 private:
@@ -48,8 +55,10 @@ private:
 	long long universe_id;
 
 	bool save_recent_message_topics = true;
+	bool save_recent_ordered_datastores = true;
 
 	std::set<QString> hidden_datastore_set;
+	std::set<QString> recent_ordered_datastore_set;
 	std::set<QString> recent_topic_set;
 
 	std::function<bool(const QString&, long long)> name_and_id_available;
@@ -83,6 +92,7 @@ signals:
 	void details_changed();
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void hidden_datastore_list_changed();
+	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 
 private:
@@ -134,6 +144,7 @@ signals:
 	void api_key_list_changed(std::optional<size_t> selected_api_index);
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void hidden_datastore_list_changed();
+	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 	void show_datastore_filter_changed();
 

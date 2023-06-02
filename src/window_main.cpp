@@ -250,7 +250,9 @@ void MyMainWindow::selected_universe_combo_changed()
 	}
 	edit_universe_button->setEnabled(select_universe_combo->count() > 0);
 	del_universe_button->setEnabled(select_universe_combo->count() > 0);
+	// TODO: replace this with a signal that is set up on construction
 	standard_datastore_panel->selected_universe_changed();
+	ordered_datastore_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
 	messaging_service_panel->selected_universe_changed();
 	universe_preferences_panel->selected_universe_changed();

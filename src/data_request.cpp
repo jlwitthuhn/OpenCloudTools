@@ -289,7 +289,6 @@ QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional
 
 void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	status_info(body);
 	if (const std::optional<GetOrderedDatastoreEntryListResponse> response = GetOrderedDatastoreEntryListResponse::fromJson(universe_id, datastore_name, scope, body))
 	{
 		for (const OrderedDatastoreEntryFull& this_entry : response->get_entries())
