@@ -77,6 +77,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 	QSplitter* splitter = new QSplitter{ this };
 	splitter->addWidget(topic_history_group_box);
 	splitter->addWidget(send_group_box);
+	splitter->setSizes({ 200, 500 });
 
 	QHBoxLayout* layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);

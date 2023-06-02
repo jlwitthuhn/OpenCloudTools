@@ -140,7 +140,6 @@ BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) 
 				right_box_layout->addWidget(search_submit_widget);
 				right_box_layout->addWidget(datastore_entry_tree);
 			}
-
 			main_tab_widget->addTab(search_panel, "Search");
 		}
 		QVBoxLayout* const main_layout = new QVBoxLayout{ main_widget };
@@ -152,6 +151,7 @@ BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) 
 	splitter->setChildrenCollapsible(false);
 	splitter->addWidget(panel_left);
 	splitter->addWidget(main_widget);
+	splitter->setSizes({ 200, 500 });
 
 	QHBoxLayout* layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
