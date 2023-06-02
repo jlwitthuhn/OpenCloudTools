@@ -467,7 +467,7 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, "", "", std::vector<QString>{} },
 	db_wrapper{ std::move(db_wrapper) }
 {
-	pending_entries = std::move(this->db_wrapper->get_pending_entries(universe_id));
+	pending_entries = this->db_wrapper->get_pending_entries(universe_id);
 
 	if (const std::optional<std::string> opt_key_prefix = this->db_wrapper->get_enumeration_search_key_prefix(universe_id))
 	{

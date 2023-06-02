@@ -25,14 +25,14 @@ public:
 protected:
 	QModelIndex get_selected_single_index() const;
 
-	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) {}
+	virtual void handle_datastore_entry_double_clicked(const QModelIndex& /*index*/ ) {}
 	virtual void handle_selected_datastore_changed();
 	virtual void handle_selected_datastore_entry_changed() {}
 	virtual void handle_search_text_changed() {}
 	virtual void handle_show_datastore_filter_changed();
 
-	virtual void pressed_right_click_datastore_list(const QPoint& pos) {}
-	virtual void pressed_right_click_entry_list(const QPoint& pos) {}
+	virtual void pressed_right_click_datastore_list(const QPoint& /*pos*/) {}
+	virtual void pressed_right_click_entry_list(const QPoint& /*pos*/) {}
 
 	virtual void clear_model() = 0;
 	virtual void refresh_datastore_list() = 0;

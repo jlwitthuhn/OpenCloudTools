@@ -10,6 +10,8 @@ public:
 	OrderedDatastoreEntryFull(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_id, const long long value) :
 		universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_id{ key_id }, value{ value } {}
 
+	long long get_universe_id() const { return universe_id; }
+	const QString& get_datastore_name() const { return datastore_name; }
 	const QString& get_scope() const { return scope; }
 	const QString& get_key_id() const { return key_id; }
 	long long get_value() const { return value; }
