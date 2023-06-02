@@ -25,6 +25,7 @@ public:
 	long long get_universe_id() const { return universe_id; }
 	bool get_save_recent_message_topics() const { return save_recent_message_topics; }
 	bool get_save_recent_ordered_datastores() const { return save_recent_ordered_datastores; }
+	bool get_show_hidden_standard_datastores() const { return show_hidden_standard_datastores; }
 	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
 	const std::set<QString>& get_recent_ordered_datastore_set() const { return recent_ordered_datastore_set; }
 	const std::set<QString>& get_recent_topic_set() const { return recent_topic_set; }
@@ -33,6 +34,7 @@ public:
 
 	void set_save_recent_message_topics(bool save_topics);
 	void set_save_recent_ordered_datastores(bool save_datastores);
+	void set_show_hidden_standard_datastores(bool show_datastores);
 
 	void add_hidden_datastore(const QString& datastore);
 	void remove_hidden_datastore(const QString& datastore);
@@ -56,6 +58,7 @@ private:
 
 	bool save_recent_message_topics = true;
 	bool save_recent_ordered_datastores = true;
+	bool show_hidden_standard_datastores = false;
 
 	std::set<QString> hidden_datastore_set;
 	std::set<QString> recent_ordered_datastore_set;

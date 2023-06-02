@@ -210,13 +210,12 @@ void StandardDatastorePanel::selected_universe_changed()
 	const bool enabled = profile != nullptr;
 	select_datastore_fetch_button->setEnabled(enabled);
 	select_datastore_show_hidden_check->setEnabled(enabled);
-	if (enabled)
+	if (profile != nullptr)
 	{
-		select_datastore_show_hidden_check->setChecked(false);
+		select_datastore_show_hidden_check->setChecked(profile->get_show_hidden_standard_datastores());
 	}
 	else
 	{
-		// TODO: This should be stored as a universe-level option
 		select_datastore_show_hidden_check->setChecked(false);
 	}
 	handle_add_entry_text_changed();
