@@ -42,7 +42,7 @@ Send messages that your game servers can consume using [MessagingService](https:
 
 To create an API key, go to the [Credentials page of the Roblox Creator Dashboard](https://create.roblox.com/credentials) and click the "Create API Key" button.
 
-### Messaing Permissions
+### Messaging Permissions
 
 The only permission available for Messaging is 'Publish', which is required to send messages.
 
