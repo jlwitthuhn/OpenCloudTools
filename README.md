@@ -16,7 +16,11 @@ Icon by Roblox user [Loominatrx](https://devforum.roblox.com/u/loominatrx/summar
 
 Send messages that your game servers can consume using [MessagingService](https://create.roblox.com/docs/reference/engine/classes/MessagingService).
 
-### Basic Datastore Operations
+### Datastore Operations
+
+Store and retrive data using Roblox's [Datastores](https://create.roblox.com/docs/cloud-services/datastores).
+
+#### Basic Datastore Operations
 
 * List datastores
 * List datastore entries
@@ -26,7 +30,7 @@ Send messages that your game servers can consume using [MessagingService](https:
 * Edit entries
 * Delete entries
 
-### Advanced Datastore Operations
+#### Advanced Datastore Operations
 
 * [Bulk Download](./doc/bulk_download.md)
   * Dump all of the entries in one or more datastores to a sqlite database. This data can later be uploaded through the 'Bulk Upload' operation.
@@ -37,6 +41,10 @@ Send messages that your game servers can consume using [MessagingService](https:
   * Scan one or more datastores for deleted entries and restore their previous version.
 * Bulk Upload
   * Upload a sqlite datastore dump. This can be used to restore from a backup or transfer data from one universe to another.
+
+### Ordered Datastore Operations
+
+
 
 ## Creating an API Key
 
