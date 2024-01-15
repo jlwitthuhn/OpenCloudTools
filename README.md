@@ -1,6 +1,6 @@
 # Open Cloud Tools
 
-Open Cloud Tools is a desktop application for Windows and MacOS that allows you to interact with Roblox's [Open Cloud](https://create.roblox.com/docs/open-cloud/index) API. Open Cloud Tools supports the DataStore and MessagingService APIs.
+Open Cloud Tools is a desktop application for Windows and MacOS that allows you to interact with Roblox's [Open Cloud](https://create.roblox.com/docs/cloud/open-cloud) API. Open Cloud Tools supports the DataStore and MessagingService APIs.
 
 Icon by Roblox user [Loominatrx](https://devforum.roblox.com/u/loominatrx/summary).
 
