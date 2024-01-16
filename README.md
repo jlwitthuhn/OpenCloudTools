@@ -44,7 +44,10 @@ Store and retrive data using Roblox's [Datastores](https://create.roblox.com/doc
 
 ### Ordered Datastore Operations
 
+Retrive data using Roblox's [Datastores](https://create.roblox.com/docs/cloud-services/datastores).
 
+* List all keys in ascending or descending order.
+* Write support coming Soon™.
 
 ## Creating an API Key
 
@@ -54,7 +57,7 @@ To create an API key, go to the [Credentials page of the Roblox Creator Dashboar
 
 The only permission available for Messaging is 'Publish', which is required to send messages.
 
-### DataStore Access Permissions
+### DataStore Permissions
 
 The bare minimum permissions that the key will need to list and view entries are:
 * List Datastores
@@ -70,6 +73,12 @@ The remaining permissions all allow modifying the datastore and you should give 
 * Create Entry
 * Update Entry
 * Delete Entry
+
+### Ordered Datastore Permissions
+
+The only permissions that exist for Ordered Datastores are:
+* Read
+* Write
 
 ## Building
 
