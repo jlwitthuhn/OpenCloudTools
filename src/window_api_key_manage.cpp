@@ -24,6 +24,7 @@
 #include <QVBoxLayout>
 
 #include "profile.h"
+#include "tooltip_text.h"
 #include "window_main.h"
 
 static bool variant_is_ulonglong(const QVariant& variant)
@@ -246,37 +247,47 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size
 
 	QWidget* info_panel = new QWidget{ this };
 	{
+		QLabel* const name_label = new QLabel{ "Name" };
+		name_label->setToolTip(ToolTip::AddApiKeyWindow_Name);
+
 		name_edit = new QLineEdit{ info_panel };
+		name_edit->setToolTip(ToolTip::AddApiKeyWindow_Name);
 		if (existing_key_profile)
 		{
 			name_edit->setText(existing_key_profile->get_name());
 		}
 		connect(name_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
+		QLabel* const key_label = new QLabel{ "API Key" };
+		key_label->setToolTip(ToolTip::AddApiKeyWindow_ApiKey);
+
 		key_edit = new QLineEdit{ info_panel };
+		key_edit->setToolTip(ToolTip::AddApiKeyWindow_ApiKey);
 		if (existing_key_profile)
 		{
 			key_edit->setText(existing_key_profile->get_key());
 		}
 		connect(key_edit, &QLineEdit::textChanged, this, &AddApiKeyWindow::input_changed);
 
-		production_check = new QCheckBox{ "Production key (adds extra confirmations)" };
+		production_check = new QCheckBox{ "Production key" };
+		production_check->setToolTip(ToolTip::AddApiKeyWindow_IsProduction);
 		if (existing_key_profile)
 		{
 			production_check->setChecked(existing_key_profile->get_production());
 		}
 
 		save_to_disk_check = new QCheckBox{ "Save to disk", info_panel };
+		save_to_disk_check->setToolTip(ToolTip::AddApiKeyWindow_SaveToDisk);
 		if (existing_key_profile)
 		{
 			save_to_disk_check->setChecked(existing_key_profile->get_save_to_disk());
 		}
 
-		QFormLayout* info_layout = new QFormLayout{ info_panel };
+		QFormLayout* const info_layout = new QFormLayout{ info_panel };
 		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 		info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-		info_layout->addRow("Name", name_edit);
-		info_layout->addRow("Key", key_edit);
+		info_layout->addRow(name_label, name_edit);
+		info_layout->addRow(key_label, key_edit);
 		info_layout->addRow("", production_check);
 		info_layout->addRow("", save_to_disk_check);
 	}
