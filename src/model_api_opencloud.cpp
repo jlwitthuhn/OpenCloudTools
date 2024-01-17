@@ -7,10 +7,14 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include <iostream>
+
 std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryListResponse::fromJson(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
+
+	std::cout << json.toStdString();
 
 	std::vector<OrderedDatastoreEntryFull> entries;
 	QJsonObject::iterator entries_it = root.find("entries");
@@ -24,6 +28,16 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 				if (this_entry.isObject())
 				{
 					QJsonObject this_entry_obj = this_entry.toObject();
+
+					std::optional<QString> path_opt;
+					QJsonObject::iterator path_it = this_entry_obj.find("path");
+					if (path_it != this_entry_obj.end())
+					{
+						if (path_it.value().isString())
+						{
+							path_opt = path_it.value().toString();
+						}
+					}
 
 					std::optional<QString> id_opt;
 					QJsonObject::iterator id_it = this_entry_obj.find("id");
@@ -49,9 +63,9 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 						}
 					}
 
-					if (id_opt && value_opt)
+					if (path_opt && id_opt && value_opt)
 					{
-						entries.push_back(OrderedDatastoreEntryFull{ universe_id, datastore_name, scope, *id_opt, *value_opt });
+						entries.push_back(OrderedDatastoreEntryFull{ *path_opt, universe_id, datastore_name, scope, *id_opt, *value_opt });
 					}
 				}
 			}
