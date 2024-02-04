@@ -22,6 +22,9 @@ public:
 private:
 	void set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model);
 
+	void view_entry(const QModelIndex& index);
+
+	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) override;
 	virtual void handle_search_text_changed() override;
 
 	void handle_recent_datastores_changed();

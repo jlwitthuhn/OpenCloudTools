@@ -264,6 +264,40 @@ QString DeleteStandardDatastoreEntryRequest::get_send_message() const
 	return QString{ "Deleting entry '%1'..." }.arg(key_name);
 }
 
+
+
+GetOrderedDatastoreEntryDetailsRequest::GetOrderedDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name) :
+	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
+{
+
+}
+
+QString GetOrderedDatastoreEntryDetailsRequest::get_title_string() const
+{
+	return "Fetching ordered datastore entry details...";
+}
+
+QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optional<QString>)
+{
+	return HttpRequestBuilder::get_ordered_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
+}
+
+void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
+{
+	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::fromJson(universe_id, datastore_name, scope, key_name, body);
+	if (response)
+	{
+		details = response->get_details();
+	}
+	else
+	{
+		do_error("Received invalid response, aborting");
+		return;
+	}
+
+	do_success("Complete");
+}
+
 GetOrderedDatastoreEntryListRequest::GetOrderedDatastoreEntryListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending, const std::optional<QString>& initial_cursor) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, ascending{ ascending }, initial_cursor { initial_cursor }
 {

@@ -7,14 +7,60 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include <iostream>
+
+std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::fromJson(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json)
+{
+	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	QJsonObject root = doc.object();
+
+	std::optional<QString> path_opt;
+	QJsonObject::iterator path_it = root.find("path");
+	if (path_it != root.end())
+	{
+		if (path_it.value().isString())
+		{
+			path_opt = path_it.value().toString();
+		}
+	}
+
+	std::optional<QString> id_opt;
+	QJsonObject::iterator id_it = root.find("id");
+	if (id_it != root.end())
+	{
+		if (id_it.value().isString())
+		{
+			id_opt = id_it.value().toString();
+		}
+	}
+
+	std::optional<long long> value_opt;
+	QJsonObject::iterator value_it = root.find("value");
+	if (value_it != root.end())
+	{
+		if (value_it.value().isDouble())
+		{
+#ifdef QT5_COMPAT
+			value_opt = static_cast<long long>(value_it.value().toDouble());
+#else
+			value_opt = value_it.value().toInteger();
+#endif
+		}
+	}
+
+	if (path_opt && id_opt && value_opt)
+	{
+		return GetOrderedDatastoreEntryDetailsResponse{ *path_opt, universe_id, datastore_name, scope, *id_opt, *value_opt };
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}
 
 std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryListResponse::fromJson(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
-
-	std::cout << json.toStdString();
 
 	std::vector<OrderedDatastoreEntryFull> entries;
 	QJsonObject::iterator entries_it = root.find("entries");

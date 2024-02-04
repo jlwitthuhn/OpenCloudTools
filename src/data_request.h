@@ -109,6 +109,25 @@ private:
 	bool delete_success = false;
 };
 
+class GetOrderedDatastoreEntryDetailsRequest : public DataRequest
+{
+public:
+	GetOrderedDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
+
+	virtual QString get_title_string() const override;
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+	QString datastore_name;
+	QString scope;
+	QString key_name;
+
+	std::optional<OrderedDatastoreEntryFull> details;
+};
+
 class GetOrderedDatastoreEntryListRequest : public DataRequest
 {
 public:

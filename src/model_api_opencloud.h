@@ -7,6 +7,20 @@
 
 #include "model_common.h"
 
+class GetOrderedDatastoreEntryDetailsResponse
+{
+public:
+	static std::optional<GetOrderedDatastoreEntryDetailsResponse> fromJson(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json);
+
+	OrderedDatastoreEntryFull get_details() const { return details; }
+
+private:
+	GetOrderedDatastoreEntryDetailsResponse(const QString& path, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_id, long long value) :
+		details{ path, universe_id, datastore_name, scope, key_id, value } {}
+
+	OrderedDatastoreEntryFull details;
+};
+
 class GetOrderedDatastoreEntryListResponse
 {
 public:

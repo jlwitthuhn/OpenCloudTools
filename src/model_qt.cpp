@@ -10,6 +10,18 @@ OrderedDatastoreEntryQTableModel::OrderedDatastoreEntryQTableModel(QObject* pare
 
 }
 
+std::optional<OrderedDatastoreEntryFull> OrderedDatastoreEntryQTableModel::get_entry(const size_t row_index) const
+{
+	if (row_index < entries.size())
+	{
+		return entries.at(row_index);
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}
+
 QVariant OrderedDatastoreEntryQTableModel::data(const QModelIndex& index, const int role) const
 {
 	if (role == Qt::DisplayRole)

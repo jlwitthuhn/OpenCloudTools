@@ -26,6 +26,19 @@ QNetworkRequest HttpRequestBuilder::get_ordered_datastore_entries(const QString&
 	{
 		url = url + "&page_token=" + QUrl::toPercentEncoding(*cursor);
 	}
+
+	QNetworkRequest req{ url };
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
+QNetworkRequest HttpRequestBuilder::get_ordered_datastore_entry_details(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name)
+{
+	QString url = ordered_datastore_base_url(universe_id);
+	url = url + "/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name);
+	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
+	url = url + "/entries/" + QUrl::toPercentEncoding(key_name);
+
 	QNetworkRequest req{ url };
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	return req;

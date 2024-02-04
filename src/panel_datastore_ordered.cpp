@@ -90,6 +90,35 @@ void OrderedDatastorePanel::set_datastore_entry_model(OrderedDatastoreEntryQTabl
 	handle_selected_datastore_entry_changed();
 }
 
+void OrderedDatastorePanel::view_entry(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		if (OrderedDatastoreEntryQTableModel* const model = dynamic_cast<OrderedDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
+		{
+			std::optional<OrderedDatastoreEntryFull> opt_entry = model->get_entry(index.row());
+			if (opt_entry)
+			{
+				const auto req = std::make_shared<GetOrderedDatastoreEntryDetailsRequest>(
+					api_key,
+					opt_entry->get_universe_id(),
+					opt_entry->get_datastore_name(),
+					opt_entry->get_scope(),
+					opt_entry->get_key_id()
+				);
+
+				OperationInProgressDialog diag{ this, req };
+				diag.exec();
+			}
+		}
+	}
+}
+
+void OrderedDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
+{
+	view_entry(index);
+}
+
 void OrderedDatastorePanel::handle_search_text_changed()
 {
 	BaseDatastorePanel::handle_search_text_changed();
