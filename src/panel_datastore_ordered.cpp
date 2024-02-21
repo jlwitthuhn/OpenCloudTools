@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QList>
 #include <QListWidget>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTreeView>
 #include <QWidget>
@@ -22,6 +23,7 @@
 #include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
+#include "window_ordered_datastore_entry_view.h"
 
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : BaseDatastorePanel(parent, api_key)
 {
@@ -109,6 +111,21 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index)
 
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
+
+				const std::optional<OrderedDatastoreEntryFull> opt_details = req->get_details();
+				if (opt_details)
+				{
+					ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ this, api_key, *opt_details };
+					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+					view_entry_window->show();
+				}
+				else
+				{
+					QMessageBox* const msg_box = new QMessageBox{ this };
+					msg_box->setWindowTitle("Not Found");
+					msg_box->setText("This entry does not exist or has been deleted.");
+					msg_box->exec();
+				}
 			}
 		}
 	}

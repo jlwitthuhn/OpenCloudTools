@@ -277,6 +277,18 @@ QString GetOrderedDatastoreEntryDetailsRequest::get_title_string() const
 	return "Fetching ordered datastore entry details...";
 }
 
+std::optional<OrderedDatastoreEntryFull> GetOrderedDatastoreEntryDetailsRequest::get_details() const
+{
+	if (status == DataRequestStatus::Success)
+	{
+		return details;
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}
+
 QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optional<QString>)
 {
 	return HttpRequestBuilder::get_ordered_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);

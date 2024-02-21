@@ -32,11 +32,11 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 	switch (view_edit_mode)
 	{
 	case ViewEditMode::Edit:
-		setWindowTitle("Edit Entry");
+		setWindowTitle("Edit Datastore Entry");
 		setMinimumWidth(640);
 		break;
 	case ViewEditMode::View:
-		setWindowTitle("View Entry");
+		setWindowTitle("View Datastore Entry");
 		setMinimumWidth(320);
 		break;
 	}
