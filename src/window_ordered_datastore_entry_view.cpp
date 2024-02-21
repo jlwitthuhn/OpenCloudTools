@@ -5,8 +5,8 @@
 
 #include "model_common.h"
 
-ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const ViewEditMode view_edit_mode) :
-	QWidget{ parent, Qt::Window }
+ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const ViewEditMode) :
+	QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 

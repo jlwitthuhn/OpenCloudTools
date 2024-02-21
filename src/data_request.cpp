@@ -294,7 +294,7 @@ QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optio
 	return HttpRequestBuilder::get_ordered_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
 }
 
-void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
+void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::fromJson(universe_id, datastore_name, scope, key_name, body);
 	if (response)

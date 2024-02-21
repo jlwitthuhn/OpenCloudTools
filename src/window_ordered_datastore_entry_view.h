@@ -21,4 +21,6 @@ private:
 	QLineEdit* scope_edit = nullptr;
 	QLineEdit* key_name_edit = nullptr;
 	QLineEdit* value_edit = nullptr;
+
+	QString api_key;
 };
