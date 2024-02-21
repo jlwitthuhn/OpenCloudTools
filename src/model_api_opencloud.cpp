@@ -8,7 +8,7 @@
 #include <QJsonValue>
 
 
-std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::fromJson(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json)
+std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::fromJson(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -50,8 +50,6 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 	if (path_opt && id_opt && value_opt)
 	{
 		//assert(*id_opt == key_name)
-		// Suppress unused variable warning until asserts exist
-		(key_name);
 		return GetOrderedDatastoreEntryDetailsResponse{ *path_opt, universe_id, datastore_name, scope, *id_opt, *value_opt };
 	}
 	else
