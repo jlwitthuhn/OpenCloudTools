@@ -50,7 +50,7 @@ void OperationInProgressDialog::constructor_common()
 
 	text_log = new TextLogWidget{ this };
 
-	close_automatically_box = new QCheckBox{ "Close this window automatically", this };
+	close_automatically_box = new QCheckBox{ "Close this window when complete", this };
 	close_automatically_box->setChecked(UserProfile::get()->get_autoclose_progress_window());
 	connect(close_automatically_box, &QCheckBox::stateChanged, this, &OperationInProgressDialog::handle_checkbox_changed);
 	if (respect_close_automatically == false)

@@ -90,7 +90,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 				}
 			}
 
-			action_toggle_autoclose = new QAction{ "&Automatically close progress window", preferences_menu };
+			action_toggle_autoclose = new QAction{ "&Close progress windows when complete", preferences_menu };
 			action_toggle_autoclose->setCheckable(true);
 			action_toggle_autoclose->setChecked(UserProfile::get()->get_autoclose_progress_window());
 			connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
