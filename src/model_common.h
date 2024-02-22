@@ -10,14 +10,14 @@ enum class DatastoreEntryType;
 class OrderedDatastoreEntryFull
 {
 public:
-	OrderedDatastoreEntryFull(const QString& path, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_id, long long value) :
-		path{ path }, universe_id { universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_id{ key_id }, value{ value } {}
+	OrderedDatastoreEntryFull(const QString& path, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, long long value) :
+		path{ path }, universe_id { universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, value{ value } {}
 
 	const QString& get_path() const { return path; }
 	long long get_universe_id() const { return universe_id; }
 	const QString& get_datastore_name() const { return datastore_name; }
 	const QString& get_scope() const { return scope; }
-	const QString& get_key_id() const { return key_id; }
+	const QString& get_key_name() const { return key_name; }
 	long long get_value() const { return value; }
 
 private:
@@ -25,7 +25,7 @@ private:
 	long long universe_id;
 	QString datastore_name;
 	QString scope;
-	QString key_id;
+	QString key_name;
 	long long value;
 };
 

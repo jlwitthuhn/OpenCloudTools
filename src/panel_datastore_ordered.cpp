@@ -106,7 +106,7 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index)
 					opt_entry->get_universe_id(),
 					opt_entry->get_datastore_name(),
 					opt_entry->get_scope(),
-					opt_entry->get_key_id()
+					opt_entry->get_key_name()
 				);
 
 				OperationInProgressDialog diag{ this, req };

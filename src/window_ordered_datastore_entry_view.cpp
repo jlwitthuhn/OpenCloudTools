@@ -29,7 +29,7 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 
 		key_name_edit = new QLineEdit{ info_panel };
 		key_name_edit->setReadOnly(true);
-		key_name_edit->setText(details.get_key_id());
+		key_name_edit->setText(details.get_key_name());
 
 		value_edit = new QLineEdit{ info_panel };
 		value_edit->setReadOnly(true);

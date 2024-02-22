@@ -34,7 +34,7 @@ QVariant OrderedDatastoreEntryQTableModel::data(const QModelIndex& index, const 
 			}
 			else if (index.column() == 1)
 			{
-				return entries.at(index.row()).get_key_id();
+				return entries.at(index.row()).get_key_name();
 			}
 			else if (index.column() == 2)
 			{
