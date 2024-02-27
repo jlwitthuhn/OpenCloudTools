@@ -82,7 +82,7 @@ void DataRequest::handle_reply_ready()
 	}
 
 	QNetworkReply::NetworkError error = pending_reply->error();
-	QString status = pending_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+	QString http_status = pending_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
 	QString reply_body = pending_reply->readAll();
 	QList<QNetworkReply::RawHeaderPair> headers = pending_reply->rawHeaderPairs();
 	RobloxTime::update_time_from_headers(headers);
@@ -93,19 +93,19 @@ void DataRequest::handle_reply_ready()
 	pending_reply->deleteLater();
 	pending_reply = nullptr;
 
-	if (status == "200") // OK
+	if (http_status == "200") // OK
 	{
 		handle_http_200(reply_body, headers);
 	}
-	else if (status == "204") // No content, body will be empty
+	else if (http_status == "204") // No content, body will be empty
 	{
 		handle_http_200(reply_body, headers);
 	}
-	else if (status == "404") // Not found
+	else if (http_status == "404") // Not found
 	{
 		handle_http_404(reply_body, headers);
 	}
-	else if (status == "429") // Too many requests
+	else if (http_status == "429") // Too many requests
 	{
 		emit status_info(QString{ "Received HTTP 429, briefly pausing..." });
 		emit received_http_429();
@@ -115,29 +115,29 @@ void DataRequest::handle_reply_ready()
 		connect(timer, &QTimer::timeout, this, &DataRequest::resend);
 		timer->start(get_next_429_delay());
 	}
-	else if (status == "500") // Internal server error
+	else if (http_status == "500") // Internal server error
 	{
 		emit status_info(QString{ "Received HTTP 500 Internal Server Error, retrying..." });
 		resend();
 	}
-	else if (status == "502") // Bad gateway
+	else if (http_status == "502") // Bad gateway
 	{
 		emit status_info(QString{ "Received HTTP 502 Bad Gateway, retrying..." });
 		resend();
 	}
-	else if (status == "504") // Gateway timeout
+	else if (http_status == "504") // Gateway timeout
 	{
 		emit status_info(QString{ "Received HTTP 504 Gateway Timeout, retrying..." });
 		resend();
 	}
-	else if (status == "")
+	else if (http_status == "")
 	{
 		QMetaEnum meta_enum = QMetaEnum::fromType<QNetworkReply::NetworkError>();
 		do_error( QString{ "Network error %1, aborting" }.arg( meta_enum.valueToKey( static_cast<int>(error) ) ) );
 	}
 	else
 	{
-		do_error(QString{ "Received HTTP %1, aborting" }.arg(status));
+		do_error(QString{ "Received HTTP %1, aborting" }.arg(http_status));
 		if (reply_body != "")
 		{
 			emit status_info(reply_body);

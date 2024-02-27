@@ -103,14 +103,14 @@ ManageApiKeysWindow::~ManageApiKeysWindow()
 
 }
 
-void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* item)
+void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 {
 	if (item)
 	{
-		QVariant data = item->data(Qt::UserRole);
-		if (variant_is_ulonglong(data))
+		const QVariant data_var = item->data(Qt::UserRole);
+		if (variant_is_ulonglong(data_var))
 		{
-			UserProfile::get()->select_api_key(data.toULongLong());
+			UserProfile::get()->select_api_key(data_var.toULongLong());
 			if (ApiKeyProfile* profile = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->get_name(), profile->get_key() };
@@ -133,10 +133,10 @@ void ManageApiKeysWindow::pressed_edit()
 	QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
 	{
-		QVariant data = selected.first()->data(Qt::UserRole);
-		if (variant_is_ulonglong(data))
+		const QVariant data_var = selected.first()->data(Qt::UserRole);
+		if (variant_is_ulonglong(data_var))
 		{
-			size_t key_index =  data.toULongLong();
+			size_t key_index = data_var.toULongLong();
 			if (UserProfile::get()->get_api_key_by_index(key_index))
 			{
 				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, key_index };
@@ -149,11 +149,11 @@ void ManageApiKeysWindow::pressed_edit()
 
 void ManageApiKeysWindow::pressed_delete()
 {
-	QList<QListWidgetItem*> selected = list_widget->selectedItems();
+	const QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
 	{
-		QVariant data = selected.first()->data(Qt::UserRole);
-		if (variant_is_ulonglong(data))
+		const QVariant selected_data = selected.first()->data(Qt::UserRole);
+		if (variant_is_ulonglong(selected_data))
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Confirm deletion");
@@ -162,7 +162,7 @@ void ManageApiKeysWindow::pressed_delete()
 			int result = msg_box->exec();
 			if (result == QMessageBox::Yes)
 			{
-				UserProfile::get()->delete_api_key(data.toULongLong());
+				UserProfile::get()->delete_api_key(selected_data.toULongLong());
 			}
 		}
 	}
@@ -170,13 +170,13 @@ void ManageApiKeysWindow::pressed_delete()
 
 void ManageApiKeysWindow::pressed_select()
 {
-	QList<QListWidgetItem*> selected = list_widget->selectedItems();
+	const QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
 	{
-		QVariant data = selected.first()->data(Qt::UserRole);
-		if (variant_is_ulonglong(data))
+		const QVariant selected_data = selected.first()->data(Qt::UserRole);
+		if (variant_is_ulonglong(selected_data))
 		{
-			UserProfile::get()->select_api_key(data.toULongLong());
+			UserProfile::get()->select_api_key(selected_data.toULongLong());
 			if (ApiKeyProfile* details = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->get_name(), details->get_key() };

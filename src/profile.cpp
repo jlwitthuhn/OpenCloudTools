@@ -51,12 +51,12 @@ bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 	return name == other.name && universe_id == other.universe_id;
 }
 
-bool UniverseProfile::set_details(const QString& name, long long universe_id)
+bool UniverseProfile::set_details(const QString& name_in, const long long universe_id_in)
 {
 	if (name_and_id_available(name, universe_id))
 	{
-		this->name = name;
-		this->universe_id = universe_id;
+		name = name_in;
+		universe_id = universe_id_in;
 		emit details_changed();
 		return true;
 	}
@@ -132,14 +132,14 @@ ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString
 
 }
 
-bool ApiKeyProfile::set_details(const QString& name, const QString& key, const bool production, const bool save_to_disk)
+bool ApiKeyProfile::set_details(const QString& name_in, const QString& key_in, const bool production_in, const bool save_to_disk_in)
 {
 	if (api_key_name_available(name))
 	{
-		this->name = name;
-		this->key = key;
-		this->production = production;
-		this->save_to_disk = save_to_disk;
+		name = name_in;
+		key = key_in;
+		production = production_in;
+		save_to_disk = save_to_disk_in;
 		emit details_changed();
 		return true;
 	}
@@ -166,11 +166,11 @@ UniverseProfile* ApiKeyProfile::get_selected_universe() const
 	}
 }
 
-std::optional<size_t> ApiKeyProfile::add_universe(const QString& name, long long universe_id)
+std::optional<size_t> ApiKeyProfile::add_universe(const QString& universe_name, long long universe_id)
 {
 	for (const UniverseProfile* existing_profile : universe_list)
 	{
-		if (existing_profile->get_name() == name && existing_profile->get_universe_id() == universe_id)
+		if (existing_profile->get_name() == universe_name && existing_profile->get_universe_id() == universe_id)
 		{
 			// Name + ID should uniquely identify a given slot
 			return std::nullopt;
@@ -179,7 +179,7 @@ std::optional<size_t> ApiKeyProfile::add_universe(const QString& name, long long
 	const std::function<bool(const QString&, long long)> name_id_check = [this](const QString& name, long long id) -> bool {
 		return universe_name_and_id_available(name, id);
 	};
-	UniverseProfile* this_universe = new UniverseProfile{ this, name, universe_id, name_id_check };
+	UniverseProfile* const this_universe = new UniverseProfile{ this, universe_name, universe_id, name_id_check };
 	connect(this_universe, &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe, &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
 	connect(this_universe, &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
@@ -251,11 +251,11 @@ void ApiKeyProfile::sort_universe_list()
 	emit universe_list_changed(selected_universe_index);
 }
 
-bool ApiKeyProfile::universe_name_and_id_available(const QString& name, const long long universe_id)
+bool ApiKeyProfile::universe_name_and_id_available(const QString& universe_name, const long long universe_id)
 {
 	for (const UniverseProfile* const this_universe : universe_list)
 	{
-		if (this_universe->get_name() == name && this_universe->get_universe_id() == universe_id)
+		if (this_universe->get_name() == universe_name && this_universe->get_universe_id() == universe_id)
 		{
 			return false;
 		}
@@ -537,11 +537,11 @@ void UserProfile::load_from_disk()
 						settings.setArrayIndex(j);
 						const long long this_universe_id = settings.value("universe_id").toLongLong();
 
-						QString name = "Unnamed";
+						QString universe_name = "Unnamed";
 						const QVariant maybe_name = settings.value("name");
 						if (maybe_name.isNull() == false)
 						{
-							name = maybe_name.toString();
+							universe_name = maybe_name.toString();
 						}
 
 						bool save_recent_message_topics = true;
@@ -560,7 +560,7 @@ void UserProfile::load_from_disk()
 
 						if (ApiKeyProfile* const this_api_key = get_api_key_by_index(*opt_key_index))
 						{
-							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(name, this_universe_id))
+							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(universe_name, this_universe_id))
 							{
 								if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
 								{

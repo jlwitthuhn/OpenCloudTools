@@ -212,8 +212,8 @@ size_t DatastoreBulkOperationProgressWindow::DownloadProgress::get_progress() co
 {
 	if (entry_total)
 	{
-		double progress = static_cast<double>(entry_done) / static_cast<double>(*entry_total);
-		return static_cast<size_t>(progress * MAXIMUM);
+		const double progress_fraction = static_cast<double>(entry_done) / static_cast<double>(*entry_total);
+		return static_cast<size_t>(progress_fraction * MAXIMUM);
 	}
 	else
 	{

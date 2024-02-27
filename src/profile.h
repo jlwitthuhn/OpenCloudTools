@@ -84,7 +84,7 @@ public:
 	UniverseProfile* get_universe_profile_by_index(size_t universe_index) const;
 	UniverseProfile* get_selected_universe() const;
 
-	std::optional<size_t> add_universe(const QString& name, long long universe_id);
+	std::optional<size_t> add_universe(const QString& universe_name, long long universe_id);
 	void remove_universe(size_t universe_index);
 
 	void select_universe(std::optional<size_t> universe_index);
@@ -100,7 +100,7 @@ signals:
 
 private:
 	void sort_universe_list();
-	bool universe_name_and_id_available(const QString& name, long long universe_id);
+	bool universe_name_and_id_available(const QString& universe_name, long long universe_id);
 
 	QString name;
 	QString key;

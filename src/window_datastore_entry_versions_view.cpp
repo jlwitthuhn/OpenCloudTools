@@ -117,8 +117,8 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 				if (confirmed)
 				{
 					const auto req = std::make_shared<GetStandardDatastoreEntryAtVersionRequest>(api_key, universe_id, datastore_name, scope, key_name, version);
-					OperationInProgressDialog diag{ this, req };
-					diag.exec();
+					OperationInProgressDialog get_diag{ this, req };
+					get_diag.exec();
 
 					const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 					if (opt_details)
@@ -128,8 +128,8 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 						const QString body = opt_details->get_data_raw();
 
 						const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body);
-						OperationInProgressDialog diag{ this, post_req };
-						diag.exec();
+						OperationInProgressDialog post_diag{ this, post_req };
+						post_diag.exec();
 
 						if (post_req->get_success())
 						{
@@ -225,8 +225,8 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 				if (confirmed)
 				{
 					const auto req = std::make_shared<GetStandardDatastoreEntryAtVersionRequest>(api_key, universe_id, datastore_name, scope, key_name, version);
-					OperationInProgressDialog diag{ this, req };
-					diag.exec();
+					OperationInProgressDialog get_diag{ this, req };
+					get_diag.exec();
 
 					const std::optional<StandardDatastoreEntryFull> opt_details = req->get_details();
 					if (opt_details)
@@ -236,8 +236,8 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 						const QString body = opt_details->get_data_raw();
 
 						const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, body);
-						OperationInProgressDialog diag{ this, post_req };
-						diag.exec();
+						OperationInProgressDialog post_diag{ this, post_req };
+						post_diag.exec();
 
 						if (post_req->get_success())
 						{

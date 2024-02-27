@@ -320,27 +320,27 @@ void ViewDatastoreEntryWindow::pressed_save()
 	const QString key_name = key_name_edit->text();
 
 	const std::optional<QString> userids = condense_json(userids_raw);
-	std::optional<QString> data;
+	std::optional<QString> data_formatted;
 	if (data_type == DatastoreEntryType::Json)
 	{
-		data = condense_json(data_raw);
+		data_formatted = condense_json(data_raw);
 	}
 	else if (data_type == DatastoreEntryType::String)
 	{
-		data = encode_json_string(data_raw);
+		data_formatted = encode_json_string(data_raw);
 	}
 	else
 	{
-		data = data_raw;
+		data_formatted = data_raw;
 	}
 
-	if (data.has_value() == false)
+	if (data_formatted.has_value() == false)
 	{
 		show_validation_error(this, "Failed to format data. This probably shouldn't happen.");
 		return;
 	}
 
-	const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data);
+	const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
 	OperationInProgressDialog diag{ this, post_req };
 	diag.exec();
 
