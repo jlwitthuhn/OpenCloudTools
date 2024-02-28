@@ -37,16 +37,16 @@ private:
 	std::optional<QString> next_page_token;
 };
 
-class GetStandardDatastoresResponse
+class GetStandardDatastoreListResponse
 {
 public:
-	static std::optional<GetStandardDatastoresResponse> from_json(const QString& json);
+	static std::optional<GetStandardDatastoreListResponse> from_json(const QString& json);
 
 	const std::vector<QString>& get_datastores_vec() const { return datastores_vec; }
 	const std::optional<QString>& get_cursor() const { return cursor; }
 
 private:
-	GetStandardDatastoresResponse(const std::vector<QString>& datastores_vec, const std::optional<QString>& cursor) : datastores_vec{ datastores_vec }, cursor{ cursor } {}
+	GetStandardDatastoreListResponse(const std::vector<QString>& datastores_vec, const std::optional<QString>& cursor) : datastores_vec{ datastores_vec }, cursor{ cursor } {}
 
 	std::vector<QString> datastores_vec;
 	std::optional<QString> cursor;

@@ -133,7 +133,7 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 	return GetOrderedDatastoreEntryListResponse{ entries, page_token };
 }
 
-std::optional<GetStandardDatastoresResponse> GetStandardDatastoresResponse::from_json(const QString& json)
+std::optional<GetStandardDatastoreListResponse> GetStandardDatastoreListResponse::from_json(const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -177,7 +177,7 @@ std::optional<GetStandardDatastoresResponse> GetStandardDatastoresResponse::from
 
 	if (datastores_vec.size() > 0)
 	{
-		return GetStandardDatastoresResponse{ datastores_vec, cursor };
+		return GetStandardDatastoreListResponse{ datastores_vec, cursor };
 	}
 	else
 	{

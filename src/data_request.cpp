@@ -379,7 +379,7 @@ QNetworkRequest GetStandardDatastoresDataRequest::build_request(std::optional<QS
 
 void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetStandardDatastoresResponse> response = GetStandardDatastoresResponse::from_json(body);
+	std::optional<GetStandardDatastoreListResponse> response = GetStandardDatastoreListResponse::from_json(body);
 	if (response)
 	{
 		for (QString this_name : response->get_datastores_vec())
