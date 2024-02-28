@@ -566,6 +566,8 @@ void DatastoreBulkDownloadProgressWindow::common_init()
 
 	std::unique_ptr<SqliteDatastoreWrapper>& db_ref = this->db_wrapper;
 
+#pragma warning ( push )
+#pragma warning ( disable: 4458 )
 	datastore_enumerate_step_callback = std::make_shared<std::function<void(long long, const std::string&, const std::string&)>>(
 		[&db_ref](const long long universe_id, const std::string& datastore_name, const std::string& cursor) {
 			db_ref->write_enumeration(universe_id, datastore_name, cursor);
@@ -577,6 +579,7 @@ void DatastoreBulkDownloadProgressWindow::common_init()
 			db_ref->delete_enumeration(universe_id, datastore_name);
 		}
 	);
+#pragma warning ( pop )
 
 	entry_found_callback = std::make_shared<std::function<void(const StandardDatastoreEntryName&)>>(
 		[&db_ref](const StandardDatastoreEntryName& entry) {
