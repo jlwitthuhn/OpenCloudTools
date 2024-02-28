@@ -296,7 +296,7 @@ QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optio
 
 void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::fromJson(universe_id, datastore_name, scope, key_name, body);
+	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::from_json(universe_id, datastore_name, scope, key_name, body);
 	if (response)
 	{
 		details = response->get_details();
@@ -333,7 +333,7 @@ QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional
 
 void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	if (const std::optional<GetOrderedDatastoreEntryListResponse> response = GetOrderedDatastoreEntryListResponse::fromJson(universe_id, datastore_name, scope, body))
+	if (const std::optional<GetOrderedDatastoreEntryListResponse> response = GetOrderedDatastoreEntryListResponse::from_json(universe_id, datastore_name, scope, body))
 	{
 		for (const OrderedDatastoreEntryFull& this_entry : response->get_entries())
 		{
@@ -379,7 +379,7 @@ QNetworkRequest GetStandardDatastoresDataRequest::build_request(std::optional<QS
 
 void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetStandardDatastoresResponse> response = GetStandardDatastoresResponse::fromJson(body);
+	std::optional<GetStandardDatastoresResponse> response = GetStandardDatastoresResponse::from_json(body);
 	if (response)
 	{
 		for (QString this_name : response->get_datastores_vec())
@@ -439,7 +439,7 @@ QNetworkRequest GetStandardDatastoreEntriesRequest::build_request(std::optional<
 
 void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetStandardDatastoreEntriesResponse> response = GetStandardDatastoreEntriesResponse::fromJson(body, universe_id, datastore_name);
+	std::optional<GetStandardDatastoreEntriesResponse> response = GetStandardDatastoreEntriesResponse::from_json(body, universe_id, datastore_name);
 	if (response)
 	{
 		auto locked_entry_found_callback = entry_found_callback.lock();

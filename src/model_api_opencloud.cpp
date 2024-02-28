@@ -8,7 +8,7 @@
 #include <QJsonValue>
 
 
-std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::fromJson(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
+std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::from_json(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -58,7 +58,7 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 	}
 }
 
-std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryListResponse::fromJson(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
+std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryListResponse::from_json(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -133,7 +133,7 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 	return GetOrderedDatastoreEntryListResponse{ entries, page_token };
 }
 
-std::optional<GetStandardDatastoresResponse> GetStandardDatastoresResponse::fromJson(const QString& json)
+std::optional<GetStandardDatastoresResponse> GetStandardDatastoresResponse::from_json(const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -185,7 +185,7 @@ std::optional<GetStandardDatastoresResponse> GetStandardDatastoresResponse::from
 	}
 }
 
-std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesResponse::fromJson(const QString& json, const long long universe_id, const QString& datastore_name)
+std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesResponse::from_json(const QString& json, const long long universe_id, const QString& datastore_name)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();

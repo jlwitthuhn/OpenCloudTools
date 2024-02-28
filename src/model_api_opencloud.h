@@ -10,7 +10,7 @@
 class GetOrderedDatastoreEntryDetailsResponse
 {
 public:
-	static std::optional<GetOrderedDatastoreEntryDetailsResponse> fromJson(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json);
+	static std::optional<GetOrderedDatastoreEntryDetailsResponse> from_json(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json);
 
 	OrderedDatastoreEntryFull get_details() const { return details; }
 
@@ -24,7 +24,7 @@ private:
 class GetOrderedDatastoreEntryListResponse
 {
 public:
-	static std::optional<GetOrderedDatastoreEntryListResponse> fromJson(long long universe_id, const QString& datastore_name, const QString& scope, const QString& json);
+	static std::optional<GetOrderedDatastoreEntryListResponse> from_json(long long universe_id, const QString& datastore_name, const QString& scope, const QString& json);
 
 	const std::vector<OrderedDatastoreEntryFull>& get_entries() const { return entries; }
 	const std::optional<QString> get_next_page_token() const { return next_page_token; }
@@ -40,7 +40,7 @@ private:
 class GetStandardDatastoresResponse
 {
 public:
-	static std::optional<GetStandardDatastoresResponse> fromJson(const QString& json);
+	static std::optional<GetStandardDatastoresResponse> from_json(const QString& json);
 
 	const std::vector<QString>& get_datastores_vec() const { return datastores_vec; }
 	const std::optional<QString>& get_cursor() const { return cursor; }
@@ -55,7 +55,7 @@ private:
 class GetStandardDatastoreEntriesResponse
 {
 public:
-	static std::optional<GetStandardDatastoreEntriesResponse> fromJson(const QString& json, long long universe_id, const QString& datastore_name);
+	static std::optional<GetStandardDatastoreEntriesResponse> from_json(const QString& json, long long universe_id, const QString& datastore_name);
 
 	const std::vector<StandardDatastoreEntryName>& get_entries() const { return entries; }
 	const std::optional<QString>& get_cursor() const { return cursor; }
