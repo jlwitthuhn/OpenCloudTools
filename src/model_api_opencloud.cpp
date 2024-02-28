@@ -185,7 +185,7 @@ std::optional<GetStandardDatastoreListResponse> GetStandardDatastoreListResponse
 	}
 }
 
-std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesResponse::from_json(const QString& json, const long long universe_id, const QString& datastore_name)
+std::optional<GetStandardDatastoreEntryListResponse> GetStandardDatastoreEntryListResponse::from_json(const QString& json, const long long universe_id, const QString& datastore_name)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -245,7 +245,7 @@ std::optional<GetStandardDatastoreEntriesResponse> GetStandardDatastoreEntriesRe
 
 	if (entries_vec.size() > 0)
 	{
-		return GetStandardDatastoreEntriesResponse{ entries_vec, cursor };
+		return GetStandardDatastoreEntryListResponse{ entries_vec, cursor };
 	}
 	else
 	{

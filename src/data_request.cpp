@@ -439,7 +439,7 @@ QNetworkRequest GetStandardDatastoreEntriesRequest::build_request(std::optional<
 
 void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetStandardDatastoreEntriesResponse> response = GetStandardDatastoreEntriesResponse::from_json(body, universe_id, datastore_name);
+	std::optional<GetStandardDatastoreEntryListResponse> response = GetStandardDatastoreEntryListResponse::from_json(body, universe_id, datastore_name);
 	if (response)
 	{
 		auto locked_entry_found_callback = entry_found_callback.lock();

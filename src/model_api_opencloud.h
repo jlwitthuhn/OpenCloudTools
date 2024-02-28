@@ -52,16 +52,16 @@ private:
 	std::optional<QString> cursor;
 };
 
-class GetStandardDatastoreEntriesResponse
+class GetStandardDatastoreEntryListResponse
 {
 public:
-	static std::optional<GetStandardDatastoreEntriesResponse> from_json(const QString& json, long long universe_id, const QString& datastore_name);
+	static std::optional<GetStandardDatastoreEntryListResponse> from_json(const QString& json, long long universe_id, const QString& datastore_name);
 
 	const std::vector<StandardDatastoreEntryName>& get_entries() const { return entries; }
 	const std::optional<QString>& get_cursor() const { return cursor; }
 
 private:
-	GetStandardDatastoreEntriesResponse(const std::vector<StandardDatastoreEntryName>& entries, const std::optional<QString>& cursor) : entries{ entries }, cursor{ cursor } {}
+	GetStandardDatastoreEntryListResponse(const std::vector<StandardDatastoreEntryName>& entries, const std::optional<QString>& cursor) : entries{ entries }, cursor{ cursor } {}
 
 	std::vector<StandardDatastoreEntryName> entries;
 	std::optional<QString> cursor;
