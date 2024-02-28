@@ -328,7 +328,7 @@ void GetOrderedDatastoreEntryListRequest::set_result_limit(const size_t limit)
 
 QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional<QString> cursor)
 {
-	return HttpRequestBuilder::get_ordered_datastore_entries(api_key, universe_id, datastore_name, scope, ascending, cursor);
+	return HttpRequestBuilder::get_ordered_datastore_entry_list(api_key, universe_id, datastore_name, scope, ascending, cursor);
 }
 
 void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -374,7 +374,7 @@ QString GetStandardDatastoresDataRequest::get_title_string() const
 
 QNetworkRequest GetStandardDatastoresDataRequest::build_request(std::optional<QString> cursor)
 {
-	return HttpRequestBuilder::get_standard_datastores(api_key, universe_id, cursor);
+	return HttpRequestBuilder::get_standard_datastore_list(api_key, universe_id, cursor);
 }
 
 void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -427,11 +427,11 @@ QNetworkRequest GetStandardDatastoreEntriesRequest::build_request(std::optional<
 	QNetworkRequest request;
 	if (cursor)
 	{
-		request = HttpRequestBuilder::get_standard_datastore_entries(api_key, universe_id, datastore_name, scope, prefix, cursor);
+		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, cursor);
 	}
 	else
 	{
-		request = HttpRequestBuilder::get_standard_datastore_entries(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
+		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
 		initial_cursor = std::nullopt;
 	}
 	return request;
@@ -595,7 +595,7 @@ QString GetStandardDatastoreEntryVersionsRequest::get_title_string() const
 
 QNetworkRequest GetStandardDatastoreEntryVersionsRequest::build_request(std::optional<QString> cursor)
 {
-	return HttpRequestBuilder::get_standard_datastore_entry_versions(api_key, universe_id, datastore_name, scope, key_name, cursor);
+	return HttpRequestBuilder::get_standard_datastore_entry_version_list(api_key, universe_id, datastore_name, scope, key_name, cursor);
 }
 
 void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
