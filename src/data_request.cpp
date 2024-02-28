@@ -600,7 +600,7 @@ QNetworkRequest GetStandardDatastoreEntryVersionsRequest::build_request(std::opt
 
 void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetStandardDatastoreEntryVersionsResponse> response = GetStandardDatastoreEntryVersionsResponse::from(body);
+	std::optional<GetStandardDatastoreEntryVersionListResponse> response = GetStandardDatastoreEntryVersionListResponse::from(body);
 	if (response)
 	{
 		for (StandardDatastoreEntryVersion this_version : response->get_versions())

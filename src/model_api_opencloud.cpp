@@ -264,7 +264,7 @@ GetStandardDatastoreEntryDetailsResponse::GetStandardDatastoreEntryDetailsRespon
 
 }
 
-std::optional<GetStandardDatastoreEntryVersionsResponse> GetStandardDatastoreEntryVersionsResponse::from(const QString& json)
+std::optional<GetStandardDatastoreEntryVersionListResponse> GetStandardDatastoreEntryVersionListResponse::from(const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -364,7 +364,7 @@ std::optional<GetStandardDatastoreEntryVersionsResponse> GetStandardDatastoreEnt
 
 	if (versions_vec.size() > 0)
 	{
-		return GetStandardDatastoreEntryVersionsResponse{ versions_vec, cursor };
+		return GetStandardDatastoreEntryVersionListResponse{ versions_vec, cursor };
 	}
 	else
 	{

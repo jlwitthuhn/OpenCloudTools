@@ -80,16 +80,16 @@ private:
 	StandardDatastoreEntryFull details;
 };
 
-class GetStandardDatastoreEntryVersionsResponse
+class GetStandardDatastoreEntryVersionListResponse
 {
 public:
-	static std::optional<GetStandardDatastoreEntryVersionsResponse> from(const QString& json);
+	static std::optional<GetStandardDatastoreEntryVersionListResponse> from(const QString& json);
 
 	const std::vector<StandardDatastoreEntryVersion>& get_versions() const { return versions; }
 	const std::optional<QString>& get_cursor() const { return cursor; }
 
 private:
-	GetStandardDatastoreEntryVersionsResponse(const std::vector<StandardDatastoreEntryVersion>& versions, const std::optional<QString>& cursor) : versions{ versions }, cursor{ cursor } {}
+	GetStandardDatastoreEntryVersionListResponse(const std::vector<StandardDatastoreEntryVersion>& versions, const std::optional<QString>& cursor) : versions{ versions }, cursor{ cursor } {}
 
 	std::vector<StandardDatastoreEntryVersion> versions;
 	std::optional<QString> cursor;
