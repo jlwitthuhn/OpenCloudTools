@@ -537,26 +537,14 @@ void UserProfile::load_from_disk()
 						settings.setArrayIndex(j);
 						const long long this_universe_id = settings.value("universe_id").toLongLong();
 
-						QString universe_name = "Unnamed";
-						const QVariant maybe_name = settings.value("name");
-						if (maybe_name.isNull() == false)
-						{
-							universe_name = maybe_name.toString();
-						}
+						const QVariant maybe_universe_name = settings.value("name");
+						const QString universe_name = maybe_universe_name.isNull() ? "Unnamed" : maybe_universe_name.toString();
 
-						bool save_recent_message_topics = true;
 						const QVariant maybe_save_topics = settings.value("save_recent_message_topics");
-						if (maybe_save_topics.isNull() == false)
-						{
-							save_recent_message_topics = maybe_save_topics.toBool();
-						}
+						const bool save_recent_message_topics = maybe_save_topics.isNull() ? true : maybe_save_topics.toBool();
 
-						bool save_recent_ordered_datastores = true;
 						const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
-						if (maybe_save_datastores.isNull() == false)
-						{
-							save_recent_ordered_datastores = maybe_save_datastores.toBool();
-						}
+						const bool save_recent_ordered_datastores = maybe_save_datastores.isNull() ? true : maybe_save_datastores.toBool();
 
 						if (ApiKeyProfile* const this_api_key = get_api_key_by_index(*opt_key_index))
 						{
