@@ -114,7 +114,7 @@ void BulkDataPanel::pressed_delete()
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
-		const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+		const auto req = std::make_shared<GetStandardDatastoreListRequest>(api_key, universe_id);
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 
@@ -134,7 +134,7 @@ void BulkDataPanel::pressed_download()
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
-		const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+		const auto req = std::make_shared<GetStandardDatastoreListRequest>(api_key, universe_id);
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 
@@ -195,7 +195,7 @@ void BulkDataPanel::pressed_undelete()
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 
-		const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+		const auto req = std::make_shared<GetStandardDatastoreListRequest>(api_key, universe_id);
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 

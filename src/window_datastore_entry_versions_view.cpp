@@ -191,7 +191,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_refresh()
 	const QString scope = scope_edit->text();
 	const QString key_name = key_name_edit->text();
 
-	const auto req = std::make_shared<GetStandardDatastoreEntryVersionsRequest>(api_key, universe_id, datastore_name, scope, key_name);
+	const auto req = std::make_shared<GetStandardDatastoreEntryVersionListRequest>(api_key, universe_id, datastore_name, scope, key_name);
 	OperationInProgressDialog diag{ this, req };
 	diag.exec();
 

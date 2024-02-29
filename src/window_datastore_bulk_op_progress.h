@@ -21,10 +21,10 @@ class QProgressBar;
 class QPushButton;
 
 class DeleteStandardDatastoreEntryRequest;
-class GetStandardDatastoreEntriesRequest;
 class GetStandardDatastoreEntryAtVersionRequest;
 class GetStandardDatastoreEntryDetailsRequest;
-class GetStandardDatastoreEntryVersionsRequest;
+class GetStandardDatastoreEntryListRequest;
+class GetStandardDatastoreEntryVersionListRequest;
 class PostStandardDatastoreEntryRequest;
 class TextLogWidget;
 
@@ -97,7 +97,7 @@ protected:
 
 	std::vector<StandardDatastoreEntryName> pending_entries;
 
-	std::shared_ptr<GetStandardDatastoreEntriesRequest> enumerate_entries_request;
+	std::shared_ptr<GetStandardDatastoreEntryListRequest> enumerate_entries_request;
 
 	QLabel* progress_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
@@ -193,7 +193,7 @@ private:
 
 	std::optional<QDateTime> undelete_after;
 
-	std::shared_ptr<GetStandardDatastoreEntryVersionsRequest> get_versions_request;
+	std::shared_ptr<GetStandardDatastoreEntryVersionListRequest> get_versions_request;
 	std::shared_ptr<GetStandardDatastoreEntryAtVersionRequest> get_entry_at_version_request;
 	std::shared_ptr<PostStandardDatastoreEntryRequest> post_entry_request;
 

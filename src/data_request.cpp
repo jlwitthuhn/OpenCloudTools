@@ -362,133 +362,6 @@ void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, c
 	}
 }
 
-GetStandardDatastoresDataRequest::GetStandardDatastoresDataRequest(const QString& api_key, const long long universe_id) : DataRequest{ api_key }, universe_id{ universe_id }
-{
-
-}
-
-QString GetStandardDatastoresDataRequest::get_title_string() const
-{
-	return "Fetching datastores...";
-}
-
-QNetworkRequest GetStandardDatastoresDataRequest::build_request(std::optional<QString> cursor)
-{
-	return HttpRequestBuilder::get_standard_datastore_list(api_key, universe_id, cursor);
-}
-
-void GetStandardDatastoresDataRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
-{
-	std::optional<GetStandardDatastoreListResponse> response = GetStandardDatastoreListResponse::from_json(body);
-	if (response)
-	{
-		for (QString this_name : response->get_datastores_vec())
-		{
-			datastore_names.push_back(this_name);
-		}
-
-		emit status_info(QString{ "Received %1 datastore name(s), %2 total" }.arg(QString::number(response->get_datastores_vec().size()), QString::number(datastore_names.size())));
-
-		std::optional<QString> cursor{ response->get_cursor() };
-		if (cursor && cursor->size() > 0)
-		{
-			send_request(cursor);
-		}
-		else
-		{
-			do_success("Complete");
-		}
-	}
-	else
-	{
-		do_success("Complete");
-	}
-}
-
-GetStandardDatastoreEntriesRequest::GetStandardDatastoreEntriesRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor) :
-	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, prefix{ prefix }, initial_cursor{ initial_cursor }
-{
-
-}
-
-QString GetStandardDatastoreEntriesRequest::get_title_string() const
-{
-	return "Fetching datastore entries...";
-}
-
-void GetStandardDatastoreEntriesRequest::set_result_limit(const size_t limit)
-{
-	result_limit = limit;
-}
-
-QNetworkRequest GetStandardDatastoreEntriesRequest::build_request(std::optional<QString> cursor)
-{
-	//assert(!(cursor && initial_cursor))
-	QNetworkRequest request;
-	if (cursor)
-	{
-		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, cursor);
-	}
-	else
-	{
-		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
-		initial_cursor = std::nullopt;
-	}
-	return request;
-}
-
-void GetStandardDatastoreEntriesRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
-{
-	std::optional<GetStandardDatastoreEntryListResponse> response = GetStandardDatastoreEntryListResponse::from_json(body, universe_id, datastore_name);
-	if (response)
-	{
-		auto locked_entry_found_callback = entry_found_callback.lock();
-		for (const StandardDatastoreEntryName& this_entry : response->get_entries())
-		{
-			if (result_limit && datastore_entries.size() >= *result_limit)
-			{
-				// Limit has been hit
-				break;
-			}
-			datastore_entries.push_back(this_entry);
-			if (locked_entry_found_callback)
-			{
-				locked_entry_found_callback->operator()(this_entry);
-			}
-		}
-
-		emit status_info(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_entries().size()), QString::number(datastore_entries.size())));
-
-		const bool limit_reached = result_limit && datastore_entries.size() >= *result_limit;
-
-		std::optional<QString> cursor{ response->get_cursor() };
-		if (cursor && cursor->size() > 0 && !limit_reached)
-		{
-			if (auto locked_callback = enumerate_step_callback.lock())
-			{
-				locked_callback->operator()(universe_id, datastore_name.toStdString(), cursor->toStdString());
-			}
-			send_request(cursor);
-		}
-		else
-		{
-			if (auto locked_callback = enumerate_done_callback.lock())
-			{
-				locked_callback->operator()(universe_id, datastore_name.toStdString());
-			}
-			do_success("Complete");
-		}
-	}
-	else
-	{
-		if (auto locked_callback = enumerate_done_callback.lock())
-		{
-			locked_callback->operator()(universe_id, datastore_name.toStdString());
-		}
-		do_success("Complete");
-	}
-}
-
 GetStandardDatastoreEntryDetailsRequest::GetStandardDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
@@ -571,6 +444,90 @@ QString GetStandardDatastoreEntryDetailsRequest::get_send_message() const
 	return QString{ "Fetching entry '%1'..." }.arg(key_name);
 }
 
+GetStandardDatastoreEntryListRequest::GetStandardDatastoreEntryListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor) :
+	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, prefix{ prefix }, initial_cursor{ initial_cursor }
+{
+
+}
+
+QString GetStandardDatastoreEntryListRequest::get_title_string() const
+{
+	return "Fetching datastore entries...";
+}
+
+void GetStandardDatastoreEntryListRequest::set_result_limit(const size_t limit)
+{
+	result_limit = limit;
+}
+
+QNetworkRequest GetStandardDatastoreEntryListRequest::build_request(std::optional<QString> cursor)
+{
+	//assert(!(cursor && initial_cursor))
+	QNetworkRequest request;
+	if (cursor)
+	{
+		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, cursor);
+	}
+	else
+	{
+		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
+		initial_cursor = std::nullopt;
+	}
+	return request;
+}
+
+void GetStandardDatastoreEntryListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	std::optional<GetStandardDatastoreEntryListResponse> response = GetStandardDatastoreEntryListResponse::from_json(body, universe_id, datastore_name);
+	if (response)
+	{
+		auto locked_entry_found_callback = entry_found_callback.lock();
+		for (const StandardDatastoreEntryName& this_entry : response->get_entries())
+		{
+			if (result_limit && datastore_entries.size() >= *result_limit)
+			{
+				// Limit has been hit
+				break;
+			}
+			datastore_entries.push_back(this_entry);
+			if (locked_entry_found_callback)
+			{
+				locked_entry_found_callback->operator()(this_entry);
+			}
+		}
+
+		emit status_info(QString{ "Received %1 entries, %2 total" }.arg(QString::number(response->get_entries().size()), QString::number(datastore_entries.size())));
+
+		const bool limit_reached = result_limit && datastore_entries.size() >= *result_limit;
+
+		std::optional<QString> cursor{ response->get_cursor() };
+		if (cursor && cursor->size() > 0 && !limit_reached)
+		{
+			if (auto locked_callback = enumerate_step_callback.lock())
+			{
+				locked_callback->operator()(universe_id, datastore_name.toStdString(), cursor->toStdString());
+			}
+			send_request(cursor);
+		}
+		else
+		{
+			if (auto locked_callback = enumerate_done_callback.lock())
+			{
+				locked_callback->operator()(universe_id, datastore_name.toStdString());
+			}
+			do_success("Complete");
+		}
+	}
+	else
+	{
+		if (auto locked_callback = enumerate_done_callback.lock())
+		{
+			locked_callback->operator()(universe_id, datastore_name.toStdString());
+		}
+		do_success("Complete");
+	}
+}
+
 GetStandardDatastoreEntryAtVersionRequest::GetStandardDatastoreEntryAtVersionRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version) :
 	GetStandardDatastoreEntryDetailsRequest{ api_key, universe_id, datastore_name, scope, key_name }, version{ version }
 {
@@ -582,23 +539,66 @@ QNetworkRequest GetStandardDatastoreEntryAtVersionRequest::build_request(std::op
 	return HttpRequestBuilder::get_standard_datastore_entry_version_details(api_key, universe_id, datastore_name, scope, key_name, version);
 }
 
-GetStandardDatastoreEntryVersionsRequest::GetStandardDatastoreEntryVersionsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
+GetStandardDatastoreListRequest::GetStandardDatastoreListRequest(const QString& api_key, const long long universe_id) : DataRequest{ api_key }, universe_id{ universe_id }
+{
+
+}
+
+QString GetStandardDatastoreListRequest::get_title_string() const
+{
+	return "Fetching datastores...";
+}
+
+QNetworkRequest GetStandardDatastoreListRequest::build_request(std::optional<QString> cursor)
+{
+	return HttpRequestBuilder::get_standard_datastore_list(api_key, universe_id, cursor);
+}
+
+void GetStandardDatastoreListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	std::optional<GetStandardDatastoreListResponse> response = GetStandardDatastoreListResponse::from_json(body);
+	if (response)
+	{
+		for (QString this_name : response->get_datastores_vec())
+		{
+			datastore_names.push_back(this_name);
+		}
+
+		emit status_info(QString{ "Received %1 datastore name(s), %2 total" }.arg(QString::number(response->get_datastores_vec().size()), QString::number(datastore_names.size())));
+
+		std::optional<QString> cursor{ response->get_cursor() };
+		if (cursor && cursor->size() > 0)
+		{
+			send_request(cursor);
+		}
+		else
+		{
+			do_success("Complete");
+		}
+	}
+	else
+	{
+		do_success("Complete");
+	}
+}
+
+GetStandardDatastoreEntryVersionListRequest::GetStandardDatastoreEntryVersionListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
 
 }
 
-QString GetStandardDatastoreEntryVersionsRequest::get_title_string() const
+QString GetStandardDatastoreEntryVersionListRequest::get_title_string() const
 {
 	return "Fetching datastore entry versions...";
 }
 
-QNetworkRequest GetStandardDatastoreEntryVersionsRequest::build_request(std::optional<QString> cursor)
+QNetworkRequest GetStandardDatastoreEntryVersionListRequest::build_request(std::optional<QString> cursor)
 {
 	return HttpRequestBuilder::get_standard_datastore_entry_version_list(api_key, universe_id, datastore_name, scope, key_name, cursor);
 }
 
-void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+void GetStandardDatastoreEntryVersionListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	std::optional<GetStandardDatastoreEntryVersionListResponse> response = GetStandardDatastoreEntryVersionListResponse::from(body);
 	if (response)
@@ -626,7 +626,7 @@ void GetStandardDatastoreEntryVersionsRequest::handle_http_200(const QString& bo
 	}
 }
 
-QString GetStandardDatastoreEntryVersionsRequest::get_send_message() const
+QString GetStandardDatastoreEntryVersionListRequest::get_send_message() const
 {
 	return QString{ "Fetching versions for '%1'..." }.arg(key_name);
 }

@@ -306,7 +306,7 @@ void StandardDatastorePanel::view_versions(const QModelIndex& index)
 			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				const auto req = std::make_shared<GetStandardDatastoreEntryVersionsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
+				const auto req = std::make_shared<GetStandardDatastoreEntryVersionListRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
@@ -588,7 +588,7 @@ void StandardDatastorePanel::pressed_fetch_datastores()
 		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
-			const auto req = std::make_shared<GetStandardDatastoresDataRequest>(api_key, universe_id);
+			const auto req = std::make_shared<GetStandardDatastoreListRequest>(api_key, universe_id);
 			OperationInProgressDialog diag{ this, req };
 			diag.exec();
 
@@ -624,7 +624,7 @@ void StandardDatastorePanel::pressed_find_all()
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			const auto req = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, datastore_name, scope, "");
+			const auto req = std::make_shared<GetStandardDatastoreEntryListRequest>(api_key, universe_id, datastore_name, scope, "");
 			if (result_limit > 0)
 			{
 				req->set_result_limit(result_limit);
@@ -657,7 +657,7 @@ void StandardDatastorePanel::pressed_find_prefix()
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			const auto req = std::make_shared<GetStandardDatastoreEntriesRequest>(api_key, universe_id, datastore_name, scope, key_name);
+			const auto req = std::make_shared<GetStandardDatastoreEntryListRequest>(api_key, universe_id, datastore_name, scope, key_name);
 			if (result_limit > 0)
 			{
 				req->set_result_limit(result_limit);
