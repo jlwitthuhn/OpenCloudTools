@@ -53,7 +53,7 @@ bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 
 bool UniverseProfile::set_details(const QString& name_in, const long long universe_id_in)
 {
-	if (name_and_id_available(name, universe_id))
+	if (name_and_id_available(name_in, universe_id_in))
 	{
 		name = name_in;
 		universe_id = universe_id_in;
@@ -134,7 +134,7 @@ ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString
 
 bool ApiKeyProfile::set_details(const QString& name_in, const QString& key_in, const bool production_in, const bool save_to_disk_in)
 {
-	if (api_key_name_available(name))
+	if (name == name_in || api_key_name_available(name_in))
 	{
 		name = name_in;
 		key = key_in;
