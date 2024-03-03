@@ -466,7 +466,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Update Failed");
-			msg_box->setText("Failed to update universe. A universe with that name and id already exists.");
+			msg_box->setText("Failed to update universe. A universe with that name or id already exists.");
 			msg_box->exec();
 		}
 	}
@@ -481,7 +481,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Add Failed");
-			msg_box->setText("Failed to add new universe. A universe with that name and id already exists.");
+			msg_box->setText("Failed to add new universe. A universe with that name or id already exists.");
 			msg_box->exec();
 		}
 	}

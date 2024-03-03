@@ -17,7 +17,7 @@ class UniverseProfile : public QObject
 {
 	Q_OBJECT
 public:
-	UniverseProfile(QObject* parent, const QString& name, long long universe_id, const std::function<bool(const QString&, long long)>& name_and_id_available);
+	UniverseProfile(QObject* parent, const QString& name, long long universe_id, std::function<bool(const QString&)> name_available, std::function<bool(long long)> id_available);
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
@@ -64,7 +64,8 @@ private:
 	std::set<QString> recent_ordered_datastore_set;
 	std::set<QString> recent_topic_set;
 
-	std::function<bool(const QString&, long long)> name_and_id_available;
+	std::function<bool(const QString&)> name_available;
+	std::function<bool(long long)> id_available;
 };
 
 class ApiKeyProfile : public QObject
@@ -100,7 +101,8 @@ signals:
 
 private:
 	void sort_universe_list();
-	bool universe_name_and_id_available(const QString& universe_name, long long universe_id);
+	bool universe_name_available(const QString& universe_name) const;
+	bool universe_id_available(long long universe_id) const;
 
 	QString name;
 	QString key;

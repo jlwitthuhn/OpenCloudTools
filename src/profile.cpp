@@ -40,8 +40,8 @@ static bool compare_universe_profile(const UniverseProfile* const a, const Unive
 	return false;
 }
 
-UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&, long long)>& name_and_id_available)
-	: QObject{ parent }, name{ name }, universe_id{ universe_id }, name_and_id_available{ name_and_id_available }
+UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&)> name_available, const std::function<bool(long long)> id_available)
+	: QObject{ parent }, name{ name }, universe_id{ universe_id }, name_available{ name_available }, id_available{ id_available }
 {
 
 }
@@ -53,7 +53,9 @@ bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 
 bool UniverseProfile::set_details(const QString& name_in, const long long universe_id_in)
 {
-	if (name_and_id_available(name_in, universe_id_in))
+	const bool name_good = name == name_in || name_available(name_in);
+	const bool id_good = universe_id == universe_id_in || id_available(universe_id_in);
+	if (name_good && id_good)
 	{
 		name = name_in;
 		universe_id = universe_id_in;
@@ -168,18 +170,17 @@ UniverseProfile* ApiKeyProfile::get_selected_universe() const
 
 std::optional<size_t> ApiKeyProfile::add_universe(const QString& universe_name, long long universe_id)
 {
-	for (const UniverseProfile* existing_profile : universe_list)
+	if (universe_name_available(universe_name) == false || universe_id_available(universe_id) == false)
 	{
-		if (existing_profile->get_name() == universe_name && existing_profile->get_universe_id() == universe_id)
-		{
-			// Name + ID should uniquely identify a given slot
-			return std::nullopt;
-		}
+		return std::nullopt;
 	}
-	const std::function<bool(const QString&, long long)> name_id_check = [this](const QString& name, long long id) -> bool {
-		return universe_name_and_id_available(name, id);
+	const std::function<bool(const QString&)> name_check = [this](const QString& name) -> bool {
+		return universe_name_available(name);
 	};
-	UniverseProfile* const this_universe = new UniverseProfile{ this, universe_name, universe_id, name_id_check };
+	const std::function<bool(long long)> id_check = [this](long long id) -> bool {
+		return universe_id_available(id);
+	};
+	UniverseProfile* const this_universe = new UniverseProfile{ this, universe_name, universe_id, name_check, id_check };
 	connect(this_universe, &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe, &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
 	connect(this_universe, &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
@@ -251,11 +252,23 @@ void ApiKeyProfile::sort_universe_list()
 	emit universe_list_changed(selected_universe_index);
 }
 
-bool ApiKeyProfile::universe_name_and_id_available(const QString& universe_name, const long long universe_id)
+bool ApiKeyProfile::universe_name_available(const QString& universe_name) const
 {
 	for (const UniverseProfile* const this_universe : universe_list)
 	{
-		if (this_universe->get_name() == universe_name && this_universe->get_universe_id() == universe_id)
+		if (this_universe->get_name() == universe_name)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool ApiKeyProfile::universe_id_available(const long long universe_id) const
+{
+	for (const UniverseProfile* const this_universe : universe_list)
+	{
+		if (this_universe->get_universe_id() == universe_id)
 		{
 			return false;
 		}
