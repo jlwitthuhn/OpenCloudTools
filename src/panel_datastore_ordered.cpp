@@ -41,6 +41,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 		group_layout->addWidget(save_recent_datastores_check);
 		group_layout->addWidget(remove_datastore_button);
 	}
+
 	// Main panel
 	{
 		find_ascending_button = new QPushButton{ "Find all (ascending)", search_submit_widget };
@@ -52,6 +53,22 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 		QBoxLayout* const search_submit_layout = dynamic_cast<QBoxLayout*>(search_submit_widget->layout());
 		search_submit_layout->insertWidget(0, find_ascending_button);
 		search_submit_layout->insertWidget(1, find_descending_button);
+
+		// Bottom buttons
+		{
+			QWidget* const read_button_panel = new QWidget{ search_panel };
+			{
+				view_entry_button = new QPushButton{ "View entry...", read_button_panel };
+				connect(view_entry_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_view_entry);
+
+				QHBoxLayout* right_read_layout = new QHBoxLayout{ read_button_panel };
+				right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+				right_read_layout->addWidget(view_entry_button);
+			}
+
+			QLayout* const search_layout = search_panel->layout();
+			search_layout->addWidget(read_button_panel);
+		}
 	}
 
 	clear_model();
@@ -89,6 +106,7 @@ void OrderedDatastorePanel::set_datastore_entry_model(OrderedDatastoreEntryQTabl
 	}
 	datastore_entry_tree->setColumnWidth(0, 140);
 	datastore_entry_tree->setColumnWidth(1, 140);
+	connect(datastore_entry_tree->selectionModel(), &QItemSelectionModel::selectionChanged, this, &OrderedDatastorePanel::handle_selected_datastore_entry_changed);
 	handle_selected_datastore_entry_changed();
 }
 
@@ -143,6 +161,18 @@ void OrderedDatastorePanel::handle_search_text_changed()
 	const bool enabled = search_datastore_name_edit->text().size() > 0 && selected_universe;
 	find_ascending_button->setEnabled(enabled);
 	find_descending_button->setEnabled(enabled);
+}
+
+void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
+{
+	size_t count = 0;
+	bool single_selected = false;
+	if (const QItemSelectionModel* const select_model = datastore_entry_tree->selectionModel())
+	{
+		count = select_model->selectedRows().count();
+		single_selected = count == 1;
+	}
+	view_entry_button->setEnabled(single_selected);
 }
 
 void OrderedDatastorePanel::handle_recent_datastores_changed()
@@ -241,4 +271,9 @@ void OrderedDatastorePanel::pressed_remove_datastore()
 			selected_universe->remove_recent_ordered_datastore(selected.front()->text());
 		}
 	}
+}
+
+void OrderedDatastorePanel::pressed_view_entry()
+{
+	view_entry(get_selected_single_index());
 }

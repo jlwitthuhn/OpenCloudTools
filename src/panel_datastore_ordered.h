@@ -26,6 +26,7 @@ private:
 
 	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) override;
 	virtual void handle_search_text_changed() override;
+	virtual void handle_selected_datastore_entry_changed() override;
 
 	void handle_recent_datastores_changed();
 	void handle_save_recent_datastores_toggled();
@@ -37,10 +38,13 @@ private:
 	void pressed_find_ascending();
 	void pressed_find_descending();
 	void pressed_remove_datastore();
+	void pressed_view_entry();
 
 	QCheckBox* save_recent_datastores_check = nullptr;
 	QPushButton* remove_datastore_button = nullptr;
 
 	QPushButton* find_ascending_button = nullptr;
 	QPushButton* find_descending_button = nullptr;
+
+	QPushButton* view_entry_button = nullptr;
 };
