@@ -123,6 +123,14 @@ QNetworkRequest HttpRequestBuilder::get_standard_datastore_list(const QString& a
 	return req;
 }
 
+QNetworkRequest HttpRequestBuilder::get_universe_details(const QString& api_key, const long long universe_id)
+{
+	QString url = universe_base_url(universe_id);
+	QNetworkRequest req{ url };
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
 QNetworkRequest HttpRequestBuilder::post_messaging_service_message(const QString api_key, long long universe_id, const QString& topic)
 {
 	const QString url = messaging_base_url(universe_id) + "/topics/" + QUrl::toPercentEncoding(topic);
@@ -168,4 +176,9 @@ QString HttpRequestBuilder::ordered_datastore_base_url(const long long universe_
 QString HttpRequestBuilder::standard_datastore_base_url(const long long universe_id)
 {
 	return QString{ "https://apis.roblox.com/datastores/v1/universes/" } + QString::number(universe_id);
+}
+
+QString HttpRequestBuilder::universe_base_url(const long long universe_id)
+{
+	return QString{ "https://apis.roblox.com/cloud/v2/universes/" } + QString::number(universe_id);
 }

@@ -71,18 +71,22 @@ class MainWindowAddUniverseWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MainWindowAddUniverseWindow(QWidget* parent = nullptr, bool edit_current = false);
+	explicit MainWindowAddUniverseWindow(QWidget* parent, const QString& api_key, bool edit_current);
 
 private:
 	bool input_is_valid() const;
 
 	void text_changed();
 	void pressed_add();
+	void pressed_fetch();
 
 	bool edit_mode = false;
+
+	QString api_key;
 
 	QLineEdit* name_edit = nullptr;
 	QLineEdit* id_edit = nullptr;
 
+	QPushButton* fetch_name_button = nullptr;
 	QPushButton* add_button = nullptr;
 };

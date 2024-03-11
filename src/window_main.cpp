@@ -32,6 +32,8 @@
 #include <sqlite3.h>
 
 #include "build_info.h"
+#include "data_request.h"
+#include "diag_operation_in_progress.h"
 #include "http_wrangler.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_standard.h"
@@ -259,14 +261,14 @@ void MyMainWindow::selected_universe_combo_changed()
 
 void MyMainWindow::pressed_add_universe()
 {
-	MainWindowAddUniverseWindow* modal_window = new MainWindowAddUniverseWindow{ this };
+	MainWindowAddUniverseWindow* modal_window = new MainWindowAddUniverseWindow{ this, api_key, false };
 	modal_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 	modal_window->show();
 }
 
 void MyMainWindow::pressed_edit_universe()
 {
-	MainWindowAddUniverseWindow* modal_window = new MainWindowAddUniverseWindow{ this, true };
+	MainWindowAddUniverseWindow* modal_window = new MainWindowAddUniverseWindow{ this, api_key, true };
 	modal_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 	modal_window->show();
 }
@@ -375,7 +377,7 @@ void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_i
 }
 
 
-MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, const bool edit_current) : QWidget{ parent, Qt::Window }
+MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, const QString& api_key, const bool edit_current) : QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
@@ -414,9 +416,12 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 		info_layout->addRow("Universe ID", id_edit);
 	}
 
-	QWidget* button_panel = new QWidget{ this };
+	QWidget* const button_panel = new QWidget{ this };
 	button_panel->setMinimumWidth(280);
 	{
+		fetch_name_button = new QPushButton{ "Fetch Name", button_panel };
+		connect(fetch_name_button, &QPushButton::clicked, this, &MainWindowAddUniverseWindow::pressed_fetch);
+
 		add_button = new QPushButton{ "Add", button_panel };
 		if (edit_mode)
 		{
@@ -424,16 +429,17 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 		}
 		connect(add_button, &QPushButton::clicked, this, &MainWindowAddUniverseWindow::pressed_add);
 
-		QPushButton* cancel_button = new QPushButton{ "Cancel", button_panel };
-
-		QHBoxLayout* button_layout = new QHBoxLayout{ button_panel };
-		button_layout->addWidget(add_button);
-		button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-		button_layout->addWidget(cancel_button);
+		QPushButton* const cancel_button = new QPushButton{ "Cancel", button_panel };
 		connect(cancel_button, &QPushButton::clicked, this, &QWidget::close);
+
+		QHBoxLayout* const button_layout = new QHBoxLayout{ button_panel };
+		button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+		button_layout->addWidget(fetch_name_button);
+		button_layout->addWidget(add_button);
+		button_layout->addWidget(cancel_button);
 	}
 
-	QVBoxLayout* layout = new QVBoxLayout{ this };
+	QVBoxLayout* const layout = new QVBoxLayout{ this };
 	layout->setSizeConstraint(QLayout::SizeConstraint::SetFixedSize);
 	layout->addWidget(info_panel);
 	layout->addWidget(button_panel);
@@ -449,6 +455,7 @@ bool MainWindowAddUniverseWindow::input_is_valid() const
 
 void MainWindowAddUniverseWindow::text_changed()
 {
+	fetch_name_button->setEnabled(input_is_valid());
 	add_button->setEnabled(input_is_valid());
 }
 
@@ -483,6 +490,23 @@ void MainWindowAddUniverseWindow::pressed_add()
 			msg_box->setWindowTitle("Add Failed");
 			msg_box->setText("Failed to add new universe. A universe with that name or id already exists.");
 			msg_box->exec();
+		}
+	}
+}
+
+void MainWindowAddUniverseWindow::pressed_fetch()
+{
+	if (input_is_valid())
+	{
+		const long long universe_id = id_edit->text().trimmed().toLongLong();
+		const auto req = std::make_shared<GetUniverseDetailsRequest>(api_key, universe_id);
+		OperationInProgressDialog diag{ this, req };
+		diag.exec();
+
+		const std::optional<QString> display_name = req->get_display_name();
+		if (display_name)
+		{
+			name_edit->setText(*display_name);
 		}
 	}
 }

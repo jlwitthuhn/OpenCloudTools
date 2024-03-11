@@ -276,6 +276,24 @@ private:
 	std::vector<StandardDatastoreEntryVersion> versions;
 };
 
+class GetUniverseDetailsRequest : public DataRequest
+{
+public:
+	GetUniverseDetailsRequest(const QString& api_key, long long universe_id);
+
+	virtual QString get_title_string() const override;
+
+	const std::optional<QString>& get_display_name() const { return display_name; }
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+
+	std::optional<QString> display_name;
+};
+
 class PostMessagingServiceMessageRequest : public DataRequest
 {
 public:

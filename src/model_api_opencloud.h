@@ -94,3 +94,16 @@ private:
 	std::vector<StandardDatastoreEntryVersion> versions;
 	std::optional<QString> cursor;
 };
+
+class GetUniverseDetailsResponse
+{
+public:
+	static std::optional<GetUniverseDetailsResponse> from(const QString& json);
+
+	const QString& get_display_name() const { return display_name; }
+
+private:
+	GetUniverseDetailsResponse(const QString& display_name) : display_name{ display_name } {}
+
+	QString display_name;
+};

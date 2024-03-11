@@ -371,3 +371,28 @@ std::optional<GetStandardDatastoreEntryVersionListResponse> GetStandardDatastore
 		return std::nullopt;
 	}
 }
+
+std::optional<GetUniverseDetailsResponse> GetUniverseDetailsResponse::from(const QString& json)
+{
+	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	QJsonObject root = doc.object();
+
+	QJsonObject::iterator display_name_it = root.find("displayName");
+	std::optional<QString> display_name;
+	if (display_name_it != root.end())
+	{
+		if (display_name_it->isString())
+		{
+			display_name = display_name_it->toString();
+		}
+	}
+
+	if (display_name)
+	{
+		return GetUniverseDetailsResponse(*display_name);
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}

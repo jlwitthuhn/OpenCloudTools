@@ -631,6 +631,32 @@ QString GetStandardDatastoreEntryVersionListRequest::get_send_message() const
 	return QString{ "Fetching versions for '%1'..." }.arg(key_name);
 }
 
+GetUniverseDetailsRequest::GetUniverseDetailsRequest(const QString& api_key, const long long universe_id)
+	: DataRequest{ api_key }, universe_id{ universe_id }
+{
+
+}
+
+QString GetUniverseDetailsRequest::get_title_string() const
+{
+	return "Fetching universe details...";
+}
+
+QNetworkRequest GetUniverseDetailsRequest::build_request(const std::optional<QString> cursor)
+{
+	return HttpRequestBuilder::get_universe_details(api_key, universe_id);
+}
+
+void GetUniverseDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	const std::optional<GetUniverseDetailsResponse> response = GetUniverseDetailsResponse::from(body);
+	if (response)
+	{
+		display_name = response->get_display_name();
+	}
+	do_success("Complete");
+}
+
 PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
 	: DataRequest{ api_key }, universe_id{ universe_id }, topic{ topic }
 {
