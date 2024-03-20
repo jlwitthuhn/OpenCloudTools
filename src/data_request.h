@@ -51,7 +51,7 @@ signals:
 protected:
 	DataRequest(const QString& api_key);
 
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) = 0;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const = 0;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) = 0;
 
 	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{});
@@ -96,7 +96,7 @@ public:
 	std::optional<bool> is_delete_success() const;
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual QString get_send_message() const override;
@@ -119,7 +119,7 @@ public:
 	std::optional<OrderedDatastoreEntryFull> get_details() const;
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
 	long long universe_id;
@@ -142,7 +142,7 @@ public:
 	const std::vector<OrderedDatastoreEntryFull>& get_entries() const { return entries; }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
 	long long universe_id;
@@ -172,7 +172,7 @@ public:
 	QString get_key_name() const { return key_name; }
 
 protected:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual QString get_send_message() const override;
@@ -202,7 +202,7 @@ public:
 	std::vector<StandardDatastoreEntryName>&& get_datastore_entries_rvalue() { return std::move(datastore_entries); }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
 	long long universe_id;
@@ -227,7 +227,7 @@ public:
 	GetStandardDatastoreEntryAtVersionRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version);
 
 protected:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 
 	QString version;
 };
@@ -242,7 +242,7 @@ public:
 	const std::vector<QString>& get_datastore_names() const { return datastore_names; }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
 	long long universe_id;
@@ -264,7 +264,7 @@ public:
 	const std::vector<StandardDatastoreEntryVersion>& get_versions() { return versions; }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual QString get_send_message() const override;
 
@@ -286,7 +286,7 @@ public:
 	const std::optional<QString>& get_display_name() const { return display_name; }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
 	long long universe_id;
@@ -304,7 +304,7 @@ public:
 	bool get_success() const { return success; }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual QString get_send_message() const override;
 
@@ -328,7 +328,7 @@ public:
 	const QString& get_key_name() const { return key_name; }
 
 private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) override;
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual QString get_send_message() const override;
 

@@ -242,7 +242,7 @@ std::optional<bool> DeleteStandardDatastoreEntryRequest::is_delete_success() con
 	}
 }
 
-QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional<QString>)
+QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::delete_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name);
 }
@@ -289,7 +289,7 @@ std::optional<OrderedDatastoreEntryFull> GetOrderedDatastoreEntryDetailsRequest:
 	}
 }
 
-QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optional<QString>)
+QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::get_ordered_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
 }
@@ -326,7 +326,7 @@ void GetOrderedDatastoreEntryListRequest::set_result_limit(const size_t limit)
 	result_limit = limit;
 }
 
-QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional<QString> cursor)
+QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional<QString> cursor) const
 {
 	return HttpRequestBuilder::get_ordered_datastore_entry_list(api_key, universe_id, datastore_name, scope, ascending, cursor);
 }
@@ -385,7 +385,7 @@ std::optional<StandardDatastoreEntryFull> GetStandardDatastoreEntryDetailsReques
 	}
 }
 
-QNetworkRequest GetStandardDatastoreEntryDetailsRequest::build_request(std::optional<QString>)
+QNetworkRequest GetStandardDatastoreEntryDetailsRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::get_standard_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
 }
@@ -460,9 +460,8 @@ void GetStandardDatastoreEntryListRequest::set_result_limit(const size_t limit)
 	result_limit = limit;
 }
 
-QNetworkRequest GetStandardDatastoreEntryListRequest::build_request(std::optional<QString> cursor)
+QNetworkRequest GetStandardDatastoreEntryListRequest::build_request(std::optional<QString> cursor) const
 {
-	//assert(!(cursor && initial_cursor))
 	QNetworkRequest request;
 	if (cursor)
 	{
@@ -471,7 +470,6 @@ QNetworkRequest GetStandardDatastoreEntryListRequest::build_request(std::optiona
 	else
 	{
 		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
-		initial_cursor = std::nullopt;
 	}
 	return request;
 }
@@ -534,7 +532,7 @@ GetStandardDatastoreEntryAtVersionRequest::GetStandardDatastoreEntryAtVersionReq
 
 }
 
-QNetworkRequest GetStandardDatastoreEntryAtVersionRequest::build_request(std::optional<QString>)
+QNetworkRequest GetStandardDatastoreEntryAtVersionRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::get_standard_datastore_entry_version_details(api_key, universe_id, datastore_name, scope, key_name, version);
 }
@@ -549,7 +547,7 @@ QString GetStandardDatastoreListRequest::get_title_string() const
 	return "Fetching datastores...";
 }
 
-QNetworkRequest GetStandardDatastoreListRequest::build_request(std::optional<QString> cursor)
+QNetworkRequest GetStandardDatastoreListRequest::build_request(std::optional<QString> cursor) const
 {
 	return HttpRequestBuilder::get_standard_datastore_list(api_key, universe_id, cursor);
 }
@@ -593,7 +591,7 @@ QString GetStandardDatastoreEntryVersionListRequest::get_title_string() const
 	return "Fetching datastore entry versions...";
 }
 
-QNetworkRequest GetStandardDatastoreEntryVersionListRequest::build_request(std::optional<QString> cursor)
+QNetworkRequest GetStandardDatastoreEntryVersionListRequest::build_request(std::optional<QString> cursor) const
 {
 	return HttpRequestBuilder::get_standard_datastore_entry_version_list(api_key, universe_id, datastore_name, scope, key_name, cursor);
 }
@@ -642,7 +640,7 @@ QString GetUniverseDetailsRequest::get_title_string() const
 	return "Fetching universe details...";
 }
 
-QNetworkRequest GetUniverseDetailsRequest::build_request(const std::optional<QString> cursor)
+QNetworkRequest GetUniverseDetailsRequest::build_request(const std::optional<QString> cursor) const
 {
 	return HttpRequestBuilder::get_universe_details(api_key, universe_id);
 }
@@ -674,7 +672,7 @@ QString PostMessagingServiceMessageRequest::get_title_string() const
 	return "Setting message...";
 }
 
-QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<QString>)
+QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::post_messaging_service_message(api_key, universe_id, topic);
 }
@@ -708,7 +706,7 @@ bool PostStandardDatastoreEntryRequest::get_success() const
 	return status == DataRequestStatus::Success;
 }
 
-QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>)
+QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::post_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name, body_md5, userids, attributes);
 }
