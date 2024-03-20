@@ -310,8 +310,8 @@ void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body
 	do_success("Complete");
 }
 
-GetOrderedDatastoreEntryListRequest::GetOrderedDatastoreEntryListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending, const std::optional<QString>& initial_cursor) :
-	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, ascending{ ascending }, initial_cursor { initial_cursor }
+GetOrderedDatastoreEntryListRequest::GetOrderedDatastoreEntryListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending) :
+	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, ascending{ ascending }
 {
 
 }

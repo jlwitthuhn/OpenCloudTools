@@ -133,7 +133,7 @@ private:
 class GetOrderedDatastoreEntryListRequest : public DataRequest
 {
 public:
-	GetOrderedDatastoreEntryListRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending, const std::optional<QString>& initial_cursor = std::nullopt);
+	GetOrderedDatastoreEntryListRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending);
 
 	virtual QString get_title_string() const override;
 
@@ -149,8 +149,6 @@ private:
 	QString datastore_name;
 	QString scope;
 	bool ascending;
-
-	std::optional<QString> initial_cursor;
 
 	std::optional<size_t> result_limit;
 
