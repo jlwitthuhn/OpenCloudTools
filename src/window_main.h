@@ -74,7 +74,8 @@ public:
 	explicit MainWindowAddUniverseWindow(QWidget* parent, const QString& api_key, bool edit_current);
 
 private:
-	bool input_is_valid() const;
+	bool id_is_valid() const;
+	bool name_is_valid() const;
 
 	void text_changed();
 	void pressed_add();

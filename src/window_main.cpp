@@ -447,56 +447,63 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 	text_changed();
 }
 
-bool MainWindowAddUniverseWindow::input_is_valid() const
+bool MainWindowAddUniverseWindow::id_is_valid() const
 {
-	const long long universe_id = id_edit->text().trimmed().toLongLong();
-	return name_edit->text().size() > 0 && universe_id > 100000L;
+	return id_edit->text().trimmed().toLongLong() > 100000L;
+}
+
+bool MainWindowAddUniverseWindow::name_is_valid() const
+{
+	return name_edit->text().size() > 0;
 }
 
 void MainWindowAddUniverseWindow::text_changed()
 {
-	fetch_name_button->setEnabled(input_is_valid());
-	add_button->setEnabled(input_is_valid());
+	fetch_name_button->setEnabled(id_is_valid());
+	add_button->setEnabled(id_is_valid() && name_is_valid());
 }
 
 void MainWindowAddUniverseWindow::pressed_add()
 {
-	const QString name = name_edit->text();
-	const long long universe_id = id_edit->text().trimmed().toLongLong();
-	if (edit_mode)
+	if (id_is_valid() && name_is_valid())
 	{
-		if (UserProfile::get_selected_universe()->set_details(name, universe_id))
+		const QString name = name_edit->text();
+		const long long universe_id = id_edit->text().trimmed().toLongLong();
+		if (edit_mode)
 		{
-			close();
+			if (UserProfile::get_selected_universe()->set_details(name, universe_id))
+			{
+				close();
+			}
+			else
+			{
+				QMessageBox* msg_box = new QMessageBox{ this };
+				msg_box->setWindowTitle("Update Failed");
+				msg_box->setText("Failed to update universe. A universe with that name or id already exists.");
+				msg_box->exec();
+			}
 		}
 		else
 		{
-			QMessageBox* msg_box = new QMessageBox{ this };
-			msg_box->setWindowTitle("Update Failed");
-			msg_box->setText("Failed to update universe. A universe with that name or id already exists.");
-			msg_box->exec();
-		}
-	}
-	else
-	{
-		const std::optional<size_t> new_id = UserProfile::get_selected_api_key()->add_universe(name, universe_id);
-		if (new_id)
-		{
-			close();
-		}
-		else
-		{
-			QMessageBox* msg_box = new QMessageBox{ this };
-			msg_box->setWindowTitle("Add Failed");
-			msg_box->setText("Failed to add new universe. A universe with that name or id already exists.");
-			msg_box->exec();
+			const std::optional<size_t> new_id = UserProfile::get_selected_api_key()->add_universe(name, universe_id);
+			if (new_id)
+			{
+				close();
+			}
+			else
+			{
+				QMessageBox* msg_box = new QMessageBox{ this };
+				msg_box->setWindowTitle("Add Failed");
+				msg_box->setText("Failed to add new universe. A universe with that name or id already exists.");
+				msg_box->exec();
+			}
 		}
 	}
 }
 
 void MainWindowAddUniverseWindow::pressed_fetch()
 {
-	if (input_is_valid())
+	if (id_is_valid())
 	{
 		const long long universe_id = id_edit->text().trimmed().toLongLong();
 		const auto req = std::make_shared<GetUniverseDetailsRequest>(api_key, universe_id);
