@@ -47,4 +47,7 @@ private:
 	QPushButton* find_descending_button = nullptr;
 
 	QPushButton* view_entry_button = nullptr;
+
+	QPushButton* increment_entry_button = nullptr;
+	QPushButton* edit_entry_button = nullptr;
 };

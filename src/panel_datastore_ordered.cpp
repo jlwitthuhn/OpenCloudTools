@@ -61,13 +61,33 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 				view_entry_button = new QPushButton{ "View entry...", read_button_panel };
 				connect(view_entry_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_view_entry);
 
-				QHBoxLayout* right_read_layout = new QHBoxLayout{ read_button_panel };
+				QHBoxLayout* const right_read_layout = new QHBoxLayout{ read_button_panel };
 				right_read_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 				right_read_layout->addWidget(view_entry_button);
 			}
 
+			QFrame* const separator = new QFrame{ search_panel };
+			separator->setFrameShape(QFrame::HLine);
+			separator->setFrameShadow(QFrame::Sunken);
+
+			QWidget* const edit_button_panel = new QWidget{ search_panel };
+			{
+				increment_entry_button = new QPushButton{ "Increment entry", edit_button_panel };
+				increment_entry_button->setEnabled(false);
+
+				edit_entry_button = new QPushButton{ "Edit entry...", edit_button_panel };
+				edit_entry_button->setEnabled(false);
+
+				QHBoxLayout* const right_edit_layout = new QHBoxLayout{ edit_button_panel };
+				right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+				right_edit_layout->addWidget(increment_entry_button);
+				right_edit_layout->addWidget(edit_entry_button);
+			}
+
 			QLayout* const search_layout = search_panel->layout();
 			search_layout->addWidget(read_button_panel);
+			search_layout->addWidget(separator);
+			search_layout->addWidget(edit_button_panel);
 		}
 	}
 
