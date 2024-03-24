@@ -9,13 +9,13 @@ class QWidget;
 
 enum class ChangeType
 {
-	Revert,
-	Update,
-	Delete,
-	MultiDelete,
-	BulkDelete,
-	BulkUndelete,
-	BulkUpload,
+	StandardDatastoreRevert,
+	StandardDatastoreUpdate,
+	StandardDatastoreDelete,
+	StandardDatastoreMultiDelete,
+	StandardDatastoreBulkDelete,
+	StandardDatastoreBulkUndelete,
+	StandardDatastoreBulkUpload,
 };
 
 class ConfirmChangeDialog : public QDialog

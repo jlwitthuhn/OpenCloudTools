@@ -223,7 +223,7 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
 	{
-		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkDelete };
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkDelete };
 		bool confirmed = static_cast<bool>(confirm_dialog->exec());
 		if (confirmed)
 		{
@@ -392,7 +392,7 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
 	{
-		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkUndelete };
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkUndelete };
 		bool confirmed = static_cast<bool>(confirm_dialog->exec());
 		if (confirmed)
 		{

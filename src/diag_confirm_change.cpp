@@ -18,25 +18,25 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	QLabel* info = new QLabel{ this };
 	switch (change_type)
 	{
-	case ChangeType::Revert:
+	case ChangeType::StandardDatastoreRevert:
 		info->setText("This action will re-save an old version of a datastore entry as the newest version. Are you sure you want to do this?");
 		break;
-	case ChangeType::Update:
+	case ChangeType::StandardDatastoreUpdate:
 		info->setText("This action will update the current value of the selected entry. Are you sure you want to do this?");
 		break;
-	case ChangeType::Delete:
+	case ChangeType::StandardDatastoreDelete:
 		info->setText("This action will delete the selected entry. Are you sure you want to do this?");
 		break;
-	case ChangeType::MultiDelete:
+	case ChangeType::StandardDatastoreMultiDelete:
 		info->setText("This action will delete all of the selected entries. Are you sure you want to do this?");
 		break;
-	case ChangeType::BulkDelete:
+	case ChangeType::StandardDatastoreBulkDelete:
 		info->setText("This action will delete the contents of the selected datastores. Are you sure you want to do this?");
 		break;
-	case ChangeType::BulkUndelete:
+	case ChangeType::StandardDatastoreBulkUndelete:
 		info->setText("This action will restore previously deleted data in the selected datastores. Are you sure you want to do this?");
 		break;
-	case ChangeType::BulkUpload:
+	case ChangeType::StandardDatastoreBulkUpload:
 		info->setText("This action will load the entire contents of a sqlite dump into this universe's datastore(s). Are you sure you want to do this?");
 		break;
 	}

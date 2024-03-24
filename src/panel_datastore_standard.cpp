@@ -355,7 +355,7 @@ void StandardDatastorePanel::delete_entry(const QModelIndex& index)
 			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Delete };
+				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreDelete };
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed == false)
 				{
@@ -375,7 +375,7 @@ void StandardDatastorePanel::delete_entry_list(const std::vector<StandardDatasto
 {
 	if (entry_list.size() > 1)
 	{
-		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::MultiDelete };
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreMultiDelete };
 		bool confirmed = static_cast<bool>(confirm_dialog->exec());
 		if (confirmed == false)
 		{
@@ -724,7 +724,7 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Update };
+	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreUpdate };
 	bool confirmed = static_cast<bool>(confirm_dialog->exec());
 	if (confirmed == false)
 	{

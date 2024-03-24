@@ -307,7 +307,7 @@ void ViewDatastoreEntryWindow::pressed_save()
 		return;
 	}
 
-	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Update };
+	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreUpdate };
 	bool confirmed = static_cast<bool>(confirm_dialog->exec());
 	if (confirmed == false)
 	{

@@ -112,7 +112,7 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 				const QString key_name = key_name_edit->text();
 				const QString version = opt_version->get_version();
 
-				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Revert };
+				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreRevert };
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed)
 				{
@@ -220,7 +220,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 				const QString key_name = key_name_edit->text();
 				const QString version = opt_version->get_version();
 
-				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::Revert };
+				ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreRevert };
 				bool confirmed = static_cast<bool>(confirm_dialog->exec());
 				if (confirmed)
 				{

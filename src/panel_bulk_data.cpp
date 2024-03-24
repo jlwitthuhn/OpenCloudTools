@@ -213,7 +213,7 @@ void BulkDataPanel::pressed_upload()
 {
 	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
 	{
-		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BulkUpload };
+		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkUpload };
 		bool confirmed = static_cast<bool>(confirm_dialog->exec());
 		if (confirmed)
 		{
