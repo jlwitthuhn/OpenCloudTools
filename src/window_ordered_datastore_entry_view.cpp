@@ -5,7 +5,7 @@
 
 #include "model_common.h"
 
-ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const ViewEditMode) :
+ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const EditMode edit_mode) :
 	QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -43,6 +43,17 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 		info_layout->addRow("Scope", scope_edit);
 		info_layout->addRow("Key", key_name_edit);
 		info_layout->addRow("Value", value_edit);
+
+		if (edit_mode == EditMode::Increment)
+		{
+			increment_edit = new QLineEdit{ info_panel };
+			info_layout->addRow("Increment By", increment_edit);
+		}
+		else if (edit_mode == EditMode::Edit)
+		{
+			new_value_edit = new QLineEdit{ info_panel };
+			info_layout->addRow("New Value", new_value_edit);
+		}
 	}
 
 	QVBoxLayout* const layout = new QVBoxLayout{ this };

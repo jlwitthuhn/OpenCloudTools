@@ -23,7 +23,6 @@
 #include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
-#include "window_ordered_datastore_entry_view.h"
 
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : BaseDatastorePanel(parent, api_key)
 {
@@ -72,11 +71,11 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 
 			QWidget* const edit_button_panel = new QWidget{ search_panel };
 			{
-				increment_entry_button = new QPushButton{ "Increment entry", edit_button_panel };
-				increment_entry_button->setEnabled(false);
+				increment_entry_button = new QPushButton{ "Increment entry...", edit_button_panel };
+				connect(increment_entry_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_increment);
 
 				edit_entry_button = new QPushButton{ "Edit entry...", edit_button_panel };
-				edit_entry_button->setEnabled(false);
+				connect(edit_entry_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_edit);
 
 				QHBoxLayout* const right_edit_layout = new QHBoxLayout{ edit_button_panel };
 				right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -130,7 +129,7 @@ void OrderedDatastorePanel::set_datastore_entry_model(OrderedDatastoreEntryQTabl
 	handle_selected_datastore_entry_changed();
 }
 
-void OrderedDatastorePanel::view_entry(const QModelIndex& index)
+void OrderedDatastorePanel::view_entry(const QModelIndex& index, ViewOrderedDatastoreEntryWindow::EditMode edit_mode)
 {
 	if (index.isValid())
 	{
@@ -153,7 +152,7 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index)
 				const std::optional<OrderedDatastoreEntryFull> opt_details = req->get_details();
 				if (opt_details)
 				{
-					ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ this, api_key, *opt_details };
+					ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ this, api_key, *opt_details, edit_mode };
 					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_entry_window->show();
 				}
@@ -171,7 +170,7 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index)
 
 void OrderedDatastorePanel::handle_datastore_entry_double_clicked(const QModelIndex& index)
 {
-	view_entry(index);
+	view_entry(index, ViewOrderedDatastoreEntryWindow::EditMode::View);
 }
 
 void OrderedDatastorePanel::handle_search_text_changed()
@@ -295,5 +294,15 @@ void OrderedDatastorePanel::pressed_remove_datastore()
 
 void OrderedDatastorePanel::pressed_view_entry()
 {
-	view_entry(get_selected_single_index());
+	view_entry(get_selected_single_index(), ViewOrderedDatastoreEntryWindow::EditMode::View);
+}
+
+void OrderedDatastorePanel::pressed_edit()
+{
+	view_entry(get_selected_single_index(), ViewOrderedDatastoreEntryWindow::EditMode::Edit);
+}
+
+void OrderedDatastorePanel::pressed_increment()
+{
+	view_entry(get_selected_single_index(), ViewOrderedDatastoreEntryWindow::EditMode::Increment);
 }

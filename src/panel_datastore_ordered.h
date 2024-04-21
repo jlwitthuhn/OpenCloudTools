@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "panel_datastore_base.h"
+#include "window_ordered_datastore_entry_view.h"
 
 class QCheckBox;
 class QPushButton;
@@ -22,7 +23,7 @@ public:
 private:
 	void set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model);
 
-	void view_entry(const QModelIndex& index);
+	void view_entry(const QModelIndex& index, ViewOrderedDatastoreEntryWindow::EditMode edit_mode);
 
 	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) override;
 	virtual void handle_search_text_changed() override;
@@ -39,6 +40,9 @@ private:
 	void pressed_find_descending();
 	void pressed_remove_datastore();
 	void pressed_view_entry();
+
+	void pressed_edit();
+	void pressed_increment();
 
 	QCheckBox* save_recent_datastores_check = nullptr;
 	QPushButton* remove_datastore_button = nullptr;
