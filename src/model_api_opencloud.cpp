@@ -44,6 +44,10 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 			value_opt = value_it.value().toInteger();
 #endif
 		}
+		else if (value_it.value().isString())
+		{
+			value_opt = value_it.value().toInteger();
+		}
 	}
 
 	if (path_opt && id_opt && value_opt)
