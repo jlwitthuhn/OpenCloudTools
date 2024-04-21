@@ -7,7 +7,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-
 std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::from_json(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
@@ -107,6 +106,10 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 #else
 							value_opt = value_it.value().toInteger();
 #endif
+						}
+						else if (value_it.value().isString())
+						{
+							value_opt = value_it.value().toInteger();
 						}
 					}
 
