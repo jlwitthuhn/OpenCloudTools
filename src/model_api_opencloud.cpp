@@ -46,7 +46,7 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 		}
 		else if (value_it.value().isString())
 		{
-			value_opt = value_it.value().toInteger();
+			value_opt = value_it.value().toString().toLongLong();
 		}
 	}
 
@@ -113,7 +113,7 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 						}
 						else if (value_it.value().isString())
 						{
-							value_opt = value_it.value().toInteger();
+							value_opt = value_it.value().toString().toLongLong();
 						}
 					}
 
