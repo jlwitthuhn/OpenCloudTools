@@ -2,6 +2,8 @@
 
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 #include "model_common.h"
 
@@ -10,7 +12,18 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	setWindowTitle("View Ordered Datastore Entry");
+	switch (edit_mode)
+	{
+		case EditMode::View:
+			setWindowTitle("View Ordered Datastore Entry");
+			break;
+		case EditMode::Increment:
+			setWindowTitle("Increment Ordered Datastore Entry");
+			break;
+		case EditMode::Edit:
+			setWindowTitle("Edit Ordered Datastore Entry");
+			break;
+	}
 	setMinimumWidth(320);
 
 	QWidget* const info_panel = new QWidget{ this };
@@ -47,15 +60,71 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 		if (edit_mode == EditMode::Increment)
 		{
 			increment_edit = new QLineEdit{ info_panel };
+			connect(increment_edit, &QLineEdit::textChanged, this, &ViewOrderedDatastoreEntryWindow::changed_increment);
 			info_layout->addRow("Increment By", increment_edit);
 		}
 		else if (edit_mode == EditMode::Edit)
 		{
 			new_value_edit = new QLineEdit{ info_panel };
+			connect(new_value_edit, &QLineEdit::textChanged, this, &ViewOrderedDatastoreEntryWindow::changed_new_value);
 			info_layout->addRow("New Value", new_value_edit);
+		}
+	}
+
+	QWidget* const button_panel = new QWidget{ this };
+	{
+		QVBoxLayout* const button_layout = new QVBoxLayout{ button_panel };
+		button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+
+		if (edit_mode == EditMode::Increment)
+		{
+			increment_submit = new QPushButton{ "Increment", button_panel };
+			increment_submit->setEnabled(false);
+			connect(increment_submit, &QPushButton::pressed, this, &ViewOrderedDatastoreEntryWindow::pressed_increment);
+			button_layout->addWidget(increment_submit);
+		}
+		else if (edit_mode == EditMode::Edit)
+		{
+			new_value_submit = new QPushButton{ "Update", button_panel };
+			new_value_submit->setEnabled(false);
+			connect(new_value_submit, &QPushButton::pressed, this, &ViewOrderedDatastoreEntryWindow::pressed_new_value);
+			button_layout->addWidget(new_value_submit);
 		}
 	}
 
 	QVBoxLayout* const layout = new QVBoxLayout{ this };
 	layout->addWidget(info_panel);
+	if (edit_mode == EditMode::Increment || edit_mode == EditMode::Edit)
+	{
+		layout->addWidget(button_panel);
+	}
+}
+
+bool ViewOrderedDatastoreEntryWindow::validate_contains_long(QLineEdit* const line)
+{
+	bool success = false;
+	line->text().toLongLong(&success);
+	return success;
+}
+
+void ViewOrderedDatastoreEntryWindow::changed_increment()
+{
+	//assert(increment_submit != nullptr && increment_edit != nullptr)
+	increment_submit->setEnabled(validate_contains_long(increment_edit));
+}
+
+void ViewOrderedDatastoreEntryWindow::changed_new_value()
+{
+	//assert(new_value_submit != nullptr && new_value_edit != nullptr)
+	new_value_submit->setEnabled(validate_contains_long(new_value_edit));
+}
+
+void ViewOrderedDatastoreEntryWindow::pressed_increment()
+{
+	// TODO
+}
+
+void ViewOrderedDatastoreEntryWindow::pressed_new_value()
+{
+	// TODO
 }

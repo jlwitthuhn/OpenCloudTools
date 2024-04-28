@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QLineEdit;
+class QPushButton;
 
 class OrderedDatastoreEntryFull;
 
@@ -21,6 +22,14 @@ public:
 	ViewOrderedDatastoreEntryWindow(QWidget* parent, const QString& api_key, const OrderedDatastoreEntryFull& details, EditMode edit_mode = EditMode::View);
 
 private:
+	static bool validate_contains_long(QLineEdit* line);
+
+	void changed_increment();
+	void changed_new_value();
+
+	void pressed_increment();
+	void pressed_new_value();
+
 	QLineEdit* universe_id_edit = nullptr;
 	QLineEdit* datastore_name_edit = nullptr;
 	QLineEdit* scope_edit = nullptr;
@@ -29,9 +38,11 @@ private:
 
 	// Increment mode only
 	QLineEdit* increment_edit = nullptr;
+	QPushButton* increment_submit = nullptr;
 
 	// Edit mode only
 	QLineEdit* new_value_edit = nullptr;
+	QPushButton* new_value_submit = nullptr;
 
 	QString api_key;
 };
