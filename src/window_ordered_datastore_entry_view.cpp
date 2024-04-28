@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "model_common.h"
 
 ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const EditMode edit_mode) :
@@ -109,13 +110,13 @@ bool ViewOrderedDatastoreEntryWindow::validate_contains_long(QLineEdit* const li
 
 void ViewOrderedDatastoreEntryWindow::changed_increment()
 {
-	//assert(increment_submit != nullptr && increment_edit != nullptr)
+	OCTASSERT(increment_submit != nullptr && increment_edit != nullptr);
 	increment_submit->setEnabled(validate_contains_long(increment_edit));
 }
 
 void ViewOrderedDatastoreEntryWindow::changed_new_value()
 {
-	//assert(new_value_submit != nullptr && new_value_edit != nullptr)
+	OCTASSERT(new_value_submit != nullptr && new_value_edit != nullptr);
 	new_value_submit->setEnabled(validate_contains_long(new_value_edit));
 }
 

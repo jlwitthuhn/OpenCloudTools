@@ -7,6 +7,8 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include "assert.h"
+
 std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::from_json(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
@@ -52,7 +54,7 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 
 	if (path_opt && id_opt && value_opt)
 	{
-		//assert(*id_opt == key_name)
+		OCTASSERT(*id_opt == key_name);
 		return GetOrderedDatastoreEntryDetailsResponse{ *path_opt, universe_id, datastore_name, scope, *id_opt, *value_opt };
 	}
 	else

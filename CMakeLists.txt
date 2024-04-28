@@ -28,6 +28,8 @@ add_library(extern_sqlite3 STATIC ./extern/sqlite/sqlite3.c)
 
 set(OPENCLOUDTOOLS_SRC
 	./src/main.cpp
+	./src/assert.cpp
+	./src/assert.h
 	./src/build_info.cpp
 	./src/build_info.h
 	./src/data_request.cpp
