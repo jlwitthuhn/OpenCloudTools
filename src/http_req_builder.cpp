@@ -141,6 +141,21 @@ QNetworkRequest HttpRequestBuilder::post_messaging_service_message(const QString
 	return req;
 }
 
+QNetworkRequest HttpRequestBuilder::post_ordered_datastore_entry_increment(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
+{
+	QString url = ordered_datastore_base_url(universe_id);
+	url = url + "/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name);
+	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
+	url = url + "/entries/" + QUrl::toPercentEncoding(entry_id);
+	url = url + ":increment";
+
+	QNetworkRequest req{ url };
+	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
+	return req;
+}
+
 QNetworkRequest HttpRequestBuilder::post_standard_datastore_entry(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& body_md5, const std::optional<QString>& userids, const std::optional<QString>& attributes)
 {
 	QString url = standard_datastore_base_url(universe_id) + "/standard-datastores/datastore/entries/entry";

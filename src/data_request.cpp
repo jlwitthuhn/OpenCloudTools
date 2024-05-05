@@ -688,6 +688,38 @@ QString PostMessagingServiceMessageRequest::get_send_message() const
 	return QString{ "Sending message to '%1'..." }.arg(topic);
 }
 
+PostOrderedDatastoreIncrementRequest::PostOrderedDatastoreIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long increment_by)
+	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, increment_by{ increment_by }
+{
+	request_type = HttpRequestType::Post;
+	QJsonObject body_json_obj;
+	body_json_obj.insert("amount", QJsonValue::fromVariant(increment_by));
+	const QJsonDocument body_json_doc{ body_json_obj };
+	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
+	post_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
+	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
+}
+
+QString PostOrderedDatastoreIncrementRequest::get_title_string() const
+{
+	return "Incrementing entry...";
+}
+
+QNetworkRequest PostOrderedDatastoreIncrementRequest::build_request(std::optional<QString>) const
+{
+	return HttpRequestBuilder::post_ordered_datastore_entry_increment(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+}
+
+void PostOrderedDatastoreIncrementRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	do_success("Complete");
+}
+
+QString PostOrderedDatastoreIncrementRequest::get_send_message() const
+{
+	return QString{ "Incrementing '%1' by %2..." }.arg(entry_id).arg(increment_by);
+}
+
 PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body)
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, userids{ userids }, attributes{ attributes }
 {

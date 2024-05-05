@@ -23,6 +23,7 @@ public:
 	static QNetworkRequest get_universe_details(const QString& api_key, long long universe_id);
 
 	static QNetworkRequest post_messaging_service_message(const QString api_key, long long universe_id, const QString& topic);
+	static QNetworkRequest post_ordered_datastore_entry_increment(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 	static QNetworkRequest post_standard_datastore_entry(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& body_md5, const std::optional<QString>& userids, const std::optional<QString>& attributes);
 
 private:

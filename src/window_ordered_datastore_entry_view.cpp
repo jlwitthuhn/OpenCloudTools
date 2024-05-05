@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 
 #include "assert.h"
+#include "data_request.h"
+#include "diag_operation_in_progress.h"
 #include "model_common.h"
 
 ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const EditMode edit_mode) :
@@ -122,7 +124,23 @@ void ViewOrderedDatastoreEntryWindow::changed_new_value()
 
 void ViewOrderedDatastoreEntryWindow::pressed_increment()
 {
-	// TODO
+	OCTASSERT(increment_edit != nullptr);
+	const bool universe_id_valid = validate_contains_long(universe_id_edit);
+	const bool increment_by_valid = validate_contains_long(increment_edit);
+	if (universe_id_valid && increment_by_valid)
+	{
+		const long long universe_id = universe_id_edit->text().toLongLong();
+		const QString datastore_name = datastore_name_edit->text();
+		const QString scope = scope_edit->text();
+		const QString key_name = key_name_edit->text();
+		const long long increment_by = increment_edit->text().toLongLong();
+		auto req = std::make_shared<PostOrderedDatastoreIncrementRequest>(api_key, universe_id, datastore_name, scope, key_name, increment_by);
+
+		OperationInProgressDialog diag{ this, req };
+		diag.exec();
+
+		this->close();
+	}
 }
 
 void ViewOrderedDatastoreEntryWindow::pressed_new_value()
