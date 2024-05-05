@@ -131,7 +131,7 @@ void ViewDatastoreEntryVersionsWindow::revert_to_version(const QModelIndex& inde
 						OperationInProgressDialog post_diag{ this, post_req };
 						post_diag.exec();
 
-						if (post_req->get_success())
+						if (post_req->req_success())
 						{
 							pressed_refresh();
 						}
@@ -239,7 +239,7 @@ void ViewDatastoreEntryVersionsWindow::pressed_revert()
 						OperationInProgressDialog post_diag{ this, post_req };
 						post_diag.exec();
 
-						if (post_req->get_success())
+						if (post_req->req_success())
 						{
 							pressed_refresh();
 						}

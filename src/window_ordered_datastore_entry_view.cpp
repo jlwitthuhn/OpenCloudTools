@@ -139,7 +139,11 @@ void ViewOrderedDatastoreEntryWindow::pressed_increment()
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 
-		this->close();
+		if (req->req_success())
+		{
+			// TODO: Change this to refresh
+			this->close();
+		}
 	}
 }
 

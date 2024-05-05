@@ -33,7 +33,8 @@ class DataRequest : public QObject
 	Q_OBJECT
 
 public:
-	DataRequestStatus request_status() const { return status; }
+	DataRequestStatus req_status() const { return status; }
+	bool req_success() const { return status == DataRequestStatus::Success; }
 
 	void send_request(std::optional<QString> cursor = std::nullopt);
 	void force_retry();
@@ -43,7 +44,7 @@ public:
 	void set_http_429_count(size_t new_count) { http_429_count = new_count; }
 
 signals:
-	void request_success();
+	void success();
 	void status_error(QString message);
 	void status_info(QString message);
 	void received_http_429();
@@ -335,8 +336,6 @@ public:
 	PostStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body);
 
 	virtual QString get_title_string() const override;
-
-	bool get_success() const;
 
 	const QString& get_datastore_name() const { return datastore_name; }
 	const QString& get_scope() const { return scope; }

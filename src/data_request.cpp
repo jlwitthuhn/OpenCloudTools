@@ -216,7 +216,7 @@ void DataRequest::do_success(const QString& message)
 {
 	status = DataRequestStatus::Success;
 	emit status_info(message);
-	emit request_success();
+	emit success();
 }
 
 DeleteStandardDatastoreEntryRequest::DeleteStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
@@ -730,11 +730,6 @@ PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(const QStri
 QString PostStandardDatastoreEntryRequest::get_title_string() const
 {
 	return "Setting entry...";
-}
-
-bool PostStandardDatastoreEntryRequest::get_success() const
-{
-	return status == DataRequestStatus::Success;
 }
 
 QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>) const

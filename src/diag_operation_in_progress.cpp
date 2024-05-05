@@ -113,9 +113,9 @@ void OperationInProgressDialog::send_next_request()
 		top_label->setText(pending_request->get_title_string());
 
 		connect(pending_request.get(), &DataRequest::received_http_429, this, &OperationInProgressDialog::handle_received_http_429);
-		connect(pending_request.get(), &DataRequest::request_success, this, &OperationInProgressDialog::handle_request_complete);
 		connect(pending_request.get(), &DataRequest::status_error, this, &OperationInProgressDialog::handle_status_error);
 		connect(pending_request.get(), &DataRequest::status_info, this, &OperationInProgressDialog::handle_status_info);
+		connect(pending_request.get(), &DataRequest::success, this, &OperationInProgressDialog::handle_request_complete);
 
 		pending_request->send_request();
 	}
@@ -127,7 +127,7 @@ void OperationInProgressDialog::send_next_request()
 
 void OperationInProgressDialog::handle_clicked_retry()
 {
-	if (pending_request && pending_request->request_status() == DataRequestStatus::Error)
+	if (pending_request && pending_request->req_status() == DataRequestStatus::Error)
 	{
 		retry_button->setEnabled(false);
 		pending_request->force_retry();

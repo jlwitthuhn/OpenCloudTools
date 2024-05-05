@@ -766,7 +766,7 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 	OperationInProgressDialog diag{ this, post_req };
 	diag.exec();
 
-	if (post_req->get_success())
+	if (post_req->req_success())
 	{
 		add_entry_data_edit->clear();
 		add_entry_userids_edit->clear();
