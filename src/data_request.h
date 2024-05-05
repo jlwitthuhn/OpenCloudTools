@@ -69,7 +69,7 @@ protected:
 	int get_next_429_delay();
 
 	void do_error(const QString& message);
-	void do_success(const QString& message);
+	void do_success(const QString& message = "Success");
 
 	DataRequestStatus status;
 

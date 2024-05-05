@@ -250,7 +250,7 @@ QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional
 void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	delete_success = true;
-	do_success("Delete success");
+	do_success();
 }
 
 void DeleteStandardDatastoreEntryRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -679,7 +679,7 @@ QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<
 
 void PostMessagingServiceMessageRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	do_success("Sent");
+	do_success("Message sent");
 }
 
 QString PostMessagingServiceMessageRequest::get_send_message() const
@@ -711,7 +711,7 @@ QNetworkRequest PostOrderedDatastoreIncrementRequest::build_request(std::optiona
 
 void PostOrderedDatastoreIncrementRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	do_success("Complete");
+	do_success();
 }
 
 QString PostOrderedDatastoreIncrementRequest::get_send_message() const
@@ -739,7 +739,7 @@ QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<Q
 
 void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	do_success("Complete");
+	do_success();
 }
 
 QString PostStandardDatastoreEntryRequest::get_send_message() const
