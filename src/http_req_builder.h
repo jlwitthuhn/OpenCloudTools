@@ -27,8 +27,8 @@ public:
 	static QNetworkRequest post_standard_datastore_entry(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& body_md5, const std::optional<QString>& userids, const std::optional<QString>& attributes);
 
 private:
-	static QString messaging_base_url(long long universe_id);
-	static QString ordered_datastore_base_url(long long universe_id);
-	static QString standard_datastore_base_url(long long universe_id);
-	static QString universe_base_url(long long universe_id);
+	static QString base_url_messaging(long long universe_id);
+	static QString base_url_ordered_datastore(long long universe_id);
+	static QString base_url_standard_datastorel(long long universe_id);
+	static QString base_url_universe(long long universe_id);
 };
