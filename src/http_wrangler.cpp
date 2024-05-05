@@ -8,6 +8,7 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+#include "assert.h"
 #include "util_enum.h"
 
 constexpr size_t LOG_MAX_ENTRIES = 1000;
@@ -139,6 +140,7 @@ QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int 
 
 QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body)
 {
+	OCTASSERT(!body || (body && type == HttpRequestType::Post));
 	init_network_manager();
 	request.setAttribute(QNetworkRequest::Attribute::Http2AllowedAttribute, false);
 	add_log_entry(HttpLogEntry{ type, request.url().toString() });

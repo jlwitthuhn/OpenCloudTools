@@ -82,7 +82,7 @@ protected:
 	QTimer* request_timeout = nullptr;
 
 	HttpRequestType request_type = HttpRequestType::Get;
-	std::optional<QString> post_body;
+	std::optional<QString> body_data;
 
 	size_t http_429_count = 0;
 };

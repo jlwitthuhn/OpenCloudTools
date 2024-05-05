@@ -35,7 +35,7 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	pending_request_cursor = cursor;
 	pending_request = build_request(cursor);
-	pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
+	pending_reply = HttpWrangler::send(request_type, *pending_request, body_data);
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
@@ -162,7 +162,7 @@ void DataRequest::resend()
 	if (pending_request)
 	{
 		emit status_info("Resending...");
-		pending_reply = HttpWrangler::send(request_type, *pending_request, post_body);
+		pending_reply = HttpWrangler::send(request_type, *pending_request, body_data);
 		connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 		timeout_begin();
 	}
@@ -664,7 +664,7 @@ PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(const QSt
 	send_object.insert("message", unencoded_message);
 
 	const QJsonDocument doc{ send_object };
-	post_body = doc.toJson(QJsonDocument::Compact);
+	body_data = doc.toJson(QJsonDocument::Compact);
 }
 
 QString PostMessagingServiceMessageRequest::get_title_string() const
@@ -695,7 +695,7 @@ PostOrderedDatastoreIncrementRequest::PostOrderedDatastoreIncrementRequest(const
 	body_json_obj.insert("amount", QJsonValue::fromVariant(increment_by));
 	const QJsonDocument body_json_doc{ body_json_obj };
 	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
-	post_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
+	body_data = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
 }
 
@@ -723,7 +723,7 @@ PostStandardDatastoreEntryRequest::PostStandardDatastoreEntryRequest(const QStri
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, userids{ userids }, attributes{ attributes }
 {
 	request_type = HttpRequestType::Post;
-	post_body = body;
+	body_data = body;
 	body_md5 = QCryptographicHash::hash(body.toUtf8(), QCryptographicHash::Algorithm::Md5).toBase64();
 }
 
