@@ -299,8 +299,6 @@ public:
 
 	virtual QString get_title_string() const override;
 
-	bool get_success() const { return success; }
-
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
@@ -308,8 +306,6 @@ private:
 
 	long long universe_id;
 	QString topic;
-
-	bool success = false;
 };
 
 class PostOrderedDatastoreIncrementRequest : public DataRequest

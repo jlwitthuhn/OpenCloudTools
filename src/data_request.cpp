@@ -679,7 +679,6 @@ QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<
 
 void PostMessagingServiceMessageRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	success = true;
 	do_success("Sent");
 }
 
