@@ -265,7 +265,6 @@ QString DeleteStandardDatastoreEntryRequest::get_send_message() const
 }
 
 
-
 GetOrderedDatastoreEntryDetailsRequest::GetOrderedDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
@@ -308,6 +307,11 @@ void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body
 	}
 
 	do_success("Complete");
+}
+
+QString GetOrderedDatastoreEntryDetailsRequest::get_send_message() const
+{
+	return QString{ "Fetching information for key '%1'..." }.arg(key_name);
 }
 
 GetOrderedDatastoreEntryListRequest::GetOrderedDatastoreEntryListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending) :
