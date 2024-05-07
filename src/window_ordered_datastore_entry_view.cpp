@@ -13,6 +13,7 @@
 ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const EditMode edit_mode) :
 	QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
+	OCTASSERT(parent != nullptr && parent->isWindow());
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	switch (edit_mode)
@@ -33,23 +34,18 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 	{
 		universe_id_edit = new QLineEdit{ info_panel };
 		universe_id_edit->setReadOnly(true);
-		universe_id_edit->setText(QString::number(details.get_universe_id()));
 
 		datastore_name_edit = new QLineEdit{ info_panel };
 		datastore_name_edit->setReadOnly(true);
-		datastore_name_edit->setText(details.get_datastore_name());
 
 		scope_edit = new QLineEdit{ info_panel };
 		scope_edit->setReadOnly(true);
-		scope_edit->setText(details.get_scope());
 
 		key_name_edit = new QLineEdit{ info_panel };
 		key_name_edit->setReadOnly(true);
-		key_name_edit->setText(details.get_key_name());
 
 		value_edit = new QLineEdit{ info_panel };
 		value_edit->setReadOnly(true);
-		value_edit->setText(QString::number(details.get_value()));
 
 		QFormLayout* const info_layout = new QFormLayout{ info_panel };
 		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -101,6 +97,8 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 	{
 		layout->addWidget(button_panel);
 	}
+
+	display(details);
 }
 
 bool ViewOrderedDatastoreEntryWindow::validate_contains_long(QLineEdit* const line)
@@ -108,6 +106,49 @@ bool ViewOrderedDatastoreEntryWindow::validate_contains_long(QLineEdit* const li
 	bool success = false;
 	line->text().toLongLong(&success);
 	return success;
+}
+
+void ViewOrderedDatastoreEntryWindow::display(const OrderedDatastoreEntryFull& details)
+{
+	universe_id_edit->setText(QString::number(details.get_universe_id()));
+	datastore_name_edit->setText(details.get_datastore_name());
+	scope_edit->setText(details.get_scope());
+	key_name_edit->setText(details.get_key_name());
+	value_edit->setText(QString::number(details.get_value()));
+}
+
+void ViewOrderedDatastoreEntryWindow::refresh()
+{
+	OCTASSERT(validate_contains_long(universe_id_edit));
+	const long long universe_id = universe_id_edit->text().toLongLong();
+	const QString datastore_name = datastore_name_edit->text();
+	const QString scope = scope_edit->text();
+	const QString key_name = key_name_edit->text();
+
+	const auto req = std::make_shared<GetOrderedDatastoreEntryDetailsRequest>(
+		api_key,
+		universe_id,
+		datastore_name,
+		scope,
+		key_name
+	);
+
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (auto new_details = req->get_details())
+	{
+		display(*new_details);
+	}
+
+	if (increment_edit)
+	{
+		increment_edit->clear();
+	}
+	if (new_value_edit)
+	{
+		new_value_edit->clear();
+	}
 }
 
 void ViewOrderedDatastoreEntryWindow::changed_increment()
@@ -141,8 +182,7 @@ void ViewOrderedDatastoreEntryWindow::pressed_increment()
 
 		if (req->req_success())
 		{
-			// TODO: Change this to refresh
-			this->close();
+			refresh();
 		}
 	}
 }

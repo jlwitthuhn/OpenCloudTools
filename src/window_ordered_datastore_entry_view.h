@@ -24,6 +24,9 @@ public:
 private:
 	static bool validate_contains_long(QLineEdit* line);
 
+	void display(const OrderedDatastoreEntryFull& details);
+	void refresh();
+
 	void changed_increment();
 	void changed_new_value();
 

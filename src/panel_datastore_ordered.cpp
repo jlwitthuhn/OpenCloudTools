@@ -152,8 +152,8 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index, ViewOrderedData
 				const std::optional<OrderedDatastoreEntryFull> opt_details = req->get_details();
 				if (opt_details)
 				{
-					ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ this, api_key, *opt_details, edit_mode };
-					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+					ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ window(), api_key, *opt_details, edit_mode};
+					view_entry_window->setWindowModality(Qt::WindowModality::WindowModal);
 					view_entry_window->show();
 				}
 				else
