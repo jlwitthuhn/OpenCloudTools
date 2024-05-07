@@ -13,7 +13,6 @@
 ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const parent, const QString& api_key, const OrderedDatastoreEntryFull& details, const EditMode edit_mode) :
 	QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
-	OCTASSERT(parent != nullptr && parent->isWindow());
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	switch (edit_mode)
