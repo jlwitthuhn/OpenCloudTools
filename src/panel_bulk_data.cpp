@@ -122,7 +122,6 @@ void BulkDataPanel::pressed_delete()
 		if (datastores.size() > 0)
 		{
 			DatastoreBulkDeleteWindow* delete_window = new DatastoreBulkDeleteWindow{ this, api_key, universe_id, datastores };
-			delete_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			delete_window->show();
 		}
 	}
@@ -142,7 +141,6 @@ void BulkDataPanel::pressed_download()
 		if (datastores.size() > 0)
 		{
 			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_id, datastores };
-			download_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			download_window->show();
 		}
 	}
@@ -183,7 +181,6 @@ void BulkDataPanel::pressed_download_resume()
 		}
 
 		DatastoreBulkDownloadProgressWindow* progress_window = new DatastoreBulkDownloadProgressWindow{ this, api_key, universe_id, std::move(writer) };
-		progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 		progress_window->show();
 		progress_window->start();
 	}
@@ -203,7 +200,6 @@ void BulkDataPanel::pressed_undelete()
 		if (datastores.size() > 0)
 		{
 			DatastoreBulkUndeleteWindow* undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_id, datastores };
-			undelete_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			undelete_window->show();
 		}
 	}

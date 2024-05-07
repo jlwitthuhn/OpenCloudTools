@@ -18,6 +18,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
@@ -29,6 +30,9 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 	: QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	setWindowTitle("View Versions");
 	setMinimumWidth(725);
@@ -164,7 +168,6 @@ void ViewDatastoreEntryVersionsWindow::view_version(const QModelIndex& index)
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
-					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_entry_window->show();
 				}
 			}
@@ -198,10 +201,8 @@ void ViewDatastoreEntryVersionsWindow::pressed_refresh()
 	if (req->get_versions().size() > 0)
 	{
 		ViewDatastoreEntryVersionsWindow* view_versions_window = new ViewDatastoreEntryVersionsWindow{ parentWidget(), api_key, universe_id, datastore_name, scope, key_name, req->get_versions()};
-		view_versions_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 		view_versions_window->show();
 		close();
-		deleteLater();
 	}
 }
 

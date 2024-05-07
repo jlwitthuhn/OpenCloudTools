@@ -24,6 +24,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "diag_confirm_change.h"
 #include "profile.h"
 #include "roblox_time.h"
@@ -36,6 +37,9 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 	universe_id{ universe_id }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	QWidget* main_panel = new QWidget{ this };
 	{
@@ -191,6 +195,7 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
 {
 	setWindowTitle("Delete Datastores");
+
 	submit_button->setText("Delete");
 
 	QGroupBox* options_box = new QGroupBox{ "Delete Options", right_bar };
@@ -234,7 +239,6 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 			const bool hide_datastores_after = hide_after_delete_check->isChecked();
 			DatastoreBulkDeleteProgressWindow* progress_window = new DatastoreBulkDeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, confirm_count_before_delete, rewrite_before_delete, hide_datastores_after };
 			close();
-			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			progress_window->show();
 			progress_window->start();
 		}
@@ -252,6 +256,7 @@ DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const 
 	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
 {
 	setWindowTitle("Download Datastores");
+
 	submit_button->setText("Save as...");
 	right_bar_layout->addStretch();
 }
@@ -294,7 +299,6 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 				const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
 				DatastoreBulkDownloadProgressWindow* progress_window = new DatastoreBulkDownloadProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, std::move(writer) };
 				close();
-				progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 				progress_window->show();
 				progress_window->start();
 			}
@@ -400,7 +404,6 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
 			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, get_undelete_after_time() };
 			close();
-			progress_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 			progress_window->show();
 			progress_window->start();
 		}

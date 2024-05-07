@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "data_request.h"
 #include "profile.h"
 #include "roblox_time.h"
@@ -31,6 +32,9 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setMinimumHeight(380);
+
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };

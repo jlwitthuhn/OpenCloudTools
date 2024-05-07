@@ -23,6 +23,7 @@
 #include <QVariant>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "profile.h"
 #include "tooltip_text.h"
 #include "window_main.h"
@@ -124,7 +125,6 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 void ManageApiKeysWindow::pressed_add()
 {
 	AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this };
-	add_key_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 	add_key_window->show();
 }
 
@@ -140,7 +140,6 @@ void ManageApiKeysWindow::pressed_edit()
 			if (UserProfile::get()->get_api_key_by_index(key_index))
 			{
 				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, key_index };
-				add_key_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 				add_key_window->show();
 			}
 		}
@@ -230,6 +229,9 @@ void ManageApiKeysWindow::selection_changed()
 AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size_t> existing_key_index_in) : QWidget{ parent, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	const ApiKeyProfile* const existing_key_profile = existing_key_index_in.has_value() ? UserProfile::get()->get_api_key_by_index(*existing_key_index_in) : nullptr;
 	if (existing_key_profile)

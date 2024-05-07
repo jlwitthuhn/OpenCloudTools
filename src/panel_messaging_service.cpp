@@ -19,6 +19,7 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "profile.h"
@@ -201,10 +202,11 @@ void MessagingServicePanel::pressed_send()
 
 MessagingServiceAddTopicWindow::MessagingServiceAddTopicWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
+	setWindowTitle("Add Topic");
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	setWindowTitle("Add Topic");
-	setWindowModality(Qt::WindowModality::ApplicationModal);
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	QWidget* info_panel = new QWidget{ this };
 	{

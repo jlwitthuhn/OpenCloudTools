@@ -15,6 +15,9 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
+
 	switch (edit_mode)
 	{
 		case EditMode::View:

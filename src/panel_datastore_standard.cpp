@@ -282,7 +282,6 @@ void StandardDatastorePanel::view_entry(const QModelIndex& index)
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* const view_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details };
-					view_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_entry_window->show();
 				}
 				else
@@ -313,7 +312,6 @@ void StandardDatastorePanel::view_versions(const QModelIndex& index)
 				if (req->get_versions().size() > 0)
 				{
 					ViewDatastoreEntryVersionsWindow* view_versions_window = new ViewDatastoreEntryVersionsWindow{ this, api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key(), req->get_versions() };
-					view_versions_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					view_versions_window->show();
 				}
 			}
@@ -338,7 +336,6 @@ void StandardDatastorePanel::edit_entry(const QModelIndex& index)
 				if (opt_details)
 				{
 					ViewDatastoreEntryWindow* edit_entry_window = new ViewDatastoreEntryWindow{ this, api_key, *opt_details, ViewEditMode::Edit };
-					edit_entry_window->setWindowModality(Qt::WindowModality::ApplicationModal);
 					edit_entry_window->show();
 				}
 			}

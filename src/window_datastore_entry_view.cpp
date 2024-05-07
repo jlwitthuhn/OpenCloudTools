@@ -17,6 +17,7 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
@@ -28,6 +29,9 @@
 ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QString& api_key, const StandardDatastoreEntryFull& details, const ViewEditMode view_edit_mode) : QWidget{ parent, Qt::Window }, data_type{ details.get_entry_type() }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	switch (view_edit_mode)
 	{

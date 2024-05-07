@@ -31,6 +31,7 @@
 
 #include <sqlite3.h>
 
+#include "assert.h"
 #include "build_info.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
@@ -261,15 +262,13 @@ void MyMainWindow::selected_universe_combo_changed()
 
 void MyMainWindow::pressed_add_universe()
 {
-	MainWindowAddUniverseWindow* modal_window = new MainWindowAddUniverseWindow{ this, api_key, false };
-	modal_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+	MainWindowAddUniverseWindow* const modal_window = new MainWindowAddUniverseWindow{ this, api_key, false };
 	modal_window->show();
 }
 
 void MyMainWindow::pressed_edit_universe()
 {
-	MainWindowAddUniverseWindow* modal_window = new MainWindowAddUniverseWindow{ this, api_key, true };
-	modal_window->setWindowModality(Qt::WindowModality::ApplicationModal);
+	MainWindowAddUniverseWindow* const modal_window = new MainWindowAddUniverseWindow{ this, api_key, true };
 	modal_window->show();
 }
 
@@ -380,6 +379,9 @@ void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_i
 MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, const QString& api_key, const bool edit_current) : QWidget{ parent, Qt::Window }, api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	const UniverseProfile* const existing_universe = edit_current ? UserProfile::get_selected_universe() : nullptr;
 	edit_mode = existing_universe != nullptr;

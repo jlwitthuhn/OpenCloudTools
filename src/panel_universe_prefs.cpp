@@ -15,6 +15,7 @@
 #include <QString>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "profile.h"
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
@@ -113,10 +114,11 @@ void UniversePreferencesPanel::pressed_remove()
 
 UniversePreferencesAddHiddenDatastoreWindow::UniversePreferencesAddHiddenDatastoreWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
+	setWindowTitle("Hide datastore");
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	setWindowTitle("Hide datastore");
-	setWindowModality(Qt::WindowModality::ApplicationModal);
+	OCTASSERT(parent != nullptr);
+	setWindowModality(Qt::WindowModality::WindowModal);
 
 	QWidget* info_panel = new QWidget{ this };
 	{
