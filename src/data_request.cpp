@@ -306,7 +306,7 @@ void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body
 		return;
 	}
 
-	do_success("Complete");
+	do_success();
 }
 
 QString GetOrderedDatastoreEntryDetailsRequest::get_send_message() const
@@ -357,7 +357,7 @@ void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, c
 		}
 		else
 		{
-			do_success("Complete");
+			do_success();
 		}
 	}
 	else
@@ -433,14 +433,14 @@ void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& bod
 		return;
 	}
 
-	do_success("Complete");
+	do_success();
 }
 
 void GetStandardDatastoreEntryDetailsRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	details = std::nullopt;
 
-	do_success("Complete");
+	do_success();
 }
 
 QString GetStandardDatastoreEntryDetailsRequest::get_send_message() const
@@ -517,7 +517,7 @@ void GetStandardDatastoreEntryListRequest::handle_http_200(const QString& body, 
 			{
 				locked_callback->operator()(universe_id, datastore_name.toStdString());
 			}
-			do_success("Complete");
+			do_success();
 		}
 	}
 	else
@@ -526,7 +526,7 @@ void GetStandardDatastoreEntryListRequest::handle_http_200(const QString& body, 
 		{
 			locked_callback->operator()(universe_id, datastore_name.toStdString());
 		}
-		do_success("Complete");
+		do_success();
 	}
 }
 
@@ -575,12 +575,12 @@ void GetStandardDatastoreListRequest::handle_http_200(const QString& body, const
 		}
 		else
 		{
-			do_success("Complete");
+			do_success();
 		}
 	}
 	else
 	{
-		do_success("Complete");
+		do_success();
 	}
 }
 
@@ -619,12 +619,12 @@ void GetStandardDatastoreEntryVersionListRequest::handle_http_200(const QString&
 		}
 		else
 		{
-			do_success("Complete");
+			do_success();
 		}
 	}
 	else
 	{
-		do_success("Complete");
+		do_success();
 	}
 }
 
@@ -656,7 +656,7 @@ void GetUniverseDetailsRequest::handle_http_200(const QString& body, const QList
 	{
 		display_name = response->get_display_name();
 	}
-	do_success("Complete");
+	do_success();
 }
 
 PostMessagingServiceMessageRequest::PostMessagingServiceMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
