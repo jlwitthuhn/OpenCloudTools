@@ -244,7 +244,7 @@ std::optional<bool> DeleteStandardDatastoreEntryRequest::is_delete_success() con
 
 QNetworkRequest DeleteStandardDatastoreEntryRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::delete_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name);
+	return HttpRequestBuilder::standard_datastore_entry_delete(api_key, universe_id, datastore_name, scope, key_name);
 }
 
 void DeleteStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -290,7 +290,7 @@ std::optional<OrderedDatastoreEntryFull> GetOrderedDatastoreEntryDetailsRequest:
 
 QNetworkRequest GetOrderedDatastoreEntryDetailsRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::get_ordered_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
+	return HttpRequestBuilder::ordered_datastore_entry_get_details(api_key, universe_id, datastore_name, scope, key_name);
 }
 
 void GetOrderedDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -332,7 +332,7 @@ void GetOrderedDatastoreEntryListRequest::set_result_limit(const size_t limit)
 
 QNetworkRequest GetOrderedDatastoreEntryListRequest::build_request(std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::get_ordered_datastore_entry_list(api_key, universe_id, datastore_name, scope, ascending, cursor);
+	return HttpRequestBuilder::ordered_datastore_entry_get_list(api_key, universe_id, datastore_name, scope, ascending, cursor);
 }
 
 void GetOrderedDatastoreEntryListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -391,7 +391,7 @@ std::optional<StandardDatastoreEntryFull> GetStandardDatastoreEntryDetailsReques
 
 QNetworkRequest GetStandardDatastoreEntryDetailsRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::get_standard_datastore_entry_details(api_key, universe_id, datastore_name, scope, key_name);
+	return HttpRequestBuilder::standard_datastore_entry_get_details(api_key, universe_id, datastore_name, scope, key_name);
 }
 
 void GetStandardDatastoreEntryDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers)
@@ -469,11 +469,11 @@ QNetworkRequest GetStandardDatastoreEntryListRequest::build_request(std::optiona
 	QNetworkRequest request;
 	if (cursor)
 	{
-		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, cursor);
+		request = HttpRequestBuilder::standard_datastore_entry_get_list(api_key, universe_id, datastore_name, scope, prefix, cursor);
 	}
 	else
 	{
-		request = HttpRequestBuilder::get_standard_datastore_entry_list(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
+		request = HttpRequestBuilder::standard_datastore_entry_get_list(api_key, universe_id, datastore_name, scope, prefix, initial_cursor);
 	}
 	return request;
 }
@@ -538,7 +538,7 @@ GetStandardDatastoreEntryAtVersionRequest::GetStandardDatastoreEntryAtVersionReq
 
 QNetworkRequest GetStandardDatastoreEntryAtVersionRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::get_standard_datastore_entry_version_details(api_key, universe_id, datastore_name, scope, key_name, version);
+	return HttpRequestBuilder::standard_datastore_entry_version_get_details(api_key, universe_id, datastore_name, scope, key_name, version);
 }
 
 GetStandardDatastoreListRequest::GetStandardDatastoreListRequest(const QString& api_key, const long long universe_id) : DataRequest{ api_key }, universe_id{ universe_id }
@@ -553,7 +553,7 @@ QString GetStandardDatastoreListRequest::get_title_string() const
 
 QNetworkRequest GetStandardDatastoreListRequest::build_request(std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::get_standard_datastore_list(api_key, universe_id, cursor);
+	return HttpRequestBuilder::standard_datastore_get_list(api_key, universe_id, cursor);
 }
 
 void GetStandardDatastoreListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -597,7 +597,7 @@ QString GetStandardDatastoreEntryVersionListRequest::get_title_string() const
 
 QNetworkRequest GetStandardDatastoreEntryVersionListRequest::build_request(std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::get_standard_datastore_entry_version_list(api_key, universe_id, datastore_name, scope, key_name, cursor);
+	return HttpRequestBuilder::standard_datastore_entry_version_get_list(api_key, universe_id, datastore_name, scope, key_name, cursor);
 }
 
 void GetStandardDatastoreEntryVersionListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -646,7 +646,7 @@ QString GetUniverseDetailsRequest::get_title_string() const
 
 QNetworkRequest GetUniverseDetailsRequest::build_request(const std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::get_universe_details(api_key, universe_id);
+	return HttpRequestBuilder::universe_get_details(api_key, universe_id);
 }
 
 void GetUniverseDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -678,7 +678,7 @@ QString PostMessagingServiceMessageRequest::get_title_string() const
 
 QNetworkRequest PostMessagingServiceMessageRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::post_messaging_service_message(api_key, universe_id, topic);
+	return HttpRequestBuilder::messaging_service_post_message(api_key, universe_id, topic);
 }
 
 void PostMessagingServiceMessageRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -710,7 +710,7 @@ QString PostOrderedDatastoreIncrementRequest::get_title_string() const
 
 QNetworkRequest PostOrderedDatastoreIncrementRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::post_ordered_datastore_entry_increment(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+	return HttpRequestBuilder::ordered_datastore_entry_post_increment(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
 }
 
 void PostOrderedDatastoreIncrementRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -738,7 +738,7 @@ QString PostStandardDatastoreEntryRequest::get_title_string() const
 
 QNetworkRequest PostStandardDatastoreEntryRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::post_standard_datastore_entry(api_key, universe_id, datastore_name, scope, key_name, body_md5, userids, attributes);
+	return HttpRequestBuilder::standard_datastore_entry_post(api_key, universe_id, datastore_name, scope, key_name, body_md5, userids, attributes);
 }
 
 void PostStandardDatastoreEntryRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
