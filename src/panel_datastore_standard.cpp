@@ -37,6 +37,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
@@ -48,15 +49,6 @@
 #include "util_validator.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
-
-static void show_validation_error(QWidget* const parent, const QString& message)
-{
-	QMessageBox* message_box = new QMessageBox{ parent };
-	message_box->setWindowTitle("Validation Error");
-	message_box->setIcon(QMessageBox::Critical);
-	message_box->setText(message);
-	message_box->exec();
-}
 
 StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& api_key) : BaseDatastorePanel(parent, api_key)
 {
@@ -706,20 +698,20 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 
 		if (data_valid == false)
 		{
-			show_validation_error(this, QString{ "New data is not a valid " } + get_enum_string(data_type) + ".");
+			show_blocking_error("Validation Error", QString{ "New data is not a valid " } + get_enum_string(data_type) + ".");
 			return;
 		}
 	}
 
 	if (userids_raw != "" && DataValidator::is_json_array(userids_raw) == false)
 	{
-		show_validation_error(this, "New user list is not empty or a valid Json array.");
+		show_blocking_error("Validation Error", "New user list is not empty or a valid Json array.");
 		return;
 	}
 
 	if (attributes_str_raw != "" && DataValidator::is_json(attributes_str_raw) == false)
 	{
-		show_validation_error(this, "New attributes is not empty or a valid Json object.");
+		show_blocking_error("Validation Error", "New attributes is not empty or a valid Json object.");
 		return;
 	}
 
@@ -737,7 +729,7 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 
 	const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 	const QString datastore_name = add_datastore_name_edit->text();
-	const QString scope = add_datastore_scope_edit->text();
+	const QString scope = add_datastore_scope_edit->text().size() > 0 ? add_datastore_scope_edit->text() : "global";
 	const QString key_name = add_datastore_key_name_edit->text();
 
 	const std::optional<QString> userids = condense_json(userids_raw);
@@ -755,11 +747,7 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 		data_formatted = data_raw;
 	}
 
-	if (data_formatted.has_value() == false)
-	{
-		show_validation_error(this, "Failed to format data. This probably shouldn't happen.");
-		return;
-	}
+	OCTASSERT(data_formatted.has_value());
 
 	const auto post_req = std::make_shared<StandardDatastoreEntryPostSetRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
 	OperationInProgressDialog diag{ this, post_req };

@@ -352,7 +352,39 @@ void OrderedDatastoreEntryGetListRequest::handle_http_200(const QString& body, c
 	}
 }
 
-OrderedDatastorePostIncrementRequest::OrderedDatastorePostIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long increment_by)
+OrderedDatastoreEntryPostCreateRequest::OrderedDatastoreEntryPostCreateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long value)
+	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, value{ value }
+{
+	request_type = HttpRequestType::Post;
+	QJsonObject body_json_obj;
+	body_json_obj.insert("value", QJsonValue::fromVariant(value));
+	const QJsonDocument body_json_doc{ body_json_obj };
+	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
+	body_data = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
+	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
+}
+
+QString OrderedDatastoreEntryPostCreateRequest::get_title_string() const
+{
+	return "Creating entry...";
+}
+
+QNetworkRequest OrderedDatastoreEntryPostCreateRequest::build_request(std::optional<QString>) const
+{
+	return HttpRequestBuilder::ordered_datastore_entry_post_create(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+}
+
+void OrderedDatastoreEntryPostCreateRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	do_success();
+}
+
+QString OrderedDatastoreEntryPostCreateRequest::get_send_message() const
+{
+	return QString{ "Creating entry '%1'..." }.arg(entry_id);
+}
+
+OrderedDatastorePostIncrementRequest::OrderedDatastorePostIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long increment_by)
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, increment_by{ increment_by }
 {
 	request_type = HttpRequestType::Post;

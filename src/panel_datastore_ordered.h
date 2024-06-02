@@ -43,6 +43,7 @@ private:
 	void pressed_find_ascending();
 	void pressed_find_descending();
 	void pressed_remove_datastore();
+	void pressed_submit_new_entry();
 	void pressed_view_entry();
 
 	void pressed_edit();
@@ -62,10 +63,10 @@ private:
 	QPushButton* edit_entry_button = nullptr;
 
 	// Add panel
-	QLineEdit* add_datastore_name_edit = nullptr;
-	QLineEdit* add_datastore_scope_edit = nullptr;
-	QLineEdit* add_datastore_key_name_edit = nullptr;
-	QLineEdit* add_datastore_value_edit = nullptr;
+	QLineEdit* add_entry_datastore_name_edit = nullptr;
+	QLineEdit* add_entry_scope_edit = nullptr;
+	QLineEdit* add_entry_key_name_edit = nullptr;
+	QLineEdit* add_entry_value_edit = nullptr;
 
 	QPushButton* add_entry_submit_button = nullptr;
 };

@@ -42,6 +42,21 @@ QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_get_list(const QStri
 	return req;
 }
 
+QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_post_create(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
+{
+	QString url = base_url_ordered_datastore(universe_id);
+	url = url + "/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name);
+	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
+	url = url + "/entries";
+	url = url + "?id=" + QUrl::toPercentEncoding(entry_id);
+
+	QNetworkRequest req{ url };
+	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
+	return req;
+}
+
 QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_post_increment(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
 {
 	QString url = base_url_ordered_datastore(universe_id);

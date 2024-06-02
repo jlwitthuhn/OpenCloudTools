@@ -9,6 +9,7 @@ class QWidget;
 
 enum class ChangeType
 {
+	OrderedDatastoreCreate,
 	StandardDatastoreRevert,
 	StandardDatastoreUpdate,
 	StandardDatastoreDelete,

@@ -12,6 +12,7 @@
 #include <QList>
 #include <QListWidget>
 #include <QMargins>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QSizePolicy>
 #include <QSplitter>
@@ -140,6 +141,15 @@ void BaseDatastorePanel::selected_universe_changed()
 	search_datastore_name_edit->setText("");
 	search_datastore_scope_edit->setText("");
 	clear_model();
+}
+
+void BaseDatastorePanel::show_blocking_error(const QString& title, const QString& message)
+{
+	QMessageBox* message_box = new QMessageBox{ this };
+	message_box->setWindowTitle(title);
+	message_box->setIcon(QMessageBox::Critical);
+	message_box->setText(message);
+	message_box->exec();
 }
 
 QModelIndex BaseDatastorePanel::get_selected_single_index() const

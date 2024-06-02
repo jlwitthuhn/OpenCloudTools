@@ -21,6 +21,8 @@ public:
 	virtual void selected_universe_changed();
 
 protected:
+	void show_blocking_error(const QString& title, const QString& message);
+
 	QModelIndex get_selected_single_index() const;
 
 	virtual void handle_datastore_entry_double_clicked(const QModelIndex& /*index*/ ) {}

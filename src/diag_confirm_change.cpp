@@ -18,11 +18,14 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	QLabel* info = new QLabel{ this };
 	switch (change_type)
 	{
+	case ChangeType::OrderedDatastoreCreate:
+		info->setText("This action will create a new ordered datastore entry. Are you sure you want to do this?");
+		break;
 	case ChangeType::StandardDatastoreRevert:
 		info->setText("This action will re-save an old version of a datastore entry as the newest version. Are you sure you want to do this?");
 		break;
 	case ChangeType::StandardDatastoreUpdate:
-		info->setText("This action will update the current value of the selected entry. Are you sure you want to do this?");
+		info->setText("This action will update the current value of the selected datastore entry. Are you sure you want to do this?");
 		break;
 	case ChangeType::StandardDatastoreDelete:
 		info->setText("This action will delete the selected entry. Are you sure you want to do this?");

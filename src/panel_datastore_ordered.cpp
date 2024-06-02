@@ -20,10 +20,12 @@
 #include <QWidget>
 
 #include "data_request.h"
+#include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
 #include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
+#include "util_validator.h"
 
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : BaseDatastorePanel(parent, api_key)
 {
@@ -98,28 +100,29 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 		{
 			QWidget* const add_entry_form = new QWidget{ add_entry_panel };
 			{
-				add_datastore_name_edit = new QLineEdit{ add_entry_form };
-				connect(add_datastore_name_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+				add_entry_datastore_name_edit = new QLineEdit{ add_entry_form };
+				connect(add_entry_datastore_name_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
 
-				add_datastore_scope_edit = new QLineEdit{ add_entry_form };
-				add_datastore_scope_edit->setPlaceholderText("global");
-				connect(add_datastore_scope_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+				add_entry_scope_edit = new QLineEdit{ add_entry_form };
+				add_entry_scope_edit->setPlaceholderText("global");
+				connect(add_entry_scope_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
 
-				add_datastore_key_name_edit = new QLineEdit{ add_entry_form };
-				connect(add_datastore_key_name_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+				add_entry_key_name_edit = new QLineEdit{ add_entry_form };
+				connect(add_entry_key_name_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
 
-				add_datastore_value_edit = new QLineEdit{ add_entry_form };
-				connect(add_datastore_value_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+				add_entry_value_edit = new QLineEdit{ add_entry_form };
+				connect(add_entry_value_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
 
 				add_entry_submit_button = new QPushButton{ "Submit", add_entry_form };
 				add_entry_submit_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
+				connect(add_entry_submit_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_submit_new_entry);
 
 				QFormLayout* const add_entry_form_layout = new QFormLayout{ add_entry_form };
 				add_entry_form_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-				add_entry_form_layout->addRow("Datastore", add_datastore_name_edit);
-				add_entry_form_layout->addRow("Scope", add_datastore_scope_edit);
-				add_entry_form_layout->addRow("Key", add_datastore_key_name_edit);
-				add_entry_form_layout->addRow("Value", add_datastore_value_edit);
+				add_entry_form_layout->addRow("Datastore", add_entry_datastore_name_edit);
+				add_entry_form_layout->addRow("Scope", add_entry_scope_edit);
+				add_entry_form_layout->addRow("Key", add_entry_key_name_edit);
+				add_entry_form_layout->addRow("Value", add_entry_value_edit);
 				add_entry_form_layout->addRow("", add_entry_submit_button);
 			}
 
@@ -226,7 +229,7 @@ void OrderedDatastorePanel::handle_selected_datastore_changed()
 	QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
 	if (selected.size() == 1)
 	{
-		add_datastore_name_edit->setText(selected.first()->text());
+		add_entry_datastore_name_edit->setText(selected.first()->text());
 	}
 	BaseDatastorePanel::handle_selected_datastore_changed();
 }
@@ -246,7 +249,7 @@ void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
 void OrderedDatastorePanel::handle_add_entry_text_changed()
 {
 	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
-	const bool submit_enabled = selected_universe && add_datastore_name_edit->text().size() > 0 && add_datastore_key_name_edit->text().size() > 0 && add_datastore_value_edit->text().size() > 0;
+	const bool submit_enabled = selected_universe && add_entry_datastore_name_edit->text().size() > 0 && add_entry_key_name_edit->text().size() > 0 && add_entry_value_edit->text().size() > 0;
 	add_entry_submit_button->setEnabled(submit_enabled);
 }
 
@@ -345,6 +348,45 @@ void OrderedDatastorePanel::pressed_remove_datastore()
 		{
 			selected_universe->remove_recent_ordered_datastore(selected.front()->text());
 		}
+	}
+}
+
+void OrderedDatastorePanel::pressed_submit_new_entry()
+{
+	const QString data_raw = add_entry_value_edit->text();
+
+	const bool value_valid = DataValidator::is_number(data_raw);
+	if (value_valid == false)
+	{
+		show_blocking_error("Validation Error", QString{ "New value is not a valid integer." });
+		return;
+	}
+
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreCreate };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
+	{
+		return;
+	}
+
+	if (UserProfile::get_selected_universe() == nullptr)
+	{
+		return;
+	}
+
+	const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+	const QString datastore_name = add_entry_datastore_name_edit->text();
+	const QString scope = add_entry_scope_edit->text().size() > 0 ? add_entry_scope_edit->text() : "global";
+	const QString key_name = add_entry_key_name_edit->text();
+	const long long value = add_entry_value_edit->text().toLongLong();
+
+	const auto post_req = std::make_shared<OrderedDatastoreEntryPostCreateRequest>(api_key, universe_id, datastore_name, scope, key_name, value);
+	OperationInProgressDialog diag{ this, post_req };
+	diag.exec();
+
+	if (post_req->req_success())
+	{
+		add_entry_value_edit->clear();
 	}
 }
 
