@@ -508,7 +508,7 @@ void MainWindowAddUniverseWindow::pressed_fetch()
 	if (id_is_valid())
 	{
 		const long long universe_id = id_edit->text().trimmed().toLongLong();
-		const auto req = std::make_shared<GetUniverseDetailsRequest>(api_key, universe_id);
+		const auto req = std::make_shared<UniverseGetDetailsRequest>(api_key, universe_id);
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 

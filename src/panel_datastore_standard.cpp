@@ -274,7 +274,7 @@ void StandardDatastorePanel::view_entry(const QModelIndex& index)
 			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				const auto req = std::make_shared<GetStandardDatastoreEntryDetailsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
+				const auto req = std::make_shared<StandardDatastoreEntryGetDetailsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
@@ -305,7 +305,7 @@ void StandardDatastorePanel::view_versions(const QModelIndex& index)
 			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				const auto req = std::make_shared<GetStandardDatastoreEntryVersionListRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
+				const auto req = std::make_shared<StandardDatastoreEntryGetVersionListRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
@@ -328,7 +328,7 @@ void StandardDatastorePanel::edit_entry(const QModelIndex& index)
 			std::optional<StandardDatastoreEntryName> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				const auto req = std::make_shared<GetStandardDatastoreEntryDetailsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
+				const auto req = std::make_shared<StandardDatastoreEntryGetDetailsRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 
@@ -359,7 +359,7 @@ void StandardDatastorePanel::delete_entry(const QModelIndex& index)
 					return;
 				}
 
-				const auto req = std::make_shared<DeleteStandardDatastoreEntryRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
+				const auto req = std::make_shared<StandardDatastoreEntryDeleteRequest>(api_key, opt_entry->get_universe_id(), opt_entry->get_datastore_name(), opt_entry->get_scope(), opt_entry->get_key());
 				OperationInProgressDialog diag{ this, req };
 				diag.exec();
 			}
@@ -382,8 +382,8 @@ void StandardDatastorePanel::delete_entry_list(const std::vector<StandardDatasto
 		std::vector<std::shared_ptr<DataRequest>> request_list;
 		for (const StandardDatastoreEntryName& this_entry : entry_list)
 		{
-			std::shared_ptr<DeleteStandardDatastoreEntryRequest> this_request =
-				std::make_shared<DeleteStandardDatastoreEntryRequest>(api_key, this_entry.get_universe_id(), this_entry.get_datastore_name(), this_entry.get_scope(), this_entry.get_key());
+			std::shared_ptr<StandardDatastoreEntryDeleteRequest> this_request =
+				std::make_shared<StandardDatastoreEntryDeleteRequest>(api_key, this_entry.get_universe_id(), this_entry.get_datastore_name(), this_entry.get_scope(), this_entry.get_key());
 
 			request_list.push_back(this_request);
 		}
@@ -585,7 +585,7 @@ void StandardDatastorePanel::pressed_fetch_datastores()
 		const long long universe_id = selected_universe->get_universe_id();
 		if (universe_id > 0)
 		{
-			const auto req = std::make_shared<GetStandardDatastoreListRequest>(api_key, universe_id);
+			const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
 			OperationInProgressDialog diag{ this, req };
 			diag.exec();
 
@@ -621,7 +621,7 @@ void StandardDatastorePanel::pressed_find_all()
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			const auto req = std::make_shared<GetStandardDatastoreEntryListRequest>(api_key, universe_id, datastore_name, scope, "");
+			const auto req = std::make_shared<StandardDatastoreEntryGetListRequest>(api_key, universe_id, datastore_name, scope, "");
 			if (result_limit > 0)
 			{
 				req->set_result_limit(result_limit);
@@ -654,7 +654,7 @@ void StandardDatastorePanel::pressed_find_prefix()
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			const auto req = std::make_shared<GetStandardDatastoreEntryListRequest>(api_key, universe_id, datastore_name, scope, key_name);
+			const auto req = std::make_shared<StandardDatastoreEntryGetListRequest>(api_key, universe_id, datastore_name, scope, key_name);
 			if (result_limit > 0)
 			{
 				req->set_result_limit(result_limit);
@@ -759,7 +759,7 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
+	const auto post_req = std::make_shared<StandardDatastoreEntryPostSetRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
 	OperationInProgressDialog diag{ this, post_req };
 	diag.exec();
 

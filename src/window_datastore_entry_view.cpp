@@ -344,7 +344,7 @@ void ViewDatastoreEntryWindow::pressed_save()
 		return;
 	}
 
-	const auto post_req = std::make_shared<PostStandardDatastoreEntryRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
+	const auto post_req = std::make_shared<StandardDatastoreEntryPostSetRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
 	OperationInProgressDialog diag{ this, post_req };
 	diag.exec();
 

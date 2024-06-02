@@ -20,12 +20,13 @@ class QLabel;
 class QProgressBar;
 class QPushButton;
 
-class DeleteStandardDatastoreEntryRequest;
-class GetStandardDatastoreEntryAtVersionRequest;
-class GetStandardDatastoreEntryDetailsRequest;
-class GetStandardDatastoreEntryListRequest;
-class GetStandardDatastoreEntryVersionListRequest;
-class PostStandardDatastoreEntryRequest;
+
+class StandardDatastoreEntryDeleteRequest;
+class StandardDatastoreEntryGetDetailsRequest;
+class StandardDatastoreEntryGetListRequest;
+class StandardDatastoreEntryGetVersionRequest;
+class StandardDatastoreEntryGetVersionListRequest;
+class StandardDatastoreEntryPostSetRequest;
 class TextLogWidget;
 
 class DatastoreBulkOperationProgressWindow : public QWidget
@@ -97,7 +98,7 @@ protected:
 
 	std::vector<StandardDatastoreEntryName> pending_entries;
 
-	std::shared_ptr<GetStandardDatastoreEntryListRequest> enumerate_entries_request;
+	std::shared_ptr<StandardDatastoreEntryGetListRequest> enumerate_entries_request;
 
 	QLabel* progress_label = nullptr;
 	QProgressBar* progress_bar = nullptr;
@@ -147,9 +148,9 @@ private:
 	size_t entries_deleted = 0;
 	size_t entries_already_deleted = 0;
 
-	std::shared_ptr<GetStandardDatastoreEntryDetailsRequest> get_entry_request;
-	std::shared_ptr<PostStandardDatastoreEntryRequest> post_entry_request;
-	std::shared_ptr<DeleteStandardDatastoreEntryRequest> delete_entry_request;
+	std::shared_ptr<StandardDatastoreEntryGetDetailsRequest> get_entry_request;
+	std::shared_ptr<StandardDatastoreEntryPostSetRequest> post_entry_request;
+	std::shared_ptr<StandardDatastoreEntryDeleteRequest> delete_entry_request;
 };
 
 class DatastoreBulkDownloadProgressWindow : public DatastoreBulkOperationProgressWindow
@@ -173,7 +174,7 @@ private:
 
 	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper;
 
-	std::shared_ptr<GetStandardDatastoreEntryDetailsRequest> get_entry_details_request;
+	std::shared_ptr<StandardDatastoreEntryGetDetailsRequest> get_entry_details_request;
 };
 
 class DatastoreBulkUndeleteProgressWindow : public DatastoreBulkOperationProgressWindow
@@ -193,9 +194,9 @@ private:
 
 	std::optional<QDateTime> undelete_after;
 
-	std::shared_ptr<GetStandardDatastoreEntryVersionListRequest> get_versions_request;
-	std::shared_ptr<GetStandardDatastoreEntryAtVersionRequest> get_entry_at_version_request;
-	std::shared_ptr<PostStandardDatastoreEntryRequest> post_entry_request;
+	std::shared_ptr<StandardDatastoreEntryGetVersionListRequest> get_version_list_request;
+	std::shared_ptr<StandardDatastoreEntryGetVersionRequest> get_version_request;
+	std::shared_ptr<StandardDatastoreEntryPostSetRequest> post_entry_request;
 
 	size_t entries_restored = 0;
 	size_t entries_not_deleted = 0;

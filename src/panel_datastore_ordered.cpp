@@ -138,7 +138,7 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index, ViewOrderedData
 			std::optional<OrderedDatastoreEntryFull> opt_entry = model->get_entry(index.row());
 			if (opt_entry)
 			{
-				const auto req = std::make_shared<GetOrderedDatastoreEntryDetailsRequest>(
+				const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsRequest>(
 					api_key,
 					opt_entry->get_universe_id(),
 					opt_entry->get_datastore_name(),
@@ -250,7 +250,7 @@ void OrderedDatastorePanel::pressed_find(const bool ascending)
 
 			const size_t result_limit = find_limit_edit->text().trimmed().toULongLong();
 
-			const auto req = std::make_shared<GetOrderedDatastoreEntryListRequest>(api_key, universe_id, datastore_name, scope, ascending);
+			const auto req = std::make_shared<OrderedDatastoreEntryGetListRequest>(api_key, universe_id, datastore_name, scope, ascending);
 			if (result_limit > 0)
 			{
 				req->set_result_limit(result_limit);

@@ -87,33 +87,26 @@ protected:
 	size_t http_429_count = 0;
 };
 
-class DeleteStandardDatastoreEntryRequest : public DataRequest
+class MessagingServicePostMessageRequest : public DataRequest
 {
 public:
-	DeleteStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	MessagingServicePostMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
 
 	virtual QString get_title_string() const override;
-
-	std::optional<bool> is_delete_success() const;
 
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
-	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 	virtual QString get_send_message() const override;
 
 	long long universe_id;
-	QString datastore_name;
-	QString scope;
-	QString key_name;
-
-	bool delete_success = false;
+	QString topic;
 };
 
-class GetOrderedDatastoreEntryDetailsRequest : public DataRequest
+class OrderedDatastoreEntryGetDetailsRequest : public DataRequest
 {
 public:
-	GetOrderedDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
+	OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -132,10 +125,10 @@ private:
 	std::optional<OrderedDatastoreEntryFull> details;
 };
 
-class GetOrderedDatastoreEntryListRequest : public DataRequest
+class OrderedDatastoreEntryGetListRequest : public DataRequest
 {
 public:
-	GetOrderedDatastoreEntryListRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending);
+	OrderedDatastoreEntryGetListRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending);
 
 	virtual QString get_title_string() const override;
 
@@ -157,10 +150,54 @@ private:
 	std::vector<OrderedDatastoreEntryFull> entries;
 };
 
-class GetStandardDatastoreEntryDetailsRequest : public DataRequest
+class OrderedDatastorePostIncrementRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntryDetailsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	OrderedDatastorePostIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long increment_by);
+
+	virtual QString get_title_string() const override;
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+	virtual QString get_send_message() const override;
+
+	long long universe_id;
+	QString datastore_name;
+	QString scope;
+	QString entry_id;
+	long long increment_by;
+
+	QString body_md5;
+};
+
+class StandardDatastoreEntryDeleteRequest : public DataRequest
+{
+public:
+	StandardDatastoreEntryDeleteRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+
+	virtual QString get_title_string() const override;
+
+	std::optional<bool> is_delete_success() const;
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+	virtual void handle_http_404(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+	virtual QString get_send_message() const override;
+
+	long long universe_id;
+	QString datastore_name;
+	QString scope;
+	QString key_name;
+
+	bool delete_success = false;
+};
+
+class StandardDatastoreEntryGetDetailsRequest : public DataRequest
+{
+public:
+	StandardDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -185,10 +222,10 @@ protected:
 	std::optional<StandardDatastoreEntryFull> details;
 };
 
-class GetStandardDatastoreEntryListRequest : public DataRequest
+class StandardDatastoreEntryGetListRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntryListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor = std::nullopt);
+	StandardDatastoreEntryGetListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor = std::nullopt);
 
 	virtual QString get_title_string() const override;
 
@@ -221,39 +258,10 @@ private:
 	std::weak_ptr<std::function<void(const StandardDatastoreEntryName&)>> entry_found_callback;
 };
 
-class GetStandardDatastoreEntryAtVersionRequest : public GetStandardDatastoreEntryDetailsRequest
+class StandardDatastoreEntryGetVersionListRequest : public DataRequest
 {
 public:
-	GetStandardDatastoreEntryAtVersionRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version);
-
-protected:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
-
-	QString version;
-};
-
-class GetStandardDatastoreListRequest : public DataRequest
-{
-public:
-	GetStandardDatastoreListRequest(const QString& api_key, long long universe_id);
-
-	virtual QString get_title_string() const override;
-
-	const std::vector<QString>& get_datastore_names() const { return datastore_names; }
-
-private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
-	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
-
-	long long universe_id;
-
-	std::vector<QString> datastore_names;
-};
-
-class GetStandardDatastoreEntryVersionListRequest : public DataRequest
-{
-public:
-	GetStandardDatastoreEntryVersionListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
+	StandardDatastoreEntryGetVersionListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name);
 
 	virtual QString get_title_string() const override;
 
@@ -276,65 +284,21 @@ private:
 	std::vector<StandardDatastoreEntryVersion> versions;
 };
 
-class GetUniverseDetailsRequest : public DataRequest
+class StandardDatastoreEntryGetVersionRequest : public StandardDatastoreEntryGetDetailsRequest
 {
 public:
-	GetUniverseDetailsRequest(const QString& api_key, long long universe_id);
+	StandardDatastoreEntryGetVersionRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version);
 
-	virtual QString get_title_string() const override;
-
-	const std::optional<QString>& get_display_name() const { return display_name; }
-
-private:
+protected:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
-	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
-	long long universe_id;
-
-	std::optional<QString> display_name;
+	QString version;
 };
 
-class PostMessagingServiceMessageRequest : public DataRequest
+class StandardDatastoreEntryPostSetRequest : public DataRequest
 {
 public:
-	PostMessagingServiceMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
-
-	virtual QString get_title_string() const override;
-
-private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
-	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
-	virtual QString get_send_message() const override;
-
-	long long universe_id;
-	QString topic;
-};
-
-class PostOrderedDatastoreIncrementRequest : public DataRequest
-{
-public:
-	PostOrderedDatastoreIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long increment_by);
-
-	virtual QString get_title_string() const override;
-
-private:
-	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
-	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
-	virtual QString get_send_message() const override;
-
-	long long universe_id;
-	QString datastore_name;
-	QString scope;
-	QString entry_id;
-	long long increment_by;
-
-	QString body_md5;
-};
-
-class PostStandardDatastoreEntryRequest : public DataRequest
-{
-public:
-	PostStandardDatastoreEntryRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body);
+	StandardDatastoreEntryPostSetRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body);
 
 	virtual QString get_title_string() const override;
 
@@ -355,4 +319,41 @@ private:
 	std::optional<QString> attributes;
 
 	QString body_md5;
+};
+
+
+class StandardDatastoreGetListRequest : public DataRequest
+{
+public:
+	StandardDatastoreGetListRequest(const QString& api_key, long long universe_id);
+
+	virtual QString get_title_string() const override;
+
+	const std::vector<QString>& get_datastore_names() const { return datastore_names; }
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+
+	std::vector<QString> datastore_names;
+};
+
+class UniverseGetDetailsRequest : public DataRequest
+{
+public:
+	UniverseGetDetailsRequest(const QString& api_key, long long universe_id);
+
+	virtual QString get_title_string() const override;
+
+	const std::optional<QString>& get_display_name() const { return display_name; }
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+
+	std::optional<QString> display_name;
 };

@@ -194,7 +194,7 @@ void MessagingServicePanel::pressed_send()
 			this_universe->add_recent_topic(topic);
 		}
 
-		const auto req = std::make_shared<PostMessagingServiceMessageRequest>(api_key, universe_id, topic, unencoded_message);
+		const auto req = std::make_shared<MessagingServicePostMessageRequest>(api_key, universe_id, topic, unencoded_message);
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
 	}
