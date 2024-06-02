@@ -8,6 +8,7 @@
 
 #include <QBoxLayout>
 #include <QCheckBox>
+#include <QFormLayout>
 #include <QGroupBox>
 #include <QLayout>
 #include <QLineEdit>
@@ -43,17 +44,20 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 
 	// Main panel
 	{
-		find_ascending_button = new QPushButton{ "Find all (ascending)", search_submit_widget };
-		connect(find_ascending_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_find_ascending);
+		// Search buttons
+		{
+			find_ascending_button = new QPushButton{ "Find all (ascending)", search_submit_widget };
+			connect(find_ascending_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_find_ascending);
 
-		find_descending_button = new QPushButton{ "Find all (descending)", search_submit_widget };
-		connect(find_descending_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_find_descending);
+			find_descending_button = new QPushButton{ "Find all (descending)", search_submit_widget };
+			connect(find_descending_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_find_descending);
 
-		QBoxLayout* const search_submit_layout = dynamic_cast<QBoxLayout*>(search_submit_widget->layout());
-		search_submit_layout->insertWidget(0, find_ascending_button);
-		search_submit_layout->insertWidget(1, find_descending_button);
+			QBoxLayout* const search_submit_layout = dynamic_cast<QBoxLayout*>(search_submit_widget->layout());
+			search_submit_layout->insertWidget(0, find_ascending_button);
+			search_submit_layout->insertWidget(1, find_descending_button);
+		}
 
-		// Bottom buttons
+		// Interact buttons
 		{
 			QWidget* const read_button_panel = new QWidget{ search_panel };
 			{
@@ -88,11 +92,47 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 			search_layout->addWidget(separator);
 			search_layout->addWidget(edit_button_panel);
 		}
+
+		// "Add Entry" tab
+		QWidget* const add_entry_panel = new QWidget{ main_tab_widget };
+		{
+			QWidget* const add_entry_form = new QWidget{ add_entry_panel };
+			{
+				add_datastore_name_edit = new QLineEdit{ add_entry_form };
+				connect(add_datastore_name_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+
+				add_datastore_scope_edit = new QLineEdit{ add_entry_form };
+				add_datastore_scope_edit->setPlaceholderText("global");
+				connect(add_datastore_scope_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+
+				add_datastore_key_name_edit = new QLineEdit{ add_entry_form };
+				connect(add_datastore_key_name_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+
+				add_datastore_value_edit = new QLineEdit{ add_entry_form };
+				connect(add_datastore_value_edit, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_add_entry_text_changed);
+
+				add_entry_submit_button = new QPushButton{ "Submit", add_entry_form };
+				add_entry_submit_button->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
+
+				QFormLayout* const add_entry_form_layout = new QFormLayout{ add_entry_form };
+				add_entry_form_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+				add_entry_form_layout->addRow("Datastore", add_datastore_name_edit);
+				add_entry_form_layout->addRow("Scope", add_datastore_scope_edit);
+				add_entry_form_layout->addRow("Key", add_datastore_key_name_edit);
+				add_entry_form_layout->addRow("Value", add_datastore_value_edit);
+				add_entry_form_layout->addRow("", add_entry_submit_button);
+			}
+
+			QVBoxLayout* const add_entry_layout = new QVBoxLayout{ add_entry_panel };
+			add_entry_layout->addWidget(add_entry_form);
+		}
+		main_tab_widget->addTab(add_entry_panel, "Add Entry");
 	}
 
 	clear_model();
 	selected_universe_changed();
 	handle_search_text_changed();
+	handle_add_entry_text_changed();
 }
 
 void OrderedDatastorePanel::selected_universe_changed()
@@ -181,6 +221,16 @@ void OrderedDatastorePanel::handle_search_text_changed()
 	find_descending_button->setEnabled(enabled);
 }
 
+void OrderedDatastorePanel::handle_selected_datastore_changed()
+{
+	QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
+	if (selected.size() == 1)
+	{
+		add_datastore_name_edit->setText(selected.first()->text());
+	}
+	BaseDatastorePanel::handle_selected_datastore_changed();
+}
+
 void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
 {
 	size_t count = 0;
@@ -191,6 +241,13 @@ void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
 		single_selected = count == 1;
 	}
 	view_entry_button->setEnabled(single_selected);
+}
+
+void OrderedDatastorePanel::handle_add_entry_text_changed()
+{
+	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const bool submit_enabled = selected_universe && add_datastore_name_edit->text().size() > 0 && add_datastore_key_name_edit->text().size() > 0 && add_datastore_value_edit->text().size() > 0;
+	add_entry_submit_button->setEnabled(submit_enabled);
 }
 
 void OrderedDatastorePanel::handle_recent_datastores_changed()

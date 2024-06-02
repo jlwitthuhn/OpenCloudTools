@@ -7,6 +7,7 @@
 #include "window_ordered_datastore_entry_view.h"
 
 class QCheckBox;
+class QLineEdit;
 class QPushButton;
 class QWidget;
 
@@ -27,7 +28,10 @@ private:
 
 	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) override;
 	virtual void handle_search_text_changed() override;
+	virtual void handle_selected_datastore_changed() override;
 	virtual void handle_selected_datastore_entry_changed() override;
+
+	void handle_add_entry_text_changed();
 
 	void handle_recent_datastores_changed();
 	void handle_save_recent_datastores_toggled();
@@ -44,9 +48,11 @@ private:
 	void pressed_edit();
 	void pressed_increment();
 
+	// Left bar
 	QCheckBox* save_recent_datastores_check = nullptr;
 	QPushButton* remove_datastore_button = nullptr;
 
+	// Search panel
 	QPushButton* find_ascending_button = nullptr;
 	QPushButton* find_descending_button = nullptr;
 
@@ -54,4 +60,12 @@ private:
 
 	QPushButton* increment_entry_button = nullptr;
 	QPushButton* edit_entry_button = nullptr;
+
+	// Add panel
+	QLineEdit* add_datastore_name_edit = nullptr;
+	QLineEdit* add_datastore_scope_edit = nullptr;
+	QLineEdit* add_datastore_key_name_edit = nullptr;
+	QLineEdit* add_datastore_value_edit = nullptr;
+
+	QPushButton* add_entry_submit_button = nullptr;
 };

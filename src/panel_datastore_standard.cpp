@@ -88,7 +88,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 			main_top_layout->addWidget(search_datastore_key_prefix_edit);
 		}
 
-		// Search submit buttons
+		// Search buttons
 		{
 			find_all_button = new QPushButton{ "Find all", search_submit_widget };
 			connect(find_all_button, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_find_all);
@@ -101,6 +101,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 			search_submit_layout->insertWidget(1, find_prefix_button);
 		}
 
+		// Interact buttons
 		{
 			QWidget* right_read_buttons = new QWidget{ search_panel };
 			{
@@ -199,6 +200,8 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 	}
 
 	clear_model();
+	selected_universe_changed();
+	handle_search_text_changed();
 	handle_add_entry_text_changed();
 }
 
@@ -449,7 +452,6 @@ void StandardDatastorePanel::handle_add_entry_text_changed()
 	const bool submit_enabled = selected_universe && add_datastore_name_edit->text().size() > 0 && add_datastore_key_name_edit->text().size() > 0 && add_entry_data_edit->toPlainText().size() > 0;
 	add_entry_submit_button->setEnabled(submit_enabled);
 }
-
 
 void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos)
 {
