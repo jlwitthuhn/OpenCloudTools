@@ -21,6 +21,9 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	case ChangeType::OrderedDatastoreCreate:
 		info->setText("This action will create a new ordered datastore entry. Are you sure you want to do this?");
 		break;
+	case ChangeType::OrderedDatastoreIncrement:
+		info->setText("This action will increment the selected ordered datastore entry. Are you sure you want to do this?");
+		break;
 	case ChangeType::StandardDatastoreRevert:
 		info->setText("This action will re-save an old version of a datastore entry as the newest version. Are you sure you want to do this?");
 		break;

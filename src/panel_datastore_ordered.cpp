@@ -362,14 +362,14 @@ void OrderedDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreCreate };
-	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
-	if (confirmed == false)
+	if (UserProfile::get_selected_universe() == nullptr)
 	{
 		return;
 	}
 
-	if (UserProfile::get_selected_universe() == nullptr)
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreCreate };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
 	{
 		return;
 	}

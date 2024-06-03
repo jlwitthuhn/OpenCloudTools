@@ -7,6 +7,7 @@
 
 #include "assert.h"
 #include "data_request.h"
+#include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
 #include "model_common.h"
 
@@ -170,22 +171,31 @@ void ViewOrderedDatastoreEntryWindow::pressed_increment()
 	OCTASSERT(increment_edit != nullptr);
 	const bool universe_id_valid = validate_contains_long(universe_id_edit);
 	const bool increment_by_valid = validate_contains_long(increment_edit);
-	if (universe_id_valid && increment_by_valid)
+	if (!universe_id_valid || !increment_by_valid)
 	{
-		const long long universe_id = universe_id_edit->text().toLongLong();
-		const QString datastore_name = datastore_name_edit->text();
-		const QString scope = scope_edit->text();
-		const QString key_name = key_name_edit->text();
-		const long long increment_by = increment_edit->text().toLongLong();
-		auto req = std::make_shared<OrderedDatastorePostIncrementRequest>(api_key, universe_id, datastore_name, scope, key_name, increment_by);
+		return;
+	}
 
-		OperationInProgressDialog diag{ this, req };
-		diag.exec();
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreIncrement };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
+	{
+		return;
+	}
 
-		if (req->req_success())
-		{
-			refresh();
-		}
+	const long long universe_id = universe_id_edit->text().toLongLong();
+	const QString datastore_name = datastore_name_edit->text();
+	const QString scope = scope_edit->text();
+	const QString key_name = key_name_edit->text();
+	const long long increment_by = increment_edit->text().toLongLong();
+	auto req = std::make_shared<OrderedDatastorePostIncrementRequest>(api_key, universe_id, datastore_name, scope, key_name, increment_by);
+
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (req->req_success())
+	{
+		refresh();
 	}
 }
 
