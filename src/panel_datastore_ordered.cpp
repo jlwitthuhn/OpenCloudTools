@@ -404,7 +404,12 @@ void OrderedDatastorePanel::pressed_view_entry()
 
 void OrderedDatastorePanel::pressed_delete()
 {
-	// TODO
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreDelete };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
+	{
+		return;
+	}
 }
 
 void OrderedDatastorePanel::pressed_edit()
