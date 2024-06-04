@@ -46,6 +46,7 @@ private:
 	void pressed_submit_new_entry();
 	void pressed_view_entry();
 
+	void pressed_delete();
 	void pressed_edit();
 	void pressed_increment();
 
@@ -61,6 +62,7 @@ private:
 
 	QPushButton* increment_entry_button = nullptr;
 	QPushButton* edit_entry_button = nullptr;
+	QPushButton* delete_entry_button = nullptr;
 
 	// Add panel
 	QLineEdit* add_entry_datastore_name_edit = nullptr;

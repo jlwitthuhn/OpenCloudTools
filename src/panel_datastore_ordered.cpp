@@ -83,10 +83,14 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 				edit_entry_button = new QPushButton{ "Edit entry...", edit_button_panel };
 				connect(edit_entry_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_edit);
 
+				delete_entry_button = new QPushButton{ "Delete entry...", edit_button_panel };
+				connect(delete_entry_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_delete);
+
 				QHBoxLayout* const right_edit_layout = new QHBoxLayout{ edit_button_panel };
 				right_edit_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 				right_edit_layout->addWidget(increment_entry_button);
 				right_edit_layout->addWidget(edit_entry_button);
+				right_edit_layout->addWidget(delete_entry_button);
 			}
 
 			QLayout* const search_layout = search_panel->layout();
@@ -244,6 +248,9 @@ void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
 		single_selected = count == 1;
 	}
 	view_entry_button->setEnabled(single_selected);
+	increment_entry_button->setEnabled(single_selected);
+	edit_entry_button->setEnabled(single_selected);
+	delete_entry_button->setEnabled(single_selected);
 }
 
 void OrderedDatastorePanel::handle_add_entry_text_changed()
@@ -393,6 +400,11 @@ void OrderedDatastorePanel::pressed_submit_new_entry()
 void OrderedDatastorePanel::pressed_view_entry()
 {
 	view_entry(get_selected_single_index(), ViewOrderedDatastoreEntryWindow::EditMode::View);
+}
+
+void OrderedDatastorePanel::pressed_delete()
+{
+	// TODO
 }
 
 void OrderedDatastorePanel::pressed_edit()
