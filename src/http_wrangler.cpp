@@ -140,14 +140,23 @@ QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int 
 
 QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body)
 {
-	OCTASSERT(!body || (body && type == HttpRequestType::Post));
 	init_network_manager();
 	request.setAttribute(QNetworkRequest::Attribute::Http2AllowedAttribute, false);
 	add_log_entry(HttpLogEntry{ type, request.url().toString() });
 	switch (type)
 	{
 	case HttpRequestType::Get:
+		OCTASSERT(body.has_value() == false);
 		return network_access_manager->get(request);
+	case HttpRequestType::Patch:
+		if (body)
+		{
+			network_access_manager->sendCustomRequest(request, "PATCH", body->toUtf8());
+		}
+		else
+		{
+			network_access_manager->sendCustomRequest(request, "PATCH", "");
+		}
 	case HttpRequestType::Post:
 		if (body)
 		{

@@ -14,6 +14,7 @@ enum class DatastoreEntryType
 enum class HttpRequestType
 {
 	Get,
+	Patch,
 	Post,
 	Delete,
 };

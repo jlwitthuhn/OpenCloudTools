@@ -384,6 +384,45 @@ QString OrderedDatastoreEntryPostCreateRequest::get_send_message() const
 	return QString{ "Creating entry '%1'..." }.arg(entry_id);
 }
 
+OrderedDatastoreEntryPatchUpdateRequest::OrderedDatastoreEntryPatchUpdateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long new_value)
+	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, new_value{ new_value }
+{
+	request_type = HttpRequestType::Patch;
+	QJsonObject body_json_obj;
+	body_json_obj.insert("value", QJsonValue::fromVariant(new_value));
+	const QJsonDocument body_json_doc{ body_json_obj };
+	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
+	body_data = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
+	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
+}
+
+QString OrderedDatastoreEntryPatchUpdateRequest::get_title_string() const
+{
+	return "Updating entry...";
+}
+
+QNetworkRequest OrderedDatastoreEntryPatchUpdateRequest::build_request(std::optional<QString>) const
+{
+	return HttpRequestBuilder::ordered_datastore_entry_patch_update(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+}
+
+void OrderedDatastoreEntryPatchUpdateRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	do_success();
+}
+
+void OrderedDatastoreEntryPatchUpdateRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	// Hack: The Roblox API returns 404 here on success for some reason
+	// Only happens when sent from Qt, not when sending the same request through curl vOv
+	do_success();
+}
+
+QString OrderedDatastoreEntryPatchUpdateRequest::get_send_message() const
+{
+	return QString{ "Setting '%1' to %2..." }.arg(entry_id).arg(new_value);
+}
+
 OrderedDatastorePostIncrementRequest::OrderedDatastorePostIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long increment_by)
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, increment_by{ increment_by }
 {

@@ -11,6 +11,7 @@ enum class ChangeType
 {
 	OrderedDatastoreCreate,
 	OrderedDatastoreIncrement,
+	OrderedDatastoreUpdate,
 	StandardDatastoreRevert,
 	StandardDatastoreUpdate,
 	StandardDatastoreDelete,

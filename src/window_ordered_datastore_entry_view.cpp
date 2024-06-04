@@ -201,5 +201,33 @@ void ViewOrderedDatastoreEntryWindow::pressed_increment()
 
 void ViewOrderedDatastoreEntryWindow::pressed_new_value()
 {
-	// TODO
+	OCTASSERT(new_value_edit != nullptr);
+	const bool universe_id_valid = validate_contains_long(universe_id_edit);
+	const bool increment_by_valid = validate_contains_long(new_value_edit);
+	if (!universe_id_valid || !increment_by_valid)
+	{
+		return;
+	}
+
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreUpdate };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
+	{
+		return;
+	}
+
+	const long long universe_id = universe_id_edit->text().toLongLong();
+	const QString datastore_name = datastore_name_edit->text();
+	const QString scope = scope_edit->text();
+	const QString key_name = key_name_edit->text();
+	const long long new_value = new_value_edit->text().toLongLong();
+	auto req = std::make_shared<OrderedDatastoreEntryPatchUpdateRequest>(api_key, universe_id, datastore_name, scope, key_name, new_value);
+
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (req->req_success())
+	{
+		refresh();
+	}
 }

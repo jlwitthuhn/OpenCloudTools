@@ -13,6 +13,7 @@ public:
 
 	static QNetworkRequest ordered_datastore_entry_get_details(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
 	static QNetworkRequest ordered_datastore_entry_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending, std::optional<QString> cursor = std::nullopt);
+	static QNetworkRequest ordered_datastore_entry_patch_update(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 	static QNetworkRequest ordered_datastore_entry_post_create(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 	static QNetworkRequest ordered_datastore_entry_post_increment(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 
