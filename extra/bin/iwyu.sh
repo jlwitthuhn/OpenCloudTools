@@ -1,7 +1,7 @@
 #!/bin/bash
 
 qt_include_base="/usr/include/qt6"
-clang_include_dir="/usr/lib64/clang/16/include"
+clang_include_dir="/usr/lib/clang/18/include"
 
 qt_defines="-DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB"
 local_includes="-I./extern/sqlite"
