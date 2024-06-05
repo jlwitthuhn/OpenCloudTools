@@ -151,11 +151,11 @@ QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request
 	case HttpRequestType::Patch:
 		if (body)
 		{
-			network_access_manager->sendCustomRequest(request, "PATCH", body->toUtf8());
+			return network_access_manager->sendCustomRequest(request, "PATCH", body->toUtf8());
 		}
 		else
 		{
-			network_access_manager->sendCustomRequest(request, "PATCH", "");
+			return network_access_manager->sendCustomRequest(request, "PATCH", "");
 		}
 	case HttpRequestType::Post:
 		if (body)

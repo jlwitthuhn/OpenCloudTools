@@ -437,13 +437,6 @@ void OrderedDatastoreEntryPatchUpdateRequest::handle_http_200(const QString&, co
 	do_success();
 }
 
-void OrderedDatastoreEntryPatchUpdateRequest::handle_http_404(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
-{
-	// Hack: The Roblox API returns 404 here on success for some reason
-	// Only happens when sent from Qt, not when sending the same request through curl vOv
-	do_success();
-}
-
 QString OrderedDatastoreEntryPatchUpdateRequest::get_send_message() const
 {
 	return QString{ "Setting '%1' to %2..." }.arg(entry_id).arg(new_value);
