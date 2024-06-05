@@ -19,6 +19,7 @@
 #include <QTreeView>
 #include <QWidget>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
@@ -404,12 +405,38 @@ void OrderedDatastorePanel::pressed_view_entry()
 
 void OrderedDatastorePanel::pressed_delete()
 {
+	const QModelIndex index = get_selected_single_index();
+	if (index.isValid() == false)
+	{
+		return;
+	}
+
 	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::OrderedDatastoreDelete };
 	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
 	if (confirmed == false)
 	{
 		return;
 	}
+
+	OrderedDatastoreEntryQTableModel* const model = dynamic_cast<OrderedDatastoreEntryQTableModel*>(datastore_entry_tree->model());
+	OCTASSERT(model != nullptr);
+
+	std::optional<OrderedDatastoreEntryFull> opt_entry = model->get_entry(index.row());
+	if (opt_entry.has_value() == false)
+	{
+		return;
+	}
+
+	const auto req = std::make_shared<OrderedDatastoreEntryDeleteRequest>(
+		api_key,
+		opt_entry->get_universe_id(),
+		opt_entry->get_datastore_name(),
+		opt_entry->get_scope(),
+		opt_entry->get_key_name()
+	);
+
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
 }
 
 void OrderedDatastorePanel::pressed_edit()

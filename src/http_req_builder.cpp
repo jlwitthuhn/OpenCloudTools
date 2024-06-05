@@ -14,6 +14,18 @@ QNetworkRequest HttpRequestBuilder::messaging_service_post_message(const QString
 	return req;
 }
 
+QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_delete(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id)
+{
+	QString url = base_url_ordered_datastore(universe_id);
+	url = url + "/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name);
+	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
+	url = url + "/entries/" + QUrl::toPercentEncoding(entry_id);
+
+	QNetworkRequest req{ url };
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
 QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_get_details(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name)
 {
 	QString url = base_url_ordered_datastore(universe_id);
