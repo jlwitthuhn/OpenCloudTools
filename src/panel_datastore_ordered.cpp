@@ -3,20 +3,30 @@
 #include <cstddef>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
+#include <QAbstractItemModel>
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QFormLayout>
+#include <QFrame>
 #include <QGroupBox>
+#include <QHBoxLayout>
+#include <QItemSelectionModel>
 #include <QLayout>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidget>
+#include <QMargins>
 #include <QMessageBox>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QSizePolicy>
+#include <QTabWidget>
 #include <QTreeView>
+#include <QVBoxLayout>
 #include <QWidget>
 
 #include "assert.h"

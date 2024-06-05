@@ -4,6 +4,7 @@
 #include <optional>
 #include <utility>
 #include <set>
+#include <string>
 
 #include <Qt>
 #include <QCheckBox>

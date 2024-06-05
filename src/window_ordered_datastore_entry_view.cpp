@@ -1,7 +1,12 @@
 #include "window_ordered_datastore_entry_view.h"
 
+#include <memory>
+#include <optional>
+
+#include <Qt>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QPushButton>
 #include <QVBoxLayout>
 

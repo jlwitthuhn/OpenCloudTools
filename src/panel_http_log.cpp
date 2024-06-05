@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QModelIndex>
 #include <QPushButton>
+#include <QString>
 #include <QTreeView>
 #include <QVBoxLayout>
 

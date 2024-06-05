@@ -4,6 +4,7 @@
 #include <QCryptographicHash>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QMetaEnum>
 #include <QNetworkReply>
 #include <QTimer>

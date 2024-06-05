@@ -6,7 +6,6 @@
 #include <optional>
 #include <set>
 
-#include <Qt>
 #include <QAbstractItemModel>
 #include <QAction>
 #include <QBoxLayout>

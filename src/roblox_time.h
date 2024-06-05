@@ -4,9 +4,10 @@
 #include <optional>
 
 #include <QDateTime>
-#include <QList>
 #include <QNetworkReply>
 #include <QString>
+
+template <typename T> class QList;
 
 class RobloxTime
 {

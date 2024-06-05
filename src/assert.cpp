@@ -3,6 +3,7 @@
 #include <string>
 
 #include <QMessageBox>
+#include <QString>
 
 void oct_do_assert(const char* const file, int line, const bool condition)
 {

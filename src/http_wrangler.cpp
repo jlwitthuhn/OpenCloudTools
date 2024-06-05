@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 
+#include <QByteArray>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QUrl>

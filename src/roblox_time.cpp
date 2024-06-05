@@ -5,6 +5,7 @@
 
 #include <QByteArray>
 #include <QDateTime>
+#include <QList>
 
 std::chrono::steady_clock::time_point RobloxTime::last_updated;
 std::optional<QDateTime> RobloxTime::last_parsed_time;
