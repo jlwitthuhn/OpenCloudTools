@@ -407,7 +407,7 @@ void OrderedDatastoreEntryPostCreateRequest::handle_http_200(const QString&, con
 
 QString OrderedDatastoreEntryPostCreateRequest::get_send_message() const
 {
-	return QString{ "Creating entry '%1'..." }.arg(entry_id);
+	return QString{ "Creating entry '%1' with value %2..." }.arg(entry_id).arg(value);
 }
 
 OrderedDatastoreEntryPatchUpdateRequest::OrderedDatastoreEntryPatchUpdateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long new_value)
