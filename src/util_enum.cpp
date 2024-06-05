@@ -7,11 +7,13 @@ QString get_enum_string(const HttpRequestType enum_in)
 	switch (enum_in)
 	{
 	case HttpRequestType::Get:
-		return "Get";
+		return "GET";
+	case HttpRequestType::Patch:
+		return "PATCH";
 	case HttpRequestType::Post:
-		return "Post";
+		return "POST";
 	case HttpRequestType::Delete:
-		return "Delete";
+		return "DELETE";
 	}
 	return "Big Error";
 }
