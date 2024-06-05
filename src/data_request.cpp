@@ -825,7 +825,7 @@ QString UniverseGetDetailsRequest::get_title_string() const
 	return "Fetching universe details...";
 }
 
-QNetworkRequest UniverseGetDetailsRequest::build_request(const std::optional<QString> cursor) const
+QNetworkRequest UniverseGetDetailsRequest::build_request(std::optional<QString>) const
 {
 	return HttpRequestBuilder::universe_get_details(api_key, universe_id);
 }
