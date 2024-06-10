@@ -50,7 +50,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 		remove_datastore_button = new QPushButton{ "Remove", select_datastore_group };
 		connect(remove_datastore_button, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_remove_datastore);
 
-		QLayout* group_layout = select_datastore_group->layout();
+		QLayout* const group_layout = select_datastore_group->layout();
 		group_layout->addWidget(save_recent_datastores_check);
 		group_layout->addWidget(remove_datastore_button);
 	}
@@ -189,39 +189,46 @@ void OrderedDatastorePanel::set_datastore_entry_model(OrderedDatastoreEntryQTabl
 
 void OrderedDatastorePanel::view_entry(const QModelIndex& index, ViewOrderedDatastoreEntryWindow::EditMode edit_mode)
 {
-	if (index.isValid())
+	if (index.isValid() == false)
 	{
-		if (OrderedDatastoreEntryQTableModel* const model = dynamic_cast<OrderedDatastoreEntryQTableModel*>(datastore_entry_tree->model()))
-		{
-			std::optional<OrderedDatastoreEntryFull> opt_entry = model->get_entry(index.row());
-			if (opt_entry)
-			{
-				const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsRequest>(
-					api_key,
-					opt_entry->get_universe_id(),
-					opt_entry->get_datastore_name(),
-					opt_entry->get_scope(),
-					opt_entry->get_key_name()
-				);
+		return;
+	}
 
-				OperationInProgressDialog diag{ this, req };
-				diag.exec();
+	OrderedDatastoreEntryQTableModel* const model = dynamic_cast<OrderedDatastoreEntryQTableModel*>(datastore_entry_tree->model());
+	if (model == nullptr)
+	{
+		return;
+	}
 
-				const std::optional<OrderedDatastoreEntryFull> opt_details = req->get_details();
-				if (opt_details)
-				{
-					ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ this, api_key, *opt_details, edit_mode};
-					view_entry_window->show();
-				}
-				else
-				{
-					QMessageBox* const msg_box = new QMessageBox{ this };
-					msg_box->setWindowTitle("Not Found");
-					msg_box->setText("This entry does not exist or has been deleted.");
-					msg_box->exec();
-				}
-			}
-		}
+	std::optional<OrderedDatastoreEntryFull> opt_entry = model->get_entry(index.row());
+	if (opt_entry.has_value() == false)
+	{
+		return;
+	}
+
+	const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsRequest>(
+		api_key,
+		opt_entry->get_universe_id(),
+		opt_entry->get_datastore_name(),
+		opt_entry->get_scope(),
+		opt_entry->get_key_name()
+	);
+
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	const std::optional<OrderedDatastoreEntryFull> opt_details = req->get_details();
+	if (opt_details)
+	{
+		ViewOrderedDatastoreEntryWindow* const view_entry_window = new ViewOrderedDatastoreEntryWindow{ this, api_key, *opt_details, edit_mode};
+		view_entry_window->show();
+	}
+	else
+	{
+		QMessageBox* const msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Not Found");
+		msg_box->setText("This entry does not exist or has been deleted.");
+		msg_box->exec();
 	}
 }
 
