@@ -28,6 +28,22 @@ enum class DataRequestStatus
 	Error,
 };
 
+class DataRequestBody
+{
+public:
+	DataRequestBody();
+	DataRequestBody(const QString& data);
+
+	operator bool() const;
+
+	const std::optional<QString>& get_data() const { return data; }
+	const QString& get_md5() const { return md5; }
+
+private:
+	std::optional<QString> data;
+	QString md5;
+};
+
 class DataRequest : public QObject
 {
 	Q_OBJECT
@@ -82,7 +98,7 @@ protected:
 	QTimer* request_timeout = nullptr;
 
 	HttpRequestType request_type = HttpRequestType::Get;
-	std::optional<QString> body_data;
+	DataRequestBody req_body;
 
 	size_t http_429_count = 0;
 };
@@ -119,14 +135,12 @@ private:
 	QString datastore_name;
 	QString scope;
 	QString entry_id;
-
-	QString body_md5;
 };
 
 class OrderedDatastoreEntryGetDetailsRequest : public DataRequest
 {
 public:
-	OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
+	OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
 
 	virtual QString get_title_string() const override;
 
@@ -140,7 +154,7 @@ private:
 	long long universe_id;
 	QString datastore_name;
 	QString scope;
-	QString key_name;
+	QString entry_id;
 
 	std::optional<OrderedDatastoreEntryFull> details;
 };
@@ -187,8 +201,6 @@ private:
 	QString scope;
 	QString entry_id;
 	long long new_value;
-
-	QString body_md5;
 };
 
 class OrderedDatastoreEntryPostCreateRequest : public DataRequest
@@ -208,8 +220,6 @@ private:
 	QString scope;
 	QString entry_id;
 	long long value;
-
-	QString body_md5;
 };
 
 class OrderedDatastorePostIncrementRequest : public DataRequest
@@ -229,8 +239,6 @@ private:
 	QString scope;
 	QString entry_id;
 	long long increment_by;
-
-	QString body_md5;
 };
 
 class StandardDatastoreEntryDeleteRequest : public DataRequest
@@ -379,8 +387,6 @@ private:
 	QString key_name;
 	std::optional<QString> userids;
 	std::optional<QString> attributes;
-
-	QString body_md5;
 };
 
 

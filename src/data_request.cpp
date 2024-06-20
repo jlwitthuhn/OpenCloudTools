@@ -16,6 +16,21 @@
 #include "roblox_time.h"
 #include "util_enum.h"
 
+DataRequestBody::DataRequestBody()
+{
+	md5 = QCryptographicHash::hash("", QCryptographicHash::Algorithm::Md5).toBase64();
+}
+
+DataRequestBody::DataRequestBody(const QString& data) : data{ data }
+{
+	md5 = QCryptographicHash::hash(data.toUtf8(), QCryptographicHash::Algorithm::Md5).toBase64();
+}
+
+DataRequestBody::operator bool() const
+{
+	return data.has_value();
+}
+
 void DataRequest::send_request(std::optional<QString> cursor)
 {
 	if (status != DataRequestStatus::ReadyToBegin && status != DataRequestStatus::Waiting)
@@ -36,7 +51,7 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	pending_request_cursor = cursor;
 	pending_request = build_request(cursor);
-	pending_reply = HttpWrangler::send(request_type, *pending_request, body_data);
+	pending_reply = HttpWrangler::send(request_type, *pending_request, req_body.get_data());
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
@@ -163,7 +178,7 @@ void DataRequest::resend()
 	if (pending_request)
 	{
 		emit status_info("Resending...");
-		pending_reply = HttpWrangler::send(request_type, *pending_request, body_data);
+		pending_reply = HttpWrangler::send(request_type, *pending_request, req_body.get_data());
 		connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 		timeout_begin();
 	}
@@ -229,7 +244,7 @@ MessagingServicePostMessageRequest::MessagingServicePostMessageRequest(const QSt
 	send_object.insert("message", unencoded_message);
 
 	const QJsonDocument doc{ send_object };
-	body_data = doc.toJson(QJsonDocument::Compact);
+	req_body = QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
 }
 
 QString MessagingServicePostMessageRequest::get_title_string() const
@@ -278,8 +293,8 @@ QString OrderedDatastoreEntryDeleteRequest::get_send_message() const
 	return QString{ "Deleting '%1'..." }.arg(entry_id);
 }
 
-OrderedDatastoreEntryGetDetailsRequest::OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name) :
-	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
+OrderedDatastoreEntryGetDetailsRequest::OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id) :
+	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }
 {
 
 }
@@ -303,12 +318,12 @@ std::optional<OrderedDatastoreEntryFull> OrderedDatastoreEntryGetDetailsRequest:
 
 QNetworkRequest OrderedDatastoreEntryGetDetailsRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_get_details(api_key, universe_id, datastore_name, scope, key_name);
+	return HttpRequestBuilder::ordered_datastore_entry_get_details(api_key, universe_id, datastore_name, scope, entry_id);
 }
 
 void OrderedDatastoreEntryGetDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::from_json(universe_id, datastore_name, scope, key_name, body);
+	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::from_json(universe_id, datastore_name, scope, entry_id, body);
 	if (response)
 	{
 		details = response->get_details();
@@ -324,7 +339,7 @@ void OrderedDatastoreEntryGetDetailsRequest::handle_http_200(const QString& body
 
 QString OrderedDatastoreEntryGetDetailsRequest::get_send_message() const
 {
-	return QString{ "Fetching information for key '%1'..." }.arg(key_name);
+	return QString{ "Fetching information for key '%1'..." }.arg(entry_id);
 }
 
 OrderedDatastoreEntryGetListRequest::OrderedDatastoreEntryGetListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending) :
@@ -386,9 +401,7 @@ OrderedDatastoreEntryPostCreateRequest::OrderedDatastoreEntryPostCreateRequest(c
 	QJsonObject body_json_obj;
 	body_json_obj.insert("value", QJsonValue::fromVariant(value));
 	const QJsonDocument body_json_doc{ body_json_obj };
-	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
-	body_data = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
-	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
+	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
 QString OrderedDatastoreEntryPostCreateRequest::get_title_string() const
@@ -398,7 +411,7 @@ QString OrderedDatastoreEntryPostCreateRequest::get_title_string() const
 
 QNetworkRequest OrderedDatastoreEntryPostCreateRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_post_create(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+	return HttpRequestBuilder::ordered_datastore_entry_post_create(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
 }
 
 void OrderedDatastoreEntryPostCreateRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -419,8 +432,7 @@ OrderedDatastoreEntryPatchUpdateRequest::OrderedDatastoreEntryPatchUpdateRequest
 	body_json_obj.insert("value", QJsonValue::fromVariant(new_value));
 	const QJsonDocument body_json_doc{ body_json_obj };
 	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
-	body_data = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
-	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
+	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
 QString OrderedDatastoreEntryPatchUpdateRequest::get_title_string() const
@@ -430,7 +442,7 @@ QString OrderedDatastoreEntryPatchUpdateRequest::get_title_string() const
 
 QNetworkRequest OrderedDatastoreEntryPatchUpdateRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_patch_update(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+	return HttpRequestBuilder::ordered_datastore_entry_patch_update(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
 }
 
 void OrderedDatastoreEntryPatchUpdateRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -451,8 +463,7 @@ OrderedDatastorePostIncrementRequest::OrderedDatastorePostIncrementRequest(const
 	body_json_obj.insert("amount", QJsonValue::fromVariant(increment_by));
 	const QJsonDocument body_json_doc{ body_json_obj };
 	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
-	body_data = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
-	body_md5 = QCryptographicHash::hash(post_body_bytes, QCryptographicHash::Algorithm::Md5).toBase64();
+	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
 QString OrderedDatastorePostIncrementRequest::get_title_string() const
@@ -462,7 +473,7 @@ QString OrderedDatastorePostIncrementRequest::get_title_string() const
 
 QNetworkRequest OrderedDatastorePostIncrementRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_post_increment(api_key, universe_id, datastore_name, scope, entry_id, body_md5);
+	return HttpRequestBuilder::ordered_datastore_entry_post_increment(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
 }
 
 void OrderedDatastorePostIncrementRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
@@ -748,8 +759,7 @@ StandardDatastoreEntryPostSetRequest::StandardDatastoreEntryPostSetRequest(const
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, userids{ userids }, attributes{ attributes }
 {
 	request_type = HttpRequestType::Post;
-	body_data = body;
-	body_md5 = QCryptographicHash::hash(body.toUtf8(), QCryptographicHash::Algorithm::Md5).toBase64();
+	req_body = body;
 }
 
 QString StandardDatastoreEntryPostSetRequest::get_title_string() const
@@ -759,7 +769,7 @@ QString StandardDatastoreEntryPostSetRequest::get_title_string() const
 
 QNetworkRequest StandardDatastoreEntryPostSetRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::standard_datastore_entry_post(api_key, universe_id, datastore_name, scope, key_name, body_md5, userids, attributes);
+	return HttpRequestBuilder::standard_datastore_entry_post(api_key, universe_id, datastore_name, scope, key_name, req_body.get_md5(), userids, attributes);
 }
 
 void StandardDatastoreEntryPostSetRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
