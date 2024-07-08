@@ -9,16 +9,19 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+option(OCT_USE_GIT_TAG "Pull the current git tag during build" FALSE)
 option(USE_QT5 "Build with Qt 5 instead of Qt 6" FALSE)
 
-execute_process(
-	COMMAND git describe --tags
-	WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-	OUTPUT_VARIABLE GIT_DESCRIBE
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+if(OCT_USE_GIT_TAG)
+	execute_process(
+		COMMAND git describe --tags
+		WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+		OUTPUT_VARIABLE GIT_DESCRIBE
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+endif()
 
-if (USE_QT5)
+if(USE_QT5)
 	find_package(Qt5 REQUIRED COMPONENTS Network Widgets)
 else()
 	find_package(Qt6 REQUIRED COMPONENTS Network Widgets)
@@ -98,7 +101,7 @@ set(OPENCLOUDTOOLS_SRC
 	./src/window_ordered_datastore_entry_view.h
 )
 
-if (APPLE)
+if(APPLE)
 	set(MACOSX_BUNDLE_ICON_FILE icon.icns)
 	set(ICON_MACOS "${CMAKE_CURRENT_SOURCE_DIR}/res/mac/icon.icns")
 	set_source_files_properties(${ICON_MACOS} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
@@ -107,7 +110,7 @@ if (APPLE)
 		${OPENCLOUDTOOLS_SRC}
 		${ICON_MACOS}
 	)
-elseif (WIN32)
+elseif(WIN32)
 	add_executable(OpenCloudTools
 		WIN32
 		${OPENCLOUDTOOLS_SRC}
@@ -119,9 +122,11 @@ else()
 	)
 endif()
 
-target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
+if(DEFINED GIT_DESCRIBE)
+	target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
+endif()
 
-if (USE_QT5)
+if(USE_QT5)
 	target_compile_definitions(OpenCloudTools PRIVATE QT5_COMPAT)
 endif()
 
@@ -136,13 +141,13 @@ else()
 	target_link_libraries(OpenCloudTools PRIVATE Qt6::Widgets)
 endif()
 
-if (MSVC)
+if(MSVC)
 	target_compile_options(OpenCloudTools PRIVATE /W4)
 else()
 	target_compile_options(OpenCloudTools PRIVATE -Wall -Wextra -pedantic)
 endif()
 
-if (APPLE)
+if(APPLE)
 	install(TARGETS OpenCloudTools BUNDLE DESTINATION .)
 else()
 	install(TARGETS OpenCloudTools)
