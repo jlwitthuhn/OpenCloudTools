@@ -12,6 +12,8 @@ set(CMAKE_AUTOUIC ON)
 option(OCT_USE_GIT_TAG "Pull the current git tag during build" FALSE)
 option(OCT_USE_QT5 "Build with Qt 5 instead of Qt 6" FALSE)
 
+option(OCT_USE_NEW_GUI "Use experimental GUI" FALSE)
+
 if(OCT_USE_GIT_TAG)
 	execute_process(
 		COMMAND git describe --tags
@@ -97,6 +99,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/window_datastore_entry_view.h
 	./src/window_main.cpp
 	./src/window_main.h
+	./src/window_main_new.cpp
+	./src/window_main_new.h
 	./src/window_ordered_datastore_entry_view.cpp
 	./src/window_ordered_datastore_entry_view.h
 )
@@ -130,10 +134,14 @@ if(OCT_USE_QT5)
 	target_compile_definitions(OpenCloudTools PRIVATE QT5_COMPAT)
 endif()
 
+if(OCT_USE_NEW_GUI)
+	target_compile_definitions(OpenCloudTools PRIVATE OCT_NEW_GUI)
+endif()
+
 target_include_directories(OpenCloudTools PRIVATE ./extern/sqlite)
 
 target_link_libraries(OpenCloudTools PRIVATE extern_sqlite3)
-if (OCT_USE_QT5)
+if(OCT_USE_QT5)
 	target_link_libraries(OpenCloudTools PRIVATE Qt5::Network)
 	target_link_libraries(OpenCloudTools PRIVATE Qt5::Widgets)
 else()

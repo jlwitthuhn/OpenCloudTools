@@ -1,6 +1,10 @@
 #include <QApplication>
 
+#ifdef OCT_NEW_GUI
+#include "window_main_new.h"
+#else
 #include "window_api_key_manage.h"
+#endif
 
 int main(int argc, char** argv)
 {
@@ -9,11 +13,13 @@ int main(int argc, char** argv)
 
 	QApplication app{ argc, argv };
 
-	{
-		// Show API key selection first, this will launch other windows as needed
-		ManageApiKeysWindow* window = new ManageApiKeysWindow{};
-		window->show();
-	}
+#ifdef OCT_NEW_GUI
+	MyNewMainWindow* const window = new MyNewMainWindow{};
+#else
+	// Show API key selection first, this will launch other windows as needed
+	ManageApiKeysWindow* window = new ManageApiKeysWindow{};
+#endif
+	window->show();
 
 	return app.exec();
 }
