@@ -11,7 +11,6 @@
 #include <QtGlobal>
 #include <QAction>
 #include <QComboBox>
-#include <QDesktopServices>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -19,21 +18,14 @@
 #include <QLineEdit>
 #include <QList>
 #include <QMargins>
-#include <QMenu>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QStyleFactory>
 #include <QTabWidget>
-#include <QUrl>
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include <sqlite3.h>
-
 #include "assert.h"
-#include "build_info.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "http_wrangler.h"
@@ -45,126 +37,16 @@
 #include "panel_universe_prefs.h"
 #include "profile.h"
 #include "window_api_key_manage.h"
+#include "window_main_menu_bar.h"
 
 MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QMainWindow{ parent, Qt::Window }, api_key { api_key }
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
 
-	connect(UserProfile::get().get(), &UserProfile::qt_theme_changed, this, &MyMainWindow::handle_qt_theme_changed);
 	connect(UserProfile::get().get(), &UserProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
-	connect(UserProfile::get().get(), &UserProfile::autoclose_changed, this, &MyMainWindow::handle_autoclose_changed);
 
-	QMenuBar* menu_bar = new QMenuBar{ this };
-	{
-
-		QMenu* file_menu = new QMenu{ "&File", menu_bar };
-		{
-			QAction* action_change_key = new QAction{ "Change API &key", menu_bar };
-			connect(action_change_key, &QAction::triggered, this, &MyMainWindow::pressed_change_key);
-
-			QAction* action_exit = new QAction{ "E&xit", menu_bar };
-			connect(action_exit, &QAction::triggered, this, &MyMainWindow::close);
-
-			file_menu->addAction(action_change_key);
-			file_menu->addSeparator();
-			file_menu->addAction(action_exit);
-		}
-
-		QMenu* preferences_menu = new QMenu{ "&Preferences", menu_bar };
-		{
-			QMenu* theme_menu = new QMenu{ "Theme", preferences_menu };
-			{
-				for (const QString& this_theme : QStyleFactory::keys())
-				{
-					QAction* this_action = new QAction{ this_theme, theme_menu };
-					connect(this_action, &QAction::triggered, [this_theme]() {
-						UserProfile::get()->set_qt_theme(this_theme);
-					});
-					theme_actions.push_back(this_action);
-					theme_menu->addAction(this_action);
-					if (this_theme.toLower() == "fusion")
-					{
-						QAction* fusion_dark_action = new QAction{ "Fusion (Dark)", theme_menu };
-						connect(fusion_dark_action, &QAction::triggered, []() {
-							UserProfile::get()->set_qt_theme("_fusion_dark");
-						});
-						theme_actions.push_back(fusion_dark_action);
-						theme_menu->addAction(fusion_dark_action);
-					}
-				}
-			}
-
-			action_toggle_autoclose = new QAction{ "&Close progress windows when complete", preferences_menu };
-			action_toggle_autoclose->setCheckable(true);
-			action_toggle_autoclose->setChecked(UserProfile::get()->get_autoclose_progress_window());
-			connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindow::pressed_toggle_autoclose);
-
-			action_toggle_less_verbose_bulk = new QAction{ "Less &verbose bulk data operations", preferences_menu };
-			action_toggle_less_verbose_bulk->setCheckable(true);
-			action_toggle_less_verbose_bulk->setChecked(UserProfile::get()->get_less_verbose_bulk_operations());
-			connect(action_toggle_less_verbose_bulk, &QAction::triggered, this, &MyMainWindow::pressed_toggle_less_verbose_bulk);
-
-			action_toggle_datastore_name_filter = new QAction{ "Show datastore name &filter text box", preferences_menu };
-			action_toggle_datastore_name_filter->setCheckable(true);
-			action_toggle_datastore_name_filter->setChecked(UserProfile::get()->get_show_datastore_name_filter());
-			connect(action_toggle_datastore_name_filter, &QAction::triggered, this, &MyMainWindow::pressed_toggle_datastore_name_filter);
-
-			preferences_menu->addMenu(theme_menu);
-			preferences_menu->addSeparator();
-			preferences_menu->addAction(action_toggle_autoclose);
-			preferences_menu->addAction(action_toggle_less_verbose_bulk);
-			preferences_menu->addAction(action_toggle_datastore_name_filter);
-		}
-
-		QMenu* about_menu = new QMenu{ "&About", menu_bar };
-		{
-			QAction* action_github = new QAction{ "Visit repository on &Github", menu_bar };
-			connect(action_github, &QAction::triggered, []() {
-				QDesktopServices::openUrl(QUrl{ "https://github.com/jlwitthuhn/OpenCloudTools" });
-			});
-
-#ifdef GIT_DESCRIBE
-			const QString label_git_describe = QString{ "Git: %1" }.arg(GIT_DESCRIBE);
-			QAction* action_git_describe = new QAction{ label_git_describe, menu_bar };
-#endif
-
-			QMenu* about_build_menu = new QMenu{ "Build information", about_menu };
-			{
-				const QString label_date = QString{ "Build date: %1" }.arg(QString::fromStdString(get_build_date()));
-				QAction* action_date = new QAction{ label_date, menu_bar };
-
-				const QString label_compiler = QString{ "Compiler: %1" }.arg( QString::fromStdString( get_cxx_compiler_version_string() ) );
-				QAction* action_compiler = new QAction{ label_compiler, menu_bar };
-
-				about_build_menu->addAction(action_date);
-				about_build_menu->addAction(action_compiler);
-			}
-
-			QMenu* about_libraries_menu = new QMenu{ "Third-party libraries", about_menu };
-			{
-				const QString label_qt = QString{ "Qt %1" }.arg(qVersion());
-				QAction* action_qt = new QAction{ label_qt, menu_bar };
-
-				const QString label_sqlite = QString{ "SQLite %1" }.arg(sqlite3_libversion());
-				QAction* action_sqlite = new QAction{ label_sqlite, menu_bar };
-
-				about_libraries_menu->addAction(action_qt);
-				about_libraries_menu->addAction(action_sqlite);
-			}
-
-			about_menu->addAction(action_github);
-			about_menu->addSeparator();
-#ifdef GIT_DESCRIBE
-			about_menu->addAction(action_git_describe);
-#endif
-			about_menu->addMenu(about_build_menu);
-			about_menu->addMenu(about_libraries_menu);
-		}
-
-		menu_bar->addMenu(file_menu);
-		menu_bar->addMenu(preferences_menu);
-		menu_bar->addMenu(about_menu);
-	}
+	MyMainWindowMenuBar* menu_bar = new MyMainWindowMenuBar{ this };
+	connect(menu_bar, &MyMainWindowMenuBar::OLDGUI_request_change_api_key, this, &MyMainWindow::pressed_change_key);
 	setMenuBar(menu_bar);
 
 	QWidget* central_widget = new QWidget{ this };
@@ -236,7 +118,6 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	setMinimumWidth(720);
 	setMinimumHeight(520);
 
-	handle_qt_theme_changed();
 	handle_universe_list_changed(std::nullopt);
 }
 
@@ -292,49 +173,6 @@ void MyMainWindow::pressed_change_key()
 	ManageApiKeysWindow* api_window = new ManageApiKeysWindow{ nullptr };
 	api_window->show();
 	close();
-}
-
-void MyMainWindow::pressed_toggle_autoclose()
-{
-	UserProfile::get()->set_autoclose_progress_window(action_toggle_autoclose->isChecked());
-}
-
-void MyMainWindow::pressed_toggle_datastore_name_filter()
-{
-	UserProfile::get()->set_show_datastore_name_filter(action_toggle_datastore_name_filter->isChecked());
-}
-
-void MyMainWindow::pressed_toggle_less_verbose_bulk()
-{
-	UserProfile::get()->set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
-}
-
-
-void MyMainWindow::handle_autoclose_changed()
-{
-	const bool autoclose = UserProfile::get()->get_autoclose_progress_window();
-	if (autoclose != action_toggle_autoclose->isChecked())
-	{
-		action_toggle_autoclose->setChecked(autoclose);
-	}
-}
-
-void MyMainWindow::handle_qt_theme_changed()
-{
-	const QString& selected_theme = UserProfile::get()->get_qt_theme();
-	for (QAction* const this_action : theme_actions)
-	{
-		if (this_action->text() == selected_theme || (this_action->text() == "Fusion (Dark)" && selected_theme == "_fusion_dark"))
-		{
-			this_action->setCheckable(true);
-			this_action->setChecked(true);
-		}
-		else
-		{
-			this_action->setCheckable(false);
-			this_action->setChecked(false);
-		}
-	}
 }
 
 void MyMainWindow::handle_tab_changed(const int index)

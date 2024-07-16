@@ -9,12 +9,16 @@
 #include <QVBoxLayout>
 
 #include "window_api_key_manage.h"
+#include "window_main_menu_bar.h"
 
 MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("OpenCloudTools");
 	setMinimumSize(640, 480);
+
+	MyMainWindowMenuBar* const menu_bar = new MyMainWindowMenuBar{ this };
+	setMenuBar(menu_bar);
 
 	QToolBar* const main_tool_bar = new QToolBar{ this };
 	main_tool_bar->setFloatable(false);
