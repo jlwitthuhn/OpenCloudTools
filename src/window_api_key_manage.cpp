@@ -40,8 +40,12 @@ static bool variant_is_ulonglong(const QVariant& variant)
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
-
 	setWindowTitle("API Keys");
+
+#ifdef OCT_NEW_GUI
+	OCTASSERT(parent);
+	setWindowModality(Qt::WindowModality::WindowModal);
+#endif
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->setAlignment(Qt::AlignHCenter);
@@ -112,12 +116,16 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 		if (variant_is_ulonglong(data_var))
 		{
 			UserProfile::get()->select_api_key(data_var.toULongLong());
+#ifdef OCT_NEW_GUI
+			close();
+#else
 			if (ApiKeyProfile* profile = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->get_name(), profile->get_key() };
 				main_window->show();
 				close();
 			}
+#endif
 		}
 	}
 }
@@ -176,12 +184,16 @@ void ManageApiKeysWindow::pressed_select()
 		if (variant_is_ulonglong(selected_data))
 		{
 			UserProfile::get()->select_api_key(selected_data.toULongLong());
+#ifdef OCT_NEW_GUI
+			close();
+#else
 			if (ApiKeyProfile* details = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->get_name(), details->get_key() };
 				main_window->show();
 				close();
 			}
+#endif
 		}
 	}
 }

@@ -478,6 +478,7 @@ void UserProfile::select_api_key(const std::optional<size_t> index)
 	{
 		selected_key_index = std::nullopt;
 	}
+	emit selected_api_key_changed();
 }
 
 bool UserProfile::profile_name_available(const QString& name) const

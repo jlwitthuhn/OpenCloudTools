@@ -146,6 +146,7 @@ public:
 signals:
 	void qt_theme_changed();
 	void autoclose_changed();
+	void selected_api_key_changed();
 	void api_key_list_changed(std::optional<size_t> selected_api_index);
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void hidden_datastore_list_changed();
