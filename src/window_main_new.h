@@ -9,4 +9,7 @@ class MyNewMainWindow : public QMainWindow
 
 public:
 	MyNewMainWindow();
+
+private:
+	void pressed_change_key();
 };

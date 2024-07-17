@@ -33,6 +33,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 		api_key_name_edit->setMaximumWidth(250);
 
 		QPushButton* const change_key_button = new QPushButton{ "Change Key", main_tool_bar };
+		connect(change_key_button, &QPushButton::clicked, this, &MyNewMainWindow::pressed_change_key);
 
 		main_tool_bar->addWidget(api_key_label);
 		main_tool_bar->addWidget(api_key_name_edit);
@@ -49,6 +50,11 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	setCentralWidget(center_widget);
 
 	// Pop up key selection automatically on startup
+	pressed_change_key();
+}
+
+void MyNewMainWindow::pressed_change_key()
+{
 	ManageApiKeysWindow* const manage_keys_window = new ManageApiKeysWindow{ this };
 	manage_keys_window->show();
 }
