@@ -47,6 +47,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 	MyMainWindowMenuBar* menu_bar = new MyMainWindowMenuBar{ this };
 	connect(menu_bar, &MyMainWindowMenuBar::OLDGUI_request_change_api_key, this, &MyMainWindow::pressed_change_key);
+	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyMainWindow::close);
 	setMenuBar(menu_bar);
 
 	QWidget* central_widget = new QWidget{ this };

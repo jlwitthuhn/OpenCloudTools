@@ -20,6 +20,8 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	MyMainWindowMenuBar* const menu_bar = new MyMainWindowMenuBar{ this };
 	setMenuBar(menu_bar);
 
+	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyNewMainWindow::close);
+
 	QToolBar* const main_tool_bar = new QToolBar{ this };
 	main_tool_bar->setFloatable(false);
 	main_tool_bar->setMovable(false);
