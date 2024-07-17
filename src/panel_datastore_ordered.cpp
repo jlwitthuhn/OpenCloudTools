@@ -40,7 +40,7 @@
 
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : BaseDatastorePanel(parent, api_key)
 {
-	connect(UserProfile::get().get(), &UserProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
+	connect(&(UserProfile::get()), &UserProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
 
 	// Left bar
 	{

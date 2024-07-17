@@ -15,8 +15,8 @@
 
 MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent }
 {
-	connect(UserProfile::get().get(), &UserProfile::qt_theme_changed, this, &MyMainWindowMenuBar::handle_qt_theme_changed);
-	connect(UserProfile::get().get(), &UserProfile::autoclose_changed, this, &MyMainWindowMenuBar::handle_autoclose_changed);
+	connect(&(UserProfile::get()), &UserProfile::qt_theme_changed, this, &MyMainWindowMenuBar::handle_qt_theme_changed);
+	connect(&(UserProfile::get()), &UserProfile::autoclose_changed, this, &MyMainWindowMenuBar::handle_autoclose_changed);
 
 	QMenu* const file_menu = new QMenu{ "&File", this };
 	{
@@ -39,7 +39,7 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 			{
 				QAction* const this_action = new QAction{ this_theme, theme_menu };
 				connect(this_action, &QAction::triggered, [this_theme]() {
-					UserProfile::get()->set_qt_theme(this_theme);
+					UserProfile::get().set_qt_theme(this_theme);
 				});
 				theme_actions.push_back(this_action);
 				theme_menu->addAction(this_action);
@@ -47,7 +47,7 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 				{
 					QAction* fusion_dark_action = new QAction{ "Fusion (Dark)", theme_menu };
 					connect(fusion_dark_action, &QAction::triggered, []() {
-						UserProfile::get()->set_qt_theme("_fusion_dark");
+						UserProfile::get().set_qt_theme("_fusion_dark");
 					});
 					theme_actions.push_back(fusion_dark_action);
 					theme_menu->addAction(fusion_dark_action);
@@ -57,17 +57,17 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 
 		action_toggle_autoclose = new QAction{ "&Close progress windows when complete", preferences_menu };
 		action_toggle_autoclose->setCheckable(true);
-		action_toggle_autoclose->setChecked(UserProfile::get()->get_autoclose_progress_window());
+		action_toggle_autoclose->setChecked(UserProfile::get().get_autoclose_progress_window());
 		connect(action_toggle_autoclose, &QAction::triggered, this, &MyMainWindowMenuBar::pressed_toggle_autoclose);
 
 		action_toggle_less_verbose_bulk = new QAction{ "Less &verbose bulk data operations", preferences_menu };
 		action_toggle_less_verbose_bulk->setCheckable(true);
-		action_toggle_less_verbose_bulk->setChecked(UserProfile::get()->get_less_verbose_bulk_operations());
+		action_toggle_less_verbose_bulk->setChecked(UserProfile::get().get_less_verbose_bulk_operations());
 		connect(action_toggle_less_verbose_bulk, &QAction::triggered, this, &MyMainWindowMenuBar::pressed_toggle_less_verbose_bulk);
 
 		action_toggle_datastore_name_filter = new QAction{ "Show datastore name &filter text box", preferences_menu };
 		action_toggle_datastore_name_filter->setCheckable(true);
-		action_toggle_datastore_name_filter->setChecked(UserProfile::get()->get_show_datastore_name_filter());
+		action_toggle_datastore_name_filter->setChecked(UserProfile::get().get_show_datastore_name_filter());
 		connect(action_toggle_datastore_name_filter, &QAction::triggered, this, &MyMainWindowMenuBar::pressed_toggle_datastore_name_filter);
 
 		preferences_menu->addMenu(theme_menu);
@@ -132,7 +132,7 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 void MyMainWindowMenuBar::handle_autoclose_changed()
 {
 	// This can be toggled form elsewhere in the program, this keeps it in syn everywhere
-	const bool autoclose = UserProfile::get()->get_autoclose_progress_window();
+	const bool autoclose = UserProfile::get().get_autoclose_progress_window();
 	if (autoclose != action_toggle_autoclose->isChecked())
 	{
 		action_toggle_autoclose->setChecked(autoclose);
@@ -141,7 +141,7 @@ void MyMainWindowMenuBar::handle_autoclose_changed()
 
 void MyMainWindowMenuBar::handle_qt_theme_changed()
 {
-	const QString& selected_theme = UserProfile::get()->get_qt_theme();
+	const QString& selected_theme = UserProfile::get().get_qt_theme();
 	for (QAction* const this_action : theme_actions)
 	{
 		if (this_action->text() == selected_theme || (this_action->text() == "Fusion (Dark)" && selected_theme == "_fusion_dark"))
@@ -171,15 +171,15 @@ void MyMainWindowMenuBar::pressed_change_api_key()
 
 void MyMainWindowMenuBar::pressed_toggle_autoclose()
 {
-	UserProfile::get()->set_autoclose_progress_window(action_toggle_autoclose->isChecked());
+	UserProfile::get().set_autoclose_progress_window(action_toggle_autoclose->isChecked());
 }
 
 void MyMainWindowMenuBar::pressed_toggle_datastore_name_filter()
 {
-	UserProfile::get()->set_show_datastore_name_filter(action_toggle_datastore_name_filter->isChecked());
+	UserProfile::get().set_show_datastore_name_filter(action_toggle_datastore_name_filter->isChecked());
 }
 
 void MyMainWindowMenuBar::pressed_toggle_less_verbose_bulk()
 {
-	UserProfile::get()->set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
+	UserProfile::get().set_less_verbose_bulk_operations(action_toggle_less_verbose_bulk->isChecked());
 }

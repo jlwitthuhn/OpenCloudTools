@@ -20,7 +20,7 @@
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
 {
-	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
+	connect(&(UserProfile::get()), &UserProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
 
 	QWidget* container_widget = new QWidget{ this };
 	{

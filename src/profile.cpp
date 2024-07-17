@@ -276,31 +276,25 @@ bool ApiKeyProfile::universe_id_available(const long long universe_id) const
 	return true;
 }
 
-std::unique_ptr<UserProfile>& UserProfile::get()
+UserProfile& UserProfile::get()
 {
-	static std::unique_ptr<UserProfile> manager = std::unique_ptr<UserProfile>(new UserProfile());
+	static UserProfile manager{};
 	return manager;
 }
 
-ApiKeyProfile* UserProfile::get_selected_api_key(UserProfile* user_profile)
+ApiKeyProfile* UserProfile::get_selected_api_key()
 {
-	if (user_profile == nullptr && get())
+	UserProfile& user_profile = get();
+	if (const std::optional<size_t> opt_index = user_profile.selected_key_index)
 	{
-		user_profile = get().get();
-	}
-	if (user_profile != nullptr)
-	{
-		if (const std::optional<size_t> opt_index = user_profile->selected_key_index)
-		{
-			return user_profile->get_api_key_by_index(*opt_index);
-		}
+		return user_profile.get_api_key_by_index(*opt_index);
 	}
 	return nullptr;
 }
 
-UniverseProfile* UserProfile::get_selected_universe(UserProfile* const user_profile)
+UniverseProfile* UserProfile::get_selected_universe()
 {
-	if (ApiKeyProfile* selected_key = get_selected_api_key(user_profile))
+	if (ApiKeyProfile* selected_key = get_selected_api_key())
 	{
 		return selected_key->get_selected_universe();
 	}

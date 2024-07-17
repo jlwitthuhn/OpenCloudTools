@@ -26,8 +26,8 @@ BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) 
 	QWidget{ parent },
 	api_key{ api_key }
 {
-	connect(UserProfile::get().get(), &UserProfile::hidden_datastore_list_changed, this, &BaseDatastorePanel::refresh_datastore_list);
-	connect(UserProfile::get().get(), &UserProfile::show_datastore_filter_changed, this, &BaseDatastorePanel::handle_show_datastore_filter_changed);
+	connect(&(UserProfile::get()), &UserProfile::hidden_datastore_list_changed, this, &BaseDatastorePanel::refresh_datastore_list);
+	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &BaseDatastorePanel::handle_show_datastore_filter_changed);
 
 	panel_left = new QWidget{ this };
 	{
@@ -176,7 +176,7 @@ void BaseDatastorePanel::handle_selected_datastore_changed()
 
 void BaseDatastorePanel::handle_show_datastore_filter_changed()
 {
-	const bool active = UserProfile::get()->get_show_datastore_name_filter();
+	const bool active = UserProfile::get().get_show_datastore_name_filter();
 	if (!active)
 	{
 		select_datastore_name_filter_edit->setText("");

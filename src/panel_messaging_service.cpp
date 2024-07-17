@@ -26,7 +26,7 @@
 
 MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
 {
-	connect(UserProfile::get().get(), &UserProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
+	connect(&(UserProfile::get()), &UserProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
 
 	QGroupBox* topic_history_group_box = new QGroupBox{ "Topic History" };
 	{

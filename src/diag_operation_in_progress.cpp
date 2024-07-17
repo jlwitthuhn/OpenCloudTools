@@ -51,7 +51,7 @@ void OperationInProgressDialog::constructor_common()
 	text_log = new TextLogWidget{ this };
 
 	close_automatically_box = new QCheckBox{ "Close this window when complete", this };
-	close_automatically_box->setChecked(UserProfile::get()->get_autoclose_progress_window());
+	close_automatically_box->setChecked(UserProfile::get().get_autoclose_progress_window());
 	connect(close_automatically_box, &QCheckBox::stateChanged, this, &OperationInProgressDialog::handle_checkbox_changed);
 	if (respect_close_automatically == false)
 	{
@@ -173,7 +173,7 @@ void OperationInProgressDialog::handle_status_info(const QString message)
 
 void OperationInProgressDialog::handle_checkbox_changed()
 {
-	UserProfile::get()->set_autoclose_progress_window(close_automatically_box->isChecked());
+	UserProfile::get().set_autoclose_progress_window(close_automatically_box->isChecked());
 }
 
 void OperationInProgressDialog::handle_received_http_429()

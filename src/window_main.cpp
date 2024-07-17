@@ -43,7 +43,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
 
-	connect(UserProfile::get().get(), &UserProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
+	connect(&(UserProfile::get()), &UserProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 
 	MyMainWindowMenuBar* menu_bar = new MyMainWindowMenuBar{ this };
 	connect(menu_bar, &MyMainWindowMenuBar::OLDGUI_request_change_api_key, this, &MyMainWindow::pressed_change_key);

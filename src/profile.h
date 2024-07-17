@@ -3,7 +3,6 @@
 #include <cstddef>
 
 #include <functional>
-#include <memory>
 #include <optional>
 #include <vector>
 #include <set>
@@ -119,9 +118,9 @@ class UserProfile : public QObject
 {
 	Q_OBJECT
 public:
-	static std::unique_ptr<UserProfile>& get();
-	static ApiKeyProfile* get_selected_api_key(UserProfile* user_profile = nullptr);
-	static UniverseProfile* get_selected_universe(UserProfile* user_profile = nullptr);
+	static UserProfile& get();
+	static ApiKeyProfile* get_selected_api_key();
+	static UniverseProfile* get_selected_universe();
 
 	const QString& get_qt_theme() const { return qt_theme; }
 	void set_qt_theme(const QString& theme_name);
