@@ -1,11 +1,14 @@
 #include "window_main_new.h"
 
 #include <QAction>
+#include <QDockWidget>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMdiArea>
 #include <QPushButton>
 #include <QToolBar>
+#include <QTreeWidget>
 #include <QVBoxLayout>
 
 #include "window_api_key_manage.h"
@@ -42,10 +45,28 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	}
 	addToolBar(main_tool_bar);
 
-	QWidget* const center_widget = new QWidget{ this };
+	QDockWidget* const universe_tree_container = new QDockWidget{ "Universes", this};
+	universe_tree_container->setFeatures(QDockWidget::DockWidgetMovable);
+	universe_tree_container->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	universe_tree_container->setMinimumWidth(150);
 	{
+		QWidget* const universe_tree_container_inner = new QWidget{ universe_tree_container };
+		{
+			QVBoxLayout* const universe_tree_layout = new QVBoxLayout{ universe_tree_container_inner };
+			universe_tree_layout->setAlignment(Qt::AlignHCenter);
 
+			QTreeWidget* const universe_tree = new QTreeWidget{ universe_tree_container_inner };
+			universe_tree->setHeaderHidden(true);
 
+			universe_tree_container_inner->setLayout(universe_tree_layout);
+			universe_tree_layout->addWidget(universe_tree);
+		}
+		universe_tree_container->setWidget(universe_tree_container_inner);
+	}
+	addDockWidget(Qt::LeftDockWidgetArea, universe_tree_container);
+
+	QMdiArea* const center_widget = new QMdiArea{ this };
+	{
 	}
 	setCentralWidget(center_widget);
 
