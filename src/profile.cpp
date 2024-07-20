@@ -459,6 +459,7 @@ void UserProfile::delete_api_key(const size_t index)
 {
 	if (index < api_key_list.size())
 	{
+		delete api_key_list.at(index);
 		api_key_list.erase(api_key_list.begin() + index);
 		emit api_key_list_changed(std::nullopt);
 		if (selected_key_index)
