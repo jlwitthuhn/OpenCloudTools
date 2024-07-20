@@ -11,6 +11,7 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
+#include "profile.h"
 #include "window_api_key_manage.h"
 #include "window_main_menu_bar.h"
 
@@ -18,7 +19,9 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("OpenCloudTools");
-	setMinimumSize(640, 480);
+	setMinimumSize(650, 500);
+
+	connect(&(UserProfile::get()), &UserProfile::selected_api_key_changed, this, &MyNewMainWindow::on_selected_api_key_changed);
 
 	MyMainWindowMenuBar* const menu_bar = new MyMainWindowMenuBar{ this };
 	setMenuBar(menu_bar);
@@ -31,7 +34,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	{
 		QLabel* const api_key_label = new QLabel{ "Active API key: ", main_tool_bar };
 
-		QLineEdit* const api_key_name_edit = new QLineEdit{ main_tool_bar };
+		api_key_name_edit = new QLineEdit{ main_tool_bar };
 		api_key_name_edit->setReadOnly(true);
 		api_key_name_edit->setMaximumWidth(250);
 
@@ -72,6 +75,20 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 
 	// Pop up key selection automatically on startup
 	pressed_change_key();
+
+	resize(900, 600);
+}
+
+void MyNewMainWindow::on_selected_api_key_changed()
+{
+	if (ApiKeyProfile* const key_profile = UserProfile::get().get_selected_api_key())
+	{
+		api_key_name_edit->setText(key_profile->get_name());
+	}
+	else
+	{
+		api_key_name_edit->clear();
+	}
 }
 
 void MyNewMainWindow::pressed_change_key()

@@ -13,6 +13,8 @@
 #include <QStyle>
 #include <QVariant>
 
+#include "assert.h"
+
 static bool compare_api_key_profile(const ApiKeyProfile* const a, const ApiKeyProfile* const b)
 {
 	return a->get_name() < b->get_name();
@@ -459,6 +461,20 @@ void UserProfile::delete_api_key(const size_t index)
 	{
 		api_key_list.erase(api_key_list.begin() + index);
 		emit api_key_list_changed(std::nullopt);
+		if (selected_key_index)
+		{
+			const bool selected_key_deleted = (*selected_key_index == index);
+			const bool shift_selection_down = (*selected_key_index > index);
+			if (selected_key_deleted)
+			{
+				select_api_key(std::nullopt);
+			}
+			else if (shift_selection_down)
+			{
+				OCTASSERT(*selected_key_index > 0);
+				select_api_key(*selected_key_index - 1);
+			}
+		}
 	}
 }
 
