@@ -78,6 +78,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/util_debug.h
 	./src/util_enum.cpp
 	./src/util_enum.h
+	./src/util_id.cpp
+	./src/util_id.h
 	./src/util_json.cpp
 	./src/util_json.h
 	./src/util_lock.h

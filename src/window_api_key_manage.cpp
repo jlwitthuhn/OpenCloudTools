@@ -28,12 +28,12 @@
 #include "tooltip_text.h"
 #include "window_main.h"
 
-static bool variant_is_ulonglong(const QVariant& variant)
+static bool variant_is_byte_array(const QVariant& variant)
 {
 #ifdef QT5_COMPAT
-	return variant.type() == QVariant::Type::ULongLong;
+	return variant.type() == QVariant::Type::QByteArray;
 #else
-	return variant.metaType().id() == QMetaType::ULongLong;
+	return variant.metaType().id() == QMetaType::QByteArray;
 #endif
 }
 
@@ -113,9 +113,10 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 	if (item)
 	{
 		const QVariant data_var = item->data(Qt::UserRole);
-		if (variant_is_ulonglong(data_var))
+		if (variant_is_byte_array(data_var))
 		{
-			UserProfile::get().select_api_key(data_var.toULongLong());
+			const ApiKeyProfile::Id id{ data_var.toByteArray() };
+			UserProfile::get().select_api_key(id);
 #ifdef OCT_NEW_GUI
 			close();
 #else
@@ -132,7 +133,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 
 void ManageApiKeysWindow::pressed_add()
 {
-	AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this };
+	AddApiKeyWindow* const add_key_window = new AddApiKeyWindow{ this };
 	add_key_window->show();
 }
 
@@ -142,12 +143,12 @@ void ManageApiKeysWindow::pressed_edit()
 	if (selected.size() == 1)
 	{
 		const QVariant data_var = selected.first()->data(Qt::UserRole);
-		if (variant_is_ulonglong(data_var))
+		if (variant_is_byte_array(data_var))
 		{
-			size_t key_index = data_var.toULongLong();
-			if (UserProfile::get().get_api_key_by_index(key_index))
+			const ApiKeyProfile::Id id{ data_var.toByteArray() };
+			if (UserProfile::get().get_api_key_by_id(id))
 			{
-				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, key_index };
+				AddApiKeyWindow* add_key_window = new AddApiKeyWindow{ this, id };
 				add_key_window->show();
 			}
 		}
@@ -160,7 +161,7 @@ void ManageApiKeysWindow::pressed_delete()
 	if (selected.size() == 1)
 	{
 		const QVariant selected_data = selected.first()->data(Qt::UserRole);
-		if (variant_is_ulonglong(selected_data))
+		if (variant_is_byte_array(selected_data))
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Confirm deletion");
@@ -169,7 +170,8 @@ void ManageApiKeysWindow::pressed_delete()
 			int result = msg_box->exec();
 			if (result == QMessageBox::Yes)
 			{
-				UserProfile::get().delete_api_key(selected_data.toULongLong());
+				const ApiKeyProfile::Id id{ selected_data.toByteArray() };
+				UserProfile::get().delete_api_key(id);
 			}
 		}
 	}
@@ -181,9 +183,10 @@ void ManageApiKeysWindow::pressed_select()
 	if (selected.size() == 1)
 	{
 		const QVariant selected_data = selected.first()->data(Qt::UserRole);
-		if (variant_is_ulonglong(selected_data))
+		if (variant_is_byte_array(selected_data))
 		{
-			UserProfile::get().select_api_key(selected_data.toULongLong());
+			ApiKeyProfile::Id id{ selected_data.toByteArray() };
+			UserProfile::get().select_api_key(id);
 #ifdef OCT_NEW_GUI
 			close();
 #else
@@ -198,32 +201,34 @@ void ManageApiKeysWindow::pressed_select()
 	}
 }
 
-void ManageApiKeysWindow::rebuild_slots(const std::optional<size_t> selected_index)
+void ManageApiKeysWindow::rebuild_slots(const std::optional<ApiKeyProfile::Id> selected_id)
 {
-	while (list_widget->count() > 0)
-	{
-		QListWidgetItem* this_item = list_widget->takeItem(0);
-		delete this_item;
-	}
+	list_widget->clear();
 
-	size_t this_index = 0;
-	for (const ApiKeyProfile* this_key : UserProfile::get().get_api_key_list())
+	QListWidgetItem* selected_item = nullptr;
+
+	for (const ApiKeyProfile* const this_key : UserProfile::get().get_api_key_list())
 	{
-		QListWidgetItem* this_item = new QListWidgetItem(list_widget);
-		this_item->setData(Qt::UserRole, static_cast<unsigned long long>(this_index++));
+		QListWidgetItem* const this_item = new QListWidgetItem(list_widget);
+		const ApiKeyProfile::Id this_id = this_key->get_id();
+		this_item->setData(Qt::UserRole, this_key->get_id().as_q_byte_array());
 		this_item->setText(this_key->get_name());
 		list_widget->addItem(this_item);
+		if (selected_id && *selected_id == this_id)
+		{
+			selected_item = this_item;
+		}
 	}
-
-	if (selected_index)
+	
+	if (selected_item)
 	{
-		list_widget->setCurrentRow(static_cast<int>(*selected_index));
+		list_widget->setCurrentItem(selected_item);
 	}
 }
 
 void ManageApiKeysWindow::selection_changed()
 {
-	QList<QListWidgetItem*> selected = list_widget->selectedItems();
+	const QList<QListWidgetItem*> selected = list_widget->selectedItems();
 	if (selected.size() == 1)
 	{
 		mod_button->setEnabled(true);
@@ -238,18 +243,18 @@ void ManageApiKeysWindow::selection_changed()
 	}
 }
 
-AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<size_t> existing_key_index_in) : QWidget{ parent, Qt::Window }
+AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<ApiKeyProfile::Id> existing_key_id_in) : QWidget{ parent, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	OCTASSERT(parent != nullptr);
 	setWindowModality(Qt::WindowModality::WindowModal);
 
-	const ApiKeyProfile* const existing_key_profile = existing_key_index_in.has_value() ? UserProfile::get().get_api_key_by_index(*existing_key_index_in) : nullptr;
+	const ApiKeyProfile* const existing_key_profile = existing_key_id_in.has_value() ? UserProfile::get().get_api_key_by_id(*existing_key_id_in) : nullptr;
 	if (existing_key_profile)
 	{
 		setWindowTitle("Edit API Key");
-		existing_key_index = existing_key_index_in;
+		existing_key_id = existing_key_id_in;
 	}
 	else
 	{
@@ -353,7 +358,7 @@ void AddApiKeyWindow::add_key()
 		const QString& key = key_edit->text().trimmed();
 		const bool production = production_check->isChecked();
 		const bool save_to_disk = save_to_disk_check->isChecked();
-		std::optional<size_t> new_key_id = UserProfile::get().add_api_key(name, key, production, save_to_disk);
+		std::optional<ApiKeyProfile::Id> new_key_id = UserProfile::get().add_api_key(name, key, production, save_to_disk);
 		if (new_key_id)
 		{
 			close();
@@ -370,9 +375,9 @@ void AddApiKeyWindow::add_key()
 
 void AddApiKeyWindow::update_key()
 {
-	if (input_is_valid() && existing_key_index)
+	if (input_is_valid() && existing_key_id)
 	{
-		if (ApiKeyProfile* api_key_profile = UserProfile::get().get_api_key_by_index(*existing_key_index))
+		if (ApiKeyProfile* api_key_profile = UserProfile::get().get_api_key_by_id(*existing_key_id))
 		{
 			const bool result = api_key_profile->set_details(name_edit->text(), key_edit->text(), production_check->isChecked(), save_to_disk_check->isChecked());
 			if (result)

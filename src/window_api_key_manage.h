@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QWidget>
 
+#include "profile.h"
+
 class QCheckBox;
 class QLineEdit;
 class QListWidget;
@@ -26,7 +28,7 @@ private:
 	void pressed_edit();
 	void pressed_delete();
 	void pressed_select();
-	void rebuild_slots(std::optional<size_t> selected_index);
+	void rebuild_slots(std::optional<ApiKeyProfile::Id> selected_id);
 	void selection_changed();
 
 private:
@@ -41,7 +43,7 @@ class AddApiKeyWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit AddApiKeyWindow(QWidget* parent = nullptr, std::optional<size_t> existing_key_index = std::nullopt);
+	explicit AddApiKeyWindow(QWidget* parent = nullptr, std::optional<ApiKeyProfile::Id> existing_key_id = std::nullopt);
 
 private:
 	bool input_is_valid() const;
@@ -50,7 +52,7 @@ private:
 	void add_key();
 	void update_key();
 
-	std::optional<size_t> existing_key_index = 0;
+	std::optional<ApiKeyProfile::Id> existing_key_id = std::nullopt;
 
 	QLineEdit* name_edit = nullptr;
 	QLineEdit* key_edit = nullptr;

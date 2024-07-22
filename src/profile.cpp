@@ -287,9 +287,9 @@ UserProfile& UserProfile::get()
 ApiKeyProfile* UserProfile::get_selected_api_key()
 {
 	UserProfile& user_profile = get();
-	if (const std::optional<size_t> opt_index = user_profile.selected_key_index)
+	if (const std::optional<ApiKeyProfile::Id> opt_id = user_profile.selected_key_id)
 	{
-		return user_profile.get_api_key_by_index(*opt_index);
+		return user_profile.get_api_key_by_id(*opt_id);
 	}
 	return nullptr;
 }
@@ -415,19 +415,30 @@ void UserProfile::set_show_datastore_name_filter(const bool show_filter)
 	}
 }
 
-ApiKeyProfile* UserProfile::get_api_key_by_index(const size_t key_index)
+std::vector<ApiKeyProfile*> UserProfile::get_api_key_list() const
 {
-	if (key_index < api_key_list.size())
+	std::vector<ApiKeyProfile*> result;
+
+	for (const auto& this_key_pair : api_keys)
 	{
-		return api_key_list.at(key_index);
+		result.push_back(this_key_pair.second);
 	}
-	else
-	{
-		return nullptr;
-	}
+	std::sort(result.begin(), result.end(), compare_api_key_profile);
+
+	return result;
 }
 
-std::optional<size_t> UserProfile::add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk)
+ApiKeyProfile* UserProfile::get_api_key_by_id(const ApiKeyProfile::Id key_id) const
+{
+	const auto map_iter = api_keys.find(key_id);
+	if (map_iter != api_keys.end())
+	{
+		return map_iter->second;
+	}
+	return nullptr;
+}
+
+std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk)
 {
 	if (profile_name_available(name))
 	{
@@ -436,78 +447,70 @@ std::optional<size_t> UserProfile::add_api_key(const QString& name, const QStrin
 		};
 		ApiKeyProfile* this_profile = new ApiKeyProfile{ this, name, key, production, save_key_to_disk, api_key_name_available };
 		connect(this_profile, &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
-		connect(this_profile, &ApiKeyProfile::details_changed, this, &UserProfile::sort_api_key_profiles);
+		connect(this_profile, &ApiKeyProfile::details_changed, this, &UserProfile::api_key_details_changed);
 		connect(this_profile, &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
 		connect(this_profile, &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::recent_ordered_datastore_list_changed);
 		connect(this_profile, &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::recent_topic_list_changed);
 		connect(this_profile, &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
-		api_key_list.push_back(this_profile);
-		std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
-		for (size_t this_index = 0; this_index < api_key_list.size(); this_index++)
-		{
-			if (api_key_list.at(this_index)->get_name() == name)
-			{
-				emit api_key_list_changed(this_index);
-				return this_index;
-			}
-		}
+
+		OCTASSERT(api_keys.count(this_profile->get_id()) == 0);
+		api_keys[this_profile->get_id()] = this_profile;
+
+		emit api_key_list_changed(this_profile->get_id());
+		return this_profile->get_id();
 	}
 	return std::nullopt;
 }
 
-void UserProfile::delete_api_key(const size_t index)
+void UserProfile::delete_api_key(const ApiKeyProfile::Id id)
 {
-	if (index < api_key_list.size())
+	auto selected_key_iter = api_keys.find(id);
+	if (selected_key_iter == api_keys.end())
 	{
-		delete api_key_list.at(index);
-		api_key_list.erase(api_key_list.begin() + index);
-		emit api_key_list_changed(std::nullopt);
-		if (selected_key_index)
-		{
-			const bool selected_key_deleted = (*selected_key_index == index);
-			const bool shift_selection_down = (*selected_key_index > index);
-			if (selected_key_deleted)
-			{
-				select_api_key(std::nullopt);
-			}
-			else if (shift_selection_down)
-			{
-				OCTASSERT(*selected_key_index > 0);
-				select_api_key(*selected_key_index - 1);
-			}
-		}
+		OCTASSERT(false);
+		return;
 	}
-}
+	delete selected_key_iter->second;
+	api_keys.erase(selected_key_iter);
 
-void UserProfile::select_api_key(const std::optional<size_t> index)
-{
-	if (index)
+	if (selected_key_id && *selected_key_id == id)
 	{
-		selected_key_index = *index;
+		api_key_list_changed(std::nullopt);
 	}
 	else
 	{
-		selected_key_index = std::nullopt;
+		api_key_list_changed(selected_key_id);
+	}
+}
+
+void UserProfile::select_api_key(const std::optional<ApiKeyProfile::Id> id)
+{
+	if (id && api_keys.count(*id))
+	{
+		selected_key_id = id;
+	}
+	else
+	{
+		selected_key_id = std::nullopt;
 	}
 	emit selected_api_key_changed();
 }
 
+void UserProfile::api_key_details_changed()
+{
+	emit api_key_list_changed(selected_key_id);
+}
+
 bool UserProfile::profile_name_available(const QString& name) const
 {
-	for (const ApiKeyProfile* this_profile : api_key_list)
+	for (const auto& this_pair : api_keys)
 	{
-		if (name == this_profile->get_name())
+		if (name == this_pair.second->get_name())
 		{
 			return false;
 		}
 	}
 	return true;
-}
-
-void UserProfile::sort_api_key_profiles()
-{
-	std::sort(api_key_list.begin(), api_key_list.end(), compare_api_key_profile);
-	emit api_key_list_changed(std::nullopt);
 }
 
 void UserProfile::load_from_disk()
@@ -552,9 +555,9 @@ void UserProfile::load_from_disk()
 			bool production = settings.value("production").toBool();
 			if (name.size() > 0 && key.size() > 0)
 			{
-				std::optional<size_t> opt_key_index = add_api_key(name, key, production, true);
+				std::optional<ApiKeyProfile::Id> opt_key_id = add_api_key(name, key, production, true);
 
-				if (opt_key_index)
+				if (opt_key_id)
 				{
 					const int universe_list_size = settings.beginReadArray("universe_ids");
 					for (int j = 0; j < universe_list_size; j++)
@@ -571,7 +574,7 @@ void UserProfile::load_from_disk()
 						const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
 						const bool save_recent_ordered_datastores = maybe_save_datastores.isNull() ? true : maybe_save_datastores.toBool();
 
-						if (ApiKeyProfile* const this_api_key = get_api_key_by_index(*opt_key_index))
+						if (ApiKeyProfile* const this_api_key = get_api_key_by_id(*opt_key_id))
 						{
 							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(universe_name, this_universe_id))
 							{
@@ -657,7 +660,7 @@ void UserProfile::save_to_disk()
 	settings.beginWriteArray("list");
 	{
 		int next_array_index = 0;
-		for (const ApiKeyProfile* this_key : api_key_list)
+		for (const ApiKeyProfile* this_key : get_api_key_list())
 		{
 			if (this_key->get_save_to_disk())
 			{

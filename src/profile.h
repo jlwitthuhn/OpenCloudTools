@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <vector>
 #include <set>
@@ -10,6 +11,7 @@
 #include <QObject>
 #include <QString>
 
+#include "util_id.h"
 #include "util_lock.h"
 
 class UniverseProfile : public QObject
@@ -71,8 +73,11 @@ class ApiKeyProfile : public QObject
 {
 	Q_OBJECT
 public:
+	using Id = RandomId128;
+
 	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk, std::function<bool(const QString&)> api_key_name_available);
 
+	Id get_id() const { return id; }
 	QString get_name() const { return name; };
 	QString get_key() const { return key; };
 	bool get_production() const { return production; }
@@ -102,6 +107,8 @@ private:
 	void sort_universe_list();
 	bool universe_name_available(const QString& universe_name) const;
 	bool universe_id_available(long long universe_id) const;
+
+	Id id;
 
 	QString name;
 	QString key;
@@ -134,19 +141,19 @@ public:
 	bool get_show_datastore_name_filter() const { return show_datastore_name_filter; }
 	void set_show_datastore_name_filter(bool show_filter);
 
-	const std::vector<ApiKeyProfile*>& get_api_key_list() const { return api_key_list; };
-	ApiKeyProfile* get_api_key_by_index(size_t key_index);
+	std::vector<ApiKeyProfile*> get_api_key_list() const;
+	ApiKeyProfile* get_api_key_by_id(ApiKeyProfile::Id id) const;
 
-	std::optional<size_t> add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk);
-	void delete_api_key(size_t index);
+	std::optional<ApiKeyProfile::Id> add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk);
+	void delete_api_key(ApiKeyProfile::Id id);
 
-	void select_api_key(std::optional<size_t> index);
+	void select_api_key(std::optional<ApiKeyProfile::Id> id);
 
 signals:
 	void qt_theme_changed();
 	void autoclose_changed();
 	void selected_api_key_changed();
-	void api_key_list_changed(std::optional<size_t> selected_api_index);
+	void api_key_list_changed(std::optional<ApiKeyProfile::Id> selected_id);
 	void universe_list_changed(std::optional<size_t> selected_universe_index);
 	void hidden_datastore_list_changed();
 	void recent_ordered_datastore_list_changed();
@@ -156,9 +163,9 @@ signals:
 private:
 	explicit UserProfile(QObject* parent = nullptr);
 
-	bool profile_name_available(const QString& name) const;
+	void api_key_details_changed();
 
-	void sort_api_key_profiles();
+	bool profile_name_available(const QString& name) const;
 
 	void load_from_disk();
 	void save_to_disk();
@@ -168,8 +175,8 @@ private:
 	bool less_verbose_bulk_operations = true;
 	bool show_datastore_name_filter = false;
 
-	std::vector<ApiKeyProfile*> api_key_list;
-	std::optional<size_t> selected_key_index;
+	std::map<ApiKeyProfile::Id, ApiKeyProfile*> api_keys;
+	std::optional<ApiKeyProfile::Id> selected_key_id;
 
 	LockableBool load_flag;
 };
