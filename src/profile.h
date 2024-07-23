@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <optional>
 #include <vector>
 #include <set>
@@ -85,9 +86,9 @@ public:
 
 	bool set_details(const QString& name, const QString& key, bool production, bool save_to_disk);
 
-	const std::vector<UniverseProfile*>& get_universe_list() const { return universe_list; }
-	UniverseProfile* get_universe_profile_by_index(size_t universe_index) const;
-	UniverseProfile* get_selected_universe() const;
+	const std::vector<std::shared_ptr<UniverseProfile>>& get_universe_list() const { return universe_list; }
+	std::shared_ptr<UniverseProfile> get_universe_profile_by_index(size_t universe_index) const;
+	std::shared_ptr<UniverseProfile> get_selected_universe() const;
 
 	std::optional<size_t> add_universe(const QString& universe_name, long long universe_id);
 	void remove_universe(size_t universe_index);
@@ -115,7 +116,7 @@ private:
 	bool production = false;
 	bool save_to_disk = false;
 
-	std::vector<UniverseProfile*> universe_list;
+	std::vector<std::shared_ptr<UniverseProfile>> universe_list;
 	std::optional<size_t> selected_universe_index;
 
 	std::function<bool(const QString&)> api_key_name_available;
@@ -127,7 +128,7 @@ class UserProfile : public QObject
 public:
 	static UserProfile& get();
 	static ApiKeyProfile* get_selected_api_key();
-	static UniverseProfile* get_selected_universe();
+	static std::shared_ptr<UniverseProfile> get_selected_universe();
 
 	const QString& get_qt_theme() const { return qt_theme; }
 	void set_qt_theme(const QString& theme_name);

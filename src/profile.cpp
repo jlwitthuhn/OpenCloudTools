@@ -20,7 +20,7 @@ static bool compare_api_key_profile(const ApiKeyProfile* const a, const ApiKeyPr
 	return a->get_name() < b->get_name();
 }
 
-static bool compare_universe_profile(const UniverseProfile* const a, const UniverseProfile* const b)
+static bool compare_universe_profile(const std::shared_ptr<const UniverseProfile> a, const std::shared_ptr<const UniverseProfile> b)
 {
 	if (a->get_name() < b->get_name())
 	{
@@ -153,12 +153,12 @@ bool ApiKeyProfile::set_details(const QString& name_in, const QString& key_in, c
 	}
 }
 
-UniverseProfile* ApiKeyProfile::get_universe_profile_by_index(size_t universe_index) const
+std::shared_ptr<UniverseProfile> ApiKeyProfile::get_universe_profile_by_index(size_t universe_index) const
 {
 	return universe_list.at(universe_index);
 }
 
-UniverseProfile* ApiKeyProfile::get_selected_universe() const
+std::shared_ptr<UniverseProfile> ApiKeyProfile::get_selected_universe() const
 {
 	if (selected_universe_index && *selected_universe_index < universe_list.size())
 	{
@@ -182,12 +182,12 @@ std::optional<size_t> ApiKeyProfile::add_universe(const QString& universe_name, 
 	const std::function<bool(long long)> id_check = [this](long long id) -> bool {
 		return universe_id_available(id);
 	};
-	UniverseProfile* const this_universe = new UniverseProfile{ this, universe_name, universe_id, name_check, id_check };
-	connect(this_universe, &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
-	connect(this_universe, &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
-	connect(this_universe, &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
-	connect(this_universe, &UniverseProfile::recent_topic_list_changed, this, &ApiKeyProfile::recent_topic_list_changed);
-	connect(this_universe, &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
+	const std::shared_ptr<UniverseProfile> this_universe = std::make_shared<UniverseProfile>(this, universe_name, universe_id, name_check, id_check);
+	connect(this_universe.get(), &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
+	connect(this_universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
+	connect(this_universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
+	connect(this_universe.get(), &UniverseProfile::recent_topic_list_changed, this, &ApiKeyProfile::recent_topic_list_changed);
+	connect(this_universe.get(), &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
 	universe_list.push_back(this_universe);
 	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
 	for (size_t this_index = 0; this_index < universe_list.size(); this_index++)
@@ -234,7 +234,7 @@ void ApiKeyProfile::remove_selected_universe()
 
 void ApiKeyProfile::sort_universe_list()
 {
-	UniverseProfile* selected_universe = nullptr;
+	std::shared_ptr<const UniverseProfile> selected_universe;
 	if (selected_universe_index)
 	{
 		selected_universe = universe_list.at(*selected_universe_index);
@@ -256,7 +256,7 @@ void ApiKeyProfile::sort_universe_list()
 
 bool ApiKeyProfile::universe_name_available(const QString& universe_name) const
 {
-	for (const UniverseProfile* const this_universe : universe_list)
+	for (const std::shared_ptr<const UniverseProfile> this_universe : universe_list)
 	{
 		if (this_universe->get_name() == universe_name)
 		{
@@ -268,7 +268,7 @@ bool ApiKeyProfile::universe_name_available(const QString& universe_name) const
 
 bool ApiKeyProfile::universe_id_available(const long long universe_id) const
 {
-	for (const UniverseProfile* const this_universe : universe_list)
+	for (const std::shared_ptr<const UniverseProfile> this_universe : universe_list)
 	{
 		if (this_universe->get_universe_id() == universe_id)
 		{
@@ -294,7 +294,7 @@ ApiKeyProfile* UserProfile::get_selected_api_key()
 	return nullptr;
 }
 
-UniverseProfile* UserProfile::get_selected_universe()
+std::shared_ptr<UniverseProfile> UserProfile::get_selected_universe()
 {
 	if (ApiKeyProfile* selected_key = get_selected_api_key())
 	{
@@ -578,7 +578,7 @@ void UserProfile::load_from_disk()
 						{
 							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(universe_name, this_universe_id))
 							{
-								if (UniverseProfile* const this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
+								if (const std::shared_ptr<UniverseProfile> this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
 								{
 									this_universe->set_save_recent_message_topics(save_recent_message_topics);
 									this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);
@@ -672,7 +672,7 @@ void UserProfile::save_to_disk()
 				settings.beginWriteArray("universe_ids");
 				{
 					int next_universe_array_index = 0;
-					for (const UniverseProfile* this_universe_profile : this_key->get_universe_list())
+					for (const std::shared_ptr<const UniverseProfile> this_universe_profile : this_key->get_universe_list())
 					{
 						settings.setArrayIndex(next_universe_array_index++);
 						settings.setValue("name", this_universe_profile->get_name());

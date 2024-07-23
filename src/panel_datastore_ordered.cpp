@@ -157,7 +157,7 @@ void OrderedDatastorePanel::selected_universe_changed()
 {
 	BaseDatastorePanel::selected_universe_changed();
 
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool enabled = selected_universe != nullptr;
 	save_recent_datastores_check->setEnabled(enabled);
 	if (enabled)
@@ -240,7 +240,7 @@ void OrderedDatastorePanel::handle_datastore_entry_double_clicked(const QModelIn
 void OrderedDatastorePanel::handle_search_text_changed()
 {
 	BaseDatastorePanel::handle_search_text_changed();
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool enabled = search_datastore_name_edit->text().size() > 0 && selected_universe;
 	find_ascending_button->setEnabled(enabled);
 	find_descending_button->setEnabled(enabled);
@@ -273,7 +273,7 @@ void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
 
 void OrderedDatastorePanel::handle_add_entry_text_changed()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool submit_enabled = selected_universe && add_entry_datastore_name_edit->text().size() > 0 && add_entry_key_name_edit->text().size() > 0 && add_entry_value_edit->text().size() > 0;
 	add_entry_submit_button->setEnabled(submit_enabled);
 }
@@ -281,7 +281,7 @@ void OrderedDatastorePanel::handle_add_entry_text_changed()
 void OrderedDatastorePanel::handle_recent_datastores_changed()
 {
 	select_datastore_list->clear();
-	if (const UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		for (const QString& this_topic : selected_universe->get_recent_ordered_datastore_set())
 		{
@@ -292,7 +292,7 @@ void OrderedDatastorePanel::handle_recent_datastores_changed()
 
 void OrderedDatastorePanel::handle_save_recent_datastores_toggled()
 {
-	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		selected_universe->set_save_recent_ordered_datastores(save_recent_datastores_check->isChecked());
 	}
@@ -305,7 +305,7 @@ void OrderedDatastorePanel::clear_model()
 
 void OrderedDatastorePanel::refresh_datastore_list()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		for (int i = 0; i < select_datastore_list->count(); i++)
@@ -319,7 +319,7 @@ void OrderedDatastorePanel::refresh_datastore_list()
 
 void OrderedDatastorePanel::pressed_find(const bool ascending)
 {
-	UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
@@ -366,7 +366,7 @@ void OrderedDatastorePanel::pressed_find_descending()
 
 void OrderedDatastorePanel::pressed_remove_datastore()
 {
-	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
 		if (selected.size() == 1)

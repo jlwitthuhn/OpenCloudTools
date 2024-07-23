@@ -148,7 +148,7 @@ std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() con
 
 void DatastoreBulkOperationWindow::handle_show_hidden_toggled()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		const bool show_hidden = datastore_list_show_hidden_check->isChecked();

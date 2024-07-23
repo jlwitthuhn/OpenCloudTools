@@ -88,7 +88,7 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 
 void MessagingServicePanel::selected_universe_changed()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool enabled = selected_universe != nullptr;
 	if (selected_universe)
 	{
@@ -107,7 +107,7 @@ void MessagingServicePanel::selected_universe_changed()
 
 void MessagingServicePanel::handle_add_used_topics_toggled()
 {
-	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		selected_universe->set_save_recent_message_topics(add_used_topics_check->isChecked());
 	}
@@ -116,7 +116,7 @@ void MessagingServicePanel::handle_add_used_topics_toggled()
 void MessagingServicePanel::handle_recent_topic_list_changed()
 {
 	topic_history_list->clear();
-	if (const UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		for (const QString& this_topic : selected_universe->get_recent_topic_set())
 		{
@@ -136,7 +136,7 @@ void MessagingServicePanel::handle_selected_topic_changed()
 
 void MessagingServicePanel::pressed_add_topic()
 {
-	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		MessagingServiceAddTopicWindow* add_window = new MessagingServiceAddTopicWindow{ this };
 		add_window->show();
@@ -145,7 +145,7 @@ void MessagingServicePanel::pressed_add_topic()
 
 void MessagingServicePanel::pressed_remove_topic()
 {
-	if (UniverseProfile* const selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
 	{
 		QList<QListWidgetItem*> selected = topic_history_list->selectedItems();
 		if (selected.size() == 1)
@@ -157,7 +157,7 @@ void MessagingServicePanel::pressed_remove_topic()
 
 void MessagingServicePanel::pressed_send()
 {
-	if (UniverseProfile* this_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> this_universe = UserProfile::get_selected_universe())
 	{
 		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
 

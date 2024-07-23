@@ -196,7 +196,7 @@ void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_i
 		select_universe_combo->clear();
 		for (size_t i = 0; i < this_profile->get_universe_list().size(); i++)
 		{
-			const UniverseProfile* const this_universe = this_profile->get_universe_list().at(i);
+			const std::shared_ptr<const UniverseProfile> this_universe = this_profile->get_universe_list().at(i);
 			QString formatted = QString{ "%1 [%2]" }.arg(this_universe->get_name()).arg(this_universe->get_universe_id());
 			select_universe_combo->addItem(formatted, QVariant{ static_cast<unsigned long long>(i) });
 		}
@@ -223,7 +223,7 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 	OCTASSERT(parent != nullptr);
 	setWindowModality(Qt::WindowModality::WindowModal);
 
-	const UniverseProfile* const existing_universe = edit_current ? UserProfile::get_selected_universe() : nullptr;
+	const std::shared_ptr<const UniverseProfile> existing_universe = edit_current ? UserProfile::get_selected_universe() : nullptr;
 	edit_mode = existing_universe != nullptr;
 
 	if (edit_mode)

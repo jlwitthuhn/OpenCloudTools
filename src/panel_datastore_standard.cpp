@@ -200,7 +200,7 @@ void StandardDatastorePanel::selected_universe_changed()
 {
 	BaseDatastorePanel::selected_universe_changed();
 
-	const UniverseProfile* const profile = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> profile = UserProfile::get_selected_universe();
 	const bool enabled = profile != nullptr;
 	select_datastore_fetch_button->setEnabled(enabled);
 	select_datastore_show_hidden_check->setEnabled(enabled);
@@ -395,7 +395,7 @@ void StandardDatastorePanel::handle_datastore_entry_double_clicked(const QModelI
 void StandardDatastorePanel::handle_search_text_changed()
 {
 	BaseDatastorePanel::handle_search_text_changed();
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool find_all_enabled = search_datastore_name_edit->text().size() > 0 && selected_universe;
 	const bool find_prefix_enabled = find_all_enabled && search_datastore_key_prefix_edit->text().size() > 0;
 	find_all_button->setEnabled(find_all_enabled);
@@ -439,7 +439,7 @@ void StandardDatastorePanel::handle_selected_datastore_entry_changed()
 
 void StandardDatastorePanel::handle_add_entry_text_changed()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	const bool submit_enabled = selected_universe && add_datastore_name_edit->text().size() > 0 && add_datastore_key_name_edit->text().size() > 0 && add_entry_data_edit->toPlainText().size() > 0;
 	add_entry_submit_button->setEnabled(submit_enabled);
 }
@@ -449,7 +449,7 @@ void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& po
 	const QModelIndex the_index = select_datastore_list->indexAt(pos);
 	if (the_index.isValid())
 	{
-		const UniverseProfile* const this_universe = UserProfile::get_selected_universe();
+		const std::shared_ptr<const UniverseProfile> this_universe = UserProfile::get_selected_universe();
 		if (this_universe)
 		{
 			if (QListWidgetItem* the_item = select_datastore_list->item(the_index.row()))
@@ -469,7 +469,7 @@ void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& po
 					{
 						hide_unhide_action = new QAction{ "Unhide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							if (UniverseProfile* universe_profile = UserProfile::get_selected_universe())
+							if (const std::shared_ptr<UniverseProfile> universe_profile = UserProfile::get_selected_universe())
 							{
 								universe_profile->remove_hidden_datastore(the_datastore_name);
 							}
@@ -479,7 +479,7 @@ void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& po
 					{
 						hide_unhide_action = new QAction{ "Hide datastore", context_menu };
 						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							if (UniverseProfile* universe_profile = UserProfile::get_selected_universe())
+							if (const std::shared_ptr<UniverseProfile> universe_profile = UserProfile::get_selected_universe())
 							{
 								universe_profile->add_hidden_datastore(the_datastore_name);
 							}
@@ -572,7 +572,7 @@ void StandardDatastorePanel::pressed_edit_entry()
 
 void StandardDatastorePanel::pressed_fetch_datastores()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
@@ -598,7 +598,7 @@ void StandardDatastorePanel::pressed_fetch_datastores()
 
 void StandardDatastorePanel::pressed_find_all()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
@@ -630,7 +630,7 @@ void StandardDatastorePanel::pressed_find_all()
 
 void StandardDatastorePanel::pressed_find_prefix()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
@@ -778,7 +778,7 @@ void StandardDatastorePanel::clear_model()
 
 void StandardDatastorePanel::refresh_datastore_list()
 {
-	const UniverseProfile* const selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe)
 	{
 		const bool show_hidden = select_datastore_show_hidden_check->isChecked();
