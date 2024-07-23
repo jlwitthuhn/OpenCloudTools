@@ -190,7 +190,7 @@ void MyMainWindow::handle_tab_changed(const int index)
 
 void MyMainWindow::handle_universe_list_changed(std::optional<size_t> universe_index)
 {
-	ApiKeyProfile* this_profile{ UserProfile::get_selected_api_key()};
+	const std::shared_ptr<const ApiKeyProfile> this_profile{ UserProfile::get_selected_api_key()};
 	if (this_profile)
 	{
 		select_universe_combo->clear();

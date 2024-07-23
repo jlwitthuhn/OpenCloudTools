@@ -15,7 +15,7 @@
 
 #include "assert.h"
 
-static bool compare_api_key_profile(const ApiKeyProfile* const a, const ApiKeyProfile* const b)
+static bool compare_api_key_profile(const std::shared_ptr<const ApiKeyProfile> a, const std::shared_ptr<const ApiKeyProfile> b)
 {
 	return a->get_name() < b->get_name();
 }
@@ -284,7 +284,7 @@ UserProfile& UserProfile::get()
 	return manager;
 }
 
-ApiKeyProfile* UserProfile::get_selected_api_key()
+std::shared_ptr<ApiKeyProfile> UserProfile::get_selected_api_key()
 {
 	UserProfile& user_profile = get();
 	if (const std::optional<ApiKeyProfile::Id> opt_id = user_profile.selected_key_id)
@@ -296,7 +296,7 @@ ApiKeyProfile* UserProfile::get_selected_api_key()
 
 std::shared_ptr<UniverseProfile> UserProfile::get_selected_universe()
 {
-	if (ApiKeyProfile* selected_key = get_selected_api_key())
+	if (const std::shared_ptr<const ApiKeyProfile> selected_key = get_selected_api_key())
 	{
 		return selected_key->get_selected_universe();
 	}
@@ -415,9 +415,9 @@ void UserProfile::set_show_datastore_name_filter(const bool show_filter)
 	}
 }
 
-std::vector<ApiKeyProfile*> UserProfile::get_api_key_list() const
+std::vector<std::shared_ptr<ApiKeyProfile>> UserProfile::get_api_key_list() const
 {
-	std::vector<ApiKeyProfile*> result;
+	std::vector<std::shared_ptr<ApiKeyProfile>> result;
 
 	for (const auto& this_key_pair : api_keys)
 	{
@@ -428,7 +428,7 @@ std::vector<ApiKeyProfile*> UserProfile::get_api_key_list() const
 	return result;
 }
 
-ApiKeyProfile* UserProfile::get_api_key_by_id(const ApiKeyProfile::Id key_id) const
+std::shared_ptr<ApiKeyProfile> UserProfile::get_api_key_by_id(const ApiKeyProfile::Id key_id) const
 {
 	const auto map_iter = api_keys.find(key_id);
 	if (map_iter != api_keys.end())
@@ -445,13 +445,13 @@ std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, c
 		std::function<bool(const QString&)> api_key_name_available = [this](const QString& name) -> bool {
 			return profile_name_available(name);
 		};
-		ApiKeyProfile* this_profile = new ApiKeyProfile{ this, name, key, production, save_key_to_disk, api_key_name_available };
-		connect(this_profile, &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
-		connect(this_profile, &ApiKeyProfile::details_changed, this, &UserProfile::api_key_details_changed);
-		connect(this_profile, &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
-		connect(this_profile, &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::recent_ordered_datastore_list_changed);
-		connect(this_profile, &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::recent_topic_list_changed);
-		connect(this_profile, &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
+		const std::shared_ptr<ApiKeyProfile> this_profile = std::make_shared<ApiKeyProfile>(this, name, key, production, save_key_to_disk, api_key_name_available);
+		connect(this_profile.get(), &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
+		connect(this_profile.get(), &ApiKeyProfile::details_changed, this, &UserProfile::api_key_details_changed);
+		connect(this_profile.get(), &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
+		connect(this_profile.get(), &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::recent_ordered_datastore_list_changed);
+		connect(this_profile.get(), &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::recent_topic_list_changed);
+		connect(this_profile.get(), &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
 
 		OCTASSERT(api_keys.count(this_profile->get_id()) == 0);
 		api_keys[this_profile->get_id()] = this_profile;
@@ -470,7 +470,6 @@ void UserProfile::delete_api_key(const ApiKeyProfile::Id id)
 		OCTASSERT(false);
 		return;
 	}
-	delete selected_key_iter->second;
 	api_keys.erase(selected_key_iter);
 
 	if (selected_key_id && *selected_key_id == id)
@@ -574,7 +573,7 @@ void UserProfile::load_from_disk()
 						const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
 						const bool save_recent_ordered_datastores = maybe_save_datastores.isNull() ? true : maybe_save_datastores.toBool();
 
-						if (ApiKeyProfile* const this_api_key = get_api_key_by_id(*opt_key_id))
+						if (const std::shared_ptr<ApiKeyProfile> this_api_key = get_api_key_by_id(*opt_key_id))
 						{
 							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(universe_name, this_universe_id))
 							{
@@ -660,7 +659,7 @@ void UserProfile::save_to_disk()
 	settings.beginWriteArray("list");
 	{
 		int next_array_index = 0;
-		for (const ApiKeyProfile* this_key : get_api_key_list())
+		for (const std::shared_ptr<const ApiKeyProfile> this_key : get_api_key_list())
 		{
 			if (this_key->get_save_to_disk())
 			{

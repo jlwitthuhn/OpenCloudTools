@@ -81,7 +81,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 
 void MyNewMainWindow::on_selected_api_key_changed()
 {
-	if (ApiKeyProfile* const key_profile = UserProfile::get().get_selected_api_key())
+	if (const std::shared_ptr<const ApiKeyProfile> key_profile = UserProfile::get().get_selected_api_key())
 	{
 		api_key_name_edit->setText(key_profile->get_name());
 	}

@@ -127,7 +127,7 @@ class UserProfile : public QObject
 	Q_OBJECT
 public:
 	static UserProfile& get();
-	static ApiKeyProfile* get_selected_api_key();
+	static std::shared_ptr<ApiKeyProfile> get_selected_api_key();
 	static std::shared_ptr<UniverseProfile> get_selected_universe();
 
 	const QString& get_qt_theme() const { return qt_theme; }
@@ -142,8 +142,8 @@ public:
 	bool get_show_datastore_name_filter() const { return show_datastore_name_filter; }
 	void set_show_datastore_name_filter(bool show_filter);
 
-	std::vector<ApiKeyProfile*> get_api_key_list() const;
-	ApiKeyProfile* get_api_key_by_id(ApiKeyProfile::Id id) const;
+	std::vector<std::shared_ptr<ApiKeyProfile>> get_api_key_list() const;
+	std::shared_ptr<ApiKeyProfile> get_api_key_by_id(ApiKeyProfile::Id id) const;
 
 	std::optional<ApiKeyProfile::Id> add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk);
 	void delete_api_key(ApiKeyProfile::Id id);
@@ -176,7 +176,7 @@ private:
 	bool less_verbose_bulk_operations = true;
 	bool show_datastore_name_filter = false;
 
-	std::map<ApiKeyProfile::Id, ApiKeyProfile*> api_keys;
+	std::map<ApiKeyProfile::Id, std::shared_ptr<ApiKeyProfile>> api_keys;
 	std::optional<ApiKeyProfile::Id> selected_key_id;
 
 	LockableBool load_flag;

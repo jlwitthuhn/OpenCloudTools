@@ -207,7 +207,7 @@ void ManageApiKeysWindow::rebuild_slots(const std::optional<ApiKeyProfile::Id> s
 
 	QListWidgetItem* selected_item = nullptr;
 
-	for (const ApiKeyProfile* const this_key : UserProfile::get().get_api_key_list())
+	for (const std::shared_ptr<const ApiKeyProfile> this_key : UserProfile::get().get_api_key_list())
 	{
 		QListWidgetItem* const this_item = new QListWidgetItem(list_widget);
 		const ApiKeyProfile::Id this_id = this_key->get_id();
@@ -250,7 +250,7 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<ApiK
 	OCTASSERT(parent != nullptr);
 	setWindowModality(Qt::WindowModality::WindowModal);
 
-	const ApiKeyProfile* const existing_key_profile = existing_key_id_in.has_value() ? UserProfile::get().get_api_key_by_id(*existing_key_id_in) : nullptr;
+	const std::shared_ptr<const ApiKeyProfile> existing_key_profile = existing_key_id_in.has_value() ? UserProfile::get().get_api_key_by_id(*existing_key_id_in) : nullptr;
 	if (existing_key_profile)
 	{
 		setWindowTitle("Edit API Key");
@@ -377,7 +377,7 @@ void AddApiKeyWindow::update_key()
 {
 	if (input_is_valid() && existing_key_id)
 	{
-		if (ApiKeyProfile* api_key_profile = UserProfile::get().get_api_key_by_id(*existing_key_id))
+		if (const std::shared_ptr<ApiKeyProfile> api_key_profile = UserProfile::get().get_api_key_by_id(*existing_key_id))
 		{
 			const bool result = api_key_profile->set_details(name_edit->text(), key_edit->text(), production_check->isChecked(), save_to_disk_check->isChecked());
 			if (result)
