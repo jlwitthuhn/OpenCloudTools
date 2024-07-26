@@ -42,8 +42,8 @@ static bool compare_universe_profile(const std::shared_ptr<const UniverseProfile
 	return false;
 }
 
-UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&)> name_available, const std::function<bool(long long)> id_available)
-	: QObject{ parent }, name{ name }, universe_id{ universe_id }, name_available{ name_available }, id_available{ id_available }
+UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&)> is_name_available, const std::function<bool(long long)> is_universe_id_available)
+	: QObject{ parent }, name{ name }, universe_id{ universe_id }, is_name_available{ is_name_available }, is_universe_id_available{ is_universe_id_available }
 {
 
 }
@@ -55,8 +55,8 @@ bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 
 bool UniverseProfile::set_details(const QString& name_in, const long long universe_id_in)
 {
-	const bool name_good = name == name_in || name_available(name_in);
-	const bool id_good = universe_id == universe_id_in || id_available(universe_id_in);
+	const bool name_good = name == name_in || is_name_available(name_in);
+	const bool id_good = universe_id == universe_id_in || is_universe_id_available(universe_id_in);
 	if (name_good && id_good)
 	{
 		name = name_in;
@@ -153,24 +153,39 @@ bool ApiKeyProfile::set_details(const QString& name_in, const QString& key_in, c
 	}
 }
 
-std::shared_ptr<UniverseProfile> ApiKeyProfile::get_universe_profile_by_index(size_t universe_index) const
+std::vector<std::shared_ptr<UniverseProfile>> ApiKeyProfile::get_universe_list() const
 {
-	return universe_list.at(universe_index);
+	std::vector<std::shared_ptr<UniverseProfile>> result;
+
+	for (const auto& this_universe_pair : universes)
+	{
+		result.push_back(this_universe_pair.second);
+	}
+	std::sort(result.begin(), result.end(), compare_universe_profile);
+
+	return result;
+}
+
+std::shared_ptr<UniverseProfile> ApiKeyProfile::get_universe_profile_by_id(const UniverseProfile::Id universe_id) const
+{
+	auto universe_iter = universes.find(universe_id);
+	if (universe_iter == universes.end())
+	{
+		return nullptr;
+	}
+	return universe_iter->second;
 }
 
 std::shared_ptr<UniverseProfile> ApiKeyProfile::get_selected_universe() const
 {
-	if (selected_universe_index && *selected_universe_index < universe_list.size())
-	{
-		return universe_list.at(*selected_universe_index);
-	}
-	else
+	if (!selected_universe_id)
 	{
 		return nullptr;
 	}
+	return get_universe_profile_by_id(*selected_universe_id);
 }
 
-std::optional<size_t> ApiKeyProfile::add_universe(const QString& universe_name, long long universe_id)
+std::optional<UniverseProfile::Id> ApiKeyProfile::add_universe(const QString& universe_name, long long universe_id)
 {
 	if (universe_name_available(universe_name) == false || universe_id_available(universe_id) == false)
 	{
@@ -187,78 +202,60 @@ std::optional<size_t> ApiKeyProfile::add_universe(const QString& universe_name, 
 	connect(this_universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_topic_list_changed, this, &ApiKeyProfile::recent_topic_list_changed);
-	connect(this_universe.get(), &UniverseProfile::details_changed, this, &ApiKeyProfile::sort_universe_list);
-	universe_list.push_back(this_universe);
-	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
-	for (size_t this_index = 0; this_index < universe_list.size(); this_index++)
-	{
-		if (universe_list.at(this_index)->matches_name_and_id(*this_universe))
-		{
-			emit universe_list_changed(this_index);
-			return this_index;
-		}
-	}
-	// Should never happen
-	emit universe_list_changed(std::nullopt);
-	return std::nullopt;
+
+	OCTASSERT(universes.count(this_universe->get_id()) == 0);
+	universes[this_universe->get_id()] = this_universe;
+
+	emit universe_list_changed(this_universe->get_id());
+	return this_universe->get_id();
 }
 
-void ApiKeyProfile::remove_universe(const size_t universe_index)
+void ApiKeyProfile::delete_universe(const UniverseProfile::Id universe_id)
 {
-	if (universe_index < universe_list.size())
+	auto selected_universe_iter = universes.find(universe_id);
+	if (selected_universe_iter == universes.end())
 	{
-		universe_list.erase(universe_list.begin() + universe_index);
+		OCTASSERT(false);
+		return;
 	}
-}
+	universes.erase(selected_universe_iter);
 
-void ApiKeyProfile::select_universe(const std::optional<size_t> universe_index)
-{
-	if (universe_index && *universe_index < universe_list.size())
+	if (selected_universe_id && *selected_universe_id == id)
 	{
-		selected_universe_index = universe_index;
+		universe_list_changed(std::nullopt);
 	}
 	else
 	{
-		selected_universe_index = std::nullopt;
+		universe_list_changed(selected_universe_id);
 	}
 }
 
-void ApiKeyProfile::remove_selected_universe()
+void ApiKeyProfile::select_universe(const std::optional<UniverseProfile::Id> universe_id)
 {
-	if (selected_universe_index)
+	if (universe_id && universes.count(*universe_id))
 	{
-		remove_universe(*selected_universe_index);
+		selected_universe_id = universe_id;
+	}
+	else
+	{
+		selected_universe_id = std::nullopt;
+	}
+}
+
+void ApiKeyProfile::delete_selected_universe()
+{
+	if (selected_universe_id)
+	{
+		delete_universe(*selected_universe_id);
 	}
 	emit universe_list_changed(std::nullopt);
-}
-
-void ApiKeyProfile::sort_universe_list()
-{
-	std::shared_ptr<const UniverseProfile> selected_universe;
-	if (selected_universe_index)
-	{
-		selected_universe = universe_list.at(*selected_universe_index);
-	}
-	std::sort(universe_list.begin(), universe_list.end(), compare_universe_profile);
-	if (selected_universe)
-	{
-		for (size_t i = 0; i < universe_list.size(); i++)
-		{
-			if (selected_universe == universe_list.at(i))
-			{
-				selected_universe_index = i;
-				break;
-			}
-		}
-	}
-	emit universe_list_changed(selected_universe_index);
 }
 
 bool ApiKeyProfile::universe_name_available(const QString& universe_name) const
 {
-	for (const std::shared_ptr<const UniverseProfile> this_universe : universe_list)
+	for (const auto& this_pair : universes)
 	{
-		if (this_universe->get_name() == universe_name)
+		if (this_pair.second->get_name() == universe_name)
 		{
 			return false;
 		}
@@ -268,9 +265,9 @@ bool ApiKeyProfile::universe_name_available(const QString& universe_name) const
 
 bool ApiKeyProfile::universe_id_available(const long long universe_id) const
 {
-	for (const std::shared_ptr<const UniverseProfile> this_universe : universe_list)
+	for (const auto& this_pair : universes)
 	{
-		if (this_universe->get_universe_id() == universe_id)
+		if (this_pair.second->get_universe_id() == universe_id)
 		{
 			return false;
 		}
@@ -575,9 +572,9 @@ void UserProfile::load_from_disk()
 
 						if (const std::shared_ptr<ApiKeyProfile> this_api_key = get_api_key_by_id(*opt_key_id))
 						{
-							if (const std::optional<size_t> new_universe_index = this_api_key->add_universe(universe_name, this_universe_id))
+							if (const std::optional<UniverseProfile::Id> new_universe_id = this_api_key->add_universe(universe_name, this_universe_id))
 							{
-								if (const std::shared_ptr<UniverseProfile> this_universe = this_api_key->get_universe_profile_by_index(*new_universe_index))
+								if (const std::shared_ptr<UniverseProfile> this_universe = this_api_key->get_universe_profile_by_id(*new_universe_id))
 								{
 									this_universe->set_save_recent_message_topics(save_recent_message_topics);
 									this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);

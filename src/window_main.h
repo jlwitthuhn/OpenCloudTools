@@ -9,6 +9,8 @@
 #include <QString>
 #include <QWidget>
 
+#include "profile.h"
+
 class QAction;
 class QComboBox;
 class QLineEdit;
@@ -37,7 +39,7 @@ private:
 	void pressed_change_key();
 
 	void handle_tab_changed(int index);
-	void handle_universe_list_changed(std::optional<size_t> universe_index);
+	void handle_universe_list_changed(std::optional<UniverseProfile::Id> universe_id);
 
 	QString api_key;
 

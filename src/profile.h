@@ -19,10 +19,13 @@ class UniverseProfile : public QObject
 {
 	Q_OBJECT
 public:
-	UniverseProfile(QObject* parent, const QString& name, long long universe_id, std::function<bool(const QString&)> name_available, std::function<bool(long long)> id_available);
+	using Id = RandomId128;
+
+	UniverseProfile(QObject* parent, const QString& name, long long universe_id, std::function<bool(const QString&)> name_available, std::function<bool(long long)> is_universe_id_available);
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
+	Id get_id() const { return id; }
 	QString get_name() const { return name; }
 	long long get_universe_id() const { return universe_id; }
 	bool get_save_recent_message_topics() const { return save_recent_message_topics; }
@@ -55,6 +58,8 @@ signals:
 	void recent_topic_list_changed();
 
 private:
+	Id id;
+
 	QString name;
 	long long universe_id;
 
@@ -66,8 +71,8 @@ private:
 	std::set<QString> recent_ordered_datastore_set;
 	std::set<QString> recent_topic_set;
 
-	std::function<bool(const QString&)> name_available;
-	std::function<bool(long long)> id_available;
+	std::function<bool(const QString&)> is_name_available;
+	std::function<bool(long long)> is_universe_id_available;
 };
 
 class ApiKeyProfile : public QObject
@@ -86,26 +91,25 @@ public:
 
 	bool set_details(const QString& name, const QString& key, bool production, bool save_to_disk);
 
-	const std::vector<std::shared_ptr<UniverseProfile>>& get_universe_list() const { return universe_list; }
-	std::shared_ptr<UniverseProfile> get_universe_profile_by_index(size_t universe_index) const;
+	std::vector<std::shared_ptr<UniverseProfile>> get_universe_list() const;
+	std::shared_ptr<UniverseProfile> get_universe_profile_by_id(UniverseProfile::Id universe_id) const;
 	std::shared_ptr<UniverseProfile> get_selected_universe() const;
 
-	std::optional<size_t> add_universe(const QString& universe_name, long long universe_id);
-	void remove_universe(size_t universe_index);
+	std::optional<UniverseProfile::Id> add_universe(const QString& universe_name, long long universe_id);
+	void delete_universe(UniverseProfile::Id id);
 
-	void select_universe(std::optional<size_t> universe_index);
-	void remove_selected_universe();
+	void select_universe(std::optional<UniverseProfile::Id> universe_id);
+	void delete_selected_universe();
 
 signals:
 	void force_save();
 	void details_changed();
-	void universe_list_changed(std::optional<size_t> selected_universe_index);
+	void universe_list_changed(std::optional<UniverseProfile::Id> selected_universe_id);
 	void hidden_datastore_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 
 private:
-	void sort_universe_list();
 	bool universe_name_available(const QString& universe_name) const;
 	bool universe_id_available(long long universe_id) const;
 
@@ -116,8 +120,8 @@ private:
 	bool production = false;
 	bool save_to_disk = false;
 
-	std::vector<std::shared_ptr<UniverseProfile>> universe_list;
-	std::optional<size_t> selected_universe_index;
+	std::map<UniverseProfile::Id, std::shared_ptr<UniverseProfile>> universes;
+	std::optional<UniverseProfile::Id> selected_universe_id;
 
 	std::function<bool(const QString&)> api_key_name_available;
 };
@@ -155,7 +159,7 @@ signals:
 	void autoclose_changed();
 	void selected_api_key_changed();
 	void api_key_list_changed(std::optional<ApiKeyProfile::Id> selected_id);
-	void universe_list_changed(std::optional<size_t> selected_universe_index);
+	void universe_list_changed(std::optional<UniverseProfile::Id> selected_universe_index);
 	void hidden_datastore_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
