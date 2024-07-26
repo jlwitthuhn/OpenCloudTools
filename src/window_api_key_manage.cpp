@@ -120,7 +120,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 #ifdef OCT_NEW_GUI
 			close();
 #else
-			if (ApiKeyProfile* profile = UserProfile::get_selected_api_key())
+			if (const std::shared_ptr<const ApiKeyProfile> profile = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->get_name(), profile->get_key() };
 				main_window->show();
@@ -190,7 +190,7 @@ void ManageApiKeysWindow::pressed_select()
 #ifdef OCT_NEW_GUI
 			close();
 #else
-			if (ApiKeyProfile* details = UserProfile::get_selected_api_key())
+			if (const std::shared_ptr<const ApiKeyProfile> details = UserProfile::get_selected_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->get_name(), details->get_key() };
 				main_window->show();
