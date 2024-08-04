@@ -43,6 +43,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/diag_confirm_change.h
 	./src/diag_operation_in_progress.cpp
 	./src/diag_operation_in_progress.h
+	./src/gui_constants.cpp
+	./src/gui_constants.h
 	./src/http_req_builder.cpp
 	./src/http_req_builder.h
 	./src/http_wrangler.cpp
@@ -65,6 +67,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/panel_http_log.h
 	./src/panel_messaging_service.cpp
 	./src/panel_messaging_service.h
+	./src/panel_mem_sorted_map.cpp
+	./src/panel_mem_sorted_map.h
 	./src/panel_universe_prefs.cpp
 	./src/panel_universe_prefs.h
 	./src/profile.cpp

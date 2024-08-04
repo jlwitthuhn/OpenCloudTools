@@ -33,6 +33,7 @@
 #include "panel_datastore_standard.h"
 #include "panel_datastore_ordered.h"
 #include "panel_http_log.h"
+#include "panel_mem_sorted_map.h"
 #include "panel_messaging_service.h"
 #include "panel_universe_prefs.h"
 #include "profile.h"
@@ -95,6 +96,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			ordered_datastore_panel = new OrderedDatastorePanel{ panel_tabs, api_key };
 			panel_tabs->addTab(ordered_datastore_panel, "Ordered Datastore");
 
+			memory_store_panel = new MemoryStoreSortedMapPanel{ panel_tabs, api_key };
+			panel_tabs->addTab(memory_store_panel, "Memstore Sorted Map");
+
 			bulk_data_panel = new BulkDataPanel{ panel_tabs, api_key };
 			panel_tabs->addTab(bulk_data_panel, "Bulk Data");
 
@@ -139,6 +143,7 @@ void MyMainWindow::selected_universe_combo_changed()
 	// TODO: replace this with a signal that is set up on construction
 	standard_datastore_panel->selected_universe_changed();
 	ordered_datastore_panel->selected_universe_changed();
+	memory_store_panel->selected_universe_changed();
 	bulk_data_panel->selected_universe_changed();
 	messaging_service_panel->selected_universe_changed();
 	universe_preferences_panel->selected_universe_changed();
