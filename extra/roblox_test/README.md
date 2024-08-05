@@ -1,0 +1,1 @@
+This directory contains a set of scripts that can be used to create a Roblox place that uses datastores, memory stores, sets up a messagingservice receiver, etc. This data is used to test all OCT Functionality.
