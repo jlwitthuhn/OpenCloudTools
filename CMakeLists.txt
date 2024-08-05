@@ -78,6 +78,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/sqlite_wrapper.cpp
 	./src/sqlite_wrapper.h
 	./src/tooltip_text.h
+	./src/util_alert.cpp
+	./src/util_alert.h
 	./src/util_debug.cpp
 	./src/util_debug.h
 	./src/util_enum.cpp

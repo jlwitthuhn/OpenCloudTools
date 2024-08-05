@@ -32,7 +32,6 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 			layout_index->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 			layout_index->addWidget(group_box);
 		}
-		splitter->addWidget(panel_index);
 
 		QWidget* const panel_main = new QWidget{ splitter };
 		{
@@ -87,9 +86,10 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 			layout_main->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 			layout_main->addWidget(group_box);
 		}
+		splitter->addWidget(panel_index);
 		splitter->addWidget(panel_main);
+		splitter->setSizes({ OCT_LIST_WIDGET_LIST_WIDTH, OCT_LIST_WIDGET_MAIN_WIDTH });
 	}
-	splitter->setSizes({ OCT_LIST_WIDGET_LIST_WIDTH, OCT_LIST_WIDGET_MAIN_WIDTH });
 
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);

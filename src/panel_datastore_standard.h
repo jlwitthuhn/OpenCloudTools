@@ -4,33 +4,34 @@
 
 #include <QObject>
 #include <QString>
-
-#include "panel_datastore_base.h"
+#include <QWidget>
 
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
+class QListWidget;
 class QModelIndex;
 class QPoint;
 class QPushButton;
 class QTextEdit;
-class QWidget;
+class QTreeView;
 
 class StandardDatastoreEntryName;
 class StandardDatastoreEntryQTableModel;
 
-class StandardDatastorePanel : public BaseDatastorePanel
+class StandardDatastorePanel : public QWidget
 {
 	Q_OBJECT
 public:
 	StandardDatastorePanel(QWidget* parent, const QString& api_key);
 
-	virtual void selected_universe_changed() override;
+	void selected_universe_changed();
 
 private:
 	void set_datastore_entry_model(StandardDatastoreEntryQTableModel* entry_model);
 
 	std::vector<StandardDatastoreEntryName> get_selected_entries() const;
+	QModelIndex get_selected_single_index() const;
 
 	void view_entry(const QModelIndex& index);
 	void view_versions(const QModelIndex& index);
@@ -38,15 +39,16 @@ private:
 	void delete_entry(const QModelIndex& index);
 	void delete_entry_list(const std::vector<StandardDatastoreEntryName>& entry_list);
 
-	virtual void handle_datastore_entry_double_clicked(const QModelIndex& index) override;
-	virtual void handle_search_text_changed() override;
-	virtual void handle_selected_datastore_changed() override;
-	virtual void handle_selected_datastore_entry_changed() override;
+	void handle_datastore_entry_double_clicked(const QModelIndex& index);
+	void handle_search_text_changed();
+	void handle_selected_datastore_changed();
+	void handle_selected_datastore_entry_changed();
+	void handle_show_datastore_filter_changed();
 
 	void handle_add_entry_text_changed();
 
-	virtual void pressed_right_click_datastore_list(const QPoint& pos) override;
-	virtual void pressed_right_click_entry_list(const QPoint& pos) override;
+	void pressed_right_click_datastore_list(const QPoint& pos);
+	void pressed_right_click_entry_list(const QPoint& pos);
 
 	void pressed_delete_entry();
 	void pressed_edit_entry();
@@ -57,35 +59,44 @@ private:
 	void pressed_view_entry();
 	void pressed_view_versions();
 
-	virtual void clear_model() override;
-	virtual void refresh_datastore_list() override;
+	void clear_model();
+	void refresh_datastore_list();
 
-	// Left bar
-	QCheckBox* select_datastore_show_hidden_check = nullptr;
-	QPushButton* select_datastore_fetch_button = nullptr;
+	QString api_key;
+
+	// Index bar
+	QListWidget* list_datastore_index = nullptr;
+	QLineEdit* edit_datastore_index_filter = nullptr;
+	QCheckBox* check_datastore_index_show_hidden = nullptr;
+	QPushButton* button_datastore_index_fetch = nullptr;
 
 	// Search panel
-	QLineEdit* search_datastore_key_prefix_edit = nullptr;
+	QLineEdit* edit_search_datastore_name = nullptr;
+	QLineEdit* edit_search_datastore_scope = nullptr;
+	QLineEdit* edit_search_datastore_key_prefix = nullptr;
 
-	QPushButton* find_all_button = nullptr;
-	QPushButton* find_prefix_button = nullptr;
+	QPushButton* button_search_find_all = nullptr;
+	QPushButton* button_search_find_prefix = nullptr;
+	QLineEdit* edit_search_find_limit = nullptr;
 
-	QPushButton* view_entry_button = nullptr;
-	QPushButton* view_versions_button = nullptr;
+	QTreeView* tree_view_main = nullptr;
 
-	QPushButton* edit_entry_button = nullptr;
-	QPushButton* delete_entry_button = nullptr;
+	QPushButton* button_entry_view = nullptr;
+	QPushButton* button_entry_view_version = nullptr;
+
+	QPushButton* button_entry_edit = nullptr;
+	QPushButton* button_entry_delete = nullptr;
 
 	// Add panel
-	QLineEdit* add_datastore_name_edit = nullptr;
-	QLineEdit* add_datastore_scope_edit = nullptr;
-	QLineEdit* add_datastore_key_name_edit = nullptr;
+	QLineEdit* edit_add_datastore_name = nullptr;
+	QLineEdit* edit_add_datastore_scope = nullptr;
+	QLineEdit* edit_add_datastore_key_name = nullptr;
 
-	QComboBox* add_entry_type_combo = nullptr;
+	QComboBox* combo_add_entry_type = nullptr;
 
-	QTextEdit* add_entry_data_edit = nullptr;
-	QTextEdit* add_entry_userids_edit = nullptr;
-	QTextEdit* add_entry_attributes_edit = nullptr;
+	QTextEdit* edit_add_entry_data = nullptr;
+	QTextEdit* edit_add_entry_userids = nullptr;
+	QTextEdit* edit_add_entry_attributes = nullptr;
 
-	QPushButton* add_entry_submit_button = nullptr;
+	QPushButton* button_add_entry_submit = nullptr;
 };
