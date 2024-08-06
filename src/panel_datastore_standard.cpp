@@ -132,7 +132,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 						connect(button_search_find_prefix, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_find_prefix);
 
 						QLabel* const label_find_limit = new QLabel{ "Limit:", panel_search_submit };
-						//label_find_limit->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
+						label_find_limit->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
 
 						edit_search_find_limit = new QLineEdit{ panel_search_submit };
 						edit_search_find_limit->setText("1200");
