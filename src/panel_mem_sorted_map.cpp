@@ -1,5 +1,6 @@
 #include "panel_mem_sorted_map.h"
 
+#include <QCheckBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -18,6 +19,8 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 	QWidget{ parent },
 	api_key{ api_key }
 {
+	connect(&(UserProfile::get()), &UserProfile::recent_mem_sorted_map_list_changed, this, &MemoryStoreSortedMapPanel::handle_recent_maps_changed);
+
 	QSplitter* const splitter = new QSplitter{ this };
 	splitter->setChildrenCollapsible(false);
 	{
@@ -25,11 +28,16 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 		{
 			QGroupBox* const group_box = new QGroupBox{ "Sorted Maps", panel_index };
 			{
-				QListWidget* const store_list = new QListWidget{ group_box };
+				list_maps = new QListWidget{ group_box };
+
+				check_save_recent_maps = new QCheckBox{ "Add used maps", group_box };
+				connect(check_save_recent_maps, &QCheckBox::stateChanged, this, &MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled);
 
 				QVBoxLayout* const group_layout = new QVBoxLayout{ group_box };
-				group_layout->addWidget(store_list);
+				group_layout->addWidget(list_maps);
+				group_layout->addWidget(check_save_recent_maps);
 			}
+
 
 			QVBoxLayout* const layout_index = new QVBoxLayout{ panel_index };
 			layout_index->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -115,7 +123,42 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 
 void MemoryStoreSortedMapPanel::selected_universe_changed()
 {
+	list_maps->clear();
+	edit_map_name->setText("");
 
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
+	const bool enabled = selected_universe != nullptr;
+	check_save_recent_maps->setEnabled(enabled);
+	if (enabled)
+	{
+		check_save_recent_maps->setChecked(selected_universe->get_save_recent_mem_sorted_maps());
+	}
+	else
+	{
+		check_save_recent_maps->setChecked(false);
+	}
+
+	handle_recent_maps_changed();
+}
+
+void MemoryStoreSortedMapPanel::handle_recent_maps_changed()
+{
+	list_maps->clear();
+	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	{
+		for (const QString& this_map : selected_universe->get_recent_mem_sorted_map_set())
+		{
+			list_maps->addItem(this_map);
+		}
+	}
+}
+
+void MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled()
+{
+	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	{
+		selected_universe->set_save_recent_mem_sorted_maps(check_save_recent_maps->isChecked());
+	}
 }
 
 void MemoryStoreSortedMapPanel::handle_search_name_changed()
@@ -128,7 +171,7 @@ void MemoryStoreSortedMapPanel::handle_search_name_changed()
 
 void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
+	const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
 	if (selected_universe && edit_map_name->text().trimmed().size() > 0)
 	{
 		const long long universe_id = selected_universe->get_universe_id();
@@ -143,5 +186,10 @@ void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 
 		OperationInProgressDialog diag{ this, req };
 		diag.exec();
+
+		if (check_save_recent_maps->isChecked() && req->get_items().size() > 0)
+		{
+			selected_universe->add_recent_mem_sorted_map(map_name);
+		}
 	}
 }

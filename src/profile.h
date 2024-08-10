@@ -28,21 +28,27 @@ public:
 	Id get_id() const { return id; }
 	QString get_name() const { return name; }
 	long long get_universe_id() const { return universe_id; }
+	bool get_save_recent_mem_sorted_maps() const { return save_recent_mem_sorted_maps; }
 	bool get_save_recent_message_topics() const { return save_recent_message_topics; }
 	bool get_save_recent_ordered_datastores() const { return save_recent_ordered_datastores; }
 	bool get_show_hidden_standard_datastores() const { return show_hidden_standard_datastores; }
 	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
+	const std::set<QString>& get_recent_mem_sorted_map_set() const { return recent_mem_sorted_map_set; }
 	const std::set<QString>& get_recent_ordered_datastore_set() const { return recent_ordered_datastore_set; }
 	const std::set<QString>& get_recent_topic_set() const { return recent_topic_set; }
 
 	bool set_details(const QString& name, long long universe_id);
 
+	void set_save_recent_mem_sorted_maps(bool save_maps);
 	void set_save_recent_message_topics(bool save_topics);
 	void set_save_recent_ordered_datastores(bool save_datastores);
 	void set_show_hidden_standard_datastores(bool show_datastores);
 
 	void add_hidden_datastore(const QString& datastore);
 	void remove_hidden_datastore(const QString& datastore);
+
+	void add_recent_mem_sorted_map(const QString& map_name);
+	void remove_recent_mem_sorted_map(const QString& map_name);
 
 	void add_recent_ordered_datastore(const QString& datastore_name);
 	void remove_recent_ordered_datastore(const QString& datastore_name);
@@ -54,6 +60,7 @@ signals:
 	void force_save();
 	void details_changed();
 	void hidden_datastore_list_changed();
+	void recent_mem_sorted_map_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 
@@ -63,11 +70,13 @@ private:
 	QString name;
 	long long universe_id;
 
+	bool save_recent_mem_sorted_maps = true;
 	bool save_recent_message_topics = true;
 	bool save_recent_ordered_datastores = true;
 	bool show_hidden_standard_datastores = false;
 
 	std::set<QString> hidden_datastore_set;
+	std::set<QString> recent_mem_sorted_map_set;
 	std::set<QString> recent_ordered_datastore_set;
 	std::set<QString> recent_topic_set;
 
@@ -106,6 +115,7 @@ signals:
 	void details_changed();
 	void universe_list_changed(std::optional<UniverseProfile::Id> selected_universe_id);
 	void hidden_datastore_list_changed();
+	void recent_mem_sorted_map_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 
@@ -161,6 +171,7 @@ signals:
 	void api_key_list_changed(std::optional<ApiKeyProfile::Id> selected_id);
 	void universe_list_changed(std::optional<UniverseProfile::Id> selected_universe_index);
 	void hidden_datastore_list_changed();
+	void recent_mem_sorted_map_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
 	void show_datastore_filter_changed();

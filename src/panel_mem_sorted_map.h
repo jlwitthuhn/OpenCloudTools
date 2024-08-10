@@ -5,7 +5,9 @@
 
 #include "util_enum.h"
 
+class QCheckBox;
 class QLineEdit;
+class QListWidget;
 class QPushButton;
 
 class MemoryStoreSortedMapPanel : public QWidget
@@ -17,6 +19,8 @@ public:
 	void selected_universe_changed();
 
 private:
+	void handle_recent_maps_changed();
+	void handle_save_recent_maps_toggled();
 	void handle_search_name_changed();
 
 	void pressed_list_all(bool ascending);
@@ -24,6 +28,10 @@ private:
 	void pressed_list_all_desc() { return pressed_list_all(false); }
 
 	QString api_key;
+
+	// Index panel
+	QListWidget* list_maps = nullptr;
+	QCheckBox* check_save_recent_maps = nullptr;
 
 	// Search panel
 	QLineEdit* edit_map_name = nullptr;

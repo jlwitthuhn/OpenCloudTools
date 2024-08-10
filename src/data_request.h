@@ -112,6 +112,8 @@ public:
 
 	void set_result_limit(size_t limit);
 
+	const std::vector<MemoryStoreSortedMapItem>& get_items() const { return items; }
+
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;

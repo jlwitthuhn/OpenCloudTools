@@ -70,6 +70,15 @@ bool UniverseProfile::set_details(const QString& name_in, const long long univer
 	}
 }
 
+void UniverseProfile::set_save_recent_mem_sorted_maps(const bool save_maps)
+{
+	if (save_recent_mem_sorted_maps != save_maps)
+	{
+		save_recent_mem_sorted_maps = save_maps;
+		emit force_save();
+	}
+}
+
 void UniverseProfile::set_save_recent_message_topics(const bool save_topics)
 {
 	if (save_recent_message_topics != save_topics)
@@ -99,6 +108,20 @@ void UniverseProfile::remove_hidden_datastore(const QString& datastore)
 	if (hidden_datastore_set.erase(datastore))
 	{
 		emit hidden_datastore_list_changed();
+	}
+}
+
+void UniverseProfile::add_recent_mem_sorted_map(const QString& map_name)
+{
+	recent_mem_sorted_map_set.insert(map_name);
+	emit recent_mem_sorted_map_list_changed();
+}
+
+void UniverseProfile::remove_recent_mem_sorted_map(const QString& map_name)
+{
+	if (recent_mem_sorted_map_set.erase(map_name))
+	{
+		emit recent_mem_sorted_map_list_changed();
 	}
 }
 
@@ -200,6 +223,7 @@ std::optional<UniverseProfile::Id> ApiKeyProfile::add_universe(const QString& un
 	const std::shared_ptr<UniverseProfile> this_universe = std::make_shared<UniverseProfile>(this, universe_name, universe_id, name_check, id_check);
 	connect(this_universe.get(), &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
+	connect(this_universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &ApiKeyProfile::recent_mem_sorted_map_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_topic_list_changed, this, &ApiKeyProfile::recent_topic_list_changed);
 
@@ -446,6 +470,7 @@ std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, c
 		connect(this_profile.get(), &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::details_changed, this, &UserProfile::api_key_details_changed);
 		connect(this_profile.get(), &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
+		connect(this_profile.get(), &ApiKeyProfile::recent_mem_sorted_map_list_changed, this, &UserProfile::recent_mem_sorted_map_list_changed);
 		connect(this_profile.get(), &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::recent_ordered_datastore_list_changed);
 		connect(this_profile.get(), &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::recent_topic_list_changed);
 		connect(this_profile.get(), &ApiKeyProfile::universe_list_changed, this, &UserProfile::universe_list_changed);
@@ -564,6 +589,9 @@ void UserProfile::load_from_disk()
 						const QVariant maybe_universe_name = settings.value("name");
 						const QString universe_name = maybe_universe_name.isNull() ? "Unnamed" : maybe_universe_name.toString();
 
+						const QVariant maybe_save_mem_sorted_maps = settings.value("save_recent_mem_sorted_map");
+						const bool save_recent_mem_sorted_maps = maybe_save_mem_sorted_maps.isNull() ? true : maybe_save_mem_sorted_maps.toBool();
+
 						const QVariant maybe_save_topics = settings.value("save_recent_message_topics");
 						const bool save_recent_message_topics = maybe_save_topics.isNull() ? true : maybe_save_topics.toBool();
 
@@ -576,6 +604,7 @@ void UserProfile::load_from_disk()
 							{
 								if (const std::shared_ptr<UniverseProfile> this_universe = this_api_key->get_universe_profile_by_id(*new_universe_id))
 								{
+									this_universe->set_save_recent_mem_sorted_maps(save_recent_mem_sorted_maps);
 									this_universe->set_save_recent_message_topics(save_recent_message_topics);
 									this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);
 
@@ -673,6 +702,7 @@ void UserProfile::save_to_disk()
 						settings.setArrayIndex(next_universe_array_index++);
 						settings.setValue("name", this_universe_profile->get_name());
 						settings.setValue("universe_id", this_universe_profile->get_universe_id());
+						settings.setValue("save_recent_mem_sorted_maps", this_universe_profile->get_save_recent_mem_sorted_maps());
 						settings.setValue("save_recent_message_topics", this_universe_profile->get_save_recent_message_topics());
 						settings.setValue("save_recent_ordered_datastores", this_universe_profile->get_save_recent_ordered_datastores());
 
@@ -733,6 +763,7 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::hidden_datastore_list_changed, this, &UserProfile::save_to_disk);
+	connect(this, &UserProfile::recent_mem_sorted_map_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::recent_ordered_datastore_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::recent_topic_list_changed, this, &UserProfile::save_to_disk);
 	connect(this, &UserProfile::universe_list_changed, this, &UserProfile::save_to_disk);
