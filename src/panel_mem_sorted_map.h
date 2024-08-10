@@ -26,12 +26,14 @@ private:
 	void pressed_list_all(bool ascending);
 	void pressed_list_all_asc() { return pressed_list_all(true); };
 	void pressed_list_all_desc() { return pressed_list_all(false); }
+	void pressed_remove_recent_map();
 
 	QString api_key;
 
 	// Index panel
 	QListWidget* list_maps = nullptr;
 	QCheckBox* check_save_recent_maps = nullptr;
+	QPushButton* button_remove_recent_map = nullptr;
 
 	// Search panel
 	QLineEdit* edit_map_name = nullptr;

@@ -33,9 +33,13 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 				check_save_recent_maps = new QCheckBox{ "Add used maps", group_box };
 				connect(check_save_recent_maps, &QCheckBox::stateChanged, this, &MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled);
 
+				button_remove_recent_map = new QPushButton{ "Remove", group_box };
+				connect(button_remove_recent_map, &QPushButton::clicked, this, &MemoryStoreSortedMapPanel::pressed_remove_recent_map);
+
 				QVBoxLayout* const group_layout = new QVBoxLayout{ group_box };
 				group_layout->addWidget(list_maps);
 				group_layout->addWidget(check_save_recent_maps);
+				group_layout->addWidget(button_remove_recent_map);
 			}
 
 
@@ -190,6 +194,18 @@ void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 		if (check_save_recent_maps->isChecked() && req->get_items().size() > 0)
 		{
 			selected_universe->add_recent_mem_sorted_map(map_name);
+		}
+	}
+}
+
+void MemoryStoreSortedMapPanel::pressed_remove_recent_map()
+{
+	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	{
+		const QList<QListWidgetItem*> selected = list_maps->selectedItems();
+		if (selected.size() == 1)
+		{
+			selected_universe->remove_recent_mem_sorted_map(selected.front()->text());
 		}
 	}
 }
