@@ -5,7 +5,46 @@
 
 #include <QString>
 
+#include "util_json.h"
+
 enum class DatastoreEntryType;
+
+class MemoryStoreSortedMapItem
+{
+public:
+	MemoryStoreSortedMapItem(
+		long long universe_id,
+		const QString& map_name,
+		const QString& path,
+		const JsonValue& value,
+		const QString& etag,
+		const QString& expire_time,
+		const QString& id,
+		const std::optional<QString>& string_sort_key,
+		const std::optional<double>& numeric_sort_key)
+		:
+		universe_id{ universe_id },
+		map_name{ map_name },
+		path{ path },
+		value{ value },
+		etag{ etag },
+		expire_time{ expire_time },
+		id{ id },
+		string_sort_key{ string_sort_key },
+		numeric_sort_key{ numeric_sort_key }
+	{}
+
+private:
+	long long universe_id;
+	QString map_name;
+	QString path;
+	JsonValue value;
+	QString etag;
+	QString expire_time;
+	QString id;
+	std::optional<QString> string_sort_key;
+	std::optional<double> numeric_sort_key;
+};
 
 class OrderedDatastoreEntryFull
 {

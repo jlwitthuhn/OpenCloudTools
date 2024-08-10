@@ -103,6 +103,28 @@ protected:
 	size_t http_429_count = 0;
 };
 
+class MemoryStoreSortedMapGetListRequest : public DataRequest
+{
+public:
+	MemoryStoreSortedMapGetListRequest(const QString& api_key, long long universe_id, const QString& map_name, bool ascending);
+
+	virtual QString get_title_string() const override;
+
+	void set_result_limit(size_t limit);
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+	QString map_name;
+	bool ascending;
+
+	std::optional<size_t> result_limit;
+
+	std::vector<MemoryStoreSortedMapItem> items;
+};
+
 class MessagingServicePostMessageRequest : public DataRequest
 {
 public:

@@ -7,6 +7,22 @@
 
 #include "model_common.h"
 
+class GetMemoryStoreSortedMapItemListResponse
+{
+public:
+	static std::optional<GetMemoryStoreSortedMapItemListResponse> from_json(long long universe_id, const QString& datastore_name, bool ascending, const QString& json);
+
+	const std::vector<MemoryStoreSortedMapItem>& get_items() const { return items; }
+	const std::optional<QString> get_next_page_token() const { return next_page_token; }
+
+private:
+	GetMemoryStoreSortedMapItemListResponse(const std::vector<MemoryStoreSortedMapItem>& items, const std::optional<QString>& next_page_token) :
+		items{ items }, next_page_token{ next_page_token } {}
+
+	std::vector<MemoryStoreSortedMapItem> items;
+	std::optional<QString> next_page_token;
+};
+
 class GetOrderedDatastoreEntryDetailsResponse
 {
 public:

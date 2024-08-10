@@ -1,10 +1,87 @@
 #include "util_json.h"
 
+#include <sstream>
+
 #include <QChar>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+
+#include "assert.h"
+
+std::optional<JsonValue> JsonValue::from_qjson(const QJsonValueRef& qjson)
+{
+	if (qjson.isBool())
+	{
+		return JsonValue{ qjson.toBool() };
+	}
+	else if (qjson.isDouble())
+	{
+		return JsonValue{ qjson.toDouble() };
+	}
+	else if (qjson.isString())
+	{
+		return JsonValue{ qjson.toString() };
+	}
+	else if (qjson.isArray())
+	{
+		const QJsonDocument qjson_doc{ qjson.toArray() };
+		const QString json_str{ qjson_doc.toJson() };
+		return JsonValue::from_json_array(json_str);
+	}
+	else if (qjson.isObject())
+	{
+		const QJsonDocument qjson_doc{ qjson.toObject() };
+		const QString json_str{ qjson_doc.toJson() };
+		return JsonValue::from_json_object(json_str);
+	}
+	else
+	{
+		OCTASSERT(false);
+		return std::nullopt;
+	}
+}
+
+JsonValue JsonValue::from_json_array(const QString& input)
+{
+	return JsonValue(JsonDataType::Array, input);
+}
+
+JsonValue JsonValue::from_json_object(const QString& input)
+{
+	return JsonValue(JsonDataType::Object, input);
+}
+
+JsonValue::JsonValue(const bool input) :
+	type{ JsonDataType::Bool },
+	val_bool{ input },
+	json_string{ input ? "true" : "false" }
+{
+
+}
+
+JsonValue::JsonValue(const double input) :
+	type{ JsonDataType::Number },
+	val_number{ input },
+	json_string{ QString::fromStdString((std::stringstream{} << input).str()) }
+{
+
+}
+
+JsonValue::JsonValue(const QString& input) :
+	type{ JsonDataType::Number },
+	json_string{ encode_json_string(input) }
+{
+
+}
+
+JsonValue::JsonValue(const JsonDataType type, const QString& json_string) :
+	type{ type },
+	json_string{ json_string }
+{
+
+}
 
 std::optional<QString> condense_json(const QString& json_string)
 {

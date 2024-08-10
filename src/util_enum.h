@@ -19,6 +19,15 @@ enum class HttpRequestType
 	Delete,
 };
 
+enum class JsonDataType
+{
+	Bool,
+	Number,
+	String,
+	Array,
+	Object,
+};
+
 enum class ViewEditMode
 {
 	View,

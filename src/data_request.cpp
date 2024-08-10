@@ -235,6 +235,58 @@ void DataRequest::do_success(const QString& message)
 	emit success();
 }
 
+MemoryStoreSortedMapGetListRequest::MemoryStoreSortedMapGetListRequest(const QString& api_key, long long universe_id, const QString& map_name, bool ascending)
+	: DataRequest{ api_key }, universe_id{ universe_id }, map_name{ map_name }, ascending{ ascending }
+{
+
+}
+
+QString MemoryStoreSortedMapGetListRequest::get_title_string() const
+{
+	return "Fetching memory store sorted map entries...";
+}
+
+void MemoryStoreSortedMapGetListRequest::set_result_limit(const size_t limit)
+{
+	result_limit = limit;
+}
+
+QNetworkRequest MemoryStoreSortedMapGetListRequest::build_request(std::optional<QString> cursor) const
+{
+	return HttpRequestBuilder::memory_store_sorted_map_get_list(api_key, universe_id, map_name, ascending, cursor);
+}
+
+void MemoryStoreSortedMapGetListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	if (const std::optional<GetMemoryStoreSortedMapItemListResponse> response = GetMemoryStoreSortedMapItemListResponse::from_json(universe_id, map_name, ascending, body))
+	{
+		for (const MemoryStoreSortedMapItem& this_entry : response->get_items())
+		{
+			if (result_limit && items.size() >= *result_limit)
+			{
+				// Limit has been hit
+				break;
+			}
+			items.push_back(this_entry);
+		}
+
+		const bool limit_reached = result_limit && items.size() >= *result_limit;
+		const std::optional<QString> token{ response->get_next_page_token() };
+		if (token && token->size() > 0 && !limit_reached)
+		{
+			send_request(token);
+		}
+		else
+		{
+			do_success();
+		}
+	}
+	else
+	{
+		status_error("Received invalid response with HTTP 200");
+	}
+}
+
 MessagingServicePostMessageRequest::MessagingServicePostMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
 	: DataRequest{ api_key }, universe_id{ universe_id }, topic{ topic }
 {

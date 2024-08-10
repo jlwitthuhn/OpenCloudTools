@@ -8,6 +8,99 @@
 #include <QJsonValue>
 
 #include "assert.h"
+#include "util_json.h"
+
+static std::optional<JsonValue> extract_json(QJsonObject& obj, const QString& name)
+{
+	const QJsonObject::iterator iter = obj.find(name);
+	if (iter != obj.end())
+	{
+		return JsonValue::from_qjson(*iter);
+	}
+	return std::nullopt;
+}
+
+static std::optional<double> extract_number(const QJsonObject& obj, const QString& name)
+{
+	const QJsonObject::const_iterator iter = obj.find(name);
+	if (iter != obj.end())
+	{
+		if (iter->isDouble())
+		{
+			return iter->toDouble();
+		}
+	}
+	return std::nullopt;
+}
+
+static std::optional<QString> extract_string(const QJsonObject& obj, const QString& name)
+{
+	const QJsonObject::const_iterator iter = obj.find(name);
+	if (iter != obj.end())
+	{
+		if (iter->isString())
+		{
+			return iter->toString();
+		}
+	}
+	return std::nullopt;
+}
+
+std::optional<GetMemoryStoreSortedMapItemListResponse> GetMemoryStoreSortedMapItemListResponse::from_json(const long long universe_id, const QString& map_name, const bool ascending, const QString& json)
+{
+	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	QJsonObject root = doc.object();
+
+	std::vector<MemoryStoreSortedMapItem> items;
+	QJsonObject::iterator items_it = root.find("items");
+	if (items_it != root.end())
+	{
+		QJsonValueRef items_value = items_it.value();
+		if (items_value.isArray())
+		{
+			for (QJsonValueRef this_entry : items_value.toArray())
+			{
+				if (this_entry.isObject())
+				{
+					QJsonObject this_entry_obj = this_entry.toObject();
+
+					const std::optional<QString> opt_path = extract_string(this_entry_obj, "path");
+					const std::optional<JsonValue> opt_value = extract_json(this_entry_obj, "value");
+					const std::optional<QString> opt_etag = extract_string(this_entry_obj, "etag");
+					const std::optional<QString> opt_expire = extract_string(this_entry_obj, "expireTime");
+					const std::optional<QString> opt_id = extract_string(this_entry_obj, "id");
+
+					const std::optional<QString> opt_sort_string = extract_string(this_entry_obj, "stringSortKey");
+					const std::optional<double> opt_sort_number = extract_number(this_entry_obj, "numericSortKey");
+
+					if (opt_path && opt_value && opt_etag && opt_expire && opt_id)
+					{
+						items.push_back(MemoryStoreSortedMapItem{
+							universe_id,
+							map_name,
+							*opt_path,
+							*opt_value,
+							*opt_etag,
+							*opt_expire,
+							*opt_id,
+							opt_sort_string,
+							opt_sort_number
+						});
+					}
+				}
+			}
+		}
+
+		const std::optional<QString> opt_next_page_token = extract_string(root, "nextPageToken");
+
+		if (items.size() > 0 || opt_next_page_token)
+		{
+			return GetMemoryStoreSortedMapItemListResponse{ items, opt_next_page_token };
+		}
+	}
+
+	return std::nullopt;
+}
 
 std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::from_json(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
 {

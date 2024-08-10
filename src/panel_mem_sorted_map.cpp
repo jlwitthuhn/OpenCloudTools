@@ -9,7 +9,10 @@
 #include <QSplitter>
 #include <QTreeView>
 
+#include "data_request.h"
+#include "diag_operation_in_progress.h"
 #include "gui_constants.h"
+#include "profile.h"
 
 MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, const QString& api_key) :
 	QWidget{ parent },
@@ -40,7 +43,8 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 				QWidget* const panel_map_name = new QWidget{ group_box };
 				{
 					QLabel* const label_map_name = new QLabel{ "Map Name:", panel_map_name };
-					QLineEdit* const edit_map_name = new QLineEdit{ panel_map_name };
+					edit_map_name = new QLineEdit{ panel_map_name };
+					connect(edit_map_name, &QLineEdit::textChanged, this, &MemoryStoreSortedMapPanel::handle_search_name_changed);
 
 					QHBoxLayout* const layout_map_name = new QHBoxLayout{ panel_map_name };
 					layout_map_name->setContentsMargins(QMargins{ 0, 0, 0, 0 });
@@ -61,14 +65,25 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 
 				QWidget* const panel_find_buttons = new QWidget{ group_box };
 				{
-					QPushButton* const button_list_all_asc = new QPushButton{ "List all (ascending)" };
+					button_list_all_asc = new QPushButton{ "List all (ascending)" };
+					connect(button_list_all_asc, &QPushButton::clicked, this, &MemoryStoreSortedMapPanel::pressed_list_all_asc);
 
-					QPushButton* const button_list_all_desc = new QPushButton{ "List all (descending)" };
+					button_list_all_desc = new QPushButton{ "List all (descending)" };
+					connect(button_list_all_desc, &QPushButton::clicked, this, &MemoryStoreSortedMapPanel::pressed_list_all_desc);
+
+					QLabel* const label_list_limit = new QLabel{ "Limit:", panel_find_buttons };
+					label_list_limit->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
+
+					edit_list_limit = new QLineEdit{ panel_find_buttons };
+					edit_list_limit->setText("1200");
+					edit_list_limit->setFixedWidth(60);
 
 					QHBoxLayout* const layout_find_buttons = new QHBoxLayout{ panel_find_buttons };
 					layout_find_buttons->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 					layout_find_buttons->addWidget(button_list_all_asc);
 					layout_find_buttons->addWidget(button_list_all_desc);
+					layout_find_buttons->addWidget(label_list_limit);
+					layout_find_buttons->addWidget(edit_list_limit);
 				}
 
 				QTreeView* const tree_view = new QTreeView{ group_box };
@@ -93,9 +108,40 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
+
+	selected_universe_changed();
+	handle_search_name_changed();
 }
 
 void MemoryStoreSortedMapPanel::selected_universe_changed()
 {
 
+}
+
+void MemoryStoreSortedMapPanel::handle_search_name_changed()
+{
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
+	const bool enabled = selected_universe && edit_map_name->text().size() > 0;
+	button_list_all_asc->setEnabled(enabled);
+	button_list_all_desc->setEnabled(enabled);
+}
+
+void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
+{
+	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
+	if (selected_universe && edit_map_name->text().trimmed().size() > 0)
+	{
+		const long long universe_id = selected_universe->get_universe_id();
+		const QString map_name = edit_map_name->text().trimmed();
+		const size_t result_limit = edit_list_limit->text().trimmed().toULongLong();
+
+		const auto req = std::make_shared<MemoryStoreSortedMapGetListRequest>(api_key, universe_id, map_name, ascending);
+		if (result_limit > 0)
+		{
+			req->set_result_limit(result_limit);
+		}
+
+		OperationInProgressDialog diag{ this, req };
+		diag.exec();
+	}
 }

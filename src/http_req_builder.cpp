@@ -6,6 +6,25 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+QNetworkRequest HttpRequestBuilder::memory_store_sorted_map_get_list(const QString& api_key, const long long universe_id, const QString& map_name, bool ascending, const std::optional<QString> cursor)
+{
+	QString url = base_url_memory_store(universe_id);
+	url = url + "/sorted-maps/" + QUrl::toPercentEncoding(map_name);
+	url = url + "/items";
+	url = url + "?maxPageSize=100";
+	url = url + "&orderBy=" + (ascending ? "asc" : "desc");
+	//url = url + "&orderBy=id" + (ascending ? QByteArray{ "" } : QUrl::toPercentEncoding(" desc"));
+	if (cursor)
+	{
+		url = url + "&pageToken=" + QUrl::toPercentEncoding(*cursor);
+	}
+
+	QNetworkRequest req{ url };
+	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
 QNetworkRequest HttpRequestBuilder::messaging_service_post_message(const QString api_key, long long universe_id, const QString& topic)
 {
 	const QString url = base_url_messaging(universe_id) + "/topics/" + QUrl::toPercentEncoding(topic);
@@ -220,6 +239,11 @@ QNetworkRequest HttpRequestBuilder::universe_get_details(const QString& api_key,
 	QNetworkRequest req{ url };
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	return req;
+}
+
+QString HttpRequestBuilder::base_url_memory_store(const long long universe_id)
+{
+	return base_url_universe(universe_id) + "/memory-store";
 }
 
 QString HttpRequestBuilder::base_url_messaging(const long long universe_id)
