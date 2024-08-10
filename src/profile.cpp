@@ -619,6 +619,17 @@ void UserProfile::load_from_disk()
 									}
 									settings.endArray();
 
+									const int map_list_size = settings.beginReadArray("mem_sorted_maps");
+									{
+										for (int k = 0; k < map_list_size; k++)
+										{
+											settings.setArrayIndex(k);
+											const QString map_name = settings.value("name").toString();
+											this_universe->add_recent_mem_sorted_map(map_name);
+										}
+									}
+									settings.endArray();
+
 									const int topic_list_size = settings.beginReadArray("message_topics");
 									{
 										for (int k = 0; k < topic_list_size; k++)
@@ -713,6 +724,17 @@ void UserProfile::save_to_disk()
 							{
 								settings.setArrayIndex(next_hidden_array_index++);
 								settings.setValue("name", this_datastore_name);
+							}
+						}
+						settings.endArray();
+
+						settings.beginWriteArray("mem_sorted_maps");
+						{
+							int next_map_index = 0;
+							for (const QString& this_map : this_universe_profile->get_recent_mem_sorted_map_set())
+							{
+								settings.setArrayIndex(next_map_index++);
+								settings.setValue("name", this_map);
 							}
 						}
 						settings.endArray();
