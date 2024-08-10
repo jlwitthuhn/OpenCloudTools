@@ -10,7 +10,7 @@
 class GetMemoryStoreSortedMapItemListResponse
 {
 public:
-	static std::optional<GetMemoryStoreSortedMapItemListResponse> from_json(long long universe_id, const QString& datastore_name, bool ascending, const QString& json);
+	static std::optional<GetMemoryStoreSortedMapItemListResponse> from_json(long long universe_id, const QString& datastore_name, const QString& json);
 
 	const std::vector<MemoryStoreSortedMapItem>& get_items() const { return items; }
 	const std::optional<QString> get_next_page_token() const { return next_page_token; }

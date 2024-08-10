@@ -258,7 +258,7 @@ QNetworkRequest MemoryStoreSortedMapGetListRequest::build_request(std::optional<
 
 void MemoryStoreSortedMapGetListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	if (const std::optional<GetMemoryStoreSortedMapItemListResponse> response = GetMemoryStoreSortedMapItemListResponse::from_json(universe_id, map_name, ascending, body))
+	if (const std::optional<GetMemoryStoreSortedMapItemListResponse> response = GetMemoryStoreSortedMapItemListResponse::from_json(universe_id, map_name, body))
 	{
 		for (const MemoryStoreSortedMapItem& this_entry : response->get_items())
 		{

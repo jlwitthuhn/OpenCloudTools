@@ -46,7 +46,7 @@ static std::optional<QString> extract_string(const QJsonObject& obj, const QStri
 	return std::nullopt;
 }
 
-std::optional<GetMemoryStoreSortedMapItemListResponse> GetMemoryStoreSortedMapItemListResponse::from_json(const long long universe_id, const QString& map_name, const bool ascending, const QString& json)
+std::optional<GetMemoryStoreSortedMapItemListResponse> GetMemoryStoreSortedMapItemListResponse::from_json(const long long universe_id, const QString& map_name, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
