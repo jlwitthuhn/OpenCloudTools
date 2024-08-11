@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstddef>
-
 #include <optional>
 
 #include <QMainWindow>
@@ -11,7 +9,6 @@
 
 #include "profile.h"
 
-class QAction;
 class QComboBox;
 class QLineEdit;
 class QPushButton;

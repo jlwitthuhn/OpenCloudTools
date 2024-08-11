@@ -1,8 +1,14 @@
 #include "window_main_menu_bar.h"
 
+#include <string>
+
+#include <QtGlobal>
+#include <QAction>
 #include <QDesktopServices>
+#include <QList>
 #include <QMainWindow>
 #include <QMenu>
+#include <QString>
 #include <QStyleFactory>
 #include <QUrl>
 

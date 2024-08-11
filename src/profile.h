@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstddef>
-
 #include <functional>
 #include <map>
 #include <memory>
@@ -9,6 +7,7 @@
 #include <vector>
 #include <set>
 
+#include <QByteArray>
 #include <QObject>
 #include <QString>
 

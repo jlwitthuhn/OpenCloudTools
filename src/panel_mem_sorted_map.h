@@ -1,9 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
 #include <QWidget>
-
-#include "util_enum.h"
 
 class QCheckBox;
 class QLineEdit;

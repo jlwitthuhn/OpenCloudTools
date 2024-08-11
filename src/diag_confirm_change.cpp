@@ -1,5 +1,7 @@
 #include "diag_confirm_change.h"
 
+#include <memory>
+
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QHBoxLayout>

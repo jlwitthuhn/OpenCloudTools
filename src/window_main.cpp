@@ -4,19 +4,16 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include <Qt>
-#include <QtGlobal>
-#include <QAction>
+#include <QByteArray>
 #include <QComboBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLayout>
 #include <QLineEdit>
-#include <QList>
 #include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>

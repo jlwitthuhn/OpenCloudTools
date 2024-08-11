@@ -1,15 +1,18 @@
 #include "window_main_new.h"
 
-#include <QAction>
+#include <memory>
+
+#include <Qt>
 #include <QDockWidget>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMdiArea>
 #include <QPushButton>
+#include <QString>
 #include <QToolBar>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include "profile.h"
 #include "window_api_key_manage.h"

@@ -1,7 +1,7 @@
 #include "util_json.h"
 
 #include <sstream>
-#include <utility>
+#include <string>
 
 #include <QChar>
 #include <QJsonArray>

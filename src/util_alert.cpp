@@ -1,6 +1,7 @@
 #include "util_alert.h"
 
 #include <QMessageBox>
+#include <QString>
 
 void alert_error_blocking(const std::string& title, const std::string& message, QWidget* const parent)
 {

@@ -1,12 +1,11 @@
 #include "window_api_key_manage.h"
 
-#include <cstddef>
-
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include <Qt>
+#include <QByteArray>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -26,6 +25,7 @@
 #include "assert.h"
 #include "profile.h"
 #include "tooltip_text.h"
+#include "util_id.h"
 #include "window_main.h"
 
 static bool variant_is_byte_array(const QVariant& variant)

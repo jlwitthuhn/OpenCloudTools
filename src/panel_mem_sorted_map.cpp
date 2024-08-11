@@ -1,18 +1,31 @@
 #include "panel_mem_sorted_map.h"
 
+#include <cstddef>
+
+#include <memory>
+#include <set>
+#include <vector>
+
+#include <Qt>
+#include <QAbstractItemView>
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QList>
 #include <QListWidget>
+#include <QMargins>
 #include <QPushButton>
+#include <QSizePolicy>
 #include <QSplitter>
 #include <QTreeView>
+#include <QVBoxLayout>
 
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "gui_constants.h"
+#include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
 

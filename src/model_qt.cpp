@@ -4,6 +4,8 @@
 
 #include <QString>
 
+#include "util_json.h"
+
 MemoryStoreSortedMapQTableModel::MemoryStoreSortedMapQTableModel(QObject* parent, const std::vector<MemoryStoreSortedMapItem>& items) : QAbstractTableModel{ parent }, items{ items }
 {
 

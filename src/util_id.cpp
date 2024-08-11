@@ -4,6 +4,7 @@
 #include <limits>
 #include <random>
 
+#include <Qt>
 #include <QByteArray>
 
 #include "assert.h"

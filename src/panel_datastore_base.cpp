@@ -1,7 +1,5 @@
 #include "panel_datastore_base.h"
 
-#include <memory>
-
 #include <Qt>
 #include <QAbstractItemView>
 #include <QGroupBox>
