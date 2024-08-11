@@ -63,7 +63,7 @@ bool RandomId128::operator<(const RandomId128& other) const
 
 QByteArray RandomId128::as_q_byte_array() const
 {
-	QByteArray result{ static_cast<qsizetype>(id.size()), 0 };
+	QByteArray result(static_cast<QByteArray::size_type>(id.size()), '\0');
 	std::memcpy(result.data(), id.data(), id.size());
 	return result;
 }
