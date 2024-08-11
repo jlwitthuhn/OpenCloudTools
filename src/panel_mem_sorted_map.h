@@ -27,6 +27,7 @@ private:
 	void handle_recent_maps_changed();
 	void handle_save_recent_maps_toggled();
 	void handle_search_name_changed();
+	void handle_selected_map_changed();
 
 	void pressed_list_all(bool ascending);
 	void pressed_list_all_asc() { return pressed_list_all(true); };

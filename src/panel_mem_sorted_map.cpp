@@ -30,6 +30,7 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 			QGroupBox* const group_box = new QGroupBox{ "Sorted Maps", panel_index };
 			{
 				list_maps = new QListWidget{ group_box };
+				connect(list_maps, &QListWidget::itemSelectionChanged, this, &MemoryStoreSortedMapPanel::handle_selected_map_changed);
 
 				check_save_recent_maps = new QCheckBox{ "Add used maps", group_box };
 				connect(check_save_recent_maps, &QCheckBox::stateChanged, this, &MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled);
@@ -186,6 +187,15 @@ void MemoryStoreSortedMapPanel::handle_search_name_changed()
 	const bool enabled = selected_universe && edit_map_name->text().size() > 0;
 	button_list_all_asc->setEnabled(enabled);
 	button_list_all_desc->setEnabled(enabled);
+}
+
+void MemoryStoreSortedMapPanel::handle_selected_map_changed()
+{
+	const QList<QListWidgetItem*> selected = list_maps->selectedItems();
+	if (selected.size() == 1)
+	{
+		edit_map_name->setText(selected.first()->text());
+	}
 }
 
 void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
