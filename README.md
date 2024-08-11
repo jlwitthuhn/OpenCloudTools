@@ -12,9 +12,17 @@ Icon by Roblox user [Loominatrx](https://devforum.roblox.com/u/loominatrx/summar
 
 ## Features
 
+### Memory Store
+
+Sorted maps are currently the only supported type of memory store data. Queue support coming soon.
+
+#### Sorted Maps
+
+Read data in order from a [Memory Store Sorted Map](https://create.roblox.com/docs/cloud-services/memory-stores/sorted-map). Write support coming soon.
+
 ### Messaging Service
 
-Send messages that your game servers can consume using [MessagingService](https://create.roblox.com/docs/reference/engine/classes/MessagingService).
+Send messages that your game servers can consume using [MessagingService](https://create.roblox.com/docs/cloud-services/cross-server-messaging).
 
 ### Datastore Operations
 
@@ -51,34 +59,46 @@ Retrive data using Roblox's [Datastores](https://create.roblox.com/docs/cloud-se
 
 ## Creating an API Key
 
-To create an API key, go to the [Credentials page of the Roblox Creator Dashboard](https://create.roblox.com/credentials) and click the "Create API Key" button.
+To create an API key, go to the [Open Cloud API Keys page of the Roblox Creator Dashboard](https://create.roblox.com/dashboard/credentials) and click the "Create API Key" button.
 
-### Messaging Permissions
+### Memory Store
 
-The only permission available for Messaging is 'Publish', which is required to send messages.
+No top-level memory store permissions are supported yet.
 
-### Datastore Permissions
+#### Sorted Map
+
+These are self-explanatory:
+* `memory-store.sorted-map:read`
+* `memory-store.sorted-map:write`
+
+OpenCloudTools does not currently use the `write` permission for anything.
+
+### Messaging Permissions (messaging-service)
+
+The only permission available for Messaging is `publish`, which is required to send messages.
+
+### Datastore Permissions (universe-datastores)
 
 The bare minimum permissions that the key will need to list and view entries are:
-* List Datastores
-* List Entry Keys
-* Read Entry
+* `universe-datastores.control:list` - List datastores
+* `universe-datastores.objects:list` - List entries
+* `universe-datastores.objects:read` - Read entries
 
 A read-only key can also optionally include:
-* List Versions
-* Read Version
+* `universe-datastores.versions:list` - List versions
+* `universe-datastores.versions:read` - Read version
 
 The remaining permissions all allow modifying the datastore and you should give them out as needed:
-* Create Datastore
-* Create Entry
-* Update Entry
-* Delete Entry
+* `universe-datastores.control:create` - Create datastore
+* `universe-datastores.objects:create` - Create entry
+* `universe-datastores.objects:update` - Update entry
+* `universe-datastores.objects:delete` - Delete entry
 
-### Ordered Datastore Permissions
+### Ordered Datastore Permissions (ordered-data-stores)
 
 The only permissions that exist for Ordered Datastores are:
-* Read
-* Write
+* `universe.ordered-data-store.scope.entry:read`
+* `universe.ordered-data-store.scope.entry:write`
 
 ## Building
 
