@@ -79,7 +79,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	// Pop up key selection automatically on startup
 	pressed_change_key();
 
-	resize(900, 600);
+	resize(1100, 650);
 }
 
 void MyNewMainWindow::on_selected_api_key_changed()
