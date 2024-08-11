@@ -1,6 +1,7 @@
 #include "util_json.h"
 
 #include <sstream>
+#include <utility>
 
 #include <QChar>
 #include <QJsonArray>
@@ -70,10 +71,38 @@ JsonValue::JsonValue(const double input) :
 }
 
 JsonValue::JsonValue(const QString& input) :
-	type{ JsonDataType::Number },
+	type{ JsonDataType::String },
 	json_string{ encode_json_string(input) }
 {
 
+}
+
+QString JsonValue::get_short_display_string() const
+{
+	switch (type)
+	{
+		case JsonDataType::Bool:
+			return json_string;
+		case JsonDataType::Number:
+			return json_string;
+		case JsonDataType::String:
+			if (const std::optional<QString> the_string = decode_json_string(json_string))
+			{
+				return *the_string;
+			}
+			else
+			{
+				OCTASSERT(false);
+				return "[Json String Error]";
+			}
+		case JsonDataType::Array:
+			return "[Array]";
+		case JsonDataType::Object:
+			return "[Table]";
+		default:
+			OCTASSERT(false);
+			return "[Type Error]";
+	}
 }
 
 JsonValue::JsonValue(const JsonDataType type, const QString& json_string) :

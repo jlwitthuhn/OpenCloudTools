@@ -4,6 +4,79 @@
 
 #include <QString>
 
+MemoryStoreSortedMapQTableModel::MemoryStoreSortedMapQTableModel(QObject* parent, const std::vector<MemoryStoreSortedMapItem>& items) : QAbstractTableModel{ parent }, items{ items }
+{
+
+}
+
+QVariant MemoryStoreSortedMapQTableModel::data(const QModelIndex& index, const int role) const
+{
+	if (role == Qt::DisplayRole)
+	{
+		if (index.row() < static_cast<int>(items.size()))
+		{
+			if (index.column() == 0)
+			{
+				return items.at(index.row()).get_id();
+			}
+			else if (index.column() == 1)
+			{
+				return items.at(index.row()).get_display_string_sort_key();
+			}
+			else if (index.column() == 2)
+			{
+				return items.at(index.row()).get_display_numeric_sort_key();
+			}
+			else if (index.column() == 3)
+			{
+				return items.at(index.row()).get_value().get_short_display_string();
+			}
+			else if (index.column() == 4)
+			{
+				return items.at(index.row()).get_expire_time();
+			}
+		}
+	}
+	return QVariant{};
+}
+
+int MemoryStoreSortedMapQTableModel::columnCount(const QModelIndex&) const
+{
+	return 5;
+}
+
+int MemoryStoreSortedMapQTableModel::rowCount(const QModelIndex&) const
+{
+	return static_cast<int>(items.size());
+}
+
+QVariant MemoryStoreSortedMapQTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+	{
+		if (section == 0)
+		{
+			return "ID";
+		}
+		else if (section == 1)
+		{
+			return "String Sort";
+		}
+		else if (section == 2)
+		{
+			return "Numeric Sort";
+		}
+		else if (section == 3)
+		{
+			return "Value";
+		}
+		else if (section == 4)
+		{
+			return "Expiration";
+		}
+	}
+	return QVariant{};
+}
 
 OrderedDatastoreEntryQTableModel::OrderedDatastoreEntryQTableModel(QObject* parent, const std::vector<OrderedDatastoreEntryFull>& entries) : QAbstractTableModel{ parent }, entries{ entries }
 {

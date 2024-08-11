@@ -20,6 +20,8 @@ public:
 	JsonValue(bool input);
 	JsonValue(const QString& input);
 
+	QString get_short_display_string() const;
+
 private:
 	JsonValue(JsonDataType type, const QString& json_string);
 

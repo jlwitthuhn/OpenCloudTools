@@ -13,6 +13,7 @@
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "gui_constants.h"
+#include "model_qt.h"
 #include "profile.h"
 
 MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, const QString& api_key) :
@@ -98,7 +99,7 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 					layout_find_buttons->addWidget(edit_list_limit);
 				}
 
-				QTreeView* const tree_view = new QTreeView{ group_box };
+				tree_view = new QTreeView{ group_box };
 				tree_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 				tree_view->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 
@@ -121,6 +122,7 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
+	set_table_model(nullptr);
 	selected_universe_changed();
 	handle_search_name_changed();
 }
@@ -143,6 +145,19 @@ void MemoryStoreSortedMapPanel::selected_universe_changed()
 	}
 
 	handle_recent_maps_changed();
+	set_table_model(nullptr);
+}
+
+void MemoryStoreSortedMapPanel::set_table_model(MemoryStoreSortedMapQTableModel* const table_model)
+{
+	if (table_model)
+	{
+		tree_view->setModel(table_model);
+	}
+	else
+	{
+		tree_view->setModel(new MemoryStoreSortedMapQTableModel{ tree_view, std::vector<MemoryStoreSortedMapItem>{} });
+	}
 }
 
 void MemoryStoreSortedMapPanel::handle_recent_maps_changed()
@@ -195,6 +210,9 @@ void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 		{
 			selected_universe->add_recent_mem_sorted_map(map_name);
 		}
+
+		MemoryStoreSortedMapQTableModel* const model = new MemoryStoreSortedMapQTableModel{ tree_view, req->get_items() };
+		set_table_model(model);
 	}
 }
 

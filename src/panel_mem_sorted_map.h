@@ -9,6 +9,9 @@ class QCheckBox;
 class QLineEdit;
 class QListWidget;
 class QPushButton;
+class QTreeView;
+
+class MemoryStoreSortedMapQTableModel;
 
 class MemoryStoreSortedMapPanel : public QWidget
 {
@@ -19,6 +22,8 @@ public:
 	void selected_universe_changed();
 
 private:
+	void set_table_model(MemoryStoreSortedMapQTableModel* table_model);
+
 	void handle_recent_maps_changed();
 	void handle_save_recent_maps_toggled();
 	void handle_search_name_changed();
@@ -40,4 +45,5 @@ private:
 	QPushButton* button_list_all_asc = nullptr;
 	QPushButton* button_list_all_desc = nullptr;
 	QLineEdit* edit_list_limit = nullptr;
+	QTreeView* tree_view = nullptr;
 };

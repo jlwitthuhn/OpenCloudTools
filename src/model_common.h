@@ -34,6 +34,12 @@ public:
 		numeric_sort_key{ numeric_sort_key }
 	{}
 
+	const JsonValue& get_value() const { return value; }
+	const QString& get_id() const { return id; }
+	const QString& get_expire_time() const { return expire_time; }
+	QString get_display_string_sort_key() const { return string_sort_key ? *string_sort_key : QString{}; }
+	double get_display_numeric_sort_key() const { return numeric_sort_key ? *numeric_sort_key : 0.0; }
+
 private:
 	long long universe_id;
 	QString map_name;
