@@ -57,8 +57,6 @@ set(OPENCLOUDTOOLS_SRC
 	./src/model_qt.h
 	./src/panel_bulk_data.cpp
 	./src/panel_bulk_data.h
-	./src/panel_datastore_base.cpp
-	./src/panel_datastore_base.h
 	./src/panel_datastore_ordered.cpp
 	./src/panel_datastore_ordered.h
 	./src/panel_datastore_standard.cpp
