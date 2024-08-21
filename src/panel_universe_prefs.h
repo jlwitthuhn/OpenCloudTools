@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QWidget>
 
@@ -7,13 +9,15 @@ class QLineEdit;
 class QListWidget;
 class QPushButton;
 
+class UniverseProfile;
+
 class UniversePreferencesPanel : public QWidget
 {
 	Q_OBJECT
 public:
 	UniversePreferencesPanel(QWidget* parent);
 
-	void selected_universe_changed();
+	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void handle_hidden_datastores_changed();
@@ -21,6 +25,8 @@ private:
 
 	void pressed_add();
 	void pressed_remove();
+
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	QListWidget* hidden_datastore_list = nullptr;
 
@@ -32,12 +38,14 @@ class UniversePreferencesAddHiddenDatastoreWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	UniversePreferencesAddHiddenDatastoreWindow(QWidget* parent);
+	UniversePreferencesAddHiddenDatastoreWindow(QWidget* parent, const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void handle_text_changed();
 
 	void pressed_add();
+
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	QLineEdit* name_edit = nullptr;
 

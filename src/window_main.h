@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 
 #include <QMainWindow>
@@ -22,6 +23,8 @@ class MessagingServicePanel;
 class OrderedDatastorePanel;
 class UniversePreferencesPanel;
 
+class UniverseProfile;
+
 class MyMainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -31,13 +34,15 @@ public:
 private:
 	void selected_universe_combo_changed();
 
+	std::shared_ptr<UniverseProfile> get_selected_universe() const;
+
 	void pressed_add_universe();
 	void pressed_edit_universe();
 	void pressed_remove_universe();
 	void pressed_change_key();
 
 	void handle_tab_changed(int index);
-	void handle_universe_list_changed(std::optional<UniverseProfile::Id> universe_id);
+	void handle_universe_list_changed(std::optional<UniverseProfile::Id> new_universe);
 
 	QString api_key;
 
@@ -61,7 +66,7 @@ class MainWindowAddUniverseWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MainWindowAddUniverseWindow(QWidget* parent, const QString& api_key, bool edit_current);
+	explicit MainWindowAddUniverseWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& existing_universe);
 
 private:
 	bool id_is_valid() const;
@@ -71,9 +76,9 @@ private:
 	void pressed_add();
 	void pressed_fetch();
 
-	bool edit_mode = false;
 
 	QString api_key;
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	QLineEdit* name_edit = nullptr;
 	QLineEdit* id_edit = nullptr;

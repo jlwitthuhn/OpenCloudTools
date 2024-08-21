@@ -200,15 +200,6 @@ std::shared_ptr<UniverseProfile> ApiKeyProfile::get_universe_profile_by_id(const
 	return universe_iter->second;
 }
 
-std::shared_ptr<UniverseProfile> ApiKeyProfile::get_selected_universe() const
-{
-	if (!selected_universe_id)
-	{
-		return nullptr;
-	}
-	return get_universe_profile_by_id(*selected_universe_id);
-}
-
 std::optional<UniverseProfile::Id> ApiKeyProfile::add_universe(const QString& universe_name, long long universe_id)
 {
 	if (universe_name_available(universe_name) == false || universe_id_available(universe_id) == false)
@@ -245,34 +236,6 @@ void ApiKeyProfile::delete_universe(const UniverseProfile::Id universe_id)
 	}
 	universes.erase(selected_universe_iter);
 
-	if (selected_universe_id && *selected_universe_id == id)
-	{
-		universe_list_changed(std::nullopt);
-	}
-	else
-	{
-		universe_list_changed(selected_universe_id);
-	}
-}
-
-void ApiKeyProfile::select_universe(const std::optional<UniverseProfile::Id> universe_id)
-{
-	if (universe_id && universes.count(*universe_id))
-	{
-		selected_universe_id = universe_id;
-	}
-	else
-	{
-		selected_universe_id = std::nullopt;
-	}
-}
-
-void ApiKeyProfile::delete_selected_universe()
-{
-	if (selected_universe_id)
-	{
-		delete_universe(*selected_universe_id);
-	}
 	emit universe_list_changed(std::nullopt);
 }
 
@@ -314,18 +277,6 @@ std::shared_ptr<ApiKeyProfile> UserProfile::get_selected_api_key()
 		return user_profile.get_api_key_by_id(*opt_id);
 	}
 	return nullptr;
-}
-
-std::shared_ptr<UniverseProfile> UserProfile::get_selected_universe()
-{
-	if (const std::shared_ptr<const ApiKeyProfile> selected_key = get_selected_api_key())
-	{
-		return selected_key->get_selected_universe();
-	}
-	else
-	{
-		return nullptr;
-	}
 }
 
 void UserProfile::set_qt_theme(const QString& theme_name)

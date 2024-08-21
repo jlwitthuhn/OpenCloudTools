@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <QObject>
@@ -19,13 +20,15 @@ class QTreeView;
 class StandardDatastoreEntryName;
 class StandardDatastoreEntryQTableModel;
 
+class UniverseProfile;
+
 class StandardDatastorePanel : public QWidget
 {
 	Q_OBJECT
 public:
 	StandardDatastorePanel(QWidget* parent, const QString& api_key);
 
-	void selected_universe_changed();
+	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void set_datastore_entry_model(StandardDatastoreEntryQTableModel* entry_model);
@@ -63,6 +66,7 @@ private:
 	void refresh_datastore_list();
 
 	QString api_key;
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	// Index bar
 	QListWidget* list_datastore_index = nullptr;

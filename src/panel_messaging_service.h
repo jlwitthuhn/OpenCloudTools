@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -10,13 +12,15 @@ class QListWidget;
 class QPushButton;
 class QTextEdit;
 
+class UniverseProfile;
+
 class MessagingServicePanel : public QWidget
 {
 	Q_OBJECT
 public:
 	MessagingServicePanel(QWidget* parent, const QString& api_key);
 
-	void selected_universe_changed();
+	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void handle_add_used_topics_toggled();
@@ -37,6 +41,8 @@ private:
 	QLineEdit* topic_edit = nullptr;
 	QTextEdit* message_edit = nullptr;
 	QPushButton* send_button = nullptr;
+
+	std::weak_ptr<UniverseProfile> attached_universe;
 };
 
 
@@ -44,7 +50,7 @@ class MessagingServiceAddTopicWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	MessagingServiceAddTopicWindow(QWidget* parent);
+	MessagingServiceAddTopicWindow(QWidget* parent, const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void handle_text_changed();
@@ -53,5 +59,7 @@ private:
 
 	QLineEdit* name_edit = nullptr;
 
-	QPushButton* add_button;
+	QPushButton* add_button = nullptr;
+
+	std::weak_ptr<UniverseProfile> attached_universe;
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -12,13 +14,15 @@ class QPoint;
 class QTabWidget;
 class QTreeView;
 
+class UniverseProfile;
+
 class BaseDatastorePanel : public QWidget
 {
 	Q_OBJECT
 public:
 	BaseDatastorePanel(QWidget* parent, const QString& api_key);
 
-	virtual void selected_universe_changed();
+	virtual void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 protected:
 	void show_blocking_error(const QString& title, const QString& message);

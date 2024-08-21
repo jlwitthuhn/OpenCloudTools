@@ -137,21 +137,22 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 	layout->addWidget(splitter);
 
 	set_table_model(nullptr);
-	selected_universe_changed();
+	change_universe(nullptr);
 	handle_search_name_changed();
 }
 
-void MemoryStoreSortedMapPanel::selected_universe_changed()
+void MemoryStoreSortedMapPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
+	attached_universe = universe;
+
 	list_maps->clear();
 	edit_map_name->setText("");
 
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool enabled = selected_universe != nullptr;
+	const bool enabled = static_cast<bool>(universe);
 	check_save_recent_maps->setEnabled(enabled);
-	if (enabled)
+	if (universe)
 	{
-		check_save_recent_maps->setChecked(selected_universe->get_save_recent_mem_sorted_maps());
+		check_save_recent_maps->setChecked(universe->get_save_recent_mem_sorted_maps());
 	}
 	else
 	{
@@ -177,9 +178,9 @@ void MemoryStoreSortedMapPanel::set_table_model(MemoryStoreSortedMapQTableModel*
 void MemoryStoreSortedMapPanel::handle_recent_maps_changed()
 {
 	list_maps->clear();
-	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
-		for (const QString& this_map : selected_universe->get_recent_mem_sorted_map_set())
+		for (const QString& this_map : universe->get_recent_mem_sorted_map_set())
 		{
 			list_maps->addItem(this_map);
 		}
@@ -188,16 +189,16 @@ void MemoryStoreSortedMapPanel::handle_recent_maps_changed()
 
 void MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled()
 {
-	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
-		selected_universe->set_save_recent_mem_sorted_maps(check_save_recent_maps->isChecked());
+		universe->set_save_recent_mem_sorted_maps(check_save_recent_maps->isChecked());
 	}
 }
 
 void MemoryStoreSortedMapPanel::handle_search_name_changed()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool enabled = selected_universe && edit_map_name->text().size() > 0;
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	const bool enabled = universe && edit_map_name->text().size() > 0;
 	button_list_all_asc->setEnabled(enabled);
 	button_list_all_desc->setEnabled(enabled);
 }
@@ -213,10 +214,10 @@ void MemoryStoreSortedMapPanel::handle_selected_map_changed()
 
 void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 {
-	const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe && edit_map_name->text().trimmed().size() > 0)
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (universe && edit_map_name->text().trimmed().size() > 0)
 	{
-		const long long universe_id = selected_universe->get_universe_id();
+		const long long universe_id = universe->get_universe_id();
 		const QString map_name = edit_map_name->text().trimmed();
 		const size_t result_limit = edit_list_limit->text().trimmed().toULongLong();
 
@@ -231,7 +232,7 @@ void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 
 		if (check_save_recent_maps->isChecked() && req->get_items().size() > 0)
 		{
-			selected_universe->add_recent_mem_sorted_map(map_name);
+			universe->add_recent_mem_sorted_map(map_name);
 		}
 
 		MemoryStoreSortedMapQTableModel* const model = new MemoryStoreSortedMapQTableModel{ tree_view, req->get_items() };
@@ -241,12 +242,12 @@ void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 
 void MemoryStoreSortedMapPanel::pressed_remove_recent_map()
 {
-	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
 		const QList<QListWidgetItem*> selected = list_maps->selectedItems();
 		if (selected.size() == 1)
 		{
-			selected_universe->remove_recent_mem_sorted_map(selected.front()->text());
+			universe->remove_recent_mem_sorted_map(selected.front()->text());
 		}
 	}
 }

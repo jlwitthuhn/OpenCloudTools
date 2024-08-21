@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -12,13 +14,15 @@ class QTreeView;
 
 class MemoryStoreSortedMapQTableModel;
 
+class UniverseProfile;
+
 class MemoryStoreSortedMapPanel : public QWidget
 {
 	Q_OBJECT
 public:
 	MemoryStoreSortedMapPanel(QWidget* parent, const QString& api_key);
 
-	void selected_universe_changed();
+	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void set_table_model(MemoryStoreSortedMapQTableModel* table_model);
@@ -34,6 +38,7 @@ private:
 	void pressed_remove_recent_map();
 
 	QString api_key;
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	// Index panel
 	QListWidget* list_maps = nullptr;

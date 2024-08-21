@@ -148,21 +148,21 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 	}
 
 	clear_model();
-	selected_universe_changed();
+	change_universe(nullptr);
 	handle_search_text_changed();
 	handle_add_entry_text_changed();
 }
 
-void OrderedDatastorePanel::selected_universe_changed()
+void OrderedDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
-	BaseDatastorePanel::selected_universe_changed();
+	attached_universe = universe;
+	BaseDatastorePanel::change_universe(universe);
 
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool enabled = selected_universe != nullptr;
+	const bool enabled = static_cast<bool>(universe);
 	save_recent_datastores_check->setEnabled(enabled);
 	if (enabled)
 	{
-		save_recent_datastores_check->setChecked(selected_universe->get_save_recent_ordered_datastores());
+		save_recent_datastores_check->setChecked(universe->get_save_recent_ordered_datastores());
 	}
 	else
 	{
@@ -240,8 +240,8 @@ void OrderedDatastorePanel::handle_datastore_entry_double_clicked(const QModelIn
 void OrderedDatastorePanel::handle_search_text_changed()
 {
 	BaseDatastorePanel::handle_search_text_changed();
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool enabled = search_datastore_name_edit->text().size() > 0 && selected_universe;
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	const bool enabled = search_datastore_name_edit->text().size() > 0 && universe;
 	find_ascending_button->setEnabled(enabled);
 	find_descending_button->setEnabled(enabled);
 }
@@ -273,17 +273,17 @@ void OrderedDatastorePanel::handle_selected_datastore_entry_changed()
 
 void OrderedDatastorePanel::handle_add_entry_text_changed()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool submit_enabled = selected_universe && add_entry_datastore_name_edit->text().size() > 0 && add_entry_key_name_edit->text().size() > 0 && add_entry_value_edit->text().size() > 0;
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	const bool submit_enabled = universe && add_entry_datastore_name_edit->text().size() > 0 && add_entry_key_name_edit->text().size() > 0 && add_entry_value_edit->text().size() > 0;
 	add_entry_submit_button->setEnabled(submit_enabled);
 }
 
 void OrderedDatastorePanel::handle_recent_datastores_changed()
 {
 	select_datastore_list->clear();
-	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
-		for (const QString& this_topic : selected_universe->get_recent_ordered_datastore_set())
+		for (const QString& this_topic : universe->get_recent_ordered_datastore_set())
 		{
 			select_datastore_list->addItem(this_topic);
 		}
@@ -292,9 +292,9 @@ void OrderedDatastorePanel::handle_recent_datastores_changed()
 
 void OrderedDatastorePanel::handle_save_recent_datastores_toggled()
 {
-	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
-		selected_universe->set_save_recent_ordered_datastores(save_recent_datastores_check->isChecked());
+		universe->set_save_recent_ordered_datastores(save_recent_datastores_check->isChecked());
 	}
 }
 
@@ -305,24 +305,20 @@ void OrderedDatastorePanel::clear_model()
 
 void OrderedDatastorePanel::refresh_datastore_list()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe)
+	for (int i = 0; i < select_datastore_list->count(); i++)
 	{
-		for (int i = 0; i < select_datastore_list->count(); i++)
-		{
-			QListWidgetItem* const this_item = select_datastore_list->item(i);
-			const bool matches_filter = this_item->text().contains(select_datastore_name_filter_edit->text());
-			this_item->setHidden(!matches_filter);
-		}
+		QListWidgetItem* const this_item = select_datastore_list->item(i);
+		const bool matches_filter = this_item->text().contains(select_datastore_name_filter_edit->text());
+		this_item->setHidden(!matches_filter);
 	}
 }
 
 void OrderedDatastorePanel::pressed_find(const bool ascending)
 {
-	const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe && search_datastore_name_edit->text().trimmed().size() > 0)
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (universe && search_datastore_name_edit->text().trimmed().size() > 0)
 	{
-		const long long universe_id = selected_universe->get_universe_id();
+		const long long universe_id = universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = search_datastore_name_edit->text().trimmed();
@@ -345,7 +341,7 @@ void OrderedDatastorePanel::pressed_find(const bool ascending)
 
 			if (save_recent_datastores_check->isChecked() && req->get_entries().size() > 0)
 			{
-				selected_universe->add_recent_ordered_datastore(datastore_name);
+				universe->add_recent_ordered_datastore(datastore_name);
 			}
 
 			OrderedDatastoreEntryQTableModel* const qt_model = new OrderedDatastoreEntryQTableModel{ datastore_entry_tree, req->get_entries() };
@@ -366,12 +362,12 @@ void OrderedDatastorePanel::pressed_find_descending()
 
 void OrderedDatastorePanel::pressed_remove_datastore()
 {
-	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
 		QList<QListWidgetItem*> selected = select_datastore_list->selectedItems();
 		if (selected.size() == 1)
 		{
-			selected_universe->remove_recent_ordered_datastore(selected.front()->text());
+			universe->remove_recent_ordered_datastore(selected.front()->text());
 		}
 	}
 }
@@ -387,7 +383,8 @@ void OrderedDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	if (UserProfile::get_selected_universe() == nullptr)
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
 	{
 		return;
 	}
@@ -399,7 +396,7 @@ void OrderedDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+	const long long universe_id = universe->get_universe_id();
 	const QString datastore_name = add_entry_datastore_name_edit->text();
 	const QString scope = add_entry_scope_edit->text().size() > 0 ? add_entry_scope_edit->text() : "global";
 	const QString key_name = add_entry_key_name_edit->text();

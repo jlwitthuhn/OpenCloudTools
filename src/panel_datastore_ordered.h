@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 
@@ -13,6 +15,7 @@ class QPushButton;
 class QWidget;
 
 class OrderedDatastoreEntryQTableModel;
+class UniverseProfile;
 
 class OrderedDatastorePanel : public BaseDatastorePanel
 {
@@ -20,7 +23,7 @@ class OrderedDatastorePanel : public BaseDatastorePanel
 public:
 	OrderedDatastorePanel(QWidget* parent, const QString& api_key);
 
-	virtual void selected_universe_changed() override;
+	virtual void change_universe(const std::shared_ptr<UniverseProfile>& universe) override;
 
 private:
 	void set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model);
@@ -50,6 +53,8 @@ private:
 	void pressed_delete();
 	void pressed_edit();
 	void pressed_increment();
+
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	// Left bar
 	QCheckBox* save_recent_datastores_check = nullptr;

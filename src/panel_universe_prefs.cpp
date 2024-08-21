@@ -61,9 +61,11 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ p
 	handle_list_selection_changed();
 }
 
-void UniversePreferencesPanel::selected_universe_changed()
+void UniversePreferencesPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
-	button_add->setEnabled(UserProfile::get_selected_universe() != nullptr);
+	attached_universe = universe;
+	const bool enabled = static_cast<bool>(universe);
+	button_add->setEnabled(enabled);
 	handle_hidden_datastores_changed();
 }
 
@@ -75,9 +77,9 @@ void UniversePreferencesPanel::handle_hidden_datastores_changed()
 		delete this_item;
 	}
 
-	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
-		std::set<QString> datastore_names = selected_universe->get_hidden_datastore_set();
+		std::set<QString> datastore_names = universe->get_hidden_datastore_set();
 		for (const QString& this_datastore_name : datastore_names)
 		{
 			QListWidgetItem* this_item = new QListWidgetItem(hidden_datastore_list);
@@ -95,24 +97,34 @@ void UniversePreferencesPanel::handle_list_selection_changed()
 
 void UniversePreferencesPanel::pressed_add()
 {
-	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
-		UniversePreferencesAddHiddenDatastoreWindow* hide_datastore_window = new UniversePreferencesAddHiddenDatastoreWindow{ this };
+		UniversePreferencesAddHiddenDatastoreWindow* hide_datastore_window = new UniversePreferencesAddHiddenDatastoreWindow{ this, universe };
 		hide_datastore_window->show();
 	}
 }
 
 void UniversePreferencesPanel::pressed_remove()
 {
-	QList<QListWidgetItem*> selected = hidden_datastore_list->selectedItems();
-	if (selected.size() == 1)
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
 	{
-		QString to_remove = selected.front()->text();
-		UserProfile::get_selected_universe()->remove_hidden_datastore(to_remove);
+		return;
 	}
+
+	QList<QListWidgetItem*> selected = hidden_datastore_list->selectedItems();
+	if (selected.size() != 1)
+	{
+		return;
+	}
+
+	QString to_remove = selected.front()->text();
+	universe->remove_hidden_datastore(to_remove);
 }
 
-UniversePreferencesAddHiddenDatastoreWindow::UniversePreferencesAddHiddenDatastoreWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
+UniversePreferencesAddHiddenDatastoreWindow::UniversePreferencesAddHiddenDatastoreWindow(QWidget* parent, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent, Qt::Window },
+	attached_universe{ universe }
 {
 	setWindowTitle("Hide datastore");
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -161,6 +173,9 @@ void UniversePreferencesAddHiddenDatastoreWindow::handle_text_changed()
 
 void UniversePreferencesAddHiddenDatastoreWindow::pressed_add()
 {
-	UserProfile::get_selected_universe()->add_hidden_datastore(name_edit->text());;
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
+	{
+		universe->add_hidden_datastore(name_edit->text());;
+	}
 	close();
 }

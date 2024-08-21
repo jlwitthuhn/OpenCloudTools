@@ -83,21 +83,21 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 	QHBoxLayout* layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
-	selected_universe_changed();
+	change_universe(nullptr);
 }
 
-void MessagingServicePanel::selected_universe_changed()
+void MessagingServicePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool enabled = selected_universe != nullptr;
-	if (selected_universe)
+	attached_universe = universe;
+	if (universe)
 	{
-		add_used_topics_check->setChecked(selected_universe->get_save_recent_message_topics());
+		add_used_topics_check->setChecked(universe->get_save_recent_message_topics());
 	}
 	else
 	{
 		add_used_topics_check->setChecked(false);
 	}
+	const bool enabled = static_cast<bool>(universe);
 	add_used_topics_check->setEnabled(enabled);
 	add_topic_button->setEnabled(enabled);
 	remove_topic_button->setEnabled(enabled);
@@ -107,18 +107,18 @@ void MessagingServicePanel::selected_universe_changed()
 
 void MessagingServicePanel::handle_add_used_topics_toggled()
 {
-	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
-		selected_universe->set_save_recent_message_topics(add_used_topics_check->isChecked());
+		universe->set_save_recent_message_topics(add_used_topics_check->isChecked());
 	}
 }
 
 void MessagingServicePanel::handle_recent_topic_list_changed()
 {
 	topic_history_list->clear();
-	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
-		for (const QString& this_topic : selected_universe->get_recent_topic_set())
+		for (const QString& this_topic : universe->get_recent_topic_set())
 		{
 			topic_history_list->addItem(this_topic);
 		}
@@ -136,30 +136,30 @@ void MessagingServicePanel::handle_selected_topic_changed()
 
 void MessagingServicePanel::pressed_add_topic()
 {
-	if (const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
-		MessagingServiceAddTopicWindow* add_window = new MessagingServiceAddTopicWindow{ this };
+		MessagingServiceAddTopicWindow* const add_window = new MessagingServiceAddTopicWindow{ this, universe };
 		add_window->show();
 	}
 }
 
 void MessagingServicePanel::pressed_remove_topic()
 {
-	if (const std::shared_ptr<UniverseProfile> selected_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
 		QList<QListWidgetItem*> selected = topic_history_list->selectedItems();
 		if (selected.size() == 1)
 		{
-			selected_universe->remove_recent_topic(selected.front()->text());
+			universe->remove_recent_topic(selected.front()->text());
 		}
 	}
 }
 
 void MessagingServicePanel::pressed_send()
 {
-	if (const std::shared_ptr<UniverseProfile> this_universe = UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> this_universe = attached_universe.lock())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+		const long long universe_id = this_universe->get_universe_id();
 
 		const QString topic = topic_edit->text();
 		if (topic.size() == 0)
@@ -200,7 +200,9 @@ void MessagingServicePanel::pressed_send()
 	}
 }
 
-MessagingServiceAddTopicWindow::MessagingServiceAddTopicWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
+MessagingServiceAddTopicWindow::MessagingServiceAddTopicWindow(QWidget* const parent, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent, Qt::Window },
+	attached_universe{ universe }
 {
 	setWindowTitle("Add Topic");
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -249,6 +251,9 @@ void MessagingServiceAddTopicWindow::handle_text_changed()
 
 void MessagingServiceAddTopicWindow::pressed_add()
 {
-	UserProfile::get_selected_universe()->add_recent_topic(name_edit->text());;
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
+	{
+		universe->add_recent_topic(name_edit->text());
+	}
 	close();
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -14,11 +15,13 @@ class QListWidget;
 class QPushButton;
 class QVBoxLayout;
 
+class UniverseProfile;
+
 class DatastoreBulkOperationWindow : public QWidget
 {
 	Q_OBJECT
 protected:
-	DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+	DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names);
 
 	virtual void pressed_submit() = 0;
 
@@ -31,7 +34,7 @@ protected:
 	void pressed_toggle_filter();
 
 	QString api_key;
-	long long universe_id = 0;
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	QWidget* right_bar = nullptr;
 	QVBoxLayout* right_bar_layout = nullptr;
@@ -51,7 +54,7 @@ class DatastoreBulkDeleteWindow : public DatastoreBulkOperationWindow
 {
 	Q_OBJECT
 public:
-	DatastoreBulkDeleteWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+	DatastoreBulkDeleteWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names);
 
 private:
 	virtual void pressed_submit() override;
@@ -65,7 +68,7 @@ class DatastoreBulkDownloadWindow : public DatastoreBulkOperationWindow
 {
 	Q_OBJECT
 public:
-	DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+	DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names);
 
 private:
 	virtual void pressed_submit() override;
@@ -75,7 +78,7 @@ class DatastoreBulkUndeleteWindow : public DatastoreBulkOperationWindow
 {
 	Q_OBJECT
 public:
-	DatastoreBulkUndeleteWindow(QWidget* parent, const QString& api_key, long long universe_id, const std::vector<QString>& datastore_names);
+	DatastoreBulkUndeleteWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names);
 
 private:
 	virtual void pressed_submit() override;

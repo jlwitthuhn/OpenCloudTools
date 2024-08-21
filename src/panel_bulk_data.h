@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -7,13 +9,15 @@
 class QCheckBox;
 class QPushButton;
 
+class UniverseProfile;
+
 class BulkDataPanel : public QWidget
 {
 	Q_OBJECT
 public:
 	BulkDataPanel(QWidget* parent, const QString& api_key);
 
-	void selected_universe_changed();
+	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void handle_datastore_danger_toggle();
@@ -25,6 +29,7 @@ private:
 	void pressed_upload();
 
 	QString api_key;
+	std::weak_ptr<UniverseProfile> attached_universe;
 
 	QPushButton* datastore_download_button = nullptr;
 	QPushButton* datastore_download_resume_button = nullptr;

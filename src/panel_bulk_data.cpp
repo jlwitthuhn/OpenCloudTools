@@ -27,6 +27,10 @@
 #include "window_datastore_bulk_op.h"
 #include "window_datastore_bulk_op_progress.h"
 
+#ifdef OCT_NEW_GUI
+#include "assert.h"
+#endif
+
 BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	QWidget{ parent },
 	api_key{ api_key }
@@ -88,13 +92,16 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	layout->addWidget(container_widget);
 	layout->addStretch();
 
-	selected_universe_changed();
-	handle_datastore_danger_toggle();
+	change_universe(nullptr);
 }
 
-void BulkDataPanel::selected_universe_changed()
+void BulkDataPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
-	const bool enabled = UserProfile::get_selected_universe() != nullptr;
+#ifdef OCT_NEW_GUI
+	OCTASSERT(false);
+#endif
+	attached_universe = universe;
+	const bool enabled = static_cast<bool>(universe);
 	datastore_download_button->setEnabled(enabled);
 	danger_buttons_check->setEnabled(enabled);
 	danger_buttons_check->setCheckState(Qt::Unchecked);
@@ -111,28 +118,31 @@ void BulkDataPanel::handle_datastore_danger_toggle()
 
 void BulkDataPanel::pressed_delete()
 {
-	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
+	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
-
-		const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
-		OperationInProgressDialog diag{ this, req };
-		diag.exec();
-
-		const std::vector<QString> datastores = req->get_datastore_names();
-		if (datastores.size() > 0)
+		if (danger_buttons_check->isChecked())
 		{
-			DatastoreBulkDeleteWindow* delete_window = new DatastoreBulkDeleteWindow{ this, api_key, universe_id, datastores };
-			delete_window->show();
+			const long long universe_id = universe_profile->get_universe_id();
+
+			const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
+			OperationInProgressDialog diag{ this, req };
+			diag.exec();
+
+			const std::vector<QString> datastores = req->get_datastore_names();
+			if (datastores.size() > 0)
+			{
+				DatastoreBulkDeleteWindow* delete_window = new DatastoreBulkDeleteWindow{ this, api_key, universe_profile, datastores };
+				delete_window->show();
+			}
 		}
 	}
 }
 
 void BulkDataPanel::pressed_download()
 {
-	if (UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+		const long long universe_id = universe_profile->get_universe_id();
 
 		const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
 		OperationInProgressDialog diag{ this, req };
@@ -141,7 +151,7 @@ void BulkDataPanel::pressed_download()
 		const std::vector<QString> datastores = req->get_datastore_names();
 		if (datastores.size() > 0)
 		{
-			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_id, datastores };
+			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_profile, datastores };
 			download_window->show();
 		}
 	}
@@ -149,7 +159,7 @@ void BulkDataPanel::pressed_download()
 
 void BulkDataPanel::pressed_download_resume()
 {
-	if (UserProfile::get_selected_universe())
+	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 	{
 		const QString file_name = QFileDialog::getOpenFileName(this, "Resume download", "", "sqlite3 databases (*.sqlite3)");
 		if (file_name.trimmed().length() == 0)
@@ -167,7 +177,7 @@ void BulkDataPanel::pressed_download_resume()
 			}
 		}
 
-		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+		const long long universe_id = universe_profile->get_universe_id();
 
 		std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::open_from_path(file_name.toStdString());
 		if (writer->is_correct_schema() == false)
@@ -189,9 +199,9 @@ void BulkDataPanel::pressed_download_resume()
 
 void BulkDataPanel::pressed_undelete()
 {
-	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
+	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 	{
-		const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+		const long long universe_id = universe_profile->get_universe_id();
 
 		const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
 		OperationInProgressDialog diag{ this, req };
@@ -200,7 +210,7 @@ void BulkDataPanel::pressed_undelete()
 		const std::vector<QString> datastores = req->get_datastore_names();
 		if (datastores.size() > 0)
 		{
-			DatastoreBulkUndeleteWindow* undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_id, datastores };
+			DatastoreBulkUndeleteWindow* undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_profile, datastores };
 			undelete_window->show();
 		}
 	}
@@ -208,43 +218,46 @@ void BulkDataPanel::pressed_undelete()
 
 void BulkDataPanel::pressed_upload()
 {
-	if (UserProfile::get_selected_universe() && danger_buttons_check->isChecked())
+	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 	{
-		ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkUpload };
-		bool confirmed = static_cast<bool>(confirm_dialog->exec());
-		if (confirmed)
+		if (danger_buttons_check->isChecked())
 		{
-			const QString load_file_path = QFileDialog::getOpenFileName(this, "Select dump to upload...", "", "sqlite3 databases (*.sqlite3)");
-			if (load_file_path.trimmed().size() > 0)
+			ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkUpload };
+			bool confirmed = static_cast<bool>(confirm_dialog->exec());
+			if (confirmed)
 			{
-				std::optional<std::vector<StandardDatastoreEntryFull>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
-				if (loaded_data)
+				const QString load_file_path = QFileDialog::getOpenFileName(this, "Select dump to upload...", "", "sqlite3 databases (*.sqlite3)");
+				if (load_file_path.trimmed().size() > 0)
 				{
-					std::vector<std::shared_ptr<DataRequest>> shared_requests;
-
-					for (const StandardDatastoreEntryFull& this_entry : *loaded_data)
+					std::optional<std::vector<StandardDatastoreEntryFull>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
+					if (loaded_data)
 					{
-						shared_requests.push_back(std::make_shared<StandardDatastoreEntryPostSetRequest>(
-							api_key,
-							this_entry.get_universe_id(),
-							this_entry.get_datastore_name(),
-							this_entry.get_scope(),
-							this_entry.get_key_name(),
-							this_entry.get_userids(),
-							this_entry.get_attributes(),
-							this_entry.get_data_raw()
-						));
-					}
+						std::vector<std::shared_ptr<DataRequest>> shared_requests;
 
-					OperationInProgressDialog diag{ this, shared_requests };
-					diag.exec();
-				}
-				else
-				{
-					QMessageBox* msg_box = new QMessageBox{ this };
-					msg_box->setWindowTitle("Error");
-					msg_box->setText("Failed to open database.");
-					msg_box->exec();
+						for (const StandardDatastoreEntryFull& this_entry : *loaded_data)
+						{
+							shared_requests.push_back(std::make_shared<StandardDatastoreEntryPostSetRequest>(
+								api_key,
+								this_entry.get_universe_id(),
+								this_entry.get_datastore_name(),
+								this_entry.get_scope(),
+								this_entry.get_key_name(),
+								this_entry.get_userids(),
+								this_entry.get_attributes(),
+								this_entry.get_data_raw()
+							));
+						}
+
+						OperationInProgressDialog diag{ this, shared_requests };
+						diag.exec();
+					}
+					else
+					{
+						QMessageBox* msg_box = new QMessageBox{ this };
+						msg_box->setWindowTitle("Error");
+						msg_box->setText("Failed to open database.");
+						msg_box->exec();
+					}
 				}
 			}
 		}

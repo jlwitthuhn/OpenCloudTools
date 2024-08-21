@@ -32,10 +32,10 @@
 #include "sqlite_wrapper.h"
 #include "window_datastore_bulk_op_progress.h"
 
-DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
+DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
-	universe_id{ universe_id }
+	attached_universe{ universe }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
@@ -148,14 +148,14 @@ std::vector<QString> DatastoreBulkOperationWindow::get_selected_datastores() con
 
 void DatastoreBulkOperationWindow::handle_show_hidden_toggled()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe)
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	if (universe)
 	{
 		const bool show_hidden = datastore_list_show_hidden_check->isChecked();
 		for (int i = 0; i < datastore_list->count(); i++)
 		{
 			QListWidgetItem* this_item = datastore_list->item(i);
-			const bool hide = show_hidden ? false : static_cast<bool>(selected_universe->get_hidden_datastore_set().count(this_item->text()));
+			const bool hide = show_hidden ? false : static_cast<bool>(universe->get_hidden_datastore_set().count(this_item->text()));
 			this_item->setHidden(hide);
 			if (hide)
 			{
@@ -192,8 +192,8 @@ void DatastoreBulkOperationWindow::pressed_toggle_filter()
 	filter_key_prefix_edit->setEnabled(filter_enabled);
 }
 
-DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
-	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
+DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names) :
+	DatastoreBulkOperationWindow{ parent, api_key, universe, datastore_names }
 {
 	setWindowTitle("Delete Datastores");
 
@@ -226,6 +226,14 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 
 void DatastoreBulkDeleteWindow::pressed_submit()
 {
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		OCTASSERT(false);
+		close();
+		return;
+	}
+
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
 	{
@@ -238,7 +246,17 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 			const bool confirm_count_before_delete = confirm_count_before_delete_check->isChecked();
 			const bool rewrite_before_delete = rewrite_before_delete_check->isChecked();
 			const bool hide_datastores_after = hide_after_delete_check->isChecked();
-			DatastoreBulkDeleteProgressWindow* progress_window = new DatastoreBulkDeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, confirm_count_before_delete, rewrite_before_delete, hide_datastores_after };
+			DatastoreBulkDeleteProgressWindow* progress_window = new DatastoreBulkDeleteProgressWindow{
+				dynamic_cast<QWidget*>(parent()),
+				api_key,
+				universe,
+				scope,
+				key_prefix,
+				selected_datastores,
+				confirm_count_before_delete,
+				rewrite_before_delete,
+				hide_datastores_after
+			};
 			close();
 			progress_window->show();
 			progress_window->start();
@@ -253,8 +271,8 @@ void DatastoreBulkDeleteWindow::pressed_submit()
 	}
 }
 
-DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
-	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
+DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names) :
+	DatastoreBulkOperationWindow{ parent, api_key, universe, datastore_names }
 {
 	setWindowTitle("Download Datastores");
 
@@ -264,6 +282,14 @@ DatastoreBulkDownloadWindow::DatastoreBulkDownloadWindow(QWidget* parent, const 
 
 void DatastoreBulkDownloadWindow::pressed_submit()
 {
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		OCTASSERT(false);
+		close();
+		return;
+	}
+
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
 	{
@@ -298,7 +324,7 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 			{
 				const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
 				const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
-				DatastoreBulkDownloadProgressWindow* progress_window = new DatastoreBulkDownloadProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, std::move(writer) };
+				DatastoreBulkDownloadProgressWindow* progress_window = new DatastoreBulkDownloadProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe->get_universe_id(), scope, key_prefix, selected_datastores, std::move(writer)};
 				close();
 				progress_window->show();
 				progress_window->start();
@@ -321,8 +347,8 @@ void DatastoreBulkDownloadWindow::pressed_submit()
 	}
 }
 
-DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const QString& api_key, const long long universe_id, const std::vector<QString>& datastore_names) :
-	DatastoreBulkOperationWindow{ parent, api_key, universe_id, datastore_names }
+DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names) :
+	DatastoreBulkOperationWindow{ parent, api_key, universe, datastore_names }
 {
 	setWindowTitle("Undelete");
 	submit_button->setText("Undelete");
@@ -394,6 +420,14 @@ DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const 
 
 void DatastoreBulkUndeleteWindow::pressed_submit()
 {
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		OCTASSERT(false);
+		close();
+		return;
+	}
+
 	const std::vector<QString> selected_datastores = get_selected_datastores();
 	if (selected_datastores.size() > 0)
 	{
@@ -403,7 +437,7 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 		{
 			const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
 			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
-			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe_id, scope, key_prefix, selected_datastores, get_undelete_after_time() };
+			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe->get_universe_id(), scope, key_prefix, selected_datastores, get_undelete_after_time()};
 			close();
 			progress_window->show();
 			progress_window->start();

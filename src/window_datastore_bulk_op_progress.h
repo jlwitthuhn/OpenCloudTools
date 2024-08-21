@@ -29,6 +29,8 @@ class StandardDatastoreEntryGetVersionListRequest;
 class StandardDatastoreEntryPostSetRequest;
 class TextLogWidget;
 
+class UniverseProfile;
+
 class DatastoreBulkOperationProgressWindow : public QWidget
 {
 	Q_OBJECT
@@ -120,7 +122,7 @@ public:
 	DatastoreBulkDeleteProgressWindow(
 		QWidget* parent,
 		const QString& api_key,
-		long long universe_id,
+		const std::shared_ptr<UniverseProfile>& universe,
 		const QString& scope,
 		const QString& key_prefix,
 		std::vector<QString> datastore_names,
@@ -140,9 +142,11 @@ private:
 
 	QString get_summary() const;
 
-	bool confirm_count_before_delete;
-	bool rewrite_before_delete;
-	bool hide_datastores_when_done;
+	std::weak_ptr<UniverseProfile> attached_universe;
+
+	bool confirm_count_before_delete = true;
+	bool rewrite_before_delete = false;
+	bool hide_datastores_when_done = false;
 	bool first_delete_request_sent = false;
 
 	size_t entries_deleted = 0;

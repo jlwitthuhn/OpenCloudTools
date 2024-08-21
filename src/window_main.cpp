@@ -125,36 +125,56 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 
 void MyMainWindow::selected_universe_combo_changed()
 {
-	if (select_universe_combo->count() > 0)
+	if (select_universe_combo->count() == 0)
 	{
-		const QByteArray q_universe_id = select_universe_combo->currentData().toByteArray();
-		const UniverseProfile::Id universe_id{ q_universe_id };
-		UserProfile::get_selected_api_key()->select_universe(universe_id);
+		edit_universe_button->setEnabled(false);
+		del_universe_button->setEnabled(false);
+		
+		standard_datastore_panel->change_universe(nullptr);
+		ordered_datastore_panel->change_universe(nullptr);
+		memory_store_panel->change_universe(nullptr);
+		bulk_data_panel->change_universe(nullptr);
+		messaging_service_panel->change_universe(nullptr);
+		universe_preferences_panel->change_universe(nullptr);
 	}
 	else
 	{
-		UserProfile::get_selected_api_key()->select_universe(std::nullopt);
+		edit_universe_button->setEnabled(true);
+		del_universe_button->setEnabled(true);
+
+		const std::shared_ptr<UniverseProfile> universe = get_selected_universe();
+
+		standard_datastore_panel->change_universe(universe);
+		ordered_datastore_panel->change_universe(universe);
+		memory_store_panel->change_universe(universe);
+		bulk_data_panel->change_universe(universe);
+		messaging_service_panel->change_universe(universe);
+		universe_preferences_panel->change_universe(universe);
 	}
-	edit_universe_button->setEnabled(select_universe_combo->count() > 0);
-	del_universe_button->setEnabled(select_universe_combo->count() > 0);
-	// TODO: replace this with a signal that is set up on construction
-	standard_datastore_panel->selected_universe_changed();
-	ordered_datastore_panel->selected_universe_changed();
-	memory_store_panel->selected_universe_changed();
-	bulk_data_panel->selected_universe_changed();
-	messaging_service_panel->selected_universe_changed();
-	universe_preferences_panel->selected_universe_changed();
+}
+
+std::shared_ptr<UniverseProfile> MyMainWindow::get_selected_universe() const
+{
+	if (select_universe_combo->count() == 0)
+	{
+		return nullptr;
+	}
+	const QByteArray q_universe_id = select_universe_combo->currentData().toByteArray();
+	const UniverseProfile::Id universe_id{ q_universe_id };
+	return UserProfile::get_selected_api_key()->get_universe_profile_by_id(universe_id);
 }
 
 void MyMainWindow::pressed_add_universe()
 {
-	MainWindowAddUniverseWindow* const modal_window = new MainWindowAddUniverseWindow{ this, api_key, false };
+	MainWindowAddUniverseWindow* const modal_window = new MainWindowAddUniverseWindow{ this, api_key, nullptr };
 	modal_window->show();
 }
 
 void MyMainWindow::pressed_edit_universe()
 {
-	MainWindowAddUniverseWindow* const modal_window = new MainWindowAddUniverseWindow{ this, api_key, true };
+	const std::shared_ptr<UniverseProfile> universe = get_selected_universe();
+	OCTASSERT(static_cast<bool>(universe));
+	MainWindowAddUniverseWindow* const modal_window = new MainWindowAddUniverseWindow{ this, api_key, universe };
 	modal_window->show();
 }
 
@@ -167,7 +187,12 @@ void MyMainWindow::pressed_remove_universe()
 	int result = msg_box->exec();
 	if (result == QMessageBox::Yes)
 	{
-		UserProfile::get_selected_api_key()->delete_selected_universe();
+		const std::shared_ptr<UniverseProfile> universe = get_selected_universe();
+		OCTASSERT(static_cast<bool>(universe));
+		if (universe)
+		{
+			UserProfile::get_selected_api_key()->delete_universe(universe->get_id());
+		}
 	}
 }
 
@@ -191,7 +216,7 @@ void MyMainWindow::handle_tab_changed(const int index)
 	}
 }
 
-void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProfile::Id> universe_id)
+void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProfile::Id> new_universe)
 {
 	const std::shared_ptr<const ApiKeyProfile> this_profile{ UserProfile::get_selected_api_key()};
 	if (this_profile)
@@ -204,13 +229,13 @@ void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProf
 			select_universe_combo->addItem(formatted, QVariant{ this_universe->get_id().as_q_byte_array() });
 		}
 
-		if (universe_id)
+		if (new_universe)
 		{
 			for (size_t i = 0; i < this_profile->get_universe_list().size(); i++)
 			{
 				const QByteArray this_q_id = select_universe_combo->itemData(static_cast<int>(i)).toByteArray();
 				const UniverseProfile::Id this_id{ this_q_id };
-				if (this_id == universe_id)
+				if (this_id == new_universe)
 				{
 					select_universe_combo->setCurrentIndex(static_cast<int>(i));
 					break;
@@ -222,17 +247,16 @@ void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProf
 }
 
 
-MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, const QString& api_key, const bool edit_current) : QWidget{ parent, Qt::Window }, api_key{ api_key }
+MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& existing_universe) :
+	QWidget{ parent, Qt::Window },
+	api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	OCTASSERT(parent != nullptr);
 	setWindowModality(Qt::WindowModality::WindowModal);
 
-	const std::shared_ptr<const UniverseProfile> existing_universe = edit_current ? UserProfile::get_selected_universe() : nullptr;
-	edit_mode = existing_universe != nullptr;
-
-	if (edit_mode)
+	if (existing_universe)
 	{
 		setWindowTitle("Edit universe");
 	}
@@ -244,14 +268,14 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 	QWidget* info_panel = new QWidget{ this };
 	{
 		name_edit = new QLineEdit{ info_panel };
-		if (edit_mode)
+		if (existing_universe)
 		{
 			name_edit->setText(existing_universe->get_name());
 		}
 		connect(name_edit, &QLineEdit::textChanged, this, &MainWindowAddUniverseWindow::text_changed);
 
 		id_edit = new QLineEdit{ info_panel };
-		if (edit_mode)
+		if (existing_universe)
 		{
 			id_edit->setText(QString::number(existing_universe->get_universe_id()));
 		}
@@ -271,7 +295,7 @@ MainWindowAddUniverseWindow::MainWindowAddUniverseWindow(QWidget* const parent, 
 		connect(fetch_name_button, &QPushButton::clicked, this, &MainWindowAddUniverseWindow::pressed_fetch);
 
 		add_button = new QPushButton{ "Add", button_panel };
-		if (edit_mode)
+		if (existing_universe)
 		{
 			add_button->setText("Update");
 		}
@@ -317,9 +341,9 @@ void MainWindowAddUniverseWindow::pressed_add()
 	{
 		const QString name = name_edit->text();
 		const long long universe_id = id_edit->text().trimmed().toLongLong();
-		if (edit_mode)
+		if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 		{
-			if (UserProfile::get_selected_universe()->set_details(name, universe_id))
+			if (universe->set_details(name, universe_id))
 			{
 				close();
 			}

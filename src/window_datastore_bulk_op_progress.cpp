@@ -248,14 +248,15 @@ std::optional<size_t> DatastoreBulkOperationProgressWindow::DownloadProgress::ge
 DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(
 	QWidget* const parent,
 	const QString& api_key,
-	const long long universe_id,
+	const std::shared_ptr<UniverseProfile>& universe,
 	const QString& scope,
 	const QString& key_prefix,
 	const std::vector<QString> datastore_names,
 	const bool confirm_count_before_delete ,
 	const bool rewrite_before_delete,
 	const bool hide_datastores_when_done) :
-	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe->get_universe_id(), scope, key_prefix, datastore_names},
+	attached_universe{ universe },
 	confirm_count_before_delete{ confirm_count_before_delete },
 	rewrite_before_delete{ rewrite_before_delete },
 	hide_datastores_when_done{ hide_datastores_when_done }
@@ -330,12 +331,15 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 	}
 	else
 	{
-		if (hide_datastores_when_done)
+		if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 		{
-			for (const QString& this_name : datastore_names)
+			if (hide_datastores_when_done)
 			{
-				UserProfile::get_selected_universe()->add_hidden_datastore(this_name);;
-				handle_status_message( QString{ "Hid datastore: '%1'" }.arg(this_name) );
+				for (const QString& this_name : datastore_names)
+				{
+					universe->add_hidden_datastore(this_name);;
+					handle_status_message(QString{ "Hid datastore: '%1'" }.arg(this_name));
+				}
 			}
 		}
 		close_button->setText("Close");

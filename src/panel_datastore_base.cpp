@@ -133,7 +133,7 @@ BaseDatastorePanel::BaseDatastorePanel(QWidget* parent, const QString& api_key) 
 	handle_show_datastore_filter_changed();
 }
 
-void BaseDatastorePanel::selected_universe_changed()
+void BaseDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>&)
 {
 	select_datastore_list->clear();
 	search_datastore_name_edit->setText("");

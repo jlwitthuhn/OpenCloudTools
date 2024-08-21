@@ -262,15 +262,17 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 	layout->addWidget(splitter);
 
 	clear_model();
-	selected_universe_changed();
+	change_universe(nullptr);
 	handle_search_text_changed();
 	handle_selected_datastore_changed();
 	handle_selected_datastore_entry_changed();
 	handle_show_datastore_filter_changed();
 }
 
-void StandardDatastorePanel::selected_universe_changed()
+void StandardDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
+	attached_universe = universe;
+
 	// Clear all displayed data
 	list_datastore_index->clear();
 	edit_search_datastore_name->setText("");
@@ -280,13 +282,12 @@ void StandardDatastorePanel::selected_universe_changed()
 	handle_search_text_changed();
 
 	// Only enable buttons if there is a selected universe
-	const std::shared_ptr<const UniverseProfile> profile = UserProfile::get_selected_universe();
-	const bool enabled = profile != nullptr;
+	const bool enabled = static_cast<bool>(universe);
 	check_datastore_index_show_hidden->setEnabled(enabled);
 	button_datastore_index_fetch->setEnabled(enabled);
-	if (profile != nullptr)
+	if (universe)
 	{
-		check_datastore_index_show_hidden->setChecked(profile->get_show_hidden_standard_datastores());
+		check_datastore_index_show_hidden->setChecked(universe->get_show_hidden_standard_datastores());
 	}
 	else
 	{
@@ -485,8 +486,8 @@ void StandardDatastorePanel::handle_datastore_entry_double_clicked(const QModelI
 
 void StandardDatastorePanel::handle_search_text_changed()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool find_all_enabled = edit_search_datastore_name->text().size() > 0 && selected_universe;
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	const bool find_all_enabled = edit_search_datastore_name->text().size() > 0 && universe;
 	const bool find_prefix_enabled = find_all_enabled && edit_search_datastore_key_prefix->text().size() > 0;
 	button_search_find_all->setEnabled(find_all_enabled);
 	button_search_find_prefix->setEnabled(find_prefix_enabled);
@@ -539,8 +540,8 @@ void StandardDatastorePanel::handle_show_datastore_filter_changed()
 
 void StandardDatastorePanel::handle_add_entry_text_changed()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	const bool submit_enabled = selected_universe && edit_add_datastore_name->text().size() > 0 && edit_add_datastore_key_name->text().size() > 0 && edit_add_entry_data->toPlainText().size() > 0;
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	const bool submit_enabled = universe && edit_add_datastore_name->text().size() > 0 && edit_add_datastore_key_name->text().size() > 0 && edit_add_entry_data->toPlainText().size() > 0;
 	button_add_entry_submit->setEnabled(submit_enabled);
 }
 
@@ -549,8 +550,7 @@ void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& po
 	const QModelIndex the_index = list_datastore_index->indexAt(pos);
 	if (the_index.isValid())
 	{
-		const std::shared_ptr<const UniverseProfile> this_universe = UserProfile::get_selected_universe();
-		if (this_universe)
+		if (const std::shared_ptr<const UniverseProfile> this_universe = attached_universe.lock())
 		{
 			if (QListWidgetItem* the_item = list_datastore_index->item(the_index.row()))
 			{
@@ -568,8 +568,8 @@ void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& po
 					if (this_universe->get_hidden_datastore_set().count(the_datastore_name))
 					{
 						hide_unhide_action = new QAction{ "Unhide datastore", context_menu };
-						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							if (const std::shared_ptr<UniverseProfile> universe_profile = UserProfile::get_selected_universe())
+						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name, attached_universe = this->attached_universe]() {
+							if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 							{
 								universe_profile->remove_hidden_datastore(the_datastore_name);
 							}
@@ -578,8 +578,8 @@ void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& po
 					else
 					{
 						hide_unhide_action = new QAction{ "Hide datastore", context_menu };
-						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name]() {
-							if (const std::shared_ptr<UniverseProfile> universe_profile = UserProfile::get_selected_universe())
+						connect(hide_unhide_action, &QAction::triggered, [the_datastore_name, attached_universe = this->attached_universe]() {
+							if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
 							{
 								universe_profile->add_hidden_datastore(the_datastore_name);
 							}
@@ -672,10 +672,9 @@ void StandardDatastorePanel::pressed_edit_entry()
 
 void StandardDatastorePanel::pressed_fetch_datastores()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe)
+	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
-		const long long universe_id = selected_universe->get_universe_id();
+		const long long universe_id = universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
@@ -698,10 +697,10 @@ void StandardDatastorePanel::pressed_fetch_datastores()
 
 void StandardDatastorePanel::pressed_find_all()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe && edit_search_datastore_name->text().trimmed().size() > 0)
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	if (universe && edit_search_datastore_name->text().trimmed().size() > 0)
 	{
-		const long long universe_id = selected_universe->get_universe_id();
+		const long long universe_id = universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = edit_search_datastore_name->text().trimmed();
@@ -730,10 +729,10 @@ void StandardDatastorePanel::pressed_find_all()
 
 void StandardDatastorePanel::pressed_find_prefix()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe && edit_search_datastore_name->text().trimmed().size() > 0)
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	if (universe && edit_search_datastore_name->text().trimmed().size() > 0)
 	{
-		const long long universe_id = selected_universe->get_universe_id();
+		const long long universe_id = universe->get_universe_id();
 		if (universe_id > 0)
 		{
 			QString datastore_name = edit_search_datastore_name->text().trimmed();
@@ -821,12 +820,13 @@ void StandardDatastorePanel::pressed_submit_new_entry()
 		return;
 	}
 
-	if (UserProfile::get_selected_universe() == nullptr)
+	std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
 	{
 		return;
 	}
 
-	const long long universe_id = UserProfile::get_selected_universe()->get_universe_id();
+	const long long universe_id = universe->get_universe_id();
 	const QString datastore_name = edit_add_datastore_name->text();
 	const QString scope = edit_add_datastore_scope->text().size() > 0 ? edit_add_datastore_scope->text() : "global";
 	const QString key_name = edit_add_datastore_key_name->text();
@@ -878,14 +878,13 @@ void StandardDatastorePanel::clear_model()
 
 void StandardDatastorePanel::refresh_datastore_list()
 {
-	const std::shared_ptr<const UniverseProfile> selected_universe = UserProfile::get_selected_universe();
-	if (selected_universe)
+	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
 		const bool show_hidden = check_datastore_index_show_hidden->isChecked();
 		for (int i = 0; i < list_datastore_index->count(); i++)
 		{
 			QListWidgetItem* const this_item = list_datastore_index->item(i);
-			const bool is_hidden = static_cast<bool>(selected_universe->get_hidden_datastore_set().count(this_item->text()));
+			const bool is_hidden = static_cast<bool>(universe->get_hidden_datastore_set().count(this_item->text()));
 			const bool matches_filter = this_item->text().contains(edit_datastore_index_filter->text());
 			this_item->setHidden((!show_hidden && is_hidden) || !matches_filter);
 		}
