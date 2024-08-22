@@ -212,7 +212,7 @@ std::optional<UniverseProfile::Id> ApiKeyProfile::add_universe(const QString& un
 	const std::function<bool(long long)> id_check = [this](long long id) -> bool {
 		return universe_id_available(id);
 	};
-	const std::shared_ptr<UniverseProfile> this_universe = std::make_shared<UniverseProfile>(this, universe_name, universe_id, name_check, id_check);
+	const std::shared_ptr<UniverseProfile> this_universe = std::make_shared<UniverseProfile>(nullptr, universe_name, universe_id, name_check, id_check);
 	connect(this_universe.get(), &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &ApiKeyProfile::recent_mem_sorted_map_list_changed);
@@ -418,7 +418,7 @@ std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, c
 		std::function<bool(const QString&)> api_key_name_available = [this](const QString& name) -> bool {
 			return profile_name_available(name);
 		};
-		const std::shared_ptr<ApiKeyProfile> this_profile = std::make_shared<ApiKeyProfile>(this, name, key, production, save_key_to_disk, api_key_name_available);
+		const std::shared_ptr<ApiKeyProfile> this_profile = std::make_shared<ApiKeyProfile>(nullptr, name, key, production, save_key_to_disk, api_key_name_available);
 		connect(this_profile.get(), &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::details_changed, this, &UserProfile::api_key_details_changed);
 		connect(this_profile.get(), &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::hidden_datastore_list_changed);
