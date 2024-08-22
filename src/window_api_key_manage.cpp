@@ -116,11 +116,11 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 		if (variant_is_byte_array(data_var))
 		{
 			const ApiKeyProfile::Id id{ data_var.toByteArray() };
-			UserProfile::get().select_api_key(id);
+			UserProfile::get().activate_api_key(id);
 #ifdef OCT_NEW_GUI
 			close();
 #else
-			if (const std::shared_ptr<const ApiKeyProfile> profile = UserProfile::get_selected_api_key())
+			if (const std::shared_ptr<const ApiKeyProfile> profile = UserProfile::get_active_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->get_name(), profile->get_key() };
 				main_window->show();
@@ -186,11 +186,11 @@ void ManageApiKeysWindow::pressed_select()
 		if (variant_is_byte_array(selected_data))
 		{
 			ApiKeyProfile::Id id{ selected_data.toByteArray() };
-			UserProfile::get().select_api_key(id);
+			UserProfile::get().activate_api_key(id);
 #ifdef OCT_NEW_GUI
 			close();
 #else
-			if (const std::shared_ptr<const ApiKeyProfile> details = UserProfile::get_selected_api_key())
+			if (const std::shared_ptr<const ApiKeyProfile> details = UserProfile::get_active_api_key())
 			{
 				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->get_name(), details->get_key() };
 				main_window->show();

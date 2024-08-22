@@ -269,10 +269,10 @@ UserProfile& UserProfile::get()
 	return manager;
 }
 
-std::shared_ptr<ApiKeyProfile> UserProfile::get_selected_api_key()
+std::shared_ptr<ApiKeyProfile> UserProfile::get_active_api_key()
 {
 	UserProfile& user_profile = get();
-	if (const std::optional<ApiKeyProfile::Id> opt_id = user_profile.selected_key_id)
+	if (const std::optional<ApiKeyProfile::Id> opt_id = user_profile.active_key_id)
 	{
 		return user_profile.get_api_key_by_id(*opt_id);
 	}
@@ -446,32 +446,32 @@ void UserProfile::delete_api_key(const ApiKeyProfile::Id id)
 	}
 	api_keys.erase(selected_key_iter);
 
-	if (selected_key_id && *selected_key_id == id)
+	if (active_key_id && *active_key_id == id)
 	{
 		api_key_list_changed(std::nullopt);
 	}
 	else
 	{
-		api_key_list_changed(selected_key_id);
+		api_key_list_changed(active_key_id);
 	}
 }
 
-void UserProfile::select_api_key(const std::optional<ApiKeyProfile::Id> id)
+void UserProfile::activate_api_key(const std::optional<ApiKeyProfile::Id> id)
 {
 	if (id && api_keys.count(*id))
 	{
-		selected_key_id = id;
+		active_key_id = id;
 	}
 	else
 	{
-		selected_key_id = std::nullopt;
+		active_key_id = std::nullopt;
 	}
-	emit selected_api_key_changed();
+	emit active_api_key_changed();
 }
 
 void UserProfile::api_key_details_changed()
 {
-	emit api_key_list_changed(selected_key_id);
+	emit api_key_list_changed(active_key_id);
 }
 
 bool UserProfile::profile_name_available(const QString& name) const

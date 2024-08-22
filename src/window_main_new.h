@@ -13,7 +13,7 @@ public:
 	MyNewMainWindow();
 
 private:
-	void on_selected_api_key_changed();
+	void on_active_api_key_changed();
 
 	void pressed_change_key();
 

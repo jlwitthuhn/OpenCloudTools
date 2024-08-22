@@ -58,7 +58,7 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	info->setWordWrap(true);
 
 	QGroupBox* prod_box = nullptr;
-	if (const std::shared_ptr<const ApiKeyProfile> profile = UserProfile::get_selected_api_key())
+	if (const std::shared_ptr<const ApiKeyProfile> profile = UserProfile::get_active_api_key())
 	{
 		if (profile->get_production())
 		{

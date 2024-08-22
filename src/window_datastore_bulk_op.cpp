@@ -203,7 +203,7 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 	{
 		confirm_count_before_delete_check = new QCheckBox{ "Confirm entry count before deletion", options_box };
 		confirm_count_before_delete_check->setCheckState(Qt::Checked);
-		if (UserProfile::get_selected_api_key() && UserProfile::get_selected_api_key()->get_production())
+		if (UserProfile::get_active_api_key() && UserProfile::get_active_api_key()->get_production())
 		{
 			confirm_count_before_delete_check->setEnabled(false);
 		}

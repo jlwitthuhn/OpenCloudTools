@@ -135,7 +135,7 @@ class UserProfile : public QObject
 	Q_OBJECT
 public:
 	static UserProfile& get();
-	static std::shared_ptr<ApiKeyProfile> get_selected_api_key();
+	static std::shared_ptr<ApiKeyProfile> get_active_api_key();
 
 	const QString& get_qt_theme() const { return qt_theme; }
 	void set_qt_theme(const QString& theme_name);
@@ -155,13 +155,13 @@ public:
 	std::optional<ApiKeyProfile::Id> add_api_key(const QString& name, const QString& key, bool production, bool save_key_to_disk);
 	void delete_api_key(ApiKeyProfile::Id id);
 
-	void select_api_key(std::optional<ApiKeyProfile::Id> id);
+	void activate_api_key(std::optional<ApiKeyProfile::Id> id);
 
 signals:
 	void qt_theme_changed();
 	void autoclose_changed();
-	void selected_api_key_changed();
-	void api_key_list_changed(std::optional<ApiKeyProfile::Id> selected_id);
+	void active_api_key_changed();
+	void api_key_list_changed(std::optional<ApiKeyProfile::Id> active_id);
 	void universe_list_changed(std::optional<UniverseProfile::Id> new_universe);
 	void hidden_datastore_list_changed();
 	void recent_mem_sorted_map_list_changed();
@@ -185,7 +185,7 @@ private:
 	bool show_datastore_name_filter = false;
 
 	std::map<ApiKeyProfile::Id, std::shared_ptr<ApiKeyProfile>> api_keys;
-	std::optional<ApiKeyProfile::Id> selected_key_id;
+	std::optional<ApiKeyProfile::Id> active_key_id;
 
 	LockableBool load_flag;
 };

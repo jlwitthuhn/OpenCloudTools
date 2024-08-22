@@ -161,7 +161,7 @@ std::shared_ptr<UniverseProfile> MyMainWindow::get_selected_universe() const
 	}
 	const QByteArray q_universe_id = select_universe_combo->currentData().toByteArray();
 	const UniverseProfile::Id universe_id{ q_universe_id };
-	return UserProfile::get_selected_api_key()->get_universe_profile_by_id(universe_id);
+	return UserProfile::get_active_api_key()->get_universe_profile_by_id(universe_id);
 }
 
 void MyMainWindow::pressed_add_universe()
@@ -191,7 +191,7 @@ void MyMainWindow::pressed_remove_universe()
 		OCTASSERT(static_cast<bool>(universe));
 		if (universe)
 		{
-			UserProfile::get_selected_api_key()->delete_universe(universe->get_id());
+			UserProfile::get_active_api_key()->delete_universe(universe->get_id());
 		}
 	}
 }
@@ -218,7 +218,7 @@ void MyMainWindow::handle_tab_changed(const int index)
 
 void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProfile::Id> new_universe)
 {
-	const std::shared_ptr<const ApiKeyProfile> this_profile{ UserProfile::get_selected_api_key()};
+	const std::shared_ptr<const ApiKeyProfile> this_profile{ UserProfile::get_active_api_key()};
 	if (this_profile)
 	{
 		select_universe_combo->clear();
@@ -357,7 +357,7 @@ void MainWindowAddUniverseWindow::pressed_add()
 		}
 		else
 		{
-			const std::optional<UniverseProfile::Id> new_id = UserProfile::get_selected_api_key()->add_universe(name, universe_id);
+			const std::optional<UniverseProfile::Id> new_id = UserProfile::get_active_api_key()->add_universe(name, universe_id);
 			if (new_id)
 			{
 				close();

@@ -24,7 +24,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	setWindowTitle("OpenCloudTools");
 	setMinimumSize(650, 500);
 
-	connect(&(UserProfile::get()), &UserProfile::selected_api_key_changed, this, &MyNewMainWindow::on_selected_api_key_changed);
+	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, &MyNewMainWindow::on_active_api_key_changed);
 
 	MyMainWindowMenuBar* const menu_bar = new MyMainWindowMenuBar{ this };
 	setMenuBar(menu_bar);
@@ -82,9 +82,9 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	resize(1100, 650);
 }
 
-void MyNewMainWindow::on_selected_api_key_changed()
+void MyNewMainWindow::on_active_api_key_changed()
 {
-	if (const std::shared_ptr<const ApiKeyProfile> key_profile = UserProfile::get().get_selected_api_key())
+	if (const std::shared_ptr<const ApiKeyProfile> key_profile = UserProfile::get().get_active_api_key())
 	{
 		api_key_name_edit->setText(key_profile->get_name());
 	}
