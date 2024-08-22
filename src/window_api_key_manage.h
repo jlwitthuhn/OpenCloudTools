@@ -26,7 +26,7 @@ private:
 	void pressed_edit();
 	void pressed_delete();
 	void pressed_select();
-	void rebuild_slots(std::optional<ApiKeyProfile::Id> selected_id);
+	void rebuild_slots();
 	void selection_changed();
 
 private:

@@ -161,7 +161,7 @@ signals:
 	void qt_theme_changed();
 	void autoclose_changed();
 	void active_api_key_changed();
-	void api_key_list_changed(std::optional<ApiKeyProfile::Id> active_id);
+	void api_key_list_changed();
 	void universe_list_changed(std::optional<UniverseProfile::Id> new_universe);
 	void hidden_datastore_list_changed();
 	void recent_mem_sorted_map_list_changed();

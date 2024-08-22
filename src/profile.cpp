@@ -430,7 +430,7 @@ std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, c
 		OCTASSERT(api_keys.count(this_profile->get_id()) == 0);
 		api_keys[this_profile->get_id()] = this_profile;
 
-		emit api_key_list_changed(this_profile->get_id());
+		emit api_key_list_changed();
 		return this_profile->get_id();
 	}
 	return std::nullopt;
@@ -446,14 +446,7 @@ void UserProfile::delete_api_key(const ApiKeyProfile::Id id)
 	}
 	api_keys.erase(selected_key_iter);
 
-	if (active_key_id && *active_key_id == id)
-	{
-		api_key_list_changed(std::nullopt);
-	}
-	else
-	{
-		api_key_list_changed(active_key_id);
-	}
+	emit api_key_list_changed();
 }
 
 void UserProfile::activate_api_key(const std::optional<ApiKeyProfile::Id> id)
@@ -471,7 +464,7 @@ void UserProfile::activate_api_key(const std::optional<ApiKeyProfile::Id> id)
 
 void UserProfile::api_key_details_changed()
 {
-	emit api_key_list_changed(active_key_id);
+	emit api_key_list_changed();
 }
 
 bool UserProfile::profile_name_available(const QString& name) const
@@ -620,7 +613,7 @@ void UserProfile::load_from_disk()
 
 	set_qt_theme(qt_theme);
 
-	emit api_key_list_changed(std::nullopt);
+	emit api_key_list_changed();
 }
 
 void UserProfile::save_to_disk()
