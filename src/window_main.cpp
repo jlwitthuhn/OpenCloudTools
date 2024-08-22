@@ -41,7 +41,11 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
 
-	connect(&(UserProfile::get()), &UserProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
+	// API Key should never change for a given main window
+	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, [] { OCTASSERT(false); });
+
+	const std::shared_ptr<ApiKeyProfile> api_profile = UserProfile::get_active_api_key();
+	connect(api_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 
 	MyMainWindowMenuBar* menu_bar = new MyMainWindowMenuBar{ this };
 	connect(menu_bar, &MyMainWindowMenuBar::OLDGUI_request_change_api_key, this, &MyMainWindow::pressed_change_key);
