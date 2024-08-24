@@ -32,6 +32,8 @@ private:
 	void pressed_send();
 
 	QString api_key;
+	std::weak_ptr<UniverseProfile> attached_universe;
+	QMetaObject::Connection conn_universe_recent_topic_list_changed;
 
 	QListWidget* topic_history_list;
 	QCheckBox* add_used_topics_check = nullptr;
@@ -41,8 +43,6 @@ private:
 	QLineEdit* topic_edit = nullptr;
 	QTextEdit* message_edit = nullptr;
 	QPushButton* send_button = nullptr;
-
-	std::weak_ptr<UniverseProfile> attached_universe;
 };
 
 

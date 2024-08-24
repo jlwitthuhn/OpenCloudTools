@@ -26,8 +26,6 @@
 
 MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
 {
-	connect(&(UserProfile::get()), &UserProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
-
 	QGroupBox* topic_history_group_box = new QGroupBox{ "Topic History" };
 	{
 		QSizePolicy topic_history_size_policy{ QSizePolicy::Preferred, QSizePolicy::Preferred };
@@ -89,6 +87,13 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 void MessagingServicePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
 	attached_universe = universe;
+
+	QObject::disconnect(conn_universe_recent_topic_list_changed);
+	if (universe)
+	{
+		conn_universe_recent_topic_list_changed = connect(universe.get(), &UniverseProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
+	}
+
 	if (universe)
 	{
 		add_used_topics_check->setChecked(universe->get_save_recent_message_topics());

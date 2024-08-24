@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QMetaObject>
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -39,6 +40,7 @@ private:
 
 	QString api_key;
 	std::weak_ptr<UniverseProfile> attached_universe;
+	QMetaObject::Connection conn_universe_mem_sorted_map_list_changed;
 
 	// Index panel
 	QListWidget* list_maps = nullptr;

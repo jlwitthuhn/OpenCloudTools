@@ -33,8 +33,6 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 	QWidget{ parent },
 	api_key{ api_key }
 {
-	connect(&(UserProfile::get()), &UserProfile::recent_mem_sorted_map_list_changed, this, &MemoryStoreSortedMapPanel::handle_recent_maps_changed);
-
 	QSplitter* const splitter = new QSplitter{ this };
 	splitter->setChildrenCollapsible(false);
 	{
@@ -144,6 +142,12 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 void MemoryStoreSortedMapPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
 	attached_universe = universe;
+
+	QObject::disconnect(conn_universe_mem_sorted_map_list_changed);
+	if (universe)
+	{
+		conn_universe_mem_sorted_map_list_changed = connect(universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &MemoryStoreSortedMapPanel::handle_recent_maps_changed);
+	}
 
 	list_maps->clear();
 	edit_map_name->setText("");

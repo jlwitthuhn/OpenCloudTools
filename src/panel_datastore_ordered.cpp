@@ -45,7 +45,6 @@
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key { api_key }
 {
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &OrderedDatastorePanel::handle_show_datastore_filter_changed);
-	connect(&(UserProfile::get()), &UserProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
 
 	QSplitter* const splitter = new QSplitter{ this };
 	{
@@ -228,6 +227,12 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 void OrderedDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
 	attached_universe = universe;
+
+	QObject::disconnect(conn_universe_ordered_datastores_changed);
+	if (universe)
+	{
+		conn_universe_ordered_datastores_changed = connect(universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
+	}
 
 	list_datastore_index->clear();
 	edit_search_datastore_name->setText("");

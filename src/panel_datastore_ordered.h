@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QMetaObject>
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -61,6 +62,7 @@ private:
 
 	QString api_key;
 	std::weak_ptr<UniverseProfile> attached_universe;
+	QMetaObject::Connection conn_universe_ordered_datastores_changed;
 
 	// Left bar
 	QListWidget* list_datastore_index = nullptr;

@@ -422,9 +422,9 @@ std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, c
 		connect(this_profile.get(), &ApiKeyProfile::force_save, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::details_changed, this, &UserProfile::api_key_details_changed);
 		connect(this_profile.get(), &ApiKeyProfile::hidden_datastore_list_changed, this, &UserProfile::save_to_disk);
-		connect(this_profile.get(), &ApiKeyProfile::recent_mem_sorted_map_list_changed, this, &UserProfile::recent_mem_sorted_map_list_changed);
-		connect(this_profile.get(), &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::recent_ordered_datastore_list_changed);
-		connect(this_profile.get(), &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::recent_topic_list_changed);
+		connect(this_profile.get(), &ApiKeyProfile::recent_mem_sorted_map_list_changed, this, &UserProfile::save_to_disk);
+		connect(this_profile.get(), &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::save_to_disk);
+		connect(this_profile.get(), &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::universe_list_changed, this, &UserProfile::save_to_disk);
 
 		OCTASSERT(api_keys.count(this_profile->get_id()) == 0);
@@ -729,7 +729,4 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 	}
 	load_from_disk();
 	connect(this, &UserProfile::api_key_list_changed, this, &UserProfile::save_to_disk);
-	connect(this, &UserProfile::recent_mem_sorted_map_list_changed, this, &UserProfile::save_to_disk);
-	connect(this, &UserProfile::recent_ordered_datastore_list_changed, this, &UserProfile::save_to_disk);
-	connect(this, &UserProfile::recent_topic_list_changed, this, &UserProfile::save_to_disk);
 }
