@@ -27,6 +27,7 @@ private:
 	void pressed_remove();
 
 	std::weak_ptr<UniverseProfile> attached_universe;
+	QMetaObject::Connection conn_universe_hidden_datastores_changed;
 
 	QListWidget* hidden_datastore_list = nullptr;
 

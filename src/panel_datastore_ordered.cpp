@@ -44,7 +44,6 @@
 
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key { api_key }
 {
-	connect(&(UserProfile::get()), &UserProfile::hidden_datastore_list_changed, this, &OrderedDatastorePanel::refresh_datastore_list);
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &OrderedDatastorePanel::handle_show_datastore_filter_changed);
 	connect(&(UserProfile::get()), &UserProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
 

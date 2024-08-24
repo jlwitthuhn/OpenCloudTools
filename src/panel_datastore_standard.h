@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include <QMetaObject>
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -67,6 +68,7 @@ private:
 
 	QString api_key;
 	std::weak_ptr<UniverseProfile> attached_universe;
+	QMetaObject::Connection conn_universe_hidden_datastores_changed;
 
 	// Index bar
 	QListWidget* list_datastore_index = nullptr;

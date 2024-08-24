@@ -55,7 +55,6 @@
 
 StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key { api_key }
 {
-	connect(&(UserProfile::get()), &UserProfile::hidden_datastore_list_changed, this, &StandardDatastorePanel::refresh_datastore_list);
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &StandardDatastorePanel::handle_show_datastore_filter_changed);
 
 	QSplitter* splitter = new QSplitter{ this };
@@ -272,6 +271,12 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 void StandardDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
 	attached_universe = universe;
+
+	QObject::disconnect(conn_universe_hidden_datastores_changed);
+	if (universe)
+	{
+		conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &StandardDatastorePanel::refresh_datastore_list);
+	}
 
 	// Clear all displayed data
 	list_datastore_index->clear();

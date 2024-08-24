@@ -20,8 +20,6 @@
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
 {
-	connect(&(UserProfile::get()), &UserProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
-
 	QWidget* container_widget = new QWidget{ this };
 	{
 		QGroupBox* hidden_datastore_group = new QGroupBox{ "Hidden Datastores", container_widget };
@@ -64,6 +62,13 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ p
 void UniversePreferencesPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
 	attached_universe = universe;
+
+	QObject::disconnect(conn_universe_hidden_datastores_changed);
+	if (universe)
+	{
+		conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
+	}
+
 	const bool enabled = static_cast<bool>(universe);
 	button_add->setEnabled(enabled);
 	handle_hidden_datastores_changed();
