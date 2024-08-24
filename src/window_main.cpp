@@ -40,6 +40,7 @@
 MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QMainWindow{ parent, Qt::Window }, api_key { api_key }
 {
 	setWindowTitle(QString{ "OpenCloudTools: " } + title);
+	setAttribute(Qt::WA_DeleteOnClose);
 
 	// API Key should never change for a given main window
 	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, [] { OCTASSERT(false); });
