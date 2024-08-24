@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
@@ -100,166 +101,219 @@ void BulkDataPanel::change_universe(const std::shared_ptr<UniverseProfile>& univ
 #ifdef OCT_NEW_GUI
 	OCTASSERT(false);
 #endif
+	if (universe && universe == attached_universe.lock())
+	{
+		return;
+	}
 	attached_universe = universe;
-	const bool enabled = static_cast<bool>(universe);
-	datastore_download_button->setEnabled(enabled);
-	danger_buttons_check->setEnabled(enabled);
+
 	danger_buttons_check->setCheckState(Qt::Unchecked);
-	handle_datastore_danger_toggle();
+	gui_refresh();
+}
+
+void BulkDataPanel::gui_refresh()
+{
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		danger_buttons_check->setCheckState(Qt::Unchecked);
+		setEnabled(false);
+		return;
+	}
+
+	setEnabled(true);
+	const bool enable_danger = (danger_buttons_check->checkState() == Qt::Checked);
+	datastore_delete_button->setEnabled(enable_danger);
+	datastore_undelete_button->setEnabled(enable_danger);
+	datastore_upload_button->setEnabled(enable_danger);
 }
 
 void BulkDataPanel::handle_datastore_danger_toggle()
 {
-	const bool enabled = danger_buttons_check->isEnabled() && danger_buttons_check->isChecked();
-	datastore_delete_button->setEnabled(enabled);
-	datastore_undelete_button->setEnabled(enabled);
-	datastore_upload_button->setEnabled(enabled);
+	gui_refresh();
 }
 
 void BulkDataPanel::pressed_delete()
 {
-	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
+	const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock();
+	if (!universe_profile)
 	{
-		if (danger_buttons_check->isChecked())
-		{
-			const long long universe_id = universe_profile->get_universe_id();
-
-			const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
-			OperationInProgressDialog diag{ this, req };
-			diag.exec();
-
-			const std::vector<QString> datastores = req->get_datastore_names();
-			if (datastores.size() > 0)
-			{
-				DatastoreBulkDeleteWindow* delete_window = new DatastoreBulkDeleteWindow{ this, api_key, universe_profile, datastores };
-				delete_window->show();
-			}
-		}
+		OCTASSERT(false);
+		return;
 	}
+
+	if (danger_buttons_check->isChecked() == false)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	const long long universe_id = universe_profile->get_universe_id();
+
+	const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	const std::vector<QString> datastores = req->get_datastore_names();
+	if (datastores.size() == 0)
+	{
+		return;
+	}
+
+	DatastoreBulkDeleteWindow* delete_window = new DatastoreBulkDeleteWindow{ this, api_key, universe_profile, datastores };
+	delete_window->show();
 }
 
 void BulkDataPanel::pressed_download()
 {
-	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
+	const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock();
+	if (!universe_profile)
 	{
-		const long long universe_id = universe_profile->get_universe_id();
-
-		const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
-		OperationInProgressDialog diag{ this, req };
-		diag.exec();
-
-		const std::vector<QString> datastores = req->get_datastore_names();
-		if (datastores.size() > 0)
-		{
-			DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_profile, datastores };
-			download_window->show();
-		}
+		OCTASSERT(false);
+		return;
 	}
+
+	const long long universe_id = universe_profile->get_universe_id();
+
+	const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	const std::vector<QString> datastores = req->get_datastore_names();
+	if (datastores.size() == 0)
+	{
+		return;
+	}
+
+	DatastoreBulkDownloadWindow* download_window = new DatastoreBulkDownloadWindow{ this, api_key, universe_profile, datastores };
+	download_window->show();
 }
 
 void BulkDataPanel::pressed_download_resume()
 {
-	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
+	const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock();
+
+	if (!universe_profile)
 	{
-		const QString file_name = QFileDialog::getOpenFileName(this, "Resume download", "", "sqlite3 databases (*.sqlite3)");
-		if (file_name.trimmed().length() == 0)
-		{
-			// User selected nothing, return silently
-			return;
-		}
-
-		{
-			const QFile existing_file{ file_name };
-			if (existing_file.exists() == false)
-			{
-				QMessageBox::critical(nullptr, "Error", "Unable to open file");
-				return;
-			}
-		}
-
-		const long long universe_id = universe_profile->get_universe_id();
-
-		std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::open_from_path(file_name.toStdString());
-		if (writer->is_correct_schema() == false)
-		{
-			QMessageBox::critical(nullptr, "Error", "Selected file has unexpected database schema, unable to proceed");
-			return;
-		}
-		if (writer->is_resumable(universe_id) == false)
-		{
-			QMessageBox::critical(nullptr, "Error", "Selected file cannot be resumed for the selected universe");
-			return;
-		}
-
-		DatastoreBulkDownloadProgressWindow* progress_window = new DatastoreBulkDownloadProgressWindow{ this, api_key, universe_id, std::move(writer) };
-		progress_window->show();
-		progress_window->start();
+		OCTASSERT(false);
+		return;
 	}
+
+	const QString file_name = QFileDialog::getOpenFileName(this, "Resume download", "", "sqlite3 databases (*.sqlite3)");
+	if (file_name.trimmed().length() == 0)
+	{
+		// User selected nothing, return silently
+		return;
+	}
+
+	{
+		const QFile existing_file{ file_name };
+		if (existing_file.exists() == false)
+		{
+			QMessageBox::critical(nullptr, "Error", "Unable to open file");
+			return;
+		}
+	}
+
+	const long long universe_id = universe_profile->get_universe_id();
+
+	std::unique_ptr<SqliteDatastoreWrapper> writer = SqliteDatastoreWrapper::open_from_path(file_name.toStdString());
+	if (writer->is_correct_schema() == false)
+	{
+		QMessageBox::critical(nullptr, "Error", "Selected file has unexpected database schema, unable to proceed");
+		return;
+	}
+	if (writer->is_resumable(universe_id) == false)
+	{
+		QMessageBox::critical(nullptr, "Error", "Selected file cannot be resumed for the selected universe");
+		return;
+	}
+
+	DatastoreBulkDownloadProgressWindow* const progress_window = new DatastoreBulkDownloadProgressWindow{ this, api_key, universe_id, std::move(writer) };
+	progress_window->show();
+	progress_window->start();
 }
 
 void BulkDataPanel::pressed_undelete()
 {
-	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
+	const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock();
+	if (!universe_profile)
 	{
-		const long long universe_id = universe_profile->get_universe_id();
-
-		const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
-		OperationInProgressDialog diag{ this, req };
-		diag.exec();
-
-		const std::vector<QString> datastores = req->get_datastore_names();
-		if (datastores.size() > 0)
-		{
-			DatastoreBulkUndeleteWindow* undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_profile, datastores };
-			undelete_window->show();
-		}
+		OCTASSERT(false);
+		return;
 	}
+
+	const long long universe_id = universe_profile->get_universe_id();
+
+	const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe_id);
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	const std::vector<QString> datastores = req->get_datastore_names();
+	if (datastores.size() == 0)
+	{
+		return;
+	}
+
+	DatastoreBulkUndeleteWindow* const undelete_window = new DatastoreBulkUndeleteWindow{ this, api_key, universe_profile, datastores };
+	undelete_window->show();
 }
 
 void BulkDataPanel::pressed_upload()
 {
-	if (const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock())
+	const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock();
+	if (!universe_profile)
 	{
-		if (danger_buttons_check->isChecked())
+		OCTASSERT(false);
+		return;
+	}
+
+	if (danger_buttons_check->isChecked() == false)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkUpload };
+	bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (confirmed == false)
+	{
+		return;
+	}
+
+	const QString load_file_path = QFileDialog::getOpenFileName(this, "Select dump to upload...", "", "sqlite3 databases (*.sqlite3)");
+	if (load_file_path.trimmed().size() == 0)
+	{
+		return;
+	}
+
+	std::optional<std::vector<StandardDatastoreEntryFull>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
+	if (loaded_data)
+	{
+		std::vector<std::shared_ptr<DataRequest>> shared_requests;
+
+		for (const StandardDatastoreEntryFull& this_entry : *loaded_data)
 		{
-			ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreBulkUpload };
-			bool confirmed = static_cast<bool>(confirm_dialog->exec());
-			if (confirmed)
-			{
-				const QString load_file_path = QFileDialog::getOpenFileName(this, "Select dump to upload...", "", "sqlite3 databases (*.sqlite3)");
-				if (load_file_path.trimmed().size() > 0)
-				{
-					std::optional<std::vector<StandardDatastoreEntryFull>> loaded_data = SqliteDatastoreReader::read_all(load_file_path.toStdString());
-					if (loaded_data)
-					{
-						std::vector<std::shared_ptr<DataRequest>> shared_requests;
-
-						for (const StandardDatastoreEntryFull& this_entry : *loaded_data)
-						{
-							shared_requests.push_back(std::make_shared<StandardDatastoreEntryPostSetRequest>(
-								api_key,
-								this_entry.get_universe_id(),
-								this_entry.get_datastore_name(),
-								this_entry.get_scope(),
-								this_entry.get_key_name(),
-								this_entry.get_userids(),
-								this_entry.get_attributes(),
-								this_entry.get_data_raw()
-							));
-						}
-
-						OperationInProgressDialog diag{ this, shared_requests };
-						diag.exec();
-					}
-					else
-					{
-						QMessageBox* msg_box = new QMessageBox{ this };
-						msg_box->setWindowTitle("Error");
-						msg_box->setText("Failed to open database.");
-						msg_box->exec();
-					}
-				}
-			}
+			shared_requests.push_back(std::make_shared<StandardDatastoreEntryPostSetRequest>(
+				api_key,
+				this_entry.get_universe_id(),
+				this_entry.get_datastore_name(),
+				this_entry.get_scope(),
+				this_entry.get_key_name(),
+				this_entry.get_userids(),
+				this_entry.get_attributes(),
+				this_entry.get_data_raw()
+			));
 		}
+
+		OperationInProgressDialog diag{ this, shared_requests };
+		diag.exec();
+	}
+	else
+	{
+		QMessageBox* msg_box = new QMessageBox{ this };
+		msg_box->setWindowTitle("Error");
+		msg_box->setText("Failed to open database.");
+		msg_box->exec();
 	}
 }

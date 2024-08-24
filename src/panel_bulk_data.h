@@ -20,6 +20,8 @@ public:
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
+	void gui_refresh();
+
 	void handle_datastore_danger_toggle();
 
 	void pressed_delete();
