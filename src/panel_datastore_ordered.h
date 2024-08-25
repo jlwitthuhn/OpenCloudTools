@@ -29,6 +29,8 @@ public:
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
+	void gui_refresh();
+
 	void set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model);
 
 	QModelIndex get_selected_single_index() const;

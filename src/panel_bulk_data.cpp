@@ -103,6 +103,7 @@ void BulkDataPanel::change_universe(const std::shared_ptr<UniverseProfile>& univ
 #endif
 	if (universe && universe == attached_universe.lock())
 	{
+		gui_refresh();
 		return;
 	}
 	attached_universe = universe;
