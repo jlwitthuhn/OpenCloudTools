@@ -224,12 +224,12 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 
 void OrderedDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
-	attached_universe = universe;
 	if (universe && universe == attached_universe.lock())
 	{
 		gui_refresh();
 		return;
 	}
+	attached_universe = universe;
 
 	QObject::disconnect(conn_universe_ordered_datastores_changed);
 	if (universe)
