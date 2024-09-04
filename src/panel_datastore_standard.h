@@ -32,6 +32,8 @@ public:
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
+	void gui_refresh();
+
 	void set_datastore_entry_model(StandardDatastoreEntryQTableModel* entry_model);
 
 	std::vector<StandardDatastoreEntryName> get_selected_entries() const;
