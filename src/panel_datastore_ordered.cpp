@@ -218,7 +218,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
-	clear_model();
+	set_table_model(nullptr);
 	change_universe(nullptr);
 }
 
@@ -240,7 +240,7 @@ void OrderedDatastorePanel::change_universe(const std::shared_ptr<UniverseProfil
 	list_datastore_index->clear();
 	edit_search_datastore_name->setText("");
 	edit_search_datastore_scope->setText("");
-	clear_model();
+	set_table_model(nullptr);
 
 	const bool universe_exists = static_cast<bool>(universe);
 	check_save_recent_datastores->setEnabled(universe_exists);
@@ -291,7 +291,7 @@ void OrderedDatastorePanel::gui_refresh()
 	button_add_entry_submit->setEnabled(add_submit_enabled);
 }
 
-void OrderedDatastorePanel::set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model)
+void OrderedDatastorePanel::set_table_model(OrderedDatastoreEntryQTableModel* entry_model)
 {
 	if (entry_model)
 	{
@@ -432,11 +432,6 @@ void OrderedDatastorePanel::handle_save_recent_datastores_toggled()
 	universe->set_save_recent_ordered_datastores(check_save_recent_datastores->isChecked());
 }
 
-void OrderedDatastorePanel::clear_model()
-{
-	set_datastore_entry_model(nullptr);
-}
-
 void OrderedDatastorePanel::refresh_datastore_list()
 {
 	for (int i = 0; i < list_datastore_index->count(); i++)
@@ -486,7 +481,7 @@ void OrderedDatastorePanel::pressed_find(const bool ascending)
 	}
 
 	OrderedDatastoreEntryQTableModel* const qt_model = new OrderedDatastoreEntryQTableModel{ tree_view_main, req->get_entries() };
-	set_datastore_entry_model(qt_model);
+	set_table_model(qt_model);
 }
 
 void OrderedDatastorePanel::pressed_find_ascending()

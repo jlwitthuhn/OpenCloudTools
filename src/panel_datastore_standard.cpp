@@ -260,7 +260,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
-	clear_model();
+	set_table_model(nullptr);
 	change_universe(nullptr);
 }
 
@@ -283,9 +283,7 @@ void StandardDatastorePanel::change_universe(const std::shared_ptr<UniverseProfi
 	list_datastore_index->clear();
 	edit_search_datastore_name->setText("");
 	edit_search_datastore_scope->setText("");
-	clear_model();
-	handle_add_entry_text_changed();
-	handle_search_text_changed();
+	set_table_model(nullptr);
 
 	// Only enable buttons if there is a selected universe
 	const bool enabled = static_cast<bool>(universe);
@@ -361,7 +359,7 @@ void StandardDatastorePanel::gui_refresh()
 	}
 }
 
-void StandardDatastorePanel::set_datastore_entry_model(StandardDatastoreEntryQTableModel* const entry_model)
+void StandardDatastorePanel::set_table_model(StandardDatastoreEntryQTableModel* const entry_model)
 {
 	if (entry_model)
 	{
@@ -821,7 +819,7 @@ void StandardDatastorePanel::pressed_find_all()
 	diag.exec();
 
 	StandardDatastoreEntryQTableModel* const datastore_model = new StandardDatastoreEntryQTableModel{ tree_view_main, req->get_datastore_entries() };
-	set_datastore_entry_model(datastore_model);
+	set_table_model(datastore_model);
 }
 
 void StandardDatastorePanel::pressed_find_prefix()
@@ -860,7 +858,7 @@ void StandardDatastorePanel::pressed_find_prefix()
 	diag.exec();
 
 	StandardDatastoreEntryQTableModel* datastore_model = new StandardDatastoreEntryQTableModel{ tree_view_main, req->get_datastore_entries() };
-	set_datastore_entry_model(datastore_model);
+	set_table_model(datastore_model);
 }
 
 void StandardDatastorePanel::pressed_submit_new_entry()
@@ -971,12 +969,6 @@ void StandardDatastorePanel::pressed_view_entry()
 void StandardDatastorePanel::pressed_view_versions()
 {
 	view_versions(get_selected_single_index());
-}
-
-void StandardDatastorePanel::clear_model()
-{
-	set_datastore_entry_model(nullptr);
-	handle_selected_datastore_entry_changed();
 }
 
 void StandardDatastorePanel::refresh_datastore_list()

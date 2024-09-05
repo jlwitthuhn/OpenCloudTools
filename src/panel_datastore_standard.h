@@ -34,7 +34,7 @@ public:
 private:
 	void gui_refresh();
 
-	void set_datastore_entry_model(StandardDatastoreEntryQTableModel* entry_model);
+	void set_table_model(StandardDatastoreEntryQTableModel* entry_model);
 
 	std::vector<StandardDatastoreEntryName> get_selected_entries() const;
 	QModelIndex get_selected_single_index() const;
@@ -65,7 +65,6 @@ private:
 	void pressed_view_entry();
 	void pressed_view_versions();
 
-	void clear_model();
 	void refresh_datastore_list();
 
 	QString api_key;

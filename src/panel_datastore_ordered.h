@@ -31,7 +31,7 @@ public:
 private:
 	void gui_refresh();
 
-	void set_datastore_entry_model(OrderedDatastoreEntryQTableModel* entry_model);
+	void set_table_model(OrderedDatastoreEntryQTableModel* entry_model);
 
 	QModelIndex get_selected_single_index() const;
 
@@ -48,7 +48,6 @@ private:
 	void handle_recent_datastores_changed();
 	void handle_save_recent_datastores_toggled();
 
-	void clear_model();
 	void refresh_datastore_list();
 
 	void pressed_find(bool ascending);
