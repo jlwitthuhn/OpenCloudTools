@@ -262,13 +262,6 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 
 	clear_model();
 	change_universe(nullptr);
-
-	handle_search_text_changed();
-	handle_selected_datastore_changed();
-	handle_selected_datastore_entry_changed();
-	handle_show_datastore_filter_changed();
-
-	gui_refresh();
 }
 
 void StandardDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
