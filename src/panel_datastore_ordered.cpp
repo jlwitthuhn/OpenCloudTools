@@ -425,7 +425,6 @@ void OrderedDatastorePanel::handle_save_recent_datastores_toggled()
 	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
 	if (!universe)
 	{
-		OCTASSERT(false);
 		return;
 	}
 

@@ -26,6 +26,8 @@ public:
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
+	void gui_refresh();
+
 	void set_table_model(MemoryStoreSortedMapQTableModel* table_model);
 
 	void handle_recent_maps_changed();

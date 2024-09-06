@@ -22,6 +22,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "assert.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "gui_constants.h"
@@ -136,7 +137,6 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 
 	set_table_model(nullptr);
 	change_universe(nullptr);
-	handle_search_name_changed();
 }
 
 void MemoryStoreSortedMapPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
@@ -163,8 +163,27 @@ void MemoryStoreSortedMapPanel::change_universe(const std::shared_ptr<UniversePr
 		check_save_recent_maps->setChecked(false);
 	}
 
-	handle_recent_maps_changed();
 	set_table_model(nullptr);
+	gui_refresh();
+}
+
+void MemoryStoreSortedMapPanel::gui_refresh()
+{
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		setEnabled(false);
+		return;
+	}
+
+	setEnabled(true);
+
+	const bool list_enabled = edit_map_name->text().size() > 0;
+	button_list_all_asc->setEnabled(list_enabled);
+	button_list_all_desc->setEnabled(list_enabled);
+
+	const QList<QListWidgetItem*> selected = list_maps->selectedItems();
+	button_remove_recent_map->setEnabled(selected.size() == 1);
 }
 
 void MemoryStoreSortedMapPanel::set_table_model(MemoryStoreSortedMapQTableModel* const table_model)
@@ -181,13 +200,16 @@ void MemoryStoreSortedMapPanel::set_table_model(MemoryStoreSortedMapQTableModel*
 
 void MemoryStoreSortedMapPanel::handle_recent_maps_changed()
 {
-	list_maps->clear();
-	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
+	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
 	{
-		for (const QString& this_map : universe->get_recent_mem_sorted_map_set())
-		{
-			list_maps->addItem(this_map);
-		}
+		return;
+	}
+
+	list_maps->clear();
+	for (const QString& this_map : universe->get_recent_mem_sorted_map_set())
+	{
+		list_maps->addItem(this_map);
 	}
 }
 
@@ -201,10 +223,7 @@ void MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled()
 
 void MemoryStoreSortedMapPanel::handle_search_name_changed()
 {
-	const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock();
-	const bool enabled = universe && edit_map_name->text().size() > 0;
-	button_list_all_asc->setEnabled(enabled);
-	button_list_all_desc->setEnabled(enabled);
+	gui_refresh();
 }
 
 void MemoryStoreSortedMapPanel::handle_selected_map_changed()
@@ -219,39 +238,51 @@ void MemoryStoreSortedMapPanel::handle_selected_map_changed()
 void MemoryStoreSortedMapPanel::pressed_list_all(const bool ascending)
 {
 	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
-	if (universe && edit_map_name->text().trimmed().size() > 0)
+	if (!universe)
 	{
-		const long long universe_id = universe->get_universe_id();
-		const QString map_name = edit_map_name->text().trimmed();
-		const size_t result_limit = edit_list_limit->text().trimmed().toULongLong();
-
-		const auto req = std::make_shared<MemoryStoreSortedMapGetListRequest>(api_key, universe_id, map_name, ascending);
-		if (result_limit > 0)
-		{
-			req->set_result_limit(result_limit);
-		}
-
-		OperationInProgressDialog diag{ this, req };
-		diag.exec();
-
-		if (check_save_recent_maps->isChecked() && req->get_items().size() > 0)
-		{
-			universe->add_recent_mem_sorted_map(map_name);
-		}
-
-		MemoryStoreSortedMapQTableModel* const model = new MemoryStoreSortedMapQTableModel{ tree_view, req->get_items() };
-		set_table_model(model);
+		return;
 	}
+
+	if (edit_map_name->text().trimmed().size() == 0)
+	{
+		return;
+	}
+
+	const long long universe_id = universe->get_universe_id();
+	const QString map_name = edit_map_name->text().trimmed();
+	const size_t result_limit = edit_list_limit->text().trimmed().toULongLong();
+
+	const auto req = std::make_shared<MemoryStoreSortedMapGetListRequest>(api_key, universe_id, map_name, ascending);
+	if (result_limit > 0)
+	{
+		req->set_result_limit(result_limit);
+	}
+
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (check_save_recent_maps->isChecked() && req->get_items().size() > 0)
+	{
+		universe->add_recent_mem_sorted_map(map_name);
+	}
+
+	MemoryStoreSortedMapQTableModel* const model = new MemoryStoreSortedMapQTableModel{ tree_view, req->get_items() };
+	set_table_model(model);
 }
 
 void MemoryStoreSortedMapPanel::pressed_remove_recent_map()
 {
-	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (universe)
 	{
-		const QList<QListWidgetItem*> selected = list_maps->selectedItems();
-		if (selected.size() == 1)
-		{
-			universe->remove_recent_mem_sorted_map(selected.front()->text());
-		}
+		return;
 	}
+
+	const QList<QListWidgetItem*> selected = list_maps->selectedItems();
+	if (selected.size() != 1)
+	{
+		return;
+	}
+
+	universe->remove_recent_mem_sorted_map(selected.front()->text());
 }
