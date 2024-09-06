@@ -23,6 +23,8 @@ public:
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
+	void gui_refresh();
+
 	void handle_add_used_topics_toggled();
 	void handle_recent_topic_list_changed();
 	void handle_selected_topic_changed();

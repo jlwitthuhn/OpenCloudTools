@@ -102,12 +102,20 @@ void MessagingServicePanel::change_universe(const std::shared_ptr<UniverseProfil
 	{
 		add_used_topics_check->setChecked(false);
 	}
-	const bool enabled = static_cast<bool>(universe);
-	add_used_topics_check->setEnabled(enabled);
-	add_topic_button->setEnabled(enabled);
-	remove_topic_button->setEnabled(enabled);
-	send_button->setEnabled(enabled);
 	handle_recent_topic_list_changed();
+	gui_refresh();
+}
+
+void MessagingServicePanel::gui_refresh()
+{
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		setEnabled(false);
+		return;
+	}
+
+	setEnabled(true);
 }
 
 void MessagingServicePanel::handle_add_used_topics_toggled()

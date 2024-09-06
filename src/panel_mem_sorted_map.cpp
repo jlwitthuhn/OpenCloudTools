@@ -164,6 +164,7 @@ void MemoryStoreSortedMapPanel::change_universe(const std::shared_ptr<UniversePr
 	}
 
 	set_table_model(nullptr);
+	handle_recent_maps_changed();
 	gui_refresh();
 }
 
