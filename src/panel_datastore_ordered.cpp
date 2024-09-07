@@ -57,6 +57,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 				connect(list_datastore_index, &QListWidget::itemSelectionChanged, this, &OrderedDatastorePanel::handle_selected_datastore_changed);
 
 				edit_datastore_index_filter = new QLineEdit{ group_index };
+				edit_datastore_index_filter->setPlaceholderText("filter");
 				edit_datastore_index_filter->setToolTip("Only datastore names matching this text box will be displayed.");
 				connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &OrderedDatastorePanel::refresh_datastore_list);
 
