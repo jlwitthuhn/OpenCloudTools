@@ -20,6 +20,8 @@ public:
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 
 private:
+	void gui_refresh();
+
 	void handle_hidden_datastores_changed();
 	void handle_list_selection_changed();
 

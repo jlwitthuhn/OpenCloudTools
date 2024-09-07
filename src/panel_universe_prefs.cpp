@@ -69,18 +69,28 @@ void UniversePreferencesPanel::change_universe(const std::shared_ptr<UniversePro
 		conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
 	}
 
-	const bool enabled = static_cast<bool>(universe);
-	button_add->setEnabled(enabled);
 	handle_hidden_datastores_changed();
+	gui_refresh();
+}
+
+void UniversePreferencesPanel::gui_refresh()
+{
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		setEnabled(false);
+		return;
+	}
+
+	setEnabled(true);
+
+	const QList<QListWidgetItem*> selected = hidden_datastore_list->selectedItems();
+	button_remove->setEnabled(selected.size() == 1);
 }
 
 void UniversePreferencesPanel::handle_hidden_datastores_changed()
 {
-	while (hidden_datastore_list->count() > 0)
-	{
-		QListWidgetItem* this_item = hidden_datastore_list->takeItem(0);
-		delete this_item;
-	}
+	hidden_datastore_list->clear();
 
 	if (const std::shared_ptr<const UniverseProfile> universe = attached_universe.lock())
 	{
@@ -92,12 +102,13 @@ void UniversePreferencesPanel::handle_hidden_datastores_changed()
 			hidden_datastore_list->addItem(this_item);
 		}
 	}
+
+	gui_refresh();
 }
 
 void UniversePreferencesPanel::handle_list_selection_changed()
 {
-	QList<QListWidgetItem*> selected = hidden_datastore_list->selectedItems();
-	button_remove->setEnabled(selected.size() == 1);
+	gui_refresh();
 }
 
 void UniversePreferencesPanel::pressed_add()
