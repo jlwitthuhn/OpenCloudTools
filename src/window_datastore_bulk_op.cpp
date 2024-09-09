@@ -30,6 +30,7 @@
 #include "profile.h"
 #include "roblox_time.h"
 #include "sqlite_wrapper.h"
+#include "util_alert.h"
 #include "window_datastore_bulk_op_progress.h"
 
 DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe, const std::vector<QString>& datastore_names) :
@@ -437,7 +438,21 @@ void DatastoreBulkUndeleteWindow::pressed_submit()
 		{
 			const QString scope = filter_enabled_check->isChecked() ? filter_scope_edit->text().trimmed() : "";
 			const QString key_prefix = filter_enabled_check->isChecked() ? filter_key_prefix_edit->text().trimmed() : "";
-			DatastoreBulkUndeleteProgressWindow* progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe->get_universe_id(), scope, key_prefix, selected_datastores, get_undelete_after_time()};
+			DatastoreBulkUndeleteProgressWindow* progress_window = nullptr;
+			if (time_filter_check->isChecked())
+			{
+				const std::optional<QDateTime> undelete_time = get_undelete_after_time();
+				if (undelete_time.has_value() == false)
+				{
+					alert_error_blocking("Failed to Get Time", "Unable to determine Roblox Server time, aborting.");
+					close();
+				}
+				progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe->get_universe_id(), scope, key_prefix, selected_datastores, get_undelete_after_time() };
+			}
+			else
+			{
+				progress_window = new DatastoreBulkUndeleteProgressWindow{ dynamic_cast<QWidget*>(parent()), api_key, universe->get_universe_id(), scope, key_prefix, selected_datastores, std::nullopt };
+			}
 			close();
 			progress_window->show();
 			progress_window->start();
@@ -462,46 +477,49 @@ void DatastoreBulkUndeleteWindow::pressed_toggle_time_filter()
 
 std::optional<QDateTime> DatastoreBulkUndeleteWindow::get_undelete_after_time() const
 {
-	if (time_filter_check->isChecked())
+	if (time_filter_check->isChecked() == false)
 	{
-		if (const std::optional<QDateTime> roblox_time = RobloxTime::get_roblox_time())
+		OCTASSERT(false);
+		return std::nullopt;
+	}
+
+	const std::optional<QDateTime> roblox_time = RobloxTime::get_roblox_time();
+	if (roblox_time.has_value() == false)
+	{
+		OCTASSERT(false);
+		return std::nullopt;
+	}
+
+	QDateTime result{ *roblox_time };
+
+	{
+		bool success = false;
+		const long long days = day_edit->text().toLongLong(&success);
+		if (success)
 		{
-			QDateTime result{ *roblox_time };
-
-			{
-				bool success = false;
-				const long long days = day_edit->text().toLongLong(&success);
-				if (success)
-				{
-					result = result.addDays(-1 * days);
-				}
-			}
-
-			{
-				long long seconds_to_subtract = 0;
-
-				{
-					bool hours_success = false;
-					const long long hours = hour_edit->text().toLongLong(&hours_success);
-					if (hours_success)
-					{
-						seconds_to_subtract += hours * 60 * 60;
-					}
-				}
-
-				{
-					bool minutes_success = false;
-					const long long minutes = min_edit->text().toLongLong(&minutes_success);
-					if (minutes_success)
-					{
-						seconds_to_subtract += minutes * 60;
-					}
-				}
-
-				return result.addSecs(-1 * seconds_to_subtract);
-			}
+			result = result.addDays(-1 * days);
 		}
 	}
 
-	return std::nullopt;
+	long long seconds_to_subtract = 0;
+
+	{
+		bool hours_success = false;
+		const long long hours = hour_edit->text().toLongLong(&hours_success);
+		if (hours_success)
+		{
+			seconds_to_subtract += hours * 60 * 60;
+		}
+	}
+
+	{
+		bool minutes_success = false;
+		const long long minutes = min_edit->text().toLongLong(&minutes_success);
+		if (minutes_success)
+		{
+			seconds_to_subtract += minutes * 60;
+		}
+	}
+
+	return result.addSecs(-1 * seconds_to_subtract);
 }
