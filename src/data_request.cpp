@@ -877,6 +877,34 @@ void StandardDatastoreGetListRequest::handle_http_200(const QString& body, const
 	}
 }
 
+StandardDatastorePostSnapshotRequest::StandardDatastorePostSnapshotRequest(const QString& api_key, long long universe_id)
+	: DataRequest{ api_key }, universe_id{ universe_id }
+{
+	request_type = HttpRequestType::Post;
+	req_body = DataRequestBody{ "{}" };
+}
+
+QString StandardDatastorePostSnapshotRequest::get_title_string() const
+{
+	return "Snapshotting datastores...";
+}
+
+QNetworkRequest StandardDatastorePostSnapshotRequest::build_request(std::optional<QString>) const
+{
+	return HttpRequestBuilder::standard_datastore_snapshot_v2(api_key, universe_id);
+}
+
+void StandardDatastorePostSnapshotRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	const std::optional<PostStandardDatastoreSnapshotResponseV2> response = PostStandardDatastoreSnapshotResponseV2::from(body);
+	if (response)
+	{
+		new_snapshot_taken = response->get_new_snapshot_taken();
+		latest_snapshot_time = response->get_latest_snapshot_time();
+	}
+	do_success();
+}
+
 UniverseGetDetailsRequest::UniverseGetDetailsRequest(const QString& api_key, const long long universe_id)
 	: DataRequest{ api_key }, universe_id{ universe_id }
 {

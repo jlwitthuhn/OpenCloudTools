@@ -413,7 +413,6 @@ private:
 	std::optional<QString> attributes;
 };
 
-
 class StandardDatastoreGetListRequest : public DataRequest
 {
 public:
@@ -430,6 +429,26 @@ private:
 	long long universe_id;
 
 	std::vector<QString> datastore_names;
+};
+
+class StandardDatastorePostSnapshotRequest : public DataRequest
+{
+public:
+	StandardDatastorePostSnapshotRequest(const QString& api_key, long long universe_id);
+
+	virtual QString get_title_string() const override;
+
+	const std::optional<bool>& get_new_snapshot_taken() const { return new_snapshot_taken; }
+	const std::optional<QString>& get_latest_snapshot_time() const { return latest_snapshot_time; }
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+
+	std::optional<bool> new_snapshot_taken;
+	std::optional<QString> latest_snapshot_time;
 };
 
 class UniverseGetDetailsRequest : public DataRequest

@@ -21,6 +21,7 @@ namespace ToolTip
 	};
 	static const QString BulkDataPanel_Delete{ "Delete all of the entries in one or more datastores." };
 	static const QString BulkDataPanel_ResumeDownload{ "Resume a previous bulk download from an existing sqlite database." };
+	static const QString BulkDataPanel_Snapshot{ "Make a snapshot of the current state of all datastores in this universe. After modifying an entry, you will be able to restore it to the state from this snapshot for 30 days." };
 	static const QString BulkDataPanel_Undelete{ "Scan one or more datastores for deleted entries and restore their previous version." };
 	static const QString BulkDataPanel_Upload{
 		"Upload a sqlite datastore dump.\n"

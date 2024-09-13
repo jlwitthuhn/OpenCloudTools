@@ -123,3 +123,19 @@ private:
 
 	QString display_name;
 };
+
+class PostStandardDatastoreSnapshotResponseV2
+{
+public:
+	static std::optional<PostStandardDatastoreSnapshotResponseV2> from(const QString& json);
+
+	const bool get_new_snapshot_taken() const { return new_snapshot_taken; }
+	const QString& get_latest_snapshot_time() const { return latest_snapshot_time; }
+
+private:
+	PostStandardDatastoreSnapshotResponseV2(bool new_snapshot_taken, const QString& last_snapshot_time)
+		: new_snapshot_taken{ new_snapshot_taken }, latest_snapshot_time{ last_snapshot_time } {}
+
+	bool new_snapshot_taken = false;
+	QString latest_snapshot_time;
+};

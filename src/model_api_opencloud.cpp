@@ -10,6 +10,20 @@
 #include "assert.h"
 #include "util_json.h"
 
+static std::optional<bool> extract_bool(const QJsonObject& obj, const QString& name)
+{
+	const QJsonObject::const_iterator iter = obj.find(name);
+	if (iter == obj.end())
+	{
+
+	}
+	if (iter->isBool() == false)
+	{
+		return std::nullopt;
+	}
+	return iter->toBool();
+}
+
 static std::optional<JsonValue> extract_json(QJsonObject& obj, const QString& name)
 {
 	const QJsonObject::iterator iter = obj.find(name);
@@ -497,4 +511,20 @@ std::optional<GetUniverseDetailsResponse> GetUniverseDetailsResponse::from(const
 	{
 		return std::nullopt;
 	}
+}
+
+std::optional<PostStandardDatastoreSnapshotResponseV2> PostStandardDatastoreSnapshotResponseV2::from(const QString& json)
+{
+	const QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	const QJsonObject root = doc.object();
+
+	const std::optional<bool> new_snapshot = extract_bool(root, "newSnapshotTaken");
+	const std::optional<QString> latest_snapshot = extract_string(root, "latestSnapshotTime");
+
+	if (!new_snapshot || !latest_snapshot)
+	{
+		return std::nullopt;
+	}
+
+	return PostStandardDatastoreSnapshotResponseV2{ *new_snapshot, *latest_snapshot };
 }

@@ -27,6 +27,7 @@ private:
 	void pressed_delete();
 	void pressed_download();
 	void pressed_download_resume();
+	void pressed_snapshot();
 	void pressed_undelete();
 	void pressed_upload();
 
@@ -35,6 +36,7 @@ private:
 
 	QPushButton* datastore_download_button = nullptr;
 	QPushButton* datastore_download_resume_button = nullptr;
+	QPushButton* datastore_snapshot_button = nullptr;
 
 	QCheckBox* danger_buttons_check = nullptr;
 	QPushButton* datastore_delete_button = nullptr;

@@ -25,6 +25,7 @@
 #include "profile.h"
 #include "sqlite_wrapper.h"
 #include "tooltip_text.h"
+#include "util_alert.h"
 #include "window_datastore_bulk_op.h"
 #include "window_datastore_bulk_op_progress.h"
 
@@ -49,6 +50,11 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 			datastore_download_resume_button->setToolTip(ToolTip::BulkDataPanel_ResumeDownload);
 			datastore_download_resume_button->setMinimumWidth(150);
 			connect(datastore_download_resume_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_download_resume);
+
+			datastore_snapshot_button = new QPushButton{ "Make snapshot...", datastore_group };
+			datastore_snapshot_button->setToolTip(ToolTip::BulkDataPanel_Snapshot);
+			datastore_snapshot_button->setMinimumWidth(150);
+			connect(datastore_snapshot_button, &QPushButton::clicked, this, &BulkDataPanel::pressed_snapshot);
 
 			QFrame* separator = new QFrame{ datastore_group };
 			separator->setFrameShape(QFrame::HLine);
@@ -75,6 +81,7 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 			QVBoxLayout* group_layout = new QVBoxLayout{ datastore_group };
 			group_layout->addWidget(datastore_download_button);
 			group_layout->addWidget(datastore_download_resume_button);
+			group_layout->addWidget(datastore_snapshot_button);
 			group_layout->addWidget(separator);
 			group_layout->addWidget(danger_buttons_check);
 			group_layout->addWidget(datastore_delete_button);
@@ -233,6 +240,55 @@ void BulkDataPanel::pressed_download_resume()
 	DatastoreBulkDownloadProgressWindow* const progress_window = new DatastoreBulkDownloadProgressWindow{ this, api_key, universe_id, std::move(writer) };
 	progress_window->show();
 	progress_window->start();
+}
+
+void BulkDataPanel::pressed_snapshot()
+{
+	const std::shared_ptr<UniverseProfile> universe_profile = attached_universe.lock();
+	if (!universe_profile)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	const long long universe_id = universe_profile->get_universe_id();
+
+	QMessageBox* const confirm_message_box = new QMessageBox{ this };
+	confirm_message_box->setWindowTitle("Confirm Snapshot");
+	confirm_message_box->setText("You can only take a snapshot once per day (UTC).\nDo you want to snapshow now?");
+	confirm_message_box->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	const int confirm_status = confirm_message_box->exec();
+	if (confirm_status != QMessageBox::Yes)
+	{
+		return;
+	}
+
+	const auto req = std::make_shared<StandardDatastorePostSnapshotRequest>(api_key, universe_id);
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (req->req_status() != DataRequestStatus::Success)
+	{
+		alert_error_blocking("Failed to Snapshot", "Failed to create snapshot.", this);
+		return;
+	}
+
+	const std::optional<bool> new_snapshot_taken = req->get_new_snapshot_taken();
+	std::optional<QString> latest_snapshot_time = req->get_latest_snapshot_time();
+	if (!new_snapshot_taken || !latest_snapshot_time)
+	{
+		alert_error_blocking("Bad Response", "Received HTTP 200 with invalid data. Snapshot may have failed.", this);
+		return;
+	}
+
+	const QString status_bool = *new_snapshot_taken ? "true" : "false";
+	const QString success_message = QString{ "New snapshot taken: %1\nLatest snapshot time: %2" }.arg(status_bool, *latest_snapshot_time);
+	QMessageBox* const success_message_box = new QMessageBox{ this };
+	success_message_box->setIcon(QMessageBox::Information);
+	success_message_box->setWindowTitle("Snapshot Complete");
+	success_message_box->setText(success_message);
+	success_message_box->setStandardButtons(QMessageBox::Ok);
+	success_message_box->exec();
 }
 
 void BulkDataPanel::pressed_undelete()

@@ -122,7 +122,7 @@ QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_post_increment(const
 
 QNetworkRequest HttpRequestBuilder::standard_datastore_get_list(const QString& api_key, const long long universe_id, std::optional<QString> cursor)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores?limit=50";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores?limit=50";
 	if (cursor)
 	{
 		url = url + "&cursor=" + QUrl::toPercentEncoding(*cursor);
@@ -132,9 +132,18 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_get_list(const QString& a
 	return req;
 }
 
+QNetworkRequest HttpRequestBuilder::standard_datastore_snapshot_v2(const QString& api_key, const long long universe_id)
+{
+	const QString url = base_url_standard_datastore_v2(universe_id) + ":snapshot";
+	QNetworkRequest req{ url };
+	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
 QNetworkRequest HttpRequestBuilder::standard_datastore_entry_delete(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores/datastore/entries/entry";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores/datastore/entries/entry";
 	url = url + "?datastoreName=" + QUrl::toPercentEncoding(datastore_name);
 	url = url + "&scope=" + QUrl::toPercentEncoding(scope);
 	url = url + "&entryKey=" + QUrl::toPercentEncoding(key_name);
@@ -146,7 +155,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_delete(const QStrin
 
 QNetworkRequest HttpRequestBuilder::standard_datastore_entry_get_details(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores/datastore/entries/entry";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores/datastore/entries/entry";
 	url = url + "?datastoreName=" + QUrl::toPercentEncoding(datastore_name);
 	url = url + "&scope=" + QUrl::toPercentEncoding(scope);
 	url = url + "&entryKey=" + QUrl::toPercentEncoding(key_name);
@@ -158,7 +167,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_get_details(const Q
 
 QNetworkRequest HttpRequestBuilder::standard_datastore_entry_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& prefix, std::optional<QString> cursor)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores/datastore/entries?limit=100";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores/datastore/entries?limit=100";
 	url = url + "&datastoreName=" + QUrl::toPercentEncoding(datastore_name);
 	if (scope.size() > 0)
 	{
@@ -184,7 +193,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_get_list(const QStr
 
 QNetworkRequest HttpRequestBuilder::standard_datastore_entry_post(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& body_md5, const std::optional<QString>& userids, const std::optional<QString>& attributes)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores/datastore/entries/entry";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores/datastore/entries/entry";
 	url = url + "?datastoreName=" + QUrl::toPercentEncoding(datastore_name);
 	url = url + "&scope=" + QUrl::toPercentEncoding(scope);
 	url = url + "&entryKey=" + QUrl::toPercentEncoding(key_name);
@@ -206,7 +215,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_post(const QString&
 
 QNetworkRequest HttpRequestBuilder::standard_datastore_entry_version_get_details(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores/datastore/entries/entry/versions/version";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores/datastore/entries/entry/versions/version";
 	url = url + "?datastoreName=" + QUrl::toPercentEncoding(datastore_name);
 	url = url + "&scope=" + QUrl::toPercentEncoding(scope);
 	url = url + "&entryKey=" + QUrl::toPercentEncoding(key_name);
@@ -219,7 +228,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_version_get_details
 
 QNetworkRequest HttpRequestBuilder::standard_datastore_entry_version_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, std::optional<QString> cursor)
 {
-	QString url = base_url_standard_datastorel(universe_id) + "/standard-datastores/datastore/entries/entry/versions?sortOrder=Descending";
+	QString url = base_url_standard_datastore(universe_id) + "/standard-datastores/datastore/entries/entry/versions?sortOrder=Descending";
 	url = url + "&datastoreName=" + QUrl::toPercentEncoding(datastore_name);
 	url = url + "&scope=" + QUrl::toPercentEncoding(scope);
 	url = url + "&entryKey=" + QUrl::toPercentEncoding(key_name);
@@ -256,9 +265,14 @@ QString HttpRequestBuilder::base_url_ordered_datastore(const long long universe_
 	return QString{ "https://apis.roblox.com/ordered-data-stores/v1/universes/" } + QString::number(universe_id);
 }
 
-QString HttpRequestBuilder::base_url_standard_datastorel(const long long universe_id)
+QString HttpRequestBuilder::base_url_standard_datastore(const long long universe_id)
 {
 	return QString{ "https://apis.roblox.com/datastores/v1/universes/" } + QString::number(universe_id);
+}
+
+QString HttpRequestBuilder::base_url_standard_datastore_v2(const long long universe_id)
+{
+	return QString{ "https://apis.roblox.com/cloud/v2/universes/" } + QString::number(universe_id) + "/data-stores";
 }
 
 QString HttpRequestBuilder::base_url_universe(const long long universe_id)
