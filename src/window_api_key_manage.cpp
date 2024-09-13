@@ -44,7 +44,7 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 
 #ifdef OCT_NEW_GUI
 	OCTASSERT(parent);
-	setWindowModality(Qt::WindowModality::WindowModal);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 #endif
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
@@ -237,7 +237,7 @@ AddApiKeyWindow::AddApiKeyWindow(QWidget* const parent, const std::optional<ApiK
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	OCTASSERT(parent != nullptr);
-	setWindowModality(Qt::WindowModality::WindowModal);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 
 	const std::shared_ptr<const ApiKeyProfile> existing_key_profile = existing_key_id_in.has_value() ? UserProfile::get().get_api_key_by_id(*existing_key_id_in) : nullptr;
 	if (existing_key_profile)

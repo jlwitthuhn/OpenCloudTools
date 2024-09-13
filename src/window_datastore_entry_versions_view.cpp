@@ -32,7 +32,7 @@ ViewDatastoreEntryVersionsWindow::ViewDatastoreEntryVersionsWindow(QWidget* pare
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	OCTASSERT(parent != nullptr);
-	setWindowModality(Qt::WindowModality::WindowModal);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 
 	setWindowTitle("View Versions");
 	setMinimumWidth(725);

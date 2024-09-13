@@ -34,7 +34,7 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	setMinimumHeight(380);
 
 	OCTASSERT(parent != nullptr);
-	setWindowModality(Qt::WindowModality::WindowModal);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };

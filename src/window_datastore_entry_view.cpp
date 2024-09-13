@@ -31,7 +31,7 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	OCTASSERT(parent != nullptr);
-	setWindowModality(Qt::WindowModality::WindowModal);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 
 	switch (view_edit_mode)
 	{

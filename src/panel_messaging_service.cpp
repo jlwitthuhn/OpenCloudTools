@@ -221,7 +221,7 @@ MessagingServiceAddTopicWindow::MessagingServiceAddTopicWindow(QWidget* const pa
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	OCTASSERT(parent != nullptr);
-	setWindowModality(Qt::WindowModality::WindowModal);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 
 	QWidget* info_panel = new QWidget{ this };
 	{
