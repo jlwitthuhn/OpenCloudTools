@@ -4,6 +4,7 @@
 #include <QObject>
 
 class QLineEdit;
+class QTreeWidget;
 
 class MyNewMainWindow : public QMainWindow
 {
@@ -17,5 +18,9 @@ private:
 
 	void pressed_change_key();
 
-	QLineEdit* api_key_name_edit;
+	void rebuild_universe_tree();
+
+	QLineEdit* edit_api_key_name = nullptr;
+
+	QTreeWidget* tree_universe = nullptr;
 };
