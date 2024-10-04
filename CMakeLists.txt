@@ -93,6 +93,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/util_wed.h
 	./src/widget_text_log.cpp
 	./src/widget_text_log.h
+	./src/window_add_universe.cpp
+	./src/window_add_universe.h
 	./src/window_api_key_manage.cpp
 	./src/window_api_key_manage.h
 	./src/window_datastore_bulk_op.cpp

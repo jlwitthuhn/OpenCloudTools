@@ -29,7 +29,7 @@ class MyMainWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
-	explicit MyMainWindow(QWidget* parent, QString title, QString api_key);
+	MyMainWindow(QWidget* parent, QString title, QString api_key);
 
 private:
 	void selected_universe_combo_changed();
@@ -60,29 +60,4 @@ private:
 	HttpLogPanel* http_log_panel = nullptr;
 	MessagingServicePanel* messaging_service_panel = nullptr;
 	UniversePreferencesPanel* universe_preferences_panel = nullptr;
-};
-
-class MainWindowAddUniverseWindow : public QWidget
-{
-	Q_OBJECT
-public:
-	explicit MainWindowAddUniverseWindow(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& existing_universe);
-
-private:
-	bool id_is_valid() const;
-	bool name_is_valid() const;
-
-	void text_changed();
-	void pressed_add();
-	void pressed_fetch();
-
-
-	QString api_key;
-	std::weak_ptr<UniverseProfile> attached_universe;
-
-	QLineEdit* name_edit = nullptr;
-	QLineEdit* id_edit = nullptr;
-
-	QPushButton* fetch_name_button = nullptr;
-	QPushButton* add_button = nullptr;
 };
