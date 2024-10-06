@@ -12,7 +12,8 @@
 
 AddUniverseWindow::AddUniverseWindow(QWidget* const parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& existing_universe) :
 	QWidget{ parent, Qt::Window },
-	api_key{ api_key }
+	api_key{ api_key },
+	attached_universe{ existing_universe }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
