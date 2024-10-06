@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include <QMainWindow>
+#include <QMetaObject>
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -60,4 +62,6 @@ private:
 	HttpLogPanel* http_log_panel = nullptr;
 	MessagingServicePanel* messaging_service_panel = nullptr;
 	UniversePreferencesPanel* universe_preferences_panel = nullptr;
+
+	std::vector<QMetaObject::Connection> universe_details_updated_conns;
 };

@@ -227,12 +227,41 @@ void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProf
 	const std::shared_ptr<const ApiKeyProfile> this_profile{ UserProfile::get_active_api_key()};
 	if (this_profile)
 	{
+		for (const QMetaObject::Connection& this_conn : universe_details_updated_conns)
+		{
+			disconnect(this_conn);
+		}
+		universe_details_updated_conns.clear();
+
+		std::optional<UniverseProfile::Id> already_selected_id;
+		const int already_selected_index = select_universe_combo->currentIndex();
+		if (already_selected_index > -1)
+		{
+			const QByteArray this_q_id = select_universe_combo->itemData(static_cast<int>(already_selected_index)).toByteArray();
+			already_selected_id = this_q_id;
+		}
+
 		select_universe_combo->clear();
 
 		for (const std::shared_ptr<const UniverseProfile> this_universe : this_profile->get_universe_list())
 		{
 			const QString formatted = QString{ "%1 [%2]" }.arg(this_universe->get_name()).arg(this_universe->get_universe_id());
 			select_universe_combo->addItem(formatted, QVariant{ this_universe->get_id().as_q_byte_array() });
+
+			const QMetaObject::Connection updated_conn = connect(this_universe.get(), &UniverseProfile::details_changed, this,
+				[this] {
+					handle_universe_list_changed(std::nullopt);
+				}
+			);
+			universe_details_updated_conns.push_back(updated_conn);
+
+			if (already_selected_id && !new_universe)
+			{
+				if (this_universe->get_id() == *already_selected_id)
+				{
+					select_universe_combo->setCurrentIndex(select_universe_combo->count() - 1);
+				}
+			}
 		}
 
 		if (new_universe)
@@ -241,7 +270,7 @@ void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProf
 			{
 				const QByteArray this_q_id = select_universe_combo->itemData(static_cast<int>(i)).toByteArray();
 				const UniverseProfile::Id this_id{ this_q_id };
-				if (this_id == new_universe)
+				if (this_id == *new_universe)
 				{
 					select_universe_combo->setCurrentIndex(static_cast<int>(i));
 					break;
