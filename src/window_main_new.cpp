@@ -16,18 +16,10 @@
 
 #include "assert.h"
 #include "profile.h"
+#include "util_qvariant.h"
 #include "window_add_universe.h"
 #include "window_api_key_manage.h"
 #include "window_main_menu_bar.h"
-
-static bool variant_is_byte_array(const QVariant& variant)
-{
-#ifdef QT5_COMPAT
-	return variant.type() == QVariant::Type::ByteArray;
-#else
-	return variant.metaType().id() == QMetaType::QByteArray;
-#endif
-}
 
 MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 {
@@ -140,7 +132,7 @@ std::optional<UniverseProfile::Id> MyNewMainWindow::get_selected_universe_id()
 	}
 
 	const QVariant user_data = selected_item->data(0, Qt::UserRole);
-	if (variant_is_byte_array(user_data) == false)
+	if (qvariant_is_byte_array(user_data) == false)
 	{
 		OCTASSERT(false);
 		return {};

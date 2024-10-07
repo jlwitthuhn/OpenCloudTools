@@ -87,6 +87,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/util_json.cpp
 	./src/util_json.h
 	./src/util_lock.h
+	./src/util_qvariant.cpp
+	./src/util_qvariant.h
 	./src/util_validator.cpp
 	./src/util_validator.h
 	./src/util_wed.cpp

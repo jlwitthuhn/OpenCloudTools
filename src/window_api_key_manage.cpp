@@ -26,16 +26,8 @@
 #include "profile.h"
 #include "tooltip_text.h"
 #include "util_id.h"
+#include "util_qvariant.h"
 #include "window_main.h"
-
-static bool variant_is_byte_array(const QVariant& variant)
-{
-#ifdef QT5_COMPAT
-	return variant.type() == QVariant::Type::ByteArray;
-#else
-	return variant.metaType().id() == QMetaType::QByteArray;
-#endif
-}
 
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
@@ -113,7 +105,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 	if (item)
 	{
 		const QVariant data_var = item->data(Qt::UserRole);
-		if (variant_is_byte_array(data_var))
+		if (qvariant_is_byte_array(data_var))
 		{
 			const ApiKeyProfile::Id id{ data_var.toByteArray() };
 			UserProfile::get().activate_api_key(id);
@@ -143,7 +135,7 @@ void ManageApiKeysWindow::pressed_edit()
 	if (selected.size() == 1)
 	{
 		const QVariant data_var = selected.first()->data(Qt::UserRole);
-		if (variant_is_byte_array(data_var))
+		if (qvariant_is_byte_array(data_var))
 		{
 			const ApiKeyProfile::Id id{ data_var.toByteArray() };
 			if (UserProfile::get().get_api_key_by_id(id))
@@ -161,7 +153,7 @@ void ManageApiKeysWindow::pressed_delete()
 	if (selected.size() == 1)
 	{
 		const QVariant selected_data = selected.first()->data(Qt::UserRole);
-		if (variant_is_byte_array(selected_data))
+		if (qvariant_is_byte_array(selected_data))
 		{
 			QMessageBox* msg_box = new QMessageBox{ this };
 			msg_box->setWindowTitle("Confirm deletion");
@@ -183,7 +175,7 @@ void ManageApiKeysWindow::pressed_select()
 	if (selected.size() == 1)
 	{
 		const QVariant selected_data = selected.first()->data(Qt::UserRole);
-		if (variant_is_byte_array(selected_data))
+		if (qvariant_is_byte_array(selected_data))
 		{
 			ApiKeyProfile::Id id{ selected_data.toByteArray() };
 			UserProfile::get().activate_api_key(id);
