@@ -129,7 +129,7 @@ class PostStandardDatastoreSnapshotResponseV2
 public:
 	static std::optional<PostStandardDatastoreSnapshotResponseV2> from(const QString& json);
 
-	const bool get_new_snapshot_taken() const { return new_snapshot_taken; }
+	bool get_new_snapshot_taken() const { return new_snapshot_taken; }
 	const QString& get_latest_snapshot_time() const { return latest_snapshot_time; }
 
 private:

@@ -201,7 +201,7 @@ void ManageApiKeysWindow::rebuild_slots()
 	{
 		QListWidgetItem* const this_item = new QListWidgetItem(list_widget);
 		const ApiKeyProfile::Id this_id = this_key->get_id();
-		this_item->setData(Qt::UserRole, this_key->get_id().as_q_byte_array());
+		this_item->setData(Qt::UserRole, this_id.as_q_byte_array());
 		this_item->setText(this_key->get_name());
 		list_widget->addItem(this_item);
 	}

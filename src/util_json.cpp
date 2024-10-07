@@ -56,16 +56,14 @@ JsonValue JsonValue::from_json_object(const QString& input)
 
 JsonValue::JsonValue(const bool input) :
 	type{ JsonDataType::Bool },
-	json_string{ input ? "true" : "false" },
-	val_bool{ input }
+	json_string{ input ? "true" : "false" }
 {
 
 }
 
 JsonValue::JsonValue(const double input) :
 	type{ JsonDataType::Number },
-	json_string{ QString::fromStdString((std::stringstream{} << input).str()) },
-	val_number{ input }
+	json_string{ QString::fromStdString((std::stringstream{} << input).str()) }
 {
 
 }

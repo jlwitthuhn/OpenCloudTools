@@ -27,8 +27,6 @@ private:
 
 	JsonDataType type = JsonDataType::String;
 	QString json_string;
-	double val_number = 0.0;
-	bool val_bool = false;
 };
 
 std::optional<QString> condense_json(const QString& json_string);
