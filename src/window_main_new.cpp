@@ -1,9 +1,13 @@
 #include "window_main_new.h"
 
+#include <vector>
+
 #include <Qt>
+#include <QByteArray>
 #include <QDockWidget>
 #include <QLabel>
 #include <QLineEdit>
+#include <QList>
 #include <QMdiArea>
 #include <QMessageBox>
 #include <QPushButton>
@@ -11,6 +15,7 @@
 #include <QToolBar>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
 

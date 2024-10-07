@@ -83,6 +83,7 @@
 	{ symbol: [ "QTabWidget",            "private", "<QTabWidget>",            "public" ] },
 	{ symbol: [ "QTextEdit",             "private", "<QTextEdit>",             "public" ] },
 	{ symbol: [ "QTreeView",             "private", "<QTreeView>",             "public" ] },
+	{ symbol: [ "QTreeWidget",           "private", "<QTreeWidget>",           "public" ] },
 	{ symbol: [ "QTreeWidgetItem",       "private", "<QTreeWidgetItem>",       "public" ] },
 	{ symbol: [ "QVBoxLayout",           "private", "<QVBoxLayout>",           "public" ] },
 	{ symbol: [ "QWidget",               "private", "<QWidget>",               "public" ] },
