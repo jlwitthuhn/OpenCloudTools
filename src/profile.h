@@ -24,6 +24,8 @@ public:
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
+	QString get_display_name() const;
+
 	Id get_id() const { return id; }
 	QString get_name() const { return name; }
 	long long get_universe_id() const { return universe_id; }

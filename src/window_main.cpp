@@ -241,8 +241,7 @@ void MyMainWindow::handle_universe_list_changed(const std::optional<UniverseProf
 
 		for (const std::shared_ptr<const UniverseProfile> this_universe : this_profile->get_universe_list())
 		{
-			const QString formatted = QString{ "%1 [%2]" }.arg(this_universe->get_name()).arg(this_universe->get_universe_id());
-			select_universe_combo->addItem(formatted, QVariant{ this_universe->get_id().as_q_byte_array() });
+			select_universe_combo->addItem(this_universe->get_display_name(), QVariant{this_universe->get_id().as_q_byte_array()});
 
 			const QMetaObject::Connection updated_conn = connect(this_universe.get(), &UniverseProfile::details_changed, this,
 				[this] {

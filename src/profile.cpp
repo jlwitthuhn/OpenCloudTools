@@ -54,6 +54,11 @@ bool UniverseProfile::matches_name_and_id(const UniverseProfile& other) const
 	return name == other.name && universe_id == other.universe_id;
 }
 
+QString UniverseProfile::get_display_name() const
+{
+	return QString{ "%1 [%2]" }.arg(get_name()).arg(get_universe_id());
+}
+
 bool UniverseProfile::set_details(const QString& name_in, const long long universe_id_in)
 {
 	const bool name_good = name == name_in || is_name_available(name_in);

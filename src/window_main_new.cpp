@@ -230,7 +230,7 @@ void MyNewMainWindow::rebuild_universe_tree()
 	{
 		const QByteArray this_universe_id = this_universe->get_id().as_q_byte_array();
 		QTreeWidgetItem* const this_item = new QTreeWidgetItem{ tree_universe };
-		this_item->setText(0, this_universe->get_name());
+		this_item->setText(0, this_universe->get_display_name());
 		this_item->setData(0, Qt::UserRole, this_universe_id);
 		{
 			QTreeWidgetItem* const open_datastore = new QTreeWidgetItem{ this_item };

@@ -17,6 +17,11 @@
 #include "build_info.h"
 #include "profile.h"
 
+#ifdef OCT_NEW_GUI
+#include "assert.h"
+#include "window_api_key_manage.h"
+#endif
+
 MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent }
 {
 	connect(&(UserProfile::get()), &UserProfile::qt_theme_changed, this, &MyMainWindowMenuBar::handle_qt_theme_changed);
