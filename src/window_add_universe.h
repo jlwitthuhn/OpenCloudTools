@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
+#include <QString>
 #include <QWidget>
 
 class QLineEdit;

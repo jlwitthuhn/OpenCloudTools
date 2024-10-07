@@ -5,10 +5,12 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
+#include <Qt>
 #include <QAbstractItemModel>
-#include <QBoxLayout>
+#include <QAbstractItemView>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QFrame>
@@ -16,7 +18,6 @@
 #include <QHBoxLayout>
 #include <QItemSelectionModel>
 #include <QLabel>
-#include <QLayout>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidget>

@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QMetaObject>
 #include <QObject>
 #include <QWidget>
 

@@ -22,7 +22,6 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-#include "assert.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "gui_constants.h"

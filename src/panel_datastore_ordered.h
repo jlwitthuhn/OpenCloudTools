@@ -15,7 +15,6 @@ class QListWidget;
 class QModelIndex;
 class QPushButton;
 class QTreeView;
-class QWidget;
 
 class OrderedDatastoreEntryQTableModel;
 class UniverseProfile;

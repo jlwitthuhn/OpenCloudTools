@@ -9,11 +9,8 @@
 #include <Qt>
 #include <QByteArray>
 #include <QComboBox>
-#include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
-#include <QLayout>
-#include <QLineEdit>
 #include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
@@ -23,8 +20,6 @@
 #include <QWidget>
 
 #include "assert.h"
-#include "data_request.h"
-#include "diag_operation_in_progress.h"
 #include "http_wrangler.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_standard.h"
@@ -34,6 +29,7 @@
 #include "panel_messaging_service.h"
 #include "panel_universe_prefs.h"
 #include "profile.h"
+#include "util_id.h"
 #include "window_add_universe.h"
 #include "window_api_key_manage.h"
 #include "window_main_menu_bar.h"

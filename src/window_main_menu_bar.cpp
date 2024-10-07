@@ -14,10 +14,8 @@
 
 #include <sqlite3.h>
 
-#include "assert.h"
 #include "build_info.h"
 #include "profile.h"
-#include "window_api_key_manage.h"
 
 MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent }
 {

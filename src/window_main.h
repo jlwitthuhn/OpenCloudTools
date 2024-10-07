@@ -8,14 +8,13 @@
 #include <QMetaObject>
 #include <QObject>
 #include <QString>
-#include <QWidget>
 
 #include "profile.h"
 
 class QComboBox;
-class QLineEdit;
 class QPushButton;
 class QTabWidget;
+class QWidget;
 
 class BulkDataPanel;
 class StandardDatastorePanel;
@@ -24,8 +23,6 @@ class MemoryStoreSortedMapPanel;
 class MessagingServicePanel;
 class OrderedDatastorePanel;
 class UniversePreferencesPanel;
-
-class UniverseProfile;
 
 class MyMainWindow : public QMainWindow
 {

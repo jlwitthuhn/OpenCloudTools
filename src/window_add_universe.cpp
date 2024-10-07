@@ -1,9 +1,16 @@
 #include "window_add_universe.h"
 
+#include <optional>
+
+#include <Qt>
 #include <QFormLayout>
+#include <QHBoxLayout>
+#include <QLayout>
 #include <QLineEdit>
+#include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 #include "assert.h"
 #include "data_request.h"

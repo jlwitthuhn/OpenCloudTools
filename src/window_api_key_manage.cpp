@@ -16,7 +16,6 @@
 #include <QListWidget>
 #include <QMargins>
 #include <QMessageBox>
-#include <QMetaType>
 #include <QPushButton>
 #include <QString>
 #include <QVariant>
@@ -25,7 +24,6 @@
 #include "assert.h"
 #include "profile.h"
 #include "tooltip_text.h"
-#include "util_id.h"
 #include "util_qvariant.h"
 #include "window_main.h"
 

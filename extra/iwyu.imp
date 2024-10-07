@@ -30,6 +30,7 @@
 	{ symbol: [ "QMargins",              "private", "<QMargins>",            "public" ] },
 	{ symbol: [ "QMetaEnum",             "private", "<QMetaEnum>",           "public" ] },
 	{ symbol: [ "QMetaType",             "private", "<QMetaType>",           "public" ] },
+	{ symbol: [ "QMetaObject",           "private", "<QMetaObject>",         "public" ] },
 	{ symbol: [ "QObject",               "private", "<QObject>",             "public" ] },
 	{ symbol: [ "QPoint",                "private", "<QPoint>",              "public" ] },
 	{ symbol: [ "QSettings",             "private", "<QSettings>",           "public" ] },
@@ -82,6 +83,7 @@
 	{ symbol: [ "QTabWidget",            "private", "<QTabWidget>",            "public" ] },
 	{ symbol: [ "QTextEdit",             "private", "<QTextEdit>",             "public" ] },
 	{ symbol: [ "QTreeView",             "private", "<QTreeView>",             "public" ] },
+	{ symbol: [ "QTreeWidgetItem",       "private", "<QTreeWidgetItem>",       "public" ] },
 	{ symbol: [ "QVBoxLayout",           "private", "<QVBoxLayout>",           "public" ] },
 	{ symbol: [ "QWidget",               "private", "<QWidget>",               "public" ] },
 	# Qt Headers
