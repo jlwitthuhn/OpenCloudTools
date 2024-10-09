@@ -218,6 +218,13 @@ std::optional<UniverseProfile::Id> ApiKeyProfile::add_universe(const QString& un
 		return universe_id_available(id);
 	};
 	const std::shared_ptr<UniverseProfile> this_universe = std::make_shared<UniverseProfile>(nullptr, universe_name, universe_id, name_check, id_check);
+	const std::weak_ptr<UniverseProfile> weak_universe = this_universe;
+	connect(this_universe.get(), &UniverseProfile::details_changed, this, [this, weak_universe] {
+		if (auto shared_universe = weak_universe.lock())
+		{
+			emit universe_details_changed(shared_universe->get_id());
+		}
+	});
 	connect(this_universe.get(), &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &ApiKeyProfile::recent_mem_sorted_map_list_changed);

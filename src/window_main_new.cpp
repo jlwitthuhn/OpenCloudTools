@@ -32,7 +32,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	setWindowTitle("OpenCloudTools");
 	setMinimumSize(650, 500);
 
-	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, &MyNewMainWindow::on_active_api_key_changed);
+	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, &MyNewMainWindow::handle_active_api_key_changed);
 
 	MyMainWindowMenuBar* const menu_bar = new MyMainWindowMenuBar{ this };
 	setMenuBar(menu_bar);
@@ -110,11 +110,14 @@ void MyNewMainWindow::gui_refresh()
 	if (api_profile)
 	{
 		setEnabled(true);
+		edit_api_key_name->setText(api_profile->get_name());
 	}
 	else
 	{
 		setEnabled(false);
+		edit_api_key_name->clear();
 	}
+
 	const std::optional<UniverseProfile::Id> selected_universe = get_selected_universe_id();
 	const bool universe_buttons_active = static_cast<bool>(selected_universe);
 	button_edit_universe->setEnabled(universe_buttons_active);
@@ -146,22 +149,27 @@ std::optional<UniverseProfile::Id> MyNewMainWindow::get_selected_universe_id()
 	return ApiKeyProfile::Id{ user_data.toByteArray() };
 }
 
-void MyNewMainWindow::on_active_api_key_changed()
+void MyNewMainWindow::handle_active_api_key_changed()
 {
 	const std::shared_ptr<ApiKeyProfile> key_profile = UserProfile::get().get_active_api_key();
 	attached_profile = key_profile;
-	disconnect(attached_profile_universe_list_changed_conn);
-	attached_profile_universe_list_changed_conn = connect(key_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyNewMainWindow::handle_universe_list_changed);
+	disconnect(conn_attached_profile_details_changed);
+	conn_attached_profile_details_changed = connect(key_profile.get(), &ApiKeyProfile::details_changed, this, &MyNewMainWindow::handle_active_api_key_details_changed);
+	disconnect(conn_attached_profile_universe_details_changed);
+	conn_attached_profile_universe_details_changed = connect(key_profile.get(), &ApiKeyProfile::universe_details_changed, this, &MyNewMainWindow::handle_universe_details_changed);
+	disconnect(conn_attached_profile_universe_list_changed);
+	conn_attached_profile_universe_list_changed = connect(key_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyNewMainWindow::handle_universe_list_changed);
 
-	if (key_profile)
-	{
-		edit_api_key_name->setText(key_profile->get_name());
-	}
-	else
-	{
-		edit_api_key_name->clear();
-	}
+	rebuild_universe_tree();
+}
 
+void MyNewMainWindow::handle_active_api_key_details_changed()
+{
+	gui_refresh();
+}
+
+void MyNewMainWindow::handle_universe_details_changed(const UniverseProfile::Id)
+{
 	rebuild_universe_tree();
 }
 

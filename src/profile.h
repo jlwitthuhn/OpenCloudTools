@@ -110,6 +110,7 @@ public:
 signals:
 	void force_save();
 	void details_changed();
+	void universe_details_changed(UniverseProfile::Id changed_universe);
 	void universe_list_changed(std::optional<UniverseProfile::Id> new_universe);
 	void hidden_datastore_list_changed();
 	void recent_mem_sorted_map_list_changed();

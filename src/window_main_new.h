@@ -25,8 +25,9 @@ private:
 
 	std::optional<UniverseProfile::Id> get_selected_universe_id();
 
-	void on_active_api_key_changed();
-
+	void handle_active_api_key_changed();
+	void handle_active_api_key_details_changed();
+	void handle_universe_details_changed(UniverseProfile::Id changed_id);
 	void handle_universe_list_changed();
 
 	void pressed_change_key();
@@ -38,7 +39,9 @@ private:
 	void rebuild_universe_tree();
 
 	std::weak_ptr<ApiKeyProfile> attached_profile;
-	QMetaObject::Connection attached_profile_universe_list_changed_conn;
+	QMetaObject::Connection conn_attached_profile_details_changed;
+	QMetaObject::Connection conn_attached_profile_universe_details_changed;
+	QMetaObject::Connection conn_attached_profile_universe_list_changed;
 
 	QLineEdit* edit_api_key_name = nullptr;
 
