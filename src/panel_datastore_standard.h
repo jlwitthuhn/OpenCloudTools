@@ -8,6 +8,10 @@
 #include <QString>
 #include <QWidget>
 
+#ifdef OCT_NEW_GUI
+#include "subwindow.h"
+#endif
+
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
@@ -21,11 +25,10 @@ class QTreeView;
 class StandardDatastoreEntryName;
 class StandardDatastoreEntryQTableModel;
 
-class UniverseProfile;
-
 class StandardDatastorePanel : public QWidget
 {
 	Q_OBJECT
+
 public:
 	StandardDatastorePanel(QWidget* parent, const QString& api_key);
 

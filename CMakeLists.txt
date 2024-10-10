@@ -75,6 +75,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/roblox_time.h
 	./src/sqlite_wrapper.cpp
 	./src/sqlite_wrapper.h
+	./src/subwindow.cpp
+	./src/subwindow.h
 	./src/tooltip_text.h
 	./src/util_alert.cpp
 	./src/util_alert.h

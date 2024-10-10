@@ -53,7 +53,7 @@
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 
-StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key { api_key }
+StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
 {
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &StandardDatastorePanel::handle_show_datastore_filter_changed);
 

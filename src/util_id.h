@@ -7,6 +7,8 @@ class QByteArray;
 class RandomId128
 {
 public:
+	static const size_t LENGTH = 16;
+
 	RandomId128();
 	RandomId128(QByteArray q_id);
 
@@ -14,7 +16,7 @@ public:
 	bool operator<(const RandomId128& other) const;
 
 	QByteArray as_q_byte_array() const;
-
 private:
-	std::array<char, 16> id;
+
+	std::array<char, LENGTH> id;
 };

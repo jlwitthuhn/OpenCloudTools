@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QList>
 #include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QString>
@@ -20,6 +21,7 @@
 #include <QWidget>
 
 #include "assert.h"
+#include "panel_datastore_standard.h"
 #include "profile.h"
 #include "util_qvariant.h"
 #include "window_add_universe.h"
@@ -72,6 +74,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 			tree_universe = new QTreeWidget{ universe_tree_container_inner };
 			tree_universe->setColumnCount(1);
 			tree_universe->setHeaderHidden(true);
+			connect(tree_universe, &QTreeWidget::itemDoubleClicked, this, &MyNewMainWindow::show_subwindow_from_item);
 			connect(tree_universe, &QTreeWidget::itemSelectionChanged, this, &MyNewMainWindow::gui_refresh);
 
 			QPushButton* const button_add_universe = new QPushButton{ "Add universe...", universe_tree_container_inner };
@@ -93,10 +96,10 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	}
 	addDockWidget(Qt::LeftDockWidgetArea, universe_tree_container);
 
-	QMdiArea* const center_widget = new QMdiArea{ this };
-	setCentralWidget(center_widget);
+	center_mdi_widget = new QMdiArea{ this };
+	setCentralWidget(center_mdi_widget);
 
-	resize(1100, 650);
+	resize(1200, 650);
 
 	gui_refresh();
 
@@ -166,6 +169,12 @@ void MyNewMainWindow::handle_active_api_key_changed()
 void MyNewMainWindow::handle_active_api_key_details_changed()
 {
 	gui_refresh();
+}
+
+void MyNewMainWindow::handle_subwindow_closed(const SubwindowId& id)
+{
+	OCTASSERT(subwindows.count(id) == 1);
+	subwindows.erase(id);
 }
 
 void MyNewMainWindow::handle_universe_details_changed(const UniverseProfile::Id)
@@ -243,9 +252,79 @@ void MyNewMainWindow::rebuild_universe_tree()
 		{
 			QTreeWidgetItem* const open_datastore = new QTreeWidgetItem{ this_item };
 			open_datastore->setText(0, "Data Stores");
+			open_datastore->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD));
 		}
 		this_item->setExpanded(true);
 	}
 
 	gui_refresh();
+}
+
+void MyNewMainWindow::show_subwindow(const SubwindowId& id)
+{
+	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
+	if (!api_profile)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	const std::map<SubwindowId, QMdiSubWindow*>::const_iterator existing_iter = subwindows.find(id);
+	if (existing_iter != subwindows.end())
+	{
+		existing_iter->second->show();
+		existing_iter->second->raise();
+		return;
+	}
+
+	const std::shared_ptr<UniverseProfile> universe = api_profile->get_universe_profile_by_id(id.get_universe_id());
+	if (!universe)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	QMdiSubWindow* new_subwindow = nullptr;
+	switch (id.get_type())
+	{
+		case SubwindowType::DATA_STORES_STANDARD:
+			StandardDatastorePanel* const new_datastore_panel = new StandardDatastorePanel{ nullptr, api_profile->get_key() };
+			new_datastore_panel->change_universe(universe);
+			new_subwindow = center_mdi_widget->addSubWindow(new_datastore_panel);
+	}
+
+	if (!new_subwindow)
+	{
+		OCTASSERT(false);
+		return;
+	}
+	connect(new_subwindow, &QMdiSubWindow::destroyed, this, [this, id]() {
+		this->handle_subwindow_closed(id);
+	});
+	subwindows.emplace(id, new_subwindow);
+	new_subwindow->show();
+}
+
+void MyNewMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
+{
+	QTreeWidgetItem* const item_parent = item->parent();
+	if (item_parent == nullptr)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	const QVariant universe_id_var = item_parent->data(0, Qt::UserRole);
+	if (qvariant_is_byte_array(universe_id_var, static_cast<int>(RandomId128::LENGTH)) == false)
+	{
+		OCTASSERT(false);
+		return;
+	}
+	const UniverseProfile::Id universe_id{ universe_id_var.toByteArray() };
+
+	const QVariant type_var = item->data(0, Qt::UserRole);
+	const SubwindowType type = static_cast<SubwindowType>(type_var.toInt());
+
+	const SubwindowId subwindow_id{ type, universe_id };
+	show_subwindow(subwindow_id);
 }
