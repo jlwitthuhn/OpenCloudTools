@@ -15,7 +15,7 @@ public:
 	SubwindowId(SubwindowType type, UniverseProfile::Id universe_profile_id);
 
 	SubwindowType get_type() const { return type; }
-	UniverseProfile::Id get_universe_profile_id() const { return universe_profile_id; }
+	const UniverseProfile::Id& get_universe_profile_id() const { return universe_profile_id; }
 
 	bool operator==(const SubwindowId& other) const;
 	bool operator<(const SubwindowId& other) const;

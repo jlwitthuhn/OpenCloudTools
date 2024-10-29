@@ -173,8 +173,9 @@ void MyNewMainWindow::handle_active_api_key_details_changed()
 	gui_refresh();
 }
 
-void MyNewMainWindow::handle_universe_details_changed(const UniverseProfile::Id)
+void MyNewMainWindow::handle_universe_details_changed(const UniverseProfile::Id id)
 {
+	close_universe_subwindows(id);
 	rebuild_universe_tree();
 }
 
@@ -267,6 +268,23 @@ void MyNewMainWindow::close_all_subwindows()
 		}
 	}
 	subwindows.clear();
+}
+
+void MyNewMainWindow::close_universe_subwindows(const UniverseProfile::Id& id)
+{
+	for (const std::pair<SubwindowId, QPointer<QMdiSubWindow>>& this_pair : subwindows)
+	{
+		const SubwindowId& subwindow_id = this_pair.first;
+		const UniverseProfile::Id& universe_profile_id = subwindow_id.get_universe_profile_id();
+		if (id == universe_profile_id)
+		{
+			QMdiSubWindow* const this_subwindow = this_pair.second;
+			if (this_subwindow)
+			{
+				this_subwindow->close();
+			}
+		}
+	}
 }
 
 void MyNewMainWindow::show_subwindow(const SubwindowId& id)
