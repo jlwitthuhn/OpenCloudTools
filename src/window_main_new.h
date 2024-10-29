@@ -44,6 +44,8 @@ private:
 
 	void rebuild_universe_tree();
 
+	void close_all_subwindows();
+
 	void show_subwindow(const SubwindowId& id);
 	void show_subwindow_from_item(QTreeWidgetItem* item);
 

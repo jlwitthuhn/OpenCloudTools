@@ -154,6 +154,8 @@ std::optional<UniverseProfile::Id> MyNewMainWindow::get_selected_universe_id()
 
 void MyNewMainWindow::handle_active_api_key_changed()
 {
+	close_all_subwindows();
+
 	const std::shared_ptr<ApiKeyProfile> key_profile = UserProfile::get().get_active_api_key();
 	attached_profile = key_profile;
 	disconnect(conn_attached_profile_details_changed);
@@ -252,6 +254,19 @@ void MyNewMainWindow::rebuild_universe_tree()
 	}
 
 	gui_refresh();
+}
+
+void MyNewMainWindow::close_all_subwindows()
+{
+	for (const std::pair<SubwindowId, QPointer<QMdiSubWindow>>& this_pair : subwindows)
+	{
+		QMdiSubWindow* const this_subwindow = this_pair.second;
+		if (this_subwindow)
+		{
+			this_subwindow->close();
+		}
+	}
+	subwindows.clear();
 }
 
 void MyNewMainWindow::show_subwindow(const SubwindowId& id)
