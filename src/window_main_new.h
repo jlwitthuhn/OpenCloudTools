@@ -7,6 +7,7 @@
 #include <QMainWindow>
 #include <QMetaObject>
 #include <QObject>
+#include <QPointer>
 
 #include "profile.h"
 #include "subwindow.h"
@@ -32,7 +33,6 @@ private:
 
 	void handle_active_api_key_changed();
 	void handle_active_api_key_details_changed();
-	void handle_subwindow_closed(const SubwindowId& id);
 	void handle_universe_details_changed(UniverseProfile::Id changed_id);
 	void handle_universe_list_changed();
 
@@ -61,5 +61,5 @@ private:
 
 	QMdiArea* center_mdi_widget = nullptr;
 
-	std::map<SubwindowId, QMdiSubWindow*> subwindows;
+	std::map<SubwindowId, QPointer<QMdiSubWindow>> subwindows;
 };

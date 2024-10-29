@@ -171,12 +171,6 @@ void MyNewMainWindow::handle_active_api_key_details_changed()
 	gui_refresh();
 }
 
-void MyNewMainWindow::handle_subwindow_closed(const SubwindowId& id)
-{
-	OCTASSERT(subwindows.count(id) == 1);
-	subwindows.erase(id);
-}
-
 void MyNewMainWindow::handle_universe_details_changed(const UniverseProfile::Id)
 {
 	rebuild_universe_tree();
@@ -269,12 +263,16 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 		return;
 	}
 
-	const std::map<SubwindowId, QMdiSubWindow*>::const_iterator existing_iter = subwindows.find(id);
+	const std::map<SubwindowId, QPointer<QMdiSubWindow>>::const_iterator existing_iter = subwindows.find(id);
 	if (existing_iter != subwindows.end())
 	{
-		existing_iter->second->show();
-		existing_iter->second->raise();
-		return;
+		const QPointer<QMdiSubWindow>& subwindow = existing_iter->second;
+		if (subwindow)
+		{
+			subwindow->show();
+			subwindow->raise();
+			return;
+		}
 	}
 
 	const std::shared_ptr<UniverseProfile> universe = api_profile->get_universe_profile_by_id(id.get_universe_profile_id());
@@ -284,7 +282,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 		return;
 	}
 
-	QMdiSubWindow* new_subwindow = nullptr;
+	QPointer<QMdiSubWindow> new_subwindow;
 	switch (id.get_type())
 	{
 		case SubwindowType::DATA_STORES_STANDARD:
@@ -298,9 +296,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 		OCTASSERT(false);
 		return;
 	}
-	connect(new_subwindow, &QMdiSubWindow::destroyed, this, [this, id]() {
-		this->handle_subwindow_closed(id);
-	});
+
 	subwindows.emplace(id, new_subwindow);
 	new_subwindow->show();
 }
@@ -314,17 +310,17 @@ void MyNewMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
 		return;
 	}
 
-	const QVariant universe_id_var = item_parent->data(0, Qt::UserRole);
-	if (qvariant_is_byte_array(universe_id_var, static_cast<int>(RandomId128::LENGTH)) == false)
+	const QVariant universe_profile_id_var = item_parent->data(0, Qt::UserRole);
+	if (qvariant_is_byte_array(universe_profile_id_var, static_cast<int>(RandomId128::LENGTH)) == false)
 	{
 		OCTASSERT(false);
 		return;
 	}
-	const UniverseProfile::Id universe_id{ universe_id_var.toByteArray() };
+	const UniverseProfile::Id universe_profile_id{ universe_profile_id_var.toByteArray() };
 
 	const QVariant type_var = item->data(0, Qt::UserRole);
 	const SubwindowType type = static_cast<SubwindowType>(type_var.toInt());
 
-	const SubwindowId subwindow_id{ type, universe_id };
+	const SubwindowId subwindow_id{ type, universe_profile_id };
 	show_subwindow(subwindow_id);
 }
