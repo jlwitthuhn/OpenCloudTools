@@ -277,7 +277,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 		return;
 	}
 
-	const std::shared_ptr<UniverseProfile> universe = api_profile->get_universe_profile_by_id(id.get_universe_id());
+	const std::shared_ptr<UniverseProfile> universe = api_profile->get_universe_profile_by_id(id.get_universe_profile_id());
 	if (!universe)
 	{
 		OCTASSERT(false);

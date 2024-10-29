@@ -12,15 +12,15 @@ enum class SubwindowType
 class SubwindowId
 {
 public:
-	SubwindowId(SubwindowType type, UniverseProfile::Id universe_id);
+	SubwindowId(SubwindowType type, UniverseProfile::Id universe_profile_id);
 
 	SubwindowType get_type() const { return type; }
-	UniverseProfile::Id get_universe_id() const { return universe_id; }
+	UniverseProfile::Id get_universe_profile_id() const { return universe_profile_id; }
 
 	bool operator==(const SubwindowId& other) const;
 	bool operator<(const SubwindowId& other) const;
 
 private:
 	SubwindowType type;
-	UniverseProfile::Id universe_id;
+	UniverseProfile::Id universe_profile_id;
 };

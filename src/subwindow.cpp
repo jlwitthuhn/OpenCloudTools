@@ -1,6 +1,6 @@
 #include "subwindow.h"
 
-SubwindowId::SubwindowId(const SubwindowType type, const UniverseProfile::Id universe_id) : type{ type }, universe_id{ universe_id }
+SubwindowId::SubwindowId(const SubwindowType type, const UniverseProfile::Id universe_profile_id) : type{ type }, universe_profile_id{ universe_profile_id }
 {
 
 }
@@ -16,11 +16,11 @@ bool SubwindowId::operator<(const SubwindowId& other) const
 		return false;
 	}
 
-	if (universe_id < other.universe_id)
+	if (universe_profile_id < other.universe_profile_id)
 	{
 		return true;
 	}
-	else if (other.universe_id < universe_id)
+	else if (other.universe_profile_id < universe_profile_id)
 	{
 		return false;
 	}
