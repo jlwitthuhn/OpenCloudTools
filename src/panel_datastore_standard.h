@@ -25,6 +25,8 @@ class QTreeView;
 class StandardDatastoreEntryName;
 class StandardDatastoreEntryQTableModel;
 
+class UniverseProfile;
+
 class StandardDatastorePanel : public QWidget
 {
 	Q_OBJECT

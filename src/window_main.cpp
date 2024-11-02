@@ -46,7 +46,9 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 	connect(api_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 
 	MyMainWindowMenuBar* menu_bar = new MyMainWindowMenuBar{ this };
-	connect(menu_bar, &MyMainWindowMenuBar::OLDGUI_request_change_api_key, this, &MyMainWindow::pressed_change_key);
+#ifndef OCT_NEW_GUI
+	connect(menu_bar, &MyMainWindowMenuBar::request_change_api_key, this, &MyMainWindow::pressed_change_key);
+#endif
 	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyMainWindow::close);
 	setMenuBar(menu_bar);
 

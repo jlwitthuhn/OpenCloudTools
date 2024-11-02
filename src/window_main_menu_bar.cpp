@@ -174,7 +174,7 @@ void MyMainWindowMenuBar::pressed_change_api_key()
 	ManageApiKeysWindow* const manage_key_window = new ManageApiKeysWindow{ parent_window };
 	manage_key_window->show();
 #else
-	emit OLDGUI_request_change_api_key();
+	emit request_change_api_key();
 #endif
 }
 
