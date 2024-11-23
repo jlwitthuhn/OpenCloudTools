@@ -22,6 +22,7 @@
 
 #include "assert.h"
 #include "panel_datastore_standard.h"
+#include "panel_http_log.h"
 #include "profile.h"
 #include "util_qvariant.h"
 #include "window_add_universe.h"
@@ -40,6 +41,9 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	setMenuBar(menu_bar);
 
 	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyNewMainWindow::close);
+#ifdef OCT_NEW_GUI
+	connect(menu_bar, &MyMainWindowMenuBar::request_show_http_log, this, &MyNewMainWindow::show_http_log);
+#endif
 
 	QToolBar* const main_tool_bar = new QToolBar{ this };
 	main_tool_bar->setFloatable(false);
@@ -287,6 +291,24 @@ void MyNewMainWindow::close_universe_subwindows(const UniverseProfile::Id& id)
 	}
 }
 
+void MyNewMainWindow::show_http_log()
+{
+	if (subwindow_http_log)
+	{
+		subwindow_http_log->show();
+		subwindow_http_log->raise();
+		return;
+	}
+
+	HttpLogPanel* const new_panel = new HttpLogPanel{ nullptr };
+	subwindow_http_log = center_mdi_widget->addSubWindow(new_panel);
+	subwindow_http_log->setWindowTitle("HTTP Log");
+	QSize window_size = subwindow_http_log->size();
+	window_size.setWidth(600);
+	subwindow_http_log->resize(window_size);
+	subwindow_http_log->show();
+}
+
 void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 {
 	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
@@ -322,6 +344,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 			StandardDatastorePanel* const new_datastore_panel = new StandardDatastorePanel{ nullptr, api_profile->get_key() };
 			new_datastore_panel->change_universe(universe);
 			new_subwindow = center_mdi_widget->addSubWindow(new_datastore_panel);
+			break;
 	}
 
 	if (!new_subwindow)

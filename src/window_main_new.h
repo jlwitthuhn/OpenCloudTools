@@ -47,6 +47,7 @@ private:
 	void close_all_subwindows();
 	void close_universe_subwindows(const UniverseProfile::Id& id);
 
+	void show_http_log();
 	void show_subwindow(const SubwindowId& id);
 	void show_subwindow_from_item(QTreeWidgetItem* item);
 
@@ -65,4 +66,6 @@ private:
 	QMdiArea* center_mdi_widget = nullptr;
 
 	std::map<SubwindowId, QPointer<QMdiSubWindow>> subwindows;
+
+	QPointer<QMdiSubWindow> subwindow_http_log;
 };

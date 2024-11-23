@@ -86,6 +86,16 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 		preferences_menu->addAction(action_toggle_datastore_name_filter);
 	}
 
+#ifdef OCT_NEW_GUI
+	QMenu* const tools_menu = new QMenu{ "&Tools", this };
+	{
+		QAction* const action_http_log = new QAction{ "&HTTP Log", tools_menu };
+		connect(action_http_log, &QAction::triggered, this, &MyMainWindowMenuBar::request_show_http_log);
+
+		tools_menu->addAction(action_http_log);
+	}
+#endif
+
 	QMenu* const about_menu = new QMenu{ "&About", this };
 	{
 		QAction* const action_github = new QAction{ "Visit repository on &Github", about_menu };
@@ -133,6 +143,9 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 
 	addMenu(file_menu);
 	addMenu(preferences_menu);
+#ifdef OCT_NEW_GUI
+	addMenu(tools_menu);
+#endif
 	addMenu(about_menu);
 
 	handle_qt_theme_changed();
