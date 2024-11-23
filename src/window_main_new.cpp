@@ -362,7 +362,7 @@ void MyNewMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
 	QTreeWidgetItem* const item_parent = item->parent();
 	if (item_parent == nullptr)
 	{
-		OCTASSERT(false);
+		// User double-clicked a universe label, do nothing
 		return;
 	}
 
