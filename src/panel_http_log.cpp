@@ -44,7 +44,7 @@ void HttpLogPanel::refresh()
 	{
 		existing_model->deleteLater();
 	}
-	HttpLogModel* new_model = HttpWrangler::make_log_model(this);
+	HttpLogModel* new_model = HttpWrangler::get()->make_log_model(this);
 	tree_view->setModel(new_model);
 	for (int i = 0; i < new_model->columnCount(); i++)
 	{
@@ -54,7 +54,7 @@ void HttpLogPanel::refresh()
 
 void HttpLogPanel::pressed_clear()
 {
-	HttpWrangler::clear_log();
+	HttpWrangler::get()->clear_log();
 	refresh();
 }
 

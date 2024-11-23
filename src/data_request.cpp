@@ -51,7 +51,7 @@ void DataRequest::send_request(std::optional<QString> cursor)
 
 	pending_request_cursor = cursor;
 	pending_request = build_request(cursor);
-	pending_reply = HttpWrangler::send(request_type, *pending_request, req_body.get_data());
+	pending_reply = HttpWrangler::get()->send(request_type, *pending_request, req_body.get_data());
 
 	connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 
@@ -178,7 +178,7 @@ void DataRequest::resend()
 	if (pending_request)
 	{
 		emit status_info("Resending...");
-		pending_reply = HttpWrangler::send(request_type, *pending_request, req_body.get_data());
+		pending_reply = HttpWrangler::get()->send(request_type, *pending_request, req_body.get_data());
 		connect(pending_reply, &QNetworkReply::finished, this, &DataRequest::handle_reply_ready);
 		timeout_begin();
 	}

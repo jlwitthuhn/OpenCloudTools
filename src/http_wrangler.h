@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -15,6 +16,7 @@
 
 enum class HttpRequestType;
 
+class QNetworkAccessManager;
 class QNetworkReply;
 class QNetworkRequest;
 
@@ -52,8 +54,21 @@ public:
 class HttpWrangler
 {
 public:
-	static QNetworkReply* send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body = std::nullopt);
+	static const std::unique_ptr<HttpWrangler>& get();
 
-	static void clear_log();
-	static HttpLogModel* make_log_model(QObject* parent);
+	QNetworkReply* send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body = std::nullopt);
+
+	void clear_log();
+	HttpLogModel* make_log_model(QObject* parent);
+
+private:
+	class ConstructorToken {};
+
+	void add_log_entry(const HttpLogEntry& log_entry);
+
+	std::unique_ptr<QNetworkAccessManager> network_access_manager;
+	std::vector<HttpLogEntry> http_log_entries;
+
+public:
+	HttpWrangler(ConstructorToken token);
 };

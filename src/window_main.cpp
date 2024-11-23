@@ -202,7 +202,7 @@ void MyMainWindow::pressed_remove_universe()
 
 void MyMainWindow::pressed_change_key()
 {
-	HttpWrangler::clear_log();
+	HttpWrangler::get()->clear_log();
 	ManageApiKeysWindow* api_window = new ManageApiKeysWindow{ nullptr };
 	api_window->show();
 	close();

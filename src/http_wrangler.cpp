@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <mutex>
 
 #include <QByteArray>
 #include <QNetworkAccessManager>
@@ -13,27 +12,6 @@
 #include "util_enum.h"
 
 constexpr size_t LOG_MAX_ENTRIES = 1000;
-
-static std::once_flag network_access_once;
-static std::unique_ptr<QNetworkAccessManager> network_access_manager;
-static std::vector<HttpLogEntry> http_log_entries;
-
-static void init_network_manager()
-{
-	std::call_once(network_access_once, [&]() {
-		network_access_manager = std::make_unique<QNetworkAccessManager>();
-	});
-}
-
-static void add_log_entry(const HttpLogEntry& log_entry)
-{
-	http_log_entries.push_back(log_entry);
-	if (http_log_entries.size() > LOG_MAX_ENTRIES)
-	{
-		const size_t erase_count = http_log_entries.size() - LOG_MAX_ENTRIES;
-		http_log_entries.erase(http_log_entries.begin(), http_log_entries.begin() + erase_count);
-	}
-}
 
 HttpLogEntry::HttpLogEntry(HttpRequestType type, const QString& url) : _timestamp{ QDateTime::currentDateTime() }, _type{type}, _url{url}
 {
@@ -139,9 +117,14 @@ QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int 
 	return QVariant{};
 }
 
+const std::unique_ptr<HttpWrangler>& HttpWrangler::get()
+{
+	static std::unique_ptr<HttpWrangler> wrangler = std::make_unique<HttpWrangler>(ConstructorToken{});
+	return wrangler;
+}
+
 QNetworkReply* HttpWrangler::send(HttpRequestType type, QNetworkRequest& request, const std::optional<QString>& body)
 {
-	init_network_manager();
 	request.setAttribute(QNetworkRequest::Attribute::Http2AllowedAttribute, false);
 	add_log_entry(HttpLogEntry{ type, request.url().toString() });
 	switch (type)
@@ -181,6 +164,20 @@ void HttpWrangler::clear_log()
 
 HttpLogModel* HttpWrangler::make_log_model(QObject* parent)
 {
-	init_network_manager();
 	return new HttpLogModel{ parent, http_log_entries };
+}
+
+void HttpWrangler::add_log_entry(const HttpLogEntry& log_entry)
+{
+	http_log_entries.push_back(log_entry);
+	if (http_log_entries.size() > LOG_MAX_ENTRIES)
+	{
+		const size_t erase_count = http_log_entries.size() - LOG_MAX_ENTRIES;
+		http_log_entries.erase(http_log_entries.begin(), http_log_entries.begin() + erase_count);
+	}
+}
+
+HttpWrangler::HttpWrangler(ConstructorToken)
+{
+	network_access_manager = std::make_unique<QNetworkAccessManager>();
 }
