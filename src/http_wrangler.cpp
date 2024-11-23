@@ -1,6 +1,5 @@
 #include "http_wrangler.h"
 
-#include <algorithm>
 #include <memory>
 
 #include <QByteArray>
@@ -20,21 +19,28 @@ HttpLogEntry::HttpLogEntry(HttpRequestType type, const QString& url) : _timestam
 
 HttpLogModel::HttpLogModel(QObject* parent, const std::vector<HttpLogEntry>& entries) : QAbstractTableModel{ parent }, entries{ entries }
 {
-	std::sort(this->entries.begin(), this->entries.end(), [](const HttpLogEntry& a, const HttpLogEntry& b) {
-		return b.timestamp() < a.timestamp();
-	});
+
 }
 
-std::optional<HttpLogEntry> HttpLogModel::get_entry(const size_t row_index) const
+std::optional<HttpLogEntry> HttpLogModel::get_entry(const std::size_t row_index) const
 {
 	if (row_index < entries.size())
 	{
-		return entries.at(row_index);
+		// We need to return these in reverse order because new events are at the end of the vector
+		return entries.at(convert_offset(row_index));
 	}
 	else
 	{
 		return std::nullopt;
 	}
+}
+
+void HttpLogModel::append_entry(const HttpLogEntry& entry)
+{
+	const QModelIndex parent_index;
+	beginInsertRows(parent_index, 0, 1);
+	entries.push_back(entry);
+	endInsertRows();
 }
 
 QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
@@ -43,17 +49,18 @@ QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
 	{
 		if (index.row() < static_cast<int>(entries.size()))
 		{
+			const std::size_t row_index = convert_offset(index.row());
 			if (index.column() == 0)
 			{
-				return entries.at(index.row()).timestamp().toString(Qt::ISODateWithMs);
+				return entries.at(row_index).timestamp().toString(Qt::ISODateWithMs);
 			}
 			else if (index.column() == 1)
 			{
-				return get_enum_string(entries.at(index.row()).type());
+				return get_enum_string(entries.at(row_index).type());
 			}
 			else if (index.column() == 2 || index.column() == 3)
 			{
-				const QString& url = entries.at(index.row()).url();
+				const QString& url = entries.at(row_index).url();
 				qsizetype paramIndex = url.indexOf('?');
 				if (index.column() == 2)
 				{
@@ -117,6 +124,13 @@ QVariant HttpLogModel::headerData(int section, Qt::Orientation orientation, int 
 	return QVariant{};
 }
 
+std::size_t HttpLogModel::convert_offset(std::size_t in) const
+{
+	// We need to index elements in the opposite of the order of the vector
+	OCTASSERT(in < entries.size());
+	return entries.size() - 1 - in;
+}
+
 const std::unique_ptr<HttpWrangler>& HttpWrangler::get()
 {
 	static std::unique_ptr<HttpWrangler> wrangler = std::make_unique<HttpWrangler>(ConstructorToken{});
@@ -175,9 +189,10 @@ void HttpWrangler::add_log_entry(const HttpLogEntry& log_entry)
 		const size_t erase_count = http_log_entries.size() - LOG_MAX_ENTRIES;
 		http_log_entries.erase(http_log_entries.begin(), http_log_entries.begin() + erase_count);
 	}
+	emit log_entry_added(log_entry);
 }
 
 HttpWrangler::HttpWrangler(ConstructorToken)
 {
-	network_access_manager = std::make_unique<QNetworkAccessManager>();
+	network_access_manager = new QNetworkAccessManager(this);
 }
