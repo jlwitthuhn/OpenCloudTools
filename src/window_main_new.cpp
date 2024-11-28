@@ -353,6 +353,8 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 		return;
 	}
 
+	new_subwindow->setWindowTitle(id.get_window_title());
+
 	subwindows.emplace(id, new_subwindow);
 	new_subwindow->show();
 }
