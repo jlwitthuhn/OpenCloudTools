@@ -9,7 +9,14 @@ class QString;
 enum class SubwindowType
 {
 	DATA_STORES_STANDARD,
+	DATA_STORES_ORDERED,
+	MEMORY_STORE_SORTED_MAP,
+	BULK_DATA,
+	MESSAGING,
+	UNIVERSE_PREFERENCES,
 };
+
+QString subwindow_type_display_name(SubwindowType type);
 
 class SubwindowId
 {
@@ -25,7 +32,6 @@ public:
 	bool operator<(const SubwindowId& other) const;
 
 private:
-	QString get_type_string() const;
 	QString get_universe_string() const;
 
 	SubwindowType type;

@@ -18,7 +18,7 @@
 #include "assert.h"
 #include "profile.h"
 
-UniversePreferencesPanel::UniversePreferencesPanel(QWidget* parent) : QWidget{ parent }
+UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const QString&) : QWidget{ parent }
 {
 	QWidget* container_widget = new QWidget{ this };
 	{

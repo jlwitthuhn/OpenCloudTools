@@ -21,13 +21,25 @@
 #include <QWidget>
 
 #include "assert.h"
+#include "panel_bulk_data.h"
+#include "panel_datastore_ordered.h"
 #include "panel_datastore_standard.h"
 #include "panel_http_log.h"
+#include "panel_mem_sorted_map.h"
+#include "panel_messaging_service.h"
+#include "panel_universe_prefs.h"
 #include "profile.h"
 #include "util_qvariant.h"
 #include "window_add_universe.h"
 #include "window_api_key_manage.h"
 #include "window_main_menu_bar.h"
+
+template <typename T> static QPointer<QMdiSubWindow> create_and_attach_panel(const std::shared_ptr<const ApiKeyProfile>& api_profile, const std::shared_ptr<UniverseProfile>& universe, QMdiArea* const mdi_area)
+{
+	T* const new_panel = new T{ nullptr, api_profile->get_key() };
+	new_panel->change_universe(universe);
+	return mdi_area->addSubWindow(new_panel);
+}
 
 MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 {
@@ -101,6 +113,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	addDockWidget(Qt::LeftDockWidgetArea, universe_tree_container);
 
 	center_mdi_widget = new QMdiArea{ this };
+	center_mdi_widget->setOption(QMdiArea::DontMaximizeSubWindowOnActivation, true);
 	setCentralWidget(center_mdi_widget);
 
 	resize(1200, 650);
@@ -246,14 +259,23 @@ void MyNewMainWindow::rebuild_universe_tree()
 	const std::vector<std::shared_ptr<UniverseProfile>> universe_list = key_profile->get_universe_list();
 	for (const std::shared_ptr<UniverseProfile>& this_universe : universe_list)
 	{
+		static const std::vector<SubwindowType> subwindow_types = std::vector<SubwindowType>{
+			SubwindowType::DATA_STORES_STANDARD,
+			SubwindowType::DATA_STORES_ORDERED,
+			SubwindowType::MEMORY_STORE_SORTED_MAP,
+			SubwindowType::BULK_DATA,
+			SubwindowType::MESSAGING,
+			SubwindowType::UNIVERSE_PREFERENCES,
+		};
 		const QByteArray this_universe_id = this_universe->get_id().as_q_byte_array();
 		QTreeWidgetItem* const this_item = new QTreeWidgetItem{ tree_universe };
 		this_item->setText(0, this_universe->get_display_name());
 		this_item->setData(0, Qt::UserRole, this_universe_id);
+		for (const SubwindowType subwindow_type : subwindow_types)
 		{
-			QTreeWidgetItem* const open_datastore = new QTreeWidgetItem{ this_item };
-			open_datastore->setText(0, "Data Stores");
-			open_datastore->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD));
+			QTreeWidgetItem* const subwindow_item = new QTreeWidgetItem{ this_item };
+			subwindow_item->setText(0, subwindow_type_display_name(subwindow_type));
+			subwindow_item->setData(0, Qt::UserRole, static_cast<int>(subwindow_type));
 		}
 		this_item->setExpanded(true);
 	}
@@ -341,9 +363,22 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 	switch (id.get_type())
 	{
 		case SubwindowType::DATA_STORES_STANDARD:
-			StandardDatastorePanel* const new_datastore_panel = new StandardDatastorePanel{ nullptr, api_profile->get_key() };
-			new_datastore_panel->change_universe(universe);
-			new_subwindow = center_mdi_widget->addSubWindow(new_datastore_panel);
+			new_subwindow = create_and_attach_panel<StandardDatastorePanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::DATA_STORES_ORDERED:
+			new_subwindow = create_and_attach_panel<OrderedDatastorePanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::MEMORY_STORE_SORTED_MAP:
+			new_subwindow = create_and_attach_panel<MemoryStoreSortedMapPanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::BULK_DATA:
+			new_subwindow = create_and_attach_panel<BulkDataPanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::MESSAGING:
+			new_subwindow = create_and_attach_panel<MessagingServicePanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::UNIVERSE_PREFERENCES:
+			new_subwindow = create_and_attach_panel<UniversePreferencesPanel>(api_profile, universe, center_mdi_widget);
 			break;
 	}
 
@@ -355,7 +390,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 
 	new_subwindow->setWindowTitle(id.get_window_title());
 
-	subwindows.emplace(id, new_subwindow);
+	subwindows[id] = new_subwindow;
 	new_subwindow->show();
 }
 

@@ -16,7 +16,7 @@ class UniversePreferencesPanel : public QWidget
 {
 	Q_OBJECT
 public:
-	UniversePreferencesPanel(QWidget* parent);
+	UniversePreferencesPanel(QWidget* parent, const QString& dummy);
 
 	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
 

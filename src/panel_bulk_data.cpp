@@ -105,9 +105,6 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 
 void BulkDataPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
 {
-#ifdef OCT_NEW_GUI
-	OCTASSERT(false);
-#endif
 	if (universe && universe == attached_universe.lock())
 	{
 		gui_refresh();

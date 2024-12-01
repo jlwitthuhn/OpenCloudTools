@@ -109,7 +109,7 @@ MyMainWindow::MyMainWindow(QWidget* parent, QString title, QString api_key) : QM
 			http_log_panel = new HttpLogPanel{ panel_tabs };
 			panel_tabs->addTab(http_log_panel, "HTTP Log");
 
-			universe_preferences_panel = new UniversePreferencesPanel{ panel_tabs };
+			universe_preferences_panel = new UniversePreferencesPanel{ panel_tabs, "" };
 			panel_tabs->addTab(universe_preferences_panel, "Universe Preferences");
 
 			connect(panel_tabs, &QTabWidget::currentChanged, this, &MyMainWindow::handle_tab_changed);
