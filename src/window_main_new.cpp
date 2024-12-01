@@ -318,7 +318,7 @@ void MyNewMainWindow::show_http_log()
 	if (subwindow_http_log)
 	{
 		subwindow_http_log->show();
-		subwindow_http_log->raise();
+		subwindow_http_log->setFocus();
 		return;
 	}
 
@@ -347,7 +347,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 		if (subwindow)
 		{
 			subwindow->show();
-			subwindow->raise();
+			subwindow->setFocus();
 			return;
 		}
 	}
