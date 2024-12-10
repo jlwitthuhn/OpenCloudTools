@@ -1,6 +1,15 @@
 !include 'LogicLib.nsh'
 !include 'MUI2.nsh'
 
+; To build this installer, the directory you run this script in must have two
+; subdirectories named 'install_qt5' and 'install_qt6'
+; Each of these directories must contain a file named OpenCloudTools.exe
+; The entire contents of each directory will be installed.
+
+; You will also need a file named LICENSE which will be presented to the user
+; prior to installation.
+; This should be a copy of GPLv3 as included in the repo root.
+
 ;-----------
 ; Install directory variables
 Var DIR_INSTALL
@@ -53,6 +62,8 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
  !insertmacro MUI_DESCRIPTION_TEXT ${SecQt6} "This is the main version of OpenCloudTools, requires Windows 10 or newer."
  !insertmacro MUI_DESCRIPTION_TEXT ${SecQt5} "This is the legacy version of OpenCloudTools for older versions of Windows, requires Windows 7 or newer."
+ !insertmacro MUI_DESCRIPTION_TEXT ${SecDektopShortcut} "Add an OpenCloudTools shortcut to your desktop."
+ !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenuShortcut} "Add an OpenCloudTools shortcut to your Start menu."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;-----------
