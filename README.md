@@ -116,9 +116,9 @@ This program can probably build and run on any platform that supports Qt 5 or 6,
 
 | Platform    | Qt Version | Compiler            |
 |-------------|------------|---------------------|
-| MacOS       | 6.6.3      | XCode 13.2.1        |
-| Windows Qt5 | 5.15.14    | Visual Studio 2022* |
-| Windows Qt6 | 6.6.3      | Visual Studio 2022  |
+| MacOS       | 6.5.3      | XCode 13.2.1        |
+| Windows Qt5 | 5.15.16    | Visual Studio 2022* |
+| Windows Qt6 | 6.8.1      | Visual Studio 2022  |
 
 \*For Qt5, OpenCloudTools itself is built with VS 2022, but Qt is built with VS 2019.
 
