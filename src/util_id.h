@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <array>
 
 class QByteArray;
@@ -7,7 +9,7 @@ class QByteArray;
 class RandomId128
 {
 public:
-	static const size_t LENGTH = 16;
+	static const std::size_t LENGTH = 16;
 
 	RandomId128();
 	RandomId128(QByteArray q_id);

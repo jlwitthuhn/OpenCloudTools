@@ -285,7 +285,7 @@ void MyNewMainWindow::rebuild_universe_tree()
 
 void MyNewMainWindow::close_all_subwindows()
 {
-	for (const std::pair<SubwindowId, QPointer<QMdiSubWindow>>& this_pair : subwindows)
+	for (const auto& this_pair : subwindows)
 	{
 		QMdiSubWindow* const this_subwindow = this_pair.second;
 		if (this_subwindow)
@@ -298,13 +298,13 @@ void MyNewMainWindow::close_all_subwindows()
 
 void MyNewMainWindow::close_universe_subwindows(const UniverseProfile::Id& id)
 {
-	for (const std::pair<SubwindowId, QPointer<QMdiSubWindow>>& this_pair : subwindows)
+	for (const auto& this_pair : subwindows)
 	{
 		const SubwindowId& subwindow_id = this_pair.first;
 		const UniverseProfile::Id& universe_profile_id = subwindow_id.get_universe_profile_id();
 		if (id == universe_profile_id)
 		{
-			QMdiSubWindow* const this_subwindow = this_pair.second;
+			const QPointer<QMdiSubWindow>& this_subwindow = this_pair.second;
 			if (this_subwindow)
 			{
 				this_subwindow->close();

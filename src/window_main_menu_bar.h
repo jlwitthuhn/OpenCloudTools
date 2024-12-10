@@ -18,7 +18,7 @@ public:
 signals:
 #ifdef OCT_NEW_GUI
 	void request_show_http_log();
-#else OCT_NEW_GUI
+#else
 	void request_change_api_key();
 #endif
 	void request_close();
