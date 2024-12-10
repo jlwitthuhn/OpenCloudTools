@@ -8,10 +8,6 @@
 #include <QString>
 #include <QWidget>
 
-#ifdef OCT_NEW_GUI
-#include "subwindow.h"
-#endif
-
 class QCheckBox;
 class QComboBox;
 class QLineEdit;

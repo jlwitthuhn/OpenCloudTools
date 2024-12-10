@@ -29,10 +29,6 @@
 #include "window_datastore_bulk_op.h"
 #include "window_datastore_bulk_op_progress.h"
 
-#ifdef OCT_NEW_GUI
-#include "assert.h"
-#endif
-
 BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	QWidget{ parent },
 	api_key{ api_key }

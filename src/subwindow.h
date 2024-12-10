@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QWidget>
+#include <QString>
 
 #include "profile.h"
-
-class QString;
 
 enum class SubwindowType
 {

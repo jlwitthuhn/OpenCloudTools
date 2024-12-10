@@ -25,7 +25,10 @@
 #include "profile.h"
 #include "tooltip_text.h"
 #include "util_qvariant.h"
+
+#ifndef OCT_NEW_GUI
 #include "window_main.h"
+#endif
 
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {

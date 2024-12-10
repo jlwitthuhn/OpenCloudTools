@@ -18,6 +18,7 @@
 #include "profile.h"
 
 #ifdef OCT_NEW_GUI
+#include <QWidget>
 #include "assert.h"
 #include "window_api_key_manage.h"
 #endif

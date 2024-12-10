@@ -4,6 +4,7 @@
 
 #include <QMetaObject>
 #include <QObject>
+#include <QString>
 #include <QWidget>
 
 class QLineEdit;

@@ -1,5 +1,6 @@
 #include "util_qvariant.h"
 
+#include <QByteArray>
 #include <QMetaType>
 #include <QVariant>
 

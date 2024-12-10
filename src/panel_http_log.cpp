@@ -1,5 +1,6 @@
 #include "panel_http_log.h"
 
+#include <memory>
 #include <optional>
 
 #include <Qt>

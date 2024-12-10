@@ -1,5 +1,7 @@
 #include "subwindow.h"
 
+#include <memory>
+
 #include <QString>
 
 #include "profile.h"

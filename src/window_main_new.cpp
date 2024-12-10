@@ -1,5 +1,6 @@
 #include "window_main_new.h"
 
+#include <utility>
 #include <vector>
 
 #include <Qt>
@@ -12,6 +13,7 @@
 #include <QMdiSubWindow>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSize>
 #include <QString>
 #include <QToolBar>
 #include <QTreeWidget>
@@ -29,6 +31,7 @@
 #include "panel_messaging_service.h"
 #include "panel_universe_prefs.h"
 #include "profile.h"
+#include "util_id.h"
 #include "util_qvariant.h"
 #include "window_add_universe.h"
 #include "window_api_key_manage.h"
