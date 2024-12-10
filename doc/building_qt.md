@@ -2,9 +2,6 @@
 
 Qt source bundles can be downloaded from (https://download.qt.io/archive/qt/).
 
-5.15.14: (https://download.qt.io/archive/qt/5.15/5.15.14/single/qt-everywhere-opensource-src-5.15.14.zip)
-6.6.3: (https://download.qt.io/archive/qt/6.6/6.6.3/single/qt-everywhere-src-6.6.3.zip)
-
 ## MacOS
 
 Building on macos is very straightforward. The only prerequisite you will need is Xcode, the official binary is built with Xcode 13.2.1 but any recent version should work.
