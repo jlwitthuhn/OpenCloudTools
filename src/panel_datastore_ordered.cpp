@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QCheckBox>
@@ -63,7 +64,11 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 				connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &OrderedDatastorePanel::refresh_datastore_list);
 
 				check_save_recent_datastores = new QCheckBox{ "Add used datastores", group_index };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+				connect(check_save_recent_datastores, &QCheckBox::checkStateChanged, this, &OrderedDatastorePanel::handle_save_recent_datastores_toggled);
+#else
 				connect(check_save_recent_datastores, &QCheckBox::stateChanged, this, &OrderedDatastorePanel::handle_save_recent_datastores_toggled);
+#endif
 
 				button_remove_datastore = new QPushButton{ "Remove", group_index };
 				connect(button_remove_datastore, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_remove_datastore);

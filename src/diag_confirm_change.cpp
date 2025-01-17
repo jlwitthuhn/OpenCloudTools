@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QtGlobal>
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -73,7 +74,11 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 			prod_info2->setWordWrap(true);
 
 			prod_confirm_check = new QCheckBox{ "This change will not break production", prod_box };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+			connect(prod_confirm_check, &QCheckBox::checkStateChanged, this, &ConfirmChangeDialog::handle_prod_confirm_check_changed);
+#else
 			connect(prod_confirm_check, &QCheckBox::stateChanged, this, &ConfirmChangeDialog::handle_prod_confirm_check_changed);
+#endif
 
 			QVBoxLayout* layout = new QVBoxLayout{ prod_box };
 			layout->addWidget(prod_info);

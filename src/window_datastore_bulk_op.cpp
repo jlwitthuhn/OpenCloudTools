@@ -7,6 +7,7 @@
 #include <string>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QCheckBox>
 #include <QDateTime>
 #include <QFile>
@@ -60,7 +61,11 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 				}
 
 				datastore_list_show_hidden_check = new QCheckBox{ "Show hidden", datastore_group };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+				connect(datastore_list_show_hidden_check, &QCheckBox::checkStateChanged, this, &DatastoreBulkOperationWindow::handle_show_hidden_toggled);
+#else
 				connect(datastore_list_show_hidden_check, &QCheckBox::stateChanged, this, &DatastoreBulkOperationWindow::handle_show_hidden_toggled);
+#endif
 
 				QWidget* select_buttons_widget = new QWidget{ left_bar };
 				{
@@ -92,7 +97,11 @@ DatastoreBulkOperationWindow::DatastoreBulkOperationWindow(QWidget* parent, cons
 			QGroupBox* filter_box = new QGroupBox{ "Filter", right_bar };
 			{
 				filter_enabled_check = new QCheckBox{ "Filter Enabled", filter_box};
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+				connect(filter_enabled_check, &QCheckBox::checkStateChanged, this, &DatastoreBulkOperationWindow::pressed_toggle_filter);
+#else
 				connect(filter_enabled_check, &QCheckBox::stateChanged, this, &DatastoreBulkOperationWindow::pressed_toggle_filter);
+#endif
 
 				QWidget* filter_form = new QWidget{ filter_box };
 				filter_form->setMinimumWidth(220);
@@ -357,7 +366,11 @@ DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const 
 	QGroupBox* options_box = new QGroupBox{ "Undelete Options", right_bar };
 	{
 		time_filter_check = new QCheckBox{ "Only entries deleted in the last", options_box };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+		connect(time_filter_check, &QCheckBox::checkStateChanged, this, &DatastoreBulkUndeleteWindow::pressed_toggle_time_filter);
+#else
 		connect(time_filter_check, &QCheckBox::stateChanged, this, &DatastoreBulkUndeleteWindow::pressed_toggle_time_filter);
+#endif
 
 		if (RobloxTime::is_initialized() == false)
 		{

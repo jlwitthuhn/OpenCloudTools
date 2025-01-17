@@ -8,6 +8,7 @@
 #include <string>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QAction>
@@ -74,7 +75,11 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 				connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &StandardDatastorePanel::refresh_datastore_list);
 
 				check_datastore_index_show_hidden = new QCheckBox{ "Show hidden", group_index };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+				connect(check_datastore_index_show_hidden, &QCheckBox::checkStateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+#else
 				connect(check_datastore_index_show_hidden, &QCheckBox::stateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+#endif
 
 				button_datastore_index_fetch = new QPushButton{ "Fetch datastores", group_index };
 				connect(button_datastore_index_fetch, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_fetch_datastores);

@@ -4,6 +4,7 @@
 #include <set>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
@@ -36,7 +37,11 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 		connect(topic_history_list, &QListWidget::itemSelectionChanged, this, &MessagingServicePanel::handle_selected_topic_changed);
 
 		add_used_topics_check = new QCheckBox{ "Add used topics", topic_history_group_box };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+		connect(add_used_topics_check, &QCheckBox::checkStateChanged, this, &MessagingServicePanel::handle_add_used_topics_toggled);
+#else
 		connect(add_used_topics_check, &QCheckBox::stateChanged, this, &MessagingServicePanel::handle_add_used_topics_toggled);
+#endif
 
 		add_topic_button = new QPushButton{ "Add...", topic_history_group_box };
 		connect(add_topic_button, &QPushButton::clicked, this, &MessagingServicePanel::pressed_add_topic);

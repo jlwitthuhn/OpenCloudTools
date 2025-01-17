@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QAbstractItemView>
 #include <QCheckBox>
 #include <QGroupBox>
@@ -44,7 +45,11 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 				connect(list_maps, &QListWidget::itemSelectionChanged, this, &MemoryStoreSortedMapPanel::handle_selected_map_changed);
 
 				check_save_recent_maps = new QCheckBox{ "Add used maps", group_box };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+				connect(check_save_recent_maps, &QCheckBox::checkStateChanged, this, &MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled);
+#else
 				connect(check_save_recent_maps, &QCheckBox::stateChanged, this, &MemoryStoreSortedMapPanel::handle_save_recent_maps_toggled);
+#endif
 
 				button_remove_recent_map = new QPushButton{ "Remove", group_box };
 				connect(button_remove_recent_map, &QPushButton::clicked, this, &MemoryStoreSortedMapPanel::pressed_remove_recent_map);

@@ -4,6 +4,7 @@
 #include <memory>
 #include <optional>
 
+#include <QtGlobal>
 #include <QCheckBox>
 #include <QLabel>
 #include <QProgressBar>
@@ -52,7 +53,11 @@ void OperationInProgressDialog::constructor_common()
 
 	close_automatically_box = new QCheckBox{ "Close this window when complete", this };
 	close_automatically_box->setChecked(UserProfile::get().get_autoclose_progress_window());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect(close_automatically_box, &QCheckBox::checkStateChanged, this, &OperationInProgressDialog::handle_checkbox_changed);
+#else
 	connect(close_automatically_box, &QCheckBox::stateChanged, this, &OperationInProgressDialog::handle_checkbox_changed);
+#endif
 	if (respect_close_automatically == false)
 	{
 		close_automatically_box->setHidden(true);

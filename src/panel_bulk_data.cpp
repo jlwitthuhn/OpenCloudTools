@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QCheckBox>
 #include <QFile>
 #include <QFileDialog>
@@ -57,7 +58,11 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 			separator->setFrameShadow(QFrame::Sunken);
 
 			danger_buttons_check = new QCheckBox{ "Enable danger buttons", datastore_group };
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+			connect(danger_buttons_check, &QCheckBox::checkStateChanged, this, &BulkDataPanel::handle_datastore_danger_toggle);
+#else
 			connect(danger_buttons_check, &QCheckBox::stateChanged, this, &BulkDataPanel::handle_datastore_danger_toggle);
+#endif
 
 			datastore_delete_button = new QPushButton{ "Bulk delete...", datastore_group };
 			datastore_delete_button->setToolTip(ToolTip::BulkDataPanel_Delete);
