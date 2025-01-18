@@ -8,6 +8,7 @@
 #include "profile.h"
 
 class QCheckBox;
+class QCloseEvent;
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;
@@ -19,6 +20,9 @@ class ManageApiKeysWindow : public QWidget
 public:
 	explicit ManageApiKeysWindow(QWidget* parent = nullptr);
 	virtual ~ManageApiKeysWindow() override;
+
+protected:
+	virtual void closeEvent(QCloseEvent* event) override;
 
 private:
 	void double_clicked_profile(QListWidgetItem* item);

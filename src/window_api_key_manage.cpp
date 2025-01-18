@@ -7,6 +7,7 @@
 #include <Qt>
 #include <QByteArray>
 #include <QCheckBox>
+#include <QCloseEvent>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -26,7 +27,9 @@
 #include "tooltip_text.h"
 #include "util_qvariant.h"
 
-#ifndef OCT_NEW_GUI
+#ifdef OCT_NEW_GUI
+#include "window_main_new.h"
+#else
 #include "window_main.h"
 #endif
 
@@ -99,6 +102,40 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 ManageApiKeysWindow::~ManageApiKeysWindow()
 {
 
+}
+
+void ManageApiKeysWindow::closeEvent(QCloseEvent* const event)
+{
+#ifdef OCT_NEW_GUI
+	if (static_cast<bool>(UserProfile::get().get_active_api_key()))
+	{
+		return QWidget::closeEvent(event);
+	}
+
+	QMessageBox* const message_box = new QMessageBox{ this };
+	message_box->setWindowTitle("No API key selected");
+	message_box->setText("You have not selected an API key.\nClose OpenCloudTools?");
+	message_box->setStandardButtons(QMessageBox::Close | QMessageBox::Cancel);
+	const int result = message_box->exec();
+	if (result == QMessageBox::Close)
+	{
+		MyNewMainWindow* const main_window = dynamic_cast<MyNewMainWindow*>(parentWidget());
+		OCTASSERT(main_window);
+		main_window->deleteLater();
+		event->accept();
+	}
+	else if (result == QMessageBox::Cancel)
+	{
+		event->ignore();
+	}
+	else
+	{
+		OCTASSERT(false);
+		event->accept();
+	}
+#else
+	return QWidget::closeEvent(event);
+#endif
 }
 
 void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
