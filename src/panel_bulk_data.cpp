@@ -22,6 +22,7 @@
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
+#include "gui_constants.h"
 #include "model_common.h"
 #include "profile.h"
 #include "sqlite_wrapper.h"
@@ -100,6 +101,11 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	layout->addStretch();
 	layout->addWidget(container_widget);
 	layout->addStretch();
+
+#ifdef OCT_NEW_GUI
+	// Increase minimum width so the full window title can be seen
+	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
+#endif
 
 	change_universe(nullptr);
 }
