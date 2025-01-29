@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include <QtGlobal>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -147,10 +148,10 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 	{
 		if (value_it.value().isDouble())
 		{
-#ifdef QT5_COMPAT
-			value_opt = static_cast<long long>(value_it.value().toDouble());
-#else
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			value_opt = value_it.value().toInteger();
+#else
+			value_opt = static_cast<long long>(value_it.value().toDouble());
 #endif
 		}
 		else if (value_it.value().isString())
@@ -214,10 +215,10 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 					{
 						if (value_it.value().isDouble())
 						{
-#ifdef QT5_COMPAT
-							value_opt = static_cast<long long>(value_it.value().toDouble());
-#else
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 							value_opt = value_it.value().toInteger();
+#else
+							value_opt = static_cast<long long>(value_it.value().toDouble());
 #endif
 						}
 						else if (value_it.value().isString())

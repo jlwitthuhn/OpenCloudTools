@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include <QtGlobal>
 #include <QApplication>
 #include <QPalette>
 #include <QSettings>
@@ -733,10 +734,10 @@ UserProfile::UserProfile(QObject* parent) : QObject{ parent }
 {
 	if (QApplication::style())
 	{
-#ifdef QT5_COMPAT
-		qt_theme = QApplication::style()->objectName();
-#else
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		qt_theme = QApplication::style()->name();
+#else
+		qt_theme = QApplication::style()->objectName();
 #endif
 	}
 	load_from_disk();

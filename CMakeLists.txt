@@ -144,10 +144,6 @@ if(DEFINED GIT_DESCRIBE)
 	target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
 endif()
 
-if(OCT_USE_QT5)
-	target_compile_definitions(OpenCloudTools PRIVATE QT5_COMPAT)
-endif()
-
 if(OCT_USE_NEW_GUI)
 	target_compile_definitions(OpenCloudTools PRIVATE OCT_NEW_GUI)
 endif()
