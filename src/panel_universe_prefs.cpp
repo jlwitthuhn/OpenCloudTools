@@ -56,10 +56,8 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->addWidget(container_widget);
 
-#ifdef OCT_NEW_GUI
 	// Increase minimum width so the full window title can be seen
 	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
-#endif
 
 	handle_hidden_datastores_changed();
 	handle_list_selection_changed();

@@ -27,21 +27,15 @@
 #include "tooltip_text.h"
 #include "util_qvariant.h"
 
-#ifdef OCT_NEW_GUI
 #include "window_main_new.h"
-#else
-#include "window_main.h"
-#endif
 
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("API Keys");
 
-#ifdef OCT_NEW_GUI
 	OCTASSERT(parent);
 	setWindowModality(Qt::WindowModality::ApplicationModal);
-#endif
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
 	layout->setAlignment(Qt::AlignHCenter);
@@ -106,7 +100,6 @@ ManageApiKeysWindow::~ManageApiKeysWindow()
 
 void ManageApiKeysWindow::closeEvent(QCloseEvent* const event)
 {
-#ifdef OCT_NEW_GUI
 	if (static_cast<bool>(UserProfile::get().get_active_api_key()))
 	{
 		return QWidget::closeEvent(event);
@@ -133,9 +126,6 @@ void ManageApiKeysWindow::closeEvent(QCloseEvent* const event)
 		OCTASSERT(false);
 		event->accept();
 	}
-#else
-	return QWidget::closeEvent(event);
-#endif
 }
 
 void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
@@ -147,16 +137,7 @@ void ManageApiKeysWindow::double_clicked_profile(QListWidgetItem* const item)
 		{
 			const ApiKeyProfile::Id id{ data_var.toByteArray() };
 			UserProfile::get().activate_api_key(id);
-#ifdef OCT_NEW_GUI
 			close();
-#else
-			if (const std::shared_ptr<const ApiKeyProfile> profile = UserProfile::get_active_api_key())
-			{
-				MyMainWindow* main_window = new MyMainWindow{ nullptr, profile->get_name(), profile->get_key() };
-				main_window->show();
-				close();
-			}
-#endif
 		}
 	}
 }
@@ -217,16 +198,7 @@ void ManageApiKeysWindow::pressed_select()
 		{
 			ApiKeyProfile::Id id{ selected_data.toByteArray() };
 			UserProfile::get().activate_api_key(id);
-#ifdef OCT_NEW_GUI
 			close();
-#else
-			if (const std::shared_ptr<const ApiKeyProfile> details = UserProfile::get_active_api_key())
-			{
-				MyMainWindow* main_window = new MyMainWindow{ nullptr, details->get_name(), details->get_key() };
-				main_window->show();
-				close();
-			}
-#endif
 		}
 	}
 }

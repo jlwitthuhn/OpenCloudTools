@@ -11,17 +11,14 @@
 #include <QString>
 #include <QStyleFactory>
 #include <QUrl>
+#include <QWidget>
 
 #include <sqlite3.h>
 
+#include "assert.h"
 #include "build_info.h"
 #include "profile.h"
-
-#ifdef OCT_NEW_GUI
-#include <QWidget>
-#include "assert.h"
 #include "window_api_key_manage.h"
-#endif
 
 MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent }
 {
@@ -87,7 +84,6 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 		preferences_menu->addAction(action_toggle_datastore_name_filter);
 	}
 
-#ifdef OCT_NEW_GUI
 	QMenu* const tools_menu = new QMenu{ "&Tools", this };
 	{
 		QAction* const action_http_log = new QAction{ "&HTTP Log", tools_menu };
@@ -95,7 +91,6 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 
 		tools_menu->addAction(action_http_log);
 	}
-#endif
 
 	QMenu* const about_menu = new QMenu{ "&About", this };
 	{
@@ -144,9 +139,7 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 
 	addMenu(file_menu);
 	addMenu(preferences_menu);
-#ifdef OCT_NEW_GUI
 	addMenu(tools_menu);
-#endif
 	addMenu(about_menu);
 
 	handle_qt_theme_changed();
@@ -182,14 +175,10 @@ void MyMainWindowMenuBar::handle_qt_theme_changed()
 
 void MyMainWindowMenuBar::pressed_change_api_key()
 {
-#ifdef OCT_NEW_GUI
 	QMainWindow* const parent_window = dynamic_cast<QMainWindow*>(window());
 	OCTASSERT(parent_window);
 	ManageApiKeysWindow* const manage_key_window = new ManageApiKeysWindow{ parent_window };
 	manage_key_window->show();
-#else
-	emit request_change_api_key();
-#endif
 }
 
 void MyMainWindowMenuBar::pressed_toggle_autoclose()

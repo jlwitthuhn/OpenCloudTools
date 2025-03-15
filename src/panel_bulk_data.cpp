@@ -102,10 +102,8 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	layout->addWidget(container_widget);
 	layout->addStretch();
 
-#ifdef OCT_NEW_GUI
 	// Increase minimum width so the full window title can be seen
 	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
-#endif
 
 	change_universe(nullptr);
 }

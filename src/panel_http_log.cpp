@@ -32,10 +32,8 @@ HttpLogPanel::HttpLogPanel(QWidget* parent) : QWidget{ parent }
 
 	refresh();
 
-#ifdef OCT_NEW_GUI
 	const std::unique_ptr<HttpWrangler>& wrangler = HttpWrangler::get();
 	connect(wrangler.get(), &HttpWrangler::log_entry_added, this, &HttpLogPanel::handle_log_entry_added);
-#endif
 }
 
 void HttpLogPanel::tab_opened()
@@ -58,7 +56,6 @@ void HttpLogPanel::refresh()
 	}
 }
 
-#ifdef OCT_NEW_GUI
 void HttpLogPanel::handle_log_entry_added(HttpLogEntry log_entry)
 {
 	if (HttpLogModel* const log_model = dynamic_cast<HttpLogModel*>(tree_view->model()))
@@ -66,7 +63,6 @@ void HttpLogPanel::handle_log_entry_added(HttpLogEntry log_entry)
 		log_model->append_entry(log_entry);
 	}
 }
-#endif
 
 void HttpLogPanel::pressed_clear()
 {

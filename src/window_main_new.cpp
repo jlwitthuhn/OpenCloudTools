@@ -56,9 +56,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	setMenuBar(menu_bar);
 
 	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyNewMainWindow::close);
-#ifdef OCT_NEW_GUI
 	connect(menu_bar, &MyMainWindowMenuBar::request_show_http_log, this, &MyNewMainWindow::show_http_log);
-#endif
 
 	QToolBar* const main_tool_bar = new QToolBar{ this };
 	main_tool_bar->setFloatable(false);
