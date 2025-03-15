@@ -306,7 +306,7 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 
 		const char* color_background = "#323232";
 		const char* color_background_alt = "#262626";
-		const char* color_background_input = "#141414";
+		const char* color_background_input = "#202020";
 		const char* color_text = "#FFFFFF";
 		const char* color_text_alt = "#DDDDDD";
 		const char* color_text_disabled = "#BBBBBB";
@@ -353,15 +353,8 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 		menu_palette.setColor(QPalette::Inactive, QPalette::Base, color_background_alt);
 		menu_palette.setColor(QPalette::Disabled, QPalette::Base, color_background_alt);
 
-		QPalette menu_bar_palette{ main_palette };
-
-		menu_bar_palette.setColor(QPalette::Active, QPalette::Window, color_background_alt);
-		menu_bar_palette.setColor(QPalette::Inactive, QPalette::Window, color_background_alt);
-		menu_bar_palette.setColor(QPalette::Disabled, QPalette::Window, color_background_alt);
-
 		QApplication::setPalette(main_palette);
 		QApplication::setPalette(menu_palette, "QMenu");
-		QApplication::setPalette(menu_bar_palette, "QMenuBar");
 	}
 	else
 	{
