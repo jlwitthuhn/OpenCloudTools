@@ -579,6 +579,10 @@ void OrderedDatastorePanel::pressed_entry_delete()
 
 	OrderedDatastoreEntryQTableModel* const model = dynamic_cast<OrderedDatastoreEntryQTableModel*>(tree_view_main->model());
 	OCTASSERT(model != nullptr);
+	if (model == nullptr)
+	{
+		return;
+	}
 
 	std::optional<OrderedDatastoreEntryFull> opt_entry = model->get_entry(index.row());
 	if (opt_entry.has_value() == false)

@@ -114,7 +114,10 @@ void ManageApiKeysWindow::closeEvent(QCloseEvent* const event)
 	{
 		MyMainWindow* const main_window = dynamic_cast<MyMainWindow*>(parentWidget());
 		OCTASSERT(main_window);
-		main_window->deleteLater();
+		if (main_window)
+		{
+			main_window->deleteLater();
+		}
 		event->accept();
 	}
 	else if (result == QMessageBox::Cancel)

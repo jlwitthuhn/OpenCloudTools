@@ -1,6 +1,7 @@
 #include "window_datastore_bulk_op_progress.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <utility>
 
 #include <Qt>
@@ -32,9 +33,13 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setMinimumHeight(380);
+	setWindowModality(Qt::WindowModality::ApplicationModal);
 
 	OCTASSERT(parent != nullptr);
-	setWindowModality(Qt::WindowModality::ApplicationModal);
+	if (parent == nullptr)
+	{
+		std::exit(1);
+	}
 
 	progress_label = new QLabel{ "", this };
 	progress_bar = new QProgressBar{ this };
@@ -58,7 +63,7 @@ DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidg
 	layout->addWidget(retry_button);
 	layout->addWidget(close_button);
 
-	update_ui();
+	progress_label->setText("Initializing...");
 }
 
 bool DatastoreBulkOperationProgressWindow::is_retryable() const

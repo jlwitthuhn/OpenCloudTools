@@ -162,18 +162,30 @@ void ViewOrderedDatastoreEntryWindow::refresh()
 void ViewOrderedDatastoreEntryWindow::changed_increment()
 {
 	OCTASSERT(increment_submit != nullptr && increment_edit != nullptr);
+	if (increment_submit == nullptr || increment_edit == nullptr)
+	{
+		return;
+	}
 	increment_submit->setEnabled(validate_contains_long(increment_edit));
 }
 
 void ViewOrderedDatastoreEntryWindow::changed_new_value()
 {
 	OCTASSERT(new_value_submit != nullptr && new_value_edit != nullptr);
+	if (new_value_submit == nullptr || new_value_edit == nullptr)
+	{
+		return;
+	}
 	new_value_submit->setEnabled(validate_contains_long(new_value_edit));
 }
 
 void ViewOrderedDatastoreEntryWindow::pressed_increment()
 {
 	OCTASSERT(increment_edit != nullptr);
+	if (increment_edit == nullptr)
+	{
+		return;
+	}
 	const bool universe_id_valid = validate_contains_long(universe_id_edit);
 	const bool increment_by_valid = validate_contains_long(increment_edit);
 	if (!universe_id_valid || !increment_by_valid)
@@ -207,6 +219,10 @@ void ViewOrderedDatastoreEntryWindow::pressed_increment()
 void ViewOrderedDatastoreEntryWindow::pressed_new_value()
 {
 	OCTASSERT(new_value_edit != nullptr);
+	if (new_value_edit == nullptr)
+	{
+		return;
+	}
 	const bool universe_id_valid = validate_contains_long(universe_id_edit);
 	const bool increment_by_valid = validate_contains_long(new_value_edit);
 	if (!universe_id_valid || !increment_by_valid)
