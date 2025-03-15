@@ -10,7 +10,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 option(OCT_USE_GIT_TAG "Pull the current git tag during build" FALSE)
+option(OCT_USE_IWYU "Analyze includes with include-what-you-use" FALSE)
 option(OCT_USE_QT5 "Build with Qt 5 instead of Qt 6" FALSE)
+
+if (OCT_USE_IWYU)
+	set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use -Xiwyu "--mapping_file=${CMAKE_SOURCE_DIR}/extra/iwyu.imp")
+endif()
 
 if(OCT_USE_GIT_TAG)
 	execute_process(

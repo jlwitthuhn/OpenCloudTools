@@ -1,11 +1,15 @@
 [
+	# C++ std lib
+	{ symbol: [ "std::pair", "private", "<utility>", "public" ] },
 	# Clang
 	{ include: [ "<bits/chrono.h>",      private, "<chrono>", public ] },
-	{ include: [ "<ext/alloc_traits.h>", private, "<vector>", public ] },
+	#{ include: [ "<ext/alloc_traits.h>", private, "<vector>", public ] },
 	# Macros
-	{ symbol: [ "emit",     "private", "<QObject>", "public" ] },
-	{ symbol: [ "signals",  "private", "<QObject>", "public" ] },
-	{ symbol: [ "Q_OBJECT", "private", "<QObject>", "public" ] },
+	{ symbol: [ "QT_VERSION",       "private", "<QtGlobal>", "public" ] },
+	{ symbol: [ "QT_VERSION_CHECK", "private", "<QtGlobal>", "public" ] },
+	{ symbol: [ "emit",             "private", "<QObject>",  "public" ] },
+	{ symbol: [ "signals",          "private", "<QObject>",  "public" ] },
+	{ symbol: [ "Q_OBJECT",         "private", "<QObject>",  "public" ] },
 	# Base types
 	{ symbol: [ "qsizetype",   "private", "<Qt>", "public" ] },
 	{ symbol: [ "DisplayRole", "private", "<Qt>", "public" ] },

@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <QString>
+#include <QVariant>
 
 #include "util_json.h"
 

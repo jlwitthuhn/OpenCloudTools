@@ -9,7 +9,6 @@
 #include <QAbstractTableModel>
 #include <QModelIndex>
 #include <QObject>
-#include <QVariant>
 
 #include "model_common.h"
 

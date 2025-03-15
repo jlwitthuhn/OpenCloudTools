@@ -12,7 +12,6 @@
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
-#include <QVariant>
 
 enum class HttpRequestType;
 

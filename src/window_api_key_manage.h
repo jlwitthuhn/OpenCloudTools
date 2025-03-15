@@ -8,7 +8,6 @@
 #include "profile.h"
 
 class QCheckBox;
-class QCloseEvent;
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;

@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QUrl>
+#include <QVariant>
 
 #include "assert.h"
 #include "util_enum.h"
