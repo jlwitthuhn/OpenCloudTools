@@ -27,7 +27,7 @@
 #include "tooltip_text.h"
 #include "util_qvariant.h"
 
-#include "window_main_new.h"
+#include "window_main.h"
 
 ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt::Window }
 {
@@ -112,7 +112,7 @@ void ManageApiKeysWindow::closeEvent(QCloseEvent* const event)
 	const int result = message_box->exec();
 	if (result == QMessageBox::Close)
 	{
-		MyNewMainWindow* const main_window = dynamic_cast<MyNewMainWindow*>(parentWidget());
+		MyMainWindow* const main_window = dynamic_cast<MyMainWindow*>(parentWidget());
 		OCTASSERT(main_window);
 		main_window->deleteLater();
 		event->accept();

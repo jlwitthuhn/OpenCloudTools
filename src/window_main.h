@@ -19,12 +19,12 @@ class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 
-class MyNewMainWindow : public QMainWindow
+class MyMainWindow : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	MyNewMainWindow();
+	MyMainWindow();
 
 private:
 	void gui_refresh();

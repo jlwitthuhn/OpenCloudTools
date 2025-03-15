@@ -107,10 +107,10 @@ set(OPENCLOUDTOOLS_SRC
 	./src/window_datastore_entry_versions_view.h
 	./src/window_datastore_entry_view.cpp
 	./src/window_datastore_entry_view.h
+	./src/window_main.cpp
+	./src/window_main.h
 	./src/window_main_menu_bar.cpp
 	./src/window_main_menu_bar.h
-	./src/window_main_new.cpp
-	./src/window_main_new.h
 	./src/window_ordered_datastore_entry_view.cpp
 	./src/window_ordered_datastore_entry_view.h
 )

@@ -1,4 +1,4 @@
-#include "window_main_new.h"
+#include "window_main.h"
 
 #include <utility>
 #include <vector>
@@ -44,19 +44,19 @@ template <typename T> static QPointer<QMdiSubWindow> create_and_attach_panel(con
 	return mdi_area->addSubWindow(new_panel);
 }
 
-MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
+MyMainWindow::MyMainWindow() : QMainWindow{ nullptr, Qt::Window }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("OpenCloudTools");
 	setMinimumSize(650, 500);
 
-	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, &MyNewMainWindow::handle_active_api_key_changed);
+	connect(&(UserProfile::get()), &UserProfile::active_api_key_changed, this, &MyMainWindow::handle_active_api_key_changed);
 
 	MyMainWindowMenuBar* const menu_bar = new MyMainWindowMenuBar{ this };
 	setMenuBar(menu_bar);
 
-	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyNewMainWindow::close);
-	connect(menu_bar, &MyMainWindowMenuBar::request_show_http_log, this, &MyNewMainWindow::show_http_log);
+	connect(menu_bar, &MyMainWindowMenuBar::request_close, this, &MyMainWindow::close);
+	connect(menu_bar, &MyMainWindowMenuBar::request_show_http_log, this, &MyMainWindow::show_http_log);
 
 	QToolBar* const main_tool_bar = new QToolBar{ this };
 	main_tool_bar->setFloatable(false);
@@ -69,7 +69,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 		edit_api_key_name->setMaximumWidth(250);
 
 		QPushButton* const change_key_button = new QPushButton{ "Change Key", main_tool_bar };
-		connect(change_key_button, &QPushButton::clicked, this, &MyNewMainWindow::pressed_change_key);
+		connect(change_key_button, &QPushButton::clicked, this, &MyMainWindow::pressed_change_key);
 
 		main_tool_bar->addWidget(api_key_label);
 		main_tool_bar->addWidget(edit_api_key_name);
@@ -91,17 +91,17 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 			tree_universe = new QTreeWidget{ universe_tree_container_inner };
 			tree_universe->setColumnCount(1);
 			tree_universe->setHeaderHidden(true);
-			connect(tree_universe, &QTreeWidget::itemDoubleClicked, this, &MyNewMainWindow::show_subwindow_from_item);
-			connect(tree_universe, &QTreeWidget::itemSelectionChanged, this, &MyNewMainWindow::gui_refresh);
+			connect(tree_universe, &QTreeWidget::itemDoubleClicked, this, &MyMainWindow::show_subwindow_from_item);
+			connect(tree_universe, &QTreeWidget::itemSelectionChanged, this, &MyMainWindow::gui_refresh);
 
 			QPushButton* const button_add_universe = new QPushButton{ "Add universe...", universe_tree_container_inner };
-			connect(button_add_universe, &QPushButton::clicked, this, &MyNewMainWindow::pressed_add_universe);
+			connect(button_add_universe, &QPushButton::clicked, this, &MyMainWindow::pressed_add_universe);
 
 			button_edit_universe = new QPushButton{ "Edit universe...", universe_tree_container_inner };
-			connect(button_edit_universe, &QPushButton::clicked, this, &MyNewMainWindow::pressed_edit_universe);
+			connect(button_edit_universe, &QPushButton::clicked, this, &MyMainWindow::pressed_edit_universe);
 
 			button_delete_universe = new QPushButton{ "Delete universe", universe_tree_container_inner };
-			connect(button_delete_universe, &QPushButton::clicked, this, &MyNewMainWindow::pressed_delete_universe);
+			connect(button_delete_universe, &QPushButton::clicked, this, &MyMainWindow::pressed_delete_universe);
 
 			universe_tree_container_inner->setLayout(layout_universe_tree);
 			layout_universe_tree->addWidget(tree_universe);
@@ -125,7 +125,7 @@ MyNewMainWindow::MyNewMainWindow() : QMainWindow{ nullptr, Qt::Window }
 	pressed_change_key();
 }
 
-void MyNewMainWindow::gui_refresh()
+void MyMainWindow::gui_refresh()
 {
 	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
 	if (api_profile)
@@ -145,7 +145,7 @@ void MyNewMainWindow::gui_refresh()
 	button_delete_universe->setEnabled(universe_buttons_active);
 }
 
-std::optional<UniverseProfile::Id> MyNewMainWindow::get_selected_universe_id()
+std::optional<UniverseProfile::Id> MyMainWindow::get_selected_universe_id()
 {
 	const QList<QTreeWidgetItem*> items = tree_universe->selectedItems();
 	if (items.size() == 0)
@@ -170,45 +170,45 @@ std::optional<UniverseProfile::Id> MyNewMainWindow::get_selected_universe_id()
 	return ApiKeyProfile::Id{ user_data.toByteArray() };
 }
 
-void MyNewMainWindow::handle_active_api_key_changed()
+void MyMainWindow::handle_active_api_key_changed()
 {
 	close_all_subwindows();
 
 	const std::shared_ptr<ApiKeyProfile> key_profile = UserProfile::get().get_active_api_key();
 	attached_profile = key_profile;
 	disconnect(conn_attached_profile_details_changed);
-	conn_attached_profile_details_changed = connect(key_profile.get(), &ApiKeyProfile::details_changed, this, &MyNewMainWindow::handle_active_api_key_details_changed);
+	conn_attached_profile_details_changed = connect(key_profile.get(), &ApiKeyProfile::details_changed, this, &MyMainWindow::handle_active_api_key_details_changed);
 	disconnect(conn_attached_profile_universe_details_changed);
-	conn_attached_profile_universe_details_changed = connect(key_profile.get(), &ApiKeyProfile::universe_details_changed, this, &MyNewMainWindow::handle_universe_details_changed);
+	conn_attached_profile_universe_details_changed = connect(key_profile.get(), &ApiKeyProfile::universe_details_changed, this, &MyMainWindow::handle_universe_details_changed);
 	disconnect(conn_attached_profile_universe_list_changed);
-	conn_attached_profile_universe_list_changed = connect(key_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyNewMainWindow::handle_universe_list_changed);
+	conn_attached_profile_universe_list_changed = connect(key_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 
 	rebuild_universe_tree();
 }
 
-void MyNewMainWindow::handle_active_api_key_details_changed()
+void MyMainWindow::handle_active_api_key_details_changed()
 {
 	gui_refresh();
 }
 
-void MyNewMainWindow::handle_universe_details_changed(const UniverseProfile::Id id)
+void MyMainWindow::handle_universe_details_changed(const UniverseProfile::Id id)
 {
 	close_universe_subwindows(id);
 	rebuild_universe_tree();
 }
 
-void MyNewMainWindow::handle_universe_list_changed()
+void MyMainWindow::handle_universe_list_changed()
 {
 	rebuild_universe_tree();
 }
 
-void MyNewMainWindow::pressed_change_key()
+void MyMainWindow::pressed_change_key()
 {
 	ManageApiKeysWindow* const manage_keys_window = new ManageApiKeysWindow{ this };
 	manage_keys_window->show();
 }
 
-void MyNewMainWindow::pressed_add_universe()
+void MyMainWindow::pressed_add_universe()
 {
 	if (const std::shared_ptr<ApiKeyProfile> shared_profile = attached_profile.lock())
 	{
@@ -217,7 +217,7 @@ void MyNewMainWindow::pressed_add_universe()
 	}
 }
 
-void MyNewMainWindow::pressed_edit_universe()
+void MyMainWindow::pressed_edit_universe()
 {
 	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
 	OCTASSERT(api_profile);
@@ -229,7 +229,7 @@ void MyNewMainWindow::pressed_edit_universe()
 	modal_window->show();
 }
 
-void MyNewMainWindow::pressed_delete_universe()
+void MyMainWindow::pressed_delete_universe()
 {
 	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
 	OCTASSERT(api_profile);
@@ -247,7 +247,7 @@ void MyNewMainWindow::pressed_delete_universe()
 	}
 }
 
-void MyNewMainWindow::rebuild_universe_tree()
+void MyMainWindow::rebuild_universe_tree()
 {
 	tree_universe->clear();
 
@@ -284,7 +284,7 @@ void MyNewMainWindow::rebuild_universe_tree()
 	gui_refresh();
 }
 
-void MyNewMainWindow::close_all_subwindows()
+void MyMainWindow::close_all_subwindows()
 {
 	for (const auto& this_pair : subwindows)
 	{
@@ -297,7 +297,7 @@ void MyNewMainWindow::close_all_subwindows()
 	subwindows.clear();
 }
 
-void MyNewMainWindow::close_universe_subwindows(const UniverseProfile::Id& id)
+void MyMainWindow::close_universe_subwindows(const UniverseProfile::Id& id)
 {
 	for (const auto& this_pair : subwindows)
 	{
@@ -314,7 +314,7 @@ void MyNewMainWindow::close_universe_subwindows(const UniverseProfile::Id& id)
 	}
 }
 
-void MyNewMainWindow::show_http_log()
+void MyMainWindow::show_http_log()
 {
 	if (subwindow_http_log)
 	{
@@ -332,7 +332,7 @@ void MyNewMainWindow::show_http_log()
 	subwindow_http_log->show();
 }
 
-void MyNewMainWindow::show_subwindow(const SubwindowId& id)
+void MyMainWindow::show_subwindow(const SubwindowId& id)
 {
 	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
 	if (!api_profile)
@@ -395,7 +395,7 @@ void MyNewMainWindow::show_subwindow(const SubwindowId& id)
 	new_subwindow->show();
 }
 
-void MyNewMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
+void MyMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
 {
 	QTreeWidgetItem* const item_parent = item->parent();
 	if (item_parent == nullptr)

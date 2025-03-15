@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "window_main_new.h"
+#include "window_main.h"
 
 int main(int argc, char** argv)
 {
@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 
 	QApplication app{ argc, argv };
 
-	MyNewMainWindow* const window = new MyNewMainWindow{};
+	MyMainWindow* const window = new MyMainWindow{};
 	window->show();
 
 	return app.exec();
