@@ -126,17 +126,7 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 		enumerate_entries_request->set_http_429_count(http_429_count);
 		enumerate_entries_request->set_enumerate_done_callback(datastore_enumerate_done_callback);
 		enumerate_entries_request->set_entry_found_callback(entry_found_callback);
-		connect(
-			enumerate_entries_request.get(),
-			&StandardDatastoreEntryGetListRequest::enumerate_step,
-			this,
-			[this](long long universe_id, const std::string& datastore_name, const std::string& cursor) {
-				if (datastore_enumerate_step_callback)
-				{
-					datastore_enumerate_step_callback->operator()(universe_id, datastore_name, cursor);
-				}
-			}
-		);
+		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::enumerate_step, this, &DatastoreBulkOperationProgressWindow::handle_enumerate_step);
 		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::enumerate_step, this, &DatastoreBulkOperationProgressWindow::update_ui);
 		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
@@ -594,12 +584,6 @@ void DatastoreBulkDownloadProgressWindow::common_init()
 #pragma warning ( push )
 #pragma warning ( disable: 4458 )
 #endif
-	datastore_enumerate_step_callback = std::make_shared<std::function<void(long long, const std::string&, const std::string&)>>(
-		[&db_ref](const long long universe_id, const std::string& datastore_name, const std::string& cursor) {
-			db_ref->write_enumeration(universe_id, datastore_name, cursor);
-		}
-	);
-
 	datastore_enumerate_done_callback = std::make_shared<std::function<void(long long, const std::string&)>>(
 		[&db_ref](const long long universe_id, const std::string& datastore_name) {
 			db_ref->delete_enumeration(universe_id, datastore_name);
@@ -637,6 +621,11 @@ void DatastoreBulkDownloadProgressWindow::handle_entry_response()
 		get_entry_details_request.reset();
 		send_next_entry_request();
 	}
+}
+
+void DatastoreBulkDownloadProgressWindow::handle_enumerate_step(const long long universe_id_in, const std::string& datastore_name, const std::string& cursor)
+{
+	this->db_wrapper->write_enumeration(universe_id_in, datastore_name, cursor);
 }
 
 DatastoreBulkUndeleteProgressWindow::DatastoreBulkUndeleteProgressWindow(
