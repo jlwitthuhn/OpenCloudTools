@@ -318,6 +318,8 @@ protected:
 
 class StandardDatastoreEntryGetListRequest : public DataRequest
 {
+	Q_OBJECT
+
 public:
 	StandardDatastoreEntryGetListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor = std::nullopt);
 
@@ -325,12 +327,14 @@ public:
 
 	void set_result_limit(size_t limit);
 
-	void set_enumerate_step_callback(std::weak_ptr<std::function<void(long long, const std::string&, const std::string&)>> callback) { enumerate_step_callback = callback; }
 	void set_enumerate_done_callback(std::weak_ptr<std::function<void(long long, const std::string&)>> callback) { enumerate_done_callback = callback; }
 	void set_entry_found_callback(std::weak_ptr<std::function<void(const StandardDatastoreEntryName&)>> callback) { entry_found_callback = callback; }
 
 	const std::vector<StandardDatastoreEntryName>& get_datastore_entries() const { return datastore_entries; }
 	std::vector<StandardDatastoreEntryName>&& get_datastore_entries_rvalue() { return std::move(datastore_entries); }
+
+signals:
+	void enumerate_step(long long universe_id, const std::string& datastore_name, const std::string& cursor);
 
 private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
@@ -347,7 +351,6 @@ private:
 
 	std::vector<StandardDatastoreEntryName> datastore_entries;
 
-	std::weak_ptr<std::function<void(long long, const std::string&, const std::string&)>> enumerate_step_callback;
 	std::weak_ptr<std::function<void(long long, const std::string&)>> enumerate_done_callback;
 	std::weak_ptr<std::function<void(const StandardDatastoreEntryName&)>> entry_found_callback;
 };

@@ -722,10 +722,7 @@ void StandardDatastoreEntryGetListRequest::handle_http_200(const QString& body, 
 		std::optional<QString> cursor{ response->get_cursor() };
 		if (cursor && cursor->size() > 0 && !limit_reached)
 		{
-			if (auto locked_callback = enumerate_step_callback.lock())
-			{
-				locked_callback->operator()(universe_id, datastore_name.toStdString(), cursor->toStdString());
-			}
+			emit enumerate_step(universe_id, datastore_name.toStdString(), cursor->toStdString());
 			send_request(cursor);
 		}
 		else

@@ -124,9 +124,20 @@ void DatastoreBulkOperationProgressWindow::send_next_enumerate_keys_request()
 		enumerate_entries_request = std::make_shared<StandardDatastoreEntryGetListRequest>(api_key, universe_id, this_datastore_name, find_scope, find_key_prefix, initial_cursor);
 		initial_cursor = std::nullopt;
 		enumerate_entries_request->set_http_429_count(http_429_count);
-		enumerate_entries_request->set_enumerate_step_callback(datastore_enumerate_step_callback);
 		enumerate_entries_request->set_enumerate_done_callback(datastore_enumerate_done_callback);
 		enumerate_entries_request->set_entry_found_callback(entry_found_callback);
+		connect(
+			enumerate_entries_request.get(),
+			&StandardDatastoreEntryGetListRequest::enumerate_step,
+			this,
+			[this](long long universe_id, const std::string& datastore_name, const std::string& cursor) {
+				if (datastore_enumerate_step_callback)
+				{
+					datastore_enumerate_step_callback->operator()(universe_id, datastore_name, cursor);
+				}
+			}
+		);
+		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::enumerate_step, this, &DatastoreBulkOperationProgressWindow::update_ui);
 		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::received_http_429, this, &DatastoreBulkOperationProgressWindow::handle_received_http_429);
 		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
 		connect(enumerate_entries_request.get(), &StandardDatastoreEntryGetListRequest::status_error, this, &DatastoreBulkOperationProgressWindow::handle_error_message);
