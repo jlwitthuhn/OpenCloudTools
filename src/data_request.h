@@ -327,13 +327,12 @@ public:
 
 	void set_result_limit(size_t limit);
 
-	void set_enumerate_done_callback(std::weak_ptr<std::function<void(long long, const std::string&)>> callback) { enumerate_done_callback = callback; }
-	void set_entry_found_callback(std::weak_ptr<std::function<void(const StandardDatastoreEntryName&)>> callback) { entry_found_callback = callback; }
-
 	const std::vector<StandardDatastoreEntryName>& get_datastore_entries() const { return datastore_entries; }
 	std::vector<StandardDatastoreEntryName>&& get_datastore_entries_rvalue() { return std::move(datastore_entries); }
 
 signals:
+	void entry_found(const StandardDatastoreEntryName& name);
+	void enumerate_done(long long universe_id, const std::string& datastore_name);
 	void enumerate_step(long long universe_id, const std::string& datastore_name, const std::string& cursor);
 
 private:
@@ -350,9 +349,6 @@ private:
 	std::optional<size_t> result_limit;
 
 	std::vector<StandardDatastoreEntryName> datastore_entries;
-
-	std::weak_ptr<std::function<void(long long, const std::string&)>> enumerate_done_callback;
-	std::weak_ptr<std::function<void(const StandardDatastoreEntryName&)>> entry_found_callback;
 };
 
 class StandardDatastoreEntryGetVersionListRequest : public DataRequest

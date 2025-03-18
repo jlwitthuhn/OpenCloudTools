@@ -26,6 +26,7 @@ class StandardDatastoreEntryGetDetailsRequest;
 class StandardDatastoreEntryGetListRequest;
 class StandardDatastoreEntryGetVersionRequest;
 class StandardDatastoreEntryGetVersionListRequest;
+class StandardDatastoreEntryName;
 class StandardDatastoreEntryPostSetRequest;
 class TextLogWidget;
 
@@ -59,7 +60,9 @@ protected:
 	void handle_enumerate_keys_success();
 	void handle_received_http_429();
 
+	virtual void handle_entry_found(const StandardDatastoreEntryName&) {}
 	virtual void handle_enumerate_step(long long, const std::string&, const std::string&) {}
+	virtual void handle_enumerate_done(long long, const std::string&) {}
 
 	class DownloadProgress
 	{
@@ -111,9 +114,6 @@ protected:
 
 	QPushButton* retry_button = nullptr;
 	QPushButton* close_button = nullptr;
-
-	std::shared_ptr<std::function<void(long long, const std::string&)>> datastore_enumerate_done_callback;
-	std::shared_ptr<std::function<void(const StandardDatastoreEntryName&)>> entry_found_callback;
 };
 
 class DatastoreBulkDeleteProgressWindow: public DatastoreBulkOperationProgressWindow
@@ -174,10 +174,10 @@ private:
 	virtual bool is_retryable() const override;
 	virtual bool do_retry() override;
 
-	void common_init();
-
 	void handle_entry_response();
 
+	virtual void handle_entry_found(const StandardDatastoreEntryName& name) override;
+	virtual void handle_enumerate_done(long long universe_id, const std::string& datastore_name) override;
 	virtual void handle_enumerate_step(long long universe_id, const std::string& datastore_name, const std::string& cursor) override;
 
 	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper;
