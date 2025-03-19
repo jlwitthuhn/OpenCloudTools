@@ -28,11 +28,11 @@ std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(co
 	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore_deleted;", nullptr, nullptr, nullptr);
 	sqlite3_exec(db_handle, "CREATE TABLE datastore_deleted (universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, scope TEXT NOT NULL, key_name TEXT NOT NULL, PRIMARY KEY (universe_id, datastore_name, scope, key_name))", nullptr, nullptr, nullptr);
 
-	// Table to track status of enumarating all keys
+	// Table to track status of enumerating all keys
 	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore_enumerate;", nullptr, nullptr, nullptr);
 	sqlite3_exec(db_handle, "CREATE TABLE datastore_enumerate (universe_id INTEGER NOT NULL, datastore_name TEXT NOT NULL, next_cursor TEXT, PRIMARY KEY (universe_id, datastore_name))", nullptr, nullptr, nullptr);
 
-	// Table to track status of enumaration metadata (scope and prefix)
+	// Table to track status of enumeration metadata (scope and prefix)
 	sqlite3_exec(db_handle, "DROP TABLE IF EXISTS datastore_enumerate_meta;", nullptr, nullptr, nullptr);
 	sqlite3_exec(db_handle, "CREATE TABLE datastore_enumerate_meta (universe_id INTEGER NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY (universe_id, key))", nullptr, nullptr, nullptr);
 
@@ -684,7 +684,7 @@ void SqliteDatastoreWrapper::delete_pending(const StandardDatastoreEntryName& en
 	}
 }
 
-std::optional<std::string> SqliteDatastoreWrapper::get_enumarating_cursor(const long long universe_id)
+std::optional<std::string> SqliteDatastoreWrapper::get_enumerating_cursor(const long long universe_id)
 {
 	std::optional<std::string> result;
 
@@ -710,7 +710,7 @@ std::optional<std::string> SqliteDatastoreWrapper::get_enumarating_cursor(const 
 	return result;
 }
 
-std::optional<std::string> SqliteDatastoreWrapper::get_enumarating_datastore(const long long universe_id)
+std::optional<std::string> SqliteDatastoreWrapper::get_enumerating_datastore(const long long universe_id)
 {
 	std::optional<std::string> result;
 

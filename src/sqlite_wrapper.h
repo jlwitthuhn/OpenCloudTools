@@ -32,8 +32,8 @@ public:
 	void delete_pending(const StandardDatastoreEntryFull& entry);
 	void delete_pending(const StandardDatastoreEntryName& entry);
 
-	std::optional<std::string> get_enumarating_cursor(long long universe_id);
-	std::optional<std::string> get_enumarating_datastore(long long universe_id);
+	std::optional<std::string> get_enumerating_cursor(long long universe_id);
+	std::optional<std::string> get_enumerating_datastore(long long universe_id);
 
 	std::optional<std::string> get_enumeration_search_key_prefix(long long universe_id);
 	std::optional<std::string> get_enumeration_search_scope(long long universe_id);

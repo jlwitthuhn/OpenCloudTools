@@ -495,11 +495,11 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	}
 
 	datastore_names.clear();
-	if (const std::optional<std::string> opt_name = this->db_wrapper->get_enumarating_datastore(universe_id))
+	if (const std::optional<std::string> opt_name = this->db_wrapper->get_enumerating_datastore(universe_id))
 	{
 		datastore_names.push_back(QString::fromStdString(*opt_name));
 	}
-	if (const std::optional<std::string> opt_cursor = this->db_wrapper->get_enumarating_cursor(universe_id))
+	if (const std::optional<std::string> opt_cursor = this->db_wrapper->get_enumerating_cursor(universe_id))
 	{
 		initial_cursor = QString::fromStdString(*opt_cursor);
 	}
