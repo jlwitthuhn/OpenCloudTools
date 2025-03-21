@@ -277,7 +277,6 @@ void MyMainWindow::rebuild_universe_tree()
 	{
 		static const std::vector<SubwindowType> subwindow_types = std::vector<SubwindowType>{
 			SubwindowType::DATA_STORES_STANDARD,
-			SubwindowType::DATA_STORES_STANDARD_ADD,
 			SubwindowType::DATA_STORES_ORDERED,
 			SubwindowType::MEMORY_STORE_SORTED_MAP,
 			SubwindowType::BULK_DATA,
@@ -293,6 +292,17 @@ void MyMainWindow::rebuild_universe_tree()
 			QTreeWidgetItem* const subwindow_item = new QTreeWidgetItem{ this_item };
 			subwindow_item->setText(0, subwindow_type_display_name(subwindow_type));
 			subwindow_item->setData(0, Qt::UserRole, static_cast<int>(subwindow_type));
+
+			if (subwindow_type == SubwindowType::DATA_STORES_STANDARD)
+			{
+				QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
+				search_item->setText(0, "Search Data Store");
+				search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD));
+
+				QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
+				add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_STANDARD_ADD));
+				add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD_ADD));
+			}
 		}
 		this_item->setExpanded(true);
 	}
@@ -416,14 +426,19 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 
 void MyMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
 {
-	QTreeWidgetItem* const item_parent = item->parent();
-	if (item_parent == nullptr)
+	if (item->parent() == nullptr)
 	{
 		// User double-clicked a universe label, do nothing
 		return;
 	}
 
-	const QVariant universe_profile_id_var = item_parent->data(0, Qt::UserRole);
+	QTreeWidgetItem* top_parent = item;
+	while (QTreeWidgetItem* const next_parent = top_parent->parent())
+	{
+		top_parent = next_parent;
+	}
+
+	const QVariant universe_profile_id_var = top_parent->data(0, Qt::UserRole);
 	if (qvariant_is_byte_array(universe_profile_id_var, static_cast<int>(RandomId128::LENGTH)) == false)
 	{
 		OCTASSERT(false);
