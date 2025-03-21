@@ -54,6 +54,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 	}
 
 	QVBoxLayout* layout = new QVBoxLayout{ this };
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(container_widget);
 
 	// Increase minimum width so the full window title can be seen
