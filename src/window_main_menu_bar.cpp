@@ -118,13 +118,17 @@ MyMainWindowMenuBar::MyMainWindowMenuBar(QMainWindow* parent) : QMenuBar{ parent
 
 		QMenu* const about_libraries_menu = new QMenu{ "Third-party libraries", about_menu };
 		{
-			const QString label_qt = QString{ "Qt %1" }.arg(qVersion());
-			QAction* const action_qt = new QAction{ label_qt, about_libraries_menu };
+			const QString label_qt_build = QString{ "Qt Build %1" }.arg(QT_VERSION_STR);
+			QAction* const action_qt_build = new QAction{ label_qt_build, about_libraries_menu };
+
+			const QString label_qt_run = QString{ "Qt Runtime %1" }.arg(qVersion());
+			QAction* const action_qt_run = new QAction{ label_qt_run, about_libraries_menu };
 
 			const QString label_sqlite = QString{ "SQLite %1" }.arg(sqlite3_libversion());
 			QAction* const action_sqlite = new QAction{ label_sqlite, about_libraries_menu };
 
-			about_libraries_menu->addAction(action_qt);
+			about_libraries_menu->addAction(action_qt_build);
+			about_libraries_menu->addAction(action_qt_run);
 			about_libraries_menu->addAction(action_sqlite);
 		}
 
