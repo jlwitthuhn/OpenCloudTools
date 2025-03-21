@@ -9,7 +9,6 @@
 #include <QWidget>
 
 class QCheckBox;
-class QComboBox;
 class QLineEdit;
 class QListWidget;
 class QModelIndex;
@@ -52,8 +51,6 @@ private:
 	void handle_selected_datastore_entry_changed();
 	void handle_show_datastore_filter_changed();
 
-	void handle_add_entry_text_changed();
-
 	void pressed_right_click_datastore_list(const QPoint& pos);
 	void pressed_right_click_entry_list(const QPoint& pos);
 
@@ -62,7 +59,6 @@ private:
 	void pressed_fetch_datastores();
 	void pressed_find_all();
 	void pressed_find_prefix();
-	void pressed_submit_new_entry();
 	void pressed_view_entry();
 	void pressed_view_versions();
 
@@ -94,17 +90,4 @@ private:
 
 	QPushButton* button_entry_edit = nullptr;
 	QPushButton* button_entry_delete = nullptr;
-
-	// Add panel
-	QLineEdit* edit_add_datastore_name = nullptr;
-	QLineEdit* edit_add_datastore_scope = nullptr;
-	QLineEdit* edit_add_datastore_key_name = nullptr;
-
-	QComboBox* combo_add_entry_type = nullptr;
-
-	QTextEdit* edit_add_entry_data = nullptr;
-	QTextEdit* edit_add_entry_userids = nullptr;
-	QTextEdit* edit_add_entry_attributes = nullptr;
-
-	QPushButton* button_add_entry_submit = nullptr;
 };

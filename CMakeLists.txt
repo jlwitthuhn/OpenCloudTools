@@ -69,6 +69,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/panel_datastore_ordered.h
 	./src/panel_datastore_standard.cpp
 	./src/panel_datastore_standard.h
+	./src/panel_datastore_standard_add.cpp
+	./src/panel_datastore_standard_add.h
 	./src/panel_http_log.cpp
 	./src/panel_http_log.h
 	./src/panel_messaging_service.cpp

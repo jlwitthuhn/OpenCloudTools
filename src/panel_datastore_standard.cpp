@@ -32,7 +32,6 @@
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QSplitter>
-#include <QTabWidget>
 #include <QTextEdit>
 #include <QTreeView>
 #include <QVariant>
@@ -62,7 +61,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 	{
 		QWidget* const panel_index = new QWidget{ splitter };
 		{
-			QGroupBox* const group_index = new QGroupBox{ "Datastores", panel_index };
+			QGroupBox* const group_index = new QGroupBox{ "Data store list", panel_index };
 			{
 				list_datastore_index = new QListWidget{ group_index };
 				list_datastore_index->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -71,7 +70,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 
 				edit_datastore_index_filter = new QLineEdit{ group_index };
 				edit_datastore_index_filter->setPlaceholderText("filter");
-				edit_datastore_index_filter->setToolTip("Only datastore names matching this text box will be displayed.");
+				edit_datastore_index_filter->setToolTip("Only data store names matching this text box will be displayed.");
 				connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &StandardDatastorePanel::refresh_datastore_list);
 
 				check_datastore_index_show_hidden = new QCheckBox{ "Show hidden", group_index };
@@ -81,7 +80,7 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 				connect(check_datastore_index_show_hidden, &QCheckBox::stateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
 #endif
 
-				button_datastore_index_fetch = new QPushButton{ "Fetch datastores", group_index };
+				button_datastore_index_fetch = new QPushButton{ "Fetch data stores", group_index };
 				connect(button_datastore_index_fetch, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_fetch_datastores);
 
 				QVBoxLayout* const layout_group = new QVBoxLayout{ group_index };
@@ -97,13 +96,13 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 
 		QWidget* const panel_main = new QWidget{ splitter };
 		{
-			QTabWidget* const tab_widget_main = new QTabWidget{ panel_main };
+			QGroupBox* const group_main = new QGroupBox{ "Search", panel_main};
 			{
-				QWidget* const panel_search = new QWidget{ tab_widget_main };
+				QWidget* const panel_search = new QWidget{ group_main };
 				{
 					QWidget* const panel_search_params = new QWidget{ panel_search };
 					{
-						QLabel* const label_search_datastore_name = new QLabel{ "Datastore:", panel_search_params };
+						QLabel* const label_search_datastore_name = new QLabel{ "Data store:", panel_search_params };
 
 						edit_search_datastore_name = new QLineEdit{ panel_search_params };
 						connect(edit_search_datastore_name, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
@@ -199,63 +198,14 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 					layout_search->addWidget(panel_edit);
 				}
 
-				QWidget* const panel_add = new QWidget{ tab_widget_main };
-				{
-					edit_add_datastore_name = new QLineEdit{ panel_add };
-					connect(edit_add_datastore_name, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_add_entry_text_changed);
-
-					edit_add_datastore_scope = new QLineEdit{ panel_add };
-					edit_add_datastore_scope->setPlaceholderText("global");
-					connect(edit_add_datastore_scope, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_add_entry_text_changed);
-
-					edit_add_datastore_key_name = new QLineEdit{ panel_add };
-					connect(edit_add_datastore_key_name, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_add_entry_text_changed);
-
-					combo_add_entry_type = new QComboBox{ panel_add };
-					combo_add_entry_type->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
-					combo_add_entry_type->addItem(get_enum_string(DatastoreEntryType::Json), static_cast<int>(DatastoreEntryType::Json));
-					combo_add_entry_type->addItem(get_enum_string(DatastoreEntryType::String), static_cast<int>(DatastoreEntryType::String));
-					combo_add_entry_type->addItem(get_enum_string(DatastoreEntryType::Number), static_cast<int>(DatastoreEntryType::Number));
-					combo_add_entry_type->addItem(get_enum_string(DatastoreEntryType::Bool), static_cast<int>(DatastoreEntryType::Bool));
-
-					QTabWidget* const tab_add = new QTabWidget{ panel_add };
-					{
-						edit_add_entry_data = new QTextEdit{ tab_add };
-						edit_add_entry_data->setAcceptRichText(false);
-						connect(edit_add_entry_data, &QTextEdit::textChanged, this, &StandardDatastorePanel::handle_add_entry_text_changed);
-
-						edit_add_entry_userids = new QTextEdit{ tab_add };
-						edit_add_entry_userids->setAcceptRichText(false);
-
-						edit_add_entry_attributes = new QTextEdit{ tab_add };
-						edit_add_entry_attributes->setAcceptRichText(false);
-
-						tab_add->addTab(edit_add_entry_data, "Data");
-						tab_add->addTab(edit_add_entry_userids, "User IDs");
-						tab_add->addTab(edit_add_entry_attributes, "Attributes");
-					}
-
-					button_add_entry_submit = new QPushButton{ "Submit", panel_add };
-					button_add_entry_submit->setSizePolicy(QSizePolicy{ QSizePolicy::Expanding, QSizePolicy::Preferred });
-					connect(button_add_entry_submit, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_submit_new_entry);
-
-					QFormLayout* const layout = new QFormLayout{ panel_add };
-					layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-					layout->addRow("Datastore", edit_add_datastore_name);
-					layout->addRow("Scope", edit_add_datastore_scope);
-					layout->addRow("Key", edit_add_datastore_key_name);
-					layout->addRow("Type", combo_add_entry_type);
-					layout->addRow("Data", tab_add);
-					layout->addRow("", button_add_entry_submit);
-				}
-
-				tab_widget_main->addTab(panel_search, "Search");
-				tab_widget_main->addTab(panel_add, "Add Entry");
+				QVBoxLayout* const layout_search = new QVBoxLayout{ group_main };
+				layout_search->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+				layout_search->addWidget(panel_search);
 			}
 
 			QVBoxLayout* const layout_main = new QVBoxLayout{ panel_main };
 			layout_main->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-			layout_main->addWidget(tab_widget_main);
+			layout_main->addWidget(group_main);
 		}
 
 		splitter->addWidget(panel_index);
@@ -357,11 +307,6 @@ void StandardDatastorePanel::gui_refresh()
 			edit_datastore_index_filter->setText("");
 		}
 		edit_datastore_index_filter->setVisible(filter_visible);
-	}
-
-	{
-		const bool add_submit_enabled = edit_add_datastore_name->text().size() > 0 && edit_add_datastore_key_name->text().size() > 0 && edit_add_entry_data->toPlainText().size() > 0;
-		button_add_entry_submit->setEnabled(add_submit_enabled);
 	}
 }
 
@@ -607,7 +552,6 @@ void StandardDatastorePanel::handle_selected_datastore_changed()
 	if (selected.size() == 1)
 	{
 		edit_search_datastore_name->setText(selected.first()->text());
-		edit_add_datastore_name->setText(selected.first()->text());
 	}
 	gui_refresh();
 }
@@ -618,11 +562,6 @@ void StandardDatastorePanel::handle_selected_datastore_entry_changed()
 }
 
 void StandardDatastorePanel::handle_show_datastore_filter_changed()
-{
-	gui_refresh();
-}
-
-void StandardDatastorePanel::handle_add_entry_text_changed()
 {
 	gui_refresh();
 }
@@ -865,106 +804,6 @@ void StandardDatastorePanel::pressed_find_prefix()
 
 	StandardDatastoreEntryQTableModel* datastore_model = new StandardDatastoreEntryQTableModel{ tree_view_main, req->get_datastore_entries() };
 	set_table_model(datastore_model);
-}
-
-void StandardDatastorePanel::pressed_submit_new_entry()
-{
-	const QString data_raw = edit_add_entry_data->toPlainText();
-	const QString userids_raw = edit_add_entry_userids->toPlainText().trimmed();
-	const QString attributes_str_raw = edit_add_entry_attributes->toPlainText().trimmed();
-
-	std::optional<QString> attributes;
-	if (attributes_str_raw.size() > 0)
-	{
-		attributes = condense_json(attributes_str_raw);
-	}
-
-	const DatastoreEntryType data_type = static_cast<DatastoreEntryType>(combo_add_entry_type->currentData().toInt());
-	{
-		bool data_valid = false;
-		switch (data_type)
-		{
-		case DatastoreEntryType::Error:
-			data_valid = false;
-			break;
-		case DatastoreEntryType::Bool:
-			data_valid = DataValidator::is_bool(data_raw);
-			break;
-		case DatastoreEntryType::Number:
-			data_valid = DataValidator::is_number(data_raw);
-			break;
-		case DatastoreEntryType::String:
-			data_valid = true;
-			break;
-		case DatastoreEntryType::Json:
-			data_valid = DataValidator::is_json(data_raw);
-			break;
-		}
-
-		if (data_valid == false)
-		{
-			alert_error_blocking("Validation Error", std::string{ "New data is not a valid " } + get_enum_string(data_type).toStdString() + ".");
-			return;
-		}
-	}
-
-	if (userids_raw != "" && DataValidator::is_json_array(userids_raw) == false)
-	{
-		alert_error_blocking("Validation Error", "New user list is not empty or a valid Json array.");
-		return;
-	}
-
-	if (attributes_str_raw != "" && DataValidator::is_json(attributes_str_raw) == false)
-	{
-		alert_error_blocking("Validation Error", "New attributes is not empty or a valid Json object.");
-		return;
-	}
-
-	ConfirmChangeDialog* confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::StandardDatastoreUpdate };
-	bool confirmed = static_cast<bool>(confirm_dialog->exec());
-	if (confirmed == false)
-	{
-		return;
-	}
-
-	std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
-	if (!universe)
-	{
-		return;
-	}
-
-	const long long universe_id = universe->get_universe_id();
-	const QString datastore_name = edit_add_datastore_name->text();
-	const QString scope = edit_add_datastore_scope->text().size() > 0 ? edit_add_datastore_scope->text() : "global";
-	const QString key_name = edit_add_datastore_key_name->text();
-
-	const std::optional<QString> userids = condense_json(userids_raw);
-	std::optional<QString> data_formatted;
-	if (data_type == DatastoreEntryType::Json)
-	{
-		data_formatted = condense_json(data_raw);
-	}
-	else if (data_type == DatastoreEntryType::String)
-	{
-		data_formatted = encode_json_string(data_raw);
-	}
-	else
-	{
-		data_formatted = data_raw;
-	}
-
-	OCTASSERT(data_formatted.has_value());
-
-	const auto post_req = std::make_shared<StandardDatastoreEntryPostSetRequest>(api_key, universe_id, datastore_name, scope, key_name, userids, attributes, *data_formatted);
-	OperationInProgressDialog diag{ this, post_req };
-	diag.exec();
-
-	if (post_req->req_success())
-	{
-		edit_add_entry_data->clear();
-		edit_add_entry_userids->clear();
-		edit_add_entry_attributes->clear();
-	}
 }
 
 void StandardDatastorePanel::pressed_view_entry()

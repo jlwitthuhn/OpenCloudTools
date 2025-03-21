@@ -27,6 +27,7 @@
 #include "panel_bulk_data.h"
 #include "panel_datastore_ordered.h"
 #include "panel_datastore_standard.h"
+#include "panel_datastore_standard_add.h"
 #include "panel_http_log.h"
 #include "panel_mem_sorted_map.h"
 #include "panel_messaging_service.h"
@@ -40,7 +41,7 @@
 
 template <typename T> static QPointer<QMdiSubWindow> create_and_attach_panel(const std::shared_ptr<const ApiKeyProfile>& api_profile, const std::shared_ptr<UniverseProfile>& universe, QMdiArea* const mdi_area)
 {
-	T* const new_panel = new T{ nullptr, api_profile->get_key() };
+	T* const new_panel = new T{ mdi_area, api_profile->get_key() };
 	new_panel->change_universe(universe);
 	return mdi_area->addSubWindow(new_panel);
 }
@@ -276,6 +277,7 @@ void MyMainWindow::rebuild_universe_tree()
 	{
 		static const std::vector<SubwindowType> subwindow_types = std::vector<SubwindowType>{
 			SubwindowType::DATA_STORES_STANDARD,
+			SubwindowType::DATA_STORES_STANDARD_ADD,
 			SubwindowType::DATA_STORES_ORDERED,
 			SubwindowType::MEMORY_STORE_SORTED_MAP,
 			SubwindowType::BULK_DATA,
@@ -379,6 +381,9 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 	{
 		case SubwindowType::DATA_STORES_STANDARD:
 			new_subwindow = create_and_attach_panel<StandardDatastorePanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::DATA_STORES_STANDARD_ADD:
+			new_subwindow = create_and_attach_panel<StandardDatastoreAddEntryPanel>(api_profile, universe, center_mdi_widget);
 			break;
 		case SubwindowType::DATA_STORES_ORDERED:
 			new_subwindow = create_and_attach_panel<OrderedDatastorePanel>(api_profile, universe, center_mdi_widget);
