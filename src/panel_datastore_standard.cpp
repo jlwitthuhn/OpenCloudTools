@@ -59,157 +59,144 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 
 	QSplitter* splitter = new QSplitter{ this };
 	{
-		QWidget* const panel_index = new QWidget{ splitter };
+		QGroupBox* const group_index = new QGroupBox{ "Data store list", splitter };
 		{
-			QGroupBox* const group_index = new QGroupBox{ "Data store list", panel_index };
-			{
-				list_datastore_index = new QListWidget{ group_index };
-				list_datastore_index->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-				connect(list_datastore_index, &QListWidget::customContextMenuRequested, this, &StandardDatastorePanel::pressed_right_click_datastore_list);
-				connect(list_datastore_index, &QListWidget::itemSelectionChanged, this, &StandardDatastorePanel::handle_selected_datastore_changed);
+			list_datastore_index = new QListWidget{ group_index };
+			list_datastore_index->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+			connect(list_datastore_index, &QListWidget::customContextMenuRequested, this, &StandardDatastorePanel::pressed_right_click_datastore_list);
+			connect(list_datastore_index, &QListWidget::itemSelectionChanged, this, &StandardDatastorePanel::handle_selected_datastore_changed);
 
-				edit_datastore_index_filter = new QLineEdit{ group_index };
-				edit_datastore_index_filter->setPlaceholderText("filter");
-				edit_datastore_index_filter->setToolTip("Only data store names matching this text box will be displayed.");
-				connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+			edit_datastore_index_filter = new QLineEdit{ group_index };
+			edit_datastore_index_filter->setPlaceholderText("filter");
+			edit_datastore_index_filter->setToolTip("Only data store names matching this text box will be displayed.");
+			connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &StandardDatastorePanel::refresh_datastore_list);
 
-				check_datastore_index_show_hidden = new QCheckBox{ "Show hidden", group_index };
+			check_datastore_index_show_hidden = new QCheckBox{ "Show hidden", group_index };
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-				connect(check_datastore_index_show_hidden, &QCheckBox::checkStateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+			connect(check_datastore_index_show_hidden, &QCheckBox::checkStateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
 #else
-				connect(check_datastore_index_show_hidden, &QCheckBox::stateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+			connect(check_datastore_index_show_hidden, &QCheckBox::stateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
 #endif
 
-				button_datastore_index_fetch = new QPushButton{ "Fetch data stores", group_index };
-				connect(button_datastore_index_fetch, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_fetch_datastores);
+			button_datastore_index_fetch = new QPushButton{ "Fetch data stores", group_index };
+			connect(button_datastore_index_fetch, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_fetch_datastores);
 
-				QVBoxLayout* const layout_group = new QVBoxLayout{ group_index };
-				layout_group->addWidget(list_datastore_index);
-				layout_group->addWidget(edit_datastore_index_filter);
-				layout_group->addWidget(check_datastore_index_show_hidden);
-				layout_group->addWidget(button_datastore_index_fetch);
-			}
-			QVBoxLayout* const layout_index = new QVBoxLayout{ panel_index };
-			layout_index->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-			layout_index->addWidget(group_index);
+			QVBoxLayout* const layout_group = new QVBoxLayout{ group_index };
+			layout_group->addWidget(list_datastore_index);
+			layout_group->addWidget(edit_datastore_index_filter);
+			layout_group->addWidget(check_datastore_index_show_hidden);
+			layout_group->addWidget(button_datastore_index_fetch);
 		}
 
-		QWidget* const panel_main = new QWidget{ splitter };
+		QGroupBox* const group_search = new QGroupBox{ "Search", splitter };
 		{
-			QGroupBox* const group_main = new QGroupBox{ "Search", panel_main};
+			QWidget* const panel_search = new QWidget{ group_search };
 			{
-				QWidget* const panel_search = new QWidget{ group_main };
+				QWidget* const panel_search_params = new QWidget{ panel_search };
 				{
-					QWidget* const panel_search_params = new QWidget{ panel_search };
-					{
-						QLabel* const label_search_datastore_name = new QLabel{ "Data store:", panel_search_params };
+					QLabel* const label_search_datastore_name = new QLabel{ "Data store:", panel_search_params };
 
-						edit_search_datastore_name = new QLineEdit{ panel_search_params };
-						connect(edit_search_datastore_name, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
+					edit_search_datastore_name = new QLineEdit{ panel_search_params };
+					connect(edit_search_datastore_name, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
 
-						QLabel* const label_search_datastore_scope = new QLabel{ "Scope:", panel_search_params };
+					QLabel* const label_search_datastore_scope = new QLabel{ "Scope:", panel_search_params };
 
-						edit_search_datastore_scope = new QLineEdit{ panel_search_params };
-						edit_search_datastore_scope->setPlaceholderText("global");
-						connect(edit_search_datastore_scope, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
+					edit_search_datastore_scope = new QLineEdit{ panel_search_params };
+					edit_search_datastore_scope->setPlaceholderText("global");
+					connect(edit_search_datastore_scope, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
 
-						QLabel* const label_search_datastore_key_name = new QLabel{ "Key prefix:", panel_search_params };
+					QLabel* const label_search_datastore_key_name = new QLabel{ "Key prefix:", panel_search_params };
 
-						edit_search_datastore_key_prefix = new QLineEdit{ panel_search_params };
-						connect(edit_search_datastore_key_prefix, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
+					edit_search_datastore_key_prefix = new QLineEdit{ panel_search_params };
+					connect(edit_search_datastore_key_prefix, &QLineEdit::textChanged, this, &StandardDatastorePanel::handle_search_text_changed);
 
-						QHBoxLayout* const layout = new QHBoxLayout{ panel_search_params };
-						layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-						layout->addWidget(label_search_datastore_name);
-						layout->addWidget(edit_search_datastore_name);
-						layout->addWidget(label_search_datastore_scope);
-						layout->addWidget(edit_search_datastore_scope);
-						layout->addWidget(label_search_datastore_key_name);
-						layout->addWidget(edit_search_datastore_key_prefix);
-					}
-
-					QWidget* const panel_search_submit = new QWidget{ panel_search };
-					{
-						button_search_find_all = new QPushButton{ "Find all", panel_search_submit };
-						connect(button_search_find_all, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_find_all);
-
-						button_search_find_prefix = new QPushButton{ "Find prefix match", panel_search_submit };
-						connect(button_search_find_prefix, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_find_prefix);
-
-						QLabel* const label_find_limit = new QLabel{ "Limit:", panel_search_submit };
-						label_find_limit->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
-
-						edit_search_find_limit = new QLineEdit{ panel_search_submit };
-						edit_search_find_limit->setText("1200");
-						edit_search_find_limit->setFixedWidth(60);
-
-						QHBoxLayout* const layout = new QHBoxLayout{ panel_search_submit };
-						layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-						layout->addWidget(button_search_find_all);
-						layout->addWidget(button_search_find_prefix);
-						layout->addWidget(label_find_limit);
-						layout->addWidget(edit_search_find_limit);
-					}
-
-					tree_view_main = new QTreeView{ panel_search };
-					tree_view_main->setSelectionMode(QAbstractItemView::ExtendedSelection);
-					tree_view_main->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-					connect(tree_view_main, &QListWidget::customContextMenuRequested, this, &StandardDatastorePanel::pressed_right_click_entry_list);
-					connect(tree_view_main, &QTreeView::doubleClicked, this, &StandardDatastorePanel::handle_datastore_entry_double_clicked);
-
-					QWidget* const panel_read = new QWidget{ panel_search };
-					{
-						button_entry_view = new QPushButton{ "View entry...", panel_read };
-						connect(button_entry_view, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_view_entry);
-
-						button_entry_view_version = new QPushButton{ "View versions...", panel_read };
-						connect(button_entry_view_version, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_view_versions);
-
-						QHBoxLayout* const layout = new QHBoxLayout{ panel_read };
-						layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-						layout->addWidget(button_entry_view);
-						layout->addWidget(button_entry_view_version);
-					}
-
-					QFrame* const horizontal_bar = new QFrame{ panel_search };
-					horizontal_bar->setFrameShape(QFrame::HLine);
-					horizontal_bar->setFrameShadow(QFrame::Sunken);
-
-					QWidget* const panel_edit = new QWidget{ panel_search };
-					{
-						button_entry_edit = new QPushButton{ "Edit entry...", panel_edit };
-						connect(button_entry_edit, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_edit_entry);
-
-						button_entry_delete = new QPushButton{ "Delete entry", panel_edit };
-						connect(button_entry_delete, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_delete_entry);
-
-						QHBoxLayout* const layout = new QHBoxLayout{ panel_edit };
-						layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-						layout->addWidget(button_entry_edit);
-						layout->addWidget(button_entry_delete);
-					}
-
-					QVBoxLayout* const layout_search = new QVBoxLayout{ panel_search };
-					layout_search->addWidget(panel_search_params);
-					layout_search->addWidget(panel_search_submit);
-					layout_search->addWidget(tree_view_main);
-					layout_search->addWidget(panel_read);
-					layout_search->addWidget(horizontal_bar);
-					layout_search->addWidget(panel_edit);
+					QHBoxLayout* const layout = new QHBoxLayout{ panel_search_params };
+					layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					layout->addWidget(label_search_datastore_name);
+					layout->addWidget(edit_search_datastore_name);
+					layout->addWidget(label_search_datastore_scope);
+					layout->addWidget(edit_search_datastore_scope);
+					layout->addWidget(label_search_datastore_key_name);
+					layout->addWidget(edit_search_datastore_key_prefix);
 				}
 
-				QVBoxLayout* const layout_search = new QVBoxLayout{ group_main };
-				layout_search->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-				layout_search->addWidget(panel_search);
+				QWidget* const panel_search_submit = new QWidget{ panel_search };
+				{
+					button_search_find_all = new QPushButton{ "Find all", panel_search_submit };
+					connect(button_search_find_all, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_find_all);
+
+					button_search_find_prefix = new QPushButton{ "Find prefix match", panel_search_submit };
+					connect(button_search_find_prefix, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_find_prefix);
+
+					QLabel* const label_find_limit = new QLabel{ "Limit:", panel_search_submit };
+					label_find_limit->setSizePolicy(QSizePolicy{ QSizePolicy::Fixed, QSizePolicy::Fixed });
+
+					edit_search_find_limit = new QLineEdit{ panel_search_submit };
+					edit_search_find_limit->setText("1200");
+					edit_search_find_limit->setFixedWidth(60);
+
+					QHBoxLayout* const layout = new QHBoxLayout{ panel_search_submit };
+					layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					layout->addWidget(button_search_find_all);
+					layout->addWidget(button_search_find_prefix);
+					layout->addWidget(label_find_limit);
+					layout->addWidget(edit_search_find_limit);
+				}
+
+				tree_view_main = new QTreeView{ panel_search };
+				tree_view_main->setSelectionMode(QAbstractItemView::ExtendedSelection);
+				tree_view_main->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+				connect(tree_view_main, &QListWidget::customContextMenuRequested, this, &StandardDatastorePanel::pressed_right_click_entry_list);
+				connect(tree_view_main, &QTreeView::doubleClicked, this, &StandardDatastorePanel::handle_datastore_entry_double_clicked);
+
+				QWidget* const panel_read = new QWidget{ panel_search };
+				{
+					button_entry_view = new QPushButton{ "View entry...", panel_read };
+					connect(button_entry_view, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_view_entry);
+
+					button_entry_view_version = new QPushButton{ "View versions...", panel_read };
+					connect(button_entry_view_version, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_view_versions);
+
+					QHBoxLayout* const layout = new QHBoxLayout{ panel_read };
+					layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					layout->addWidget(button_entry_view);
+					layout->addWidget(button_entry_view_version);
+				}
+
+				QFrame* const horizontal_bar = new QFrame{ panel_search };
+				horizontal_bar->setFrameShape(QFrame::HLine);
+				horizontal_bar->setFrameShadow(QFrame::Sunken);
+
+				QWidget* const panel_edit = new QWidget{ panel_search };
+				{
+					button_entry_edit = new QPushButton{ "Edit entry...", panel_edit };
+					connect(button_entry_edit, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_edit_entry);
+
+					button_entry_delete = new QPushButton{ "Delete entry", panel_edit };
+					connect(button_entry_delete, &QPushButton::clicked, this, &StandardDatastorePanel::pressed_delete_entry);
+
+					QHBoxLayout* const layout = new QHBoxLayout{ panel_edit };
+					layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+					layout->addWidget(button_entry_edit);
+					layout->addWidget(button_entry_delete);
+				}
+
+				QVBoxLayout* const layout_search = new QVBoxLayout{ panel_search };
+				layout_search->addWidget(panel_search_params);
+				layout_search->addWidget(panel_search_submit);
+				layout_search->addWidget(tree_view_main);
+				layout_search->addWidget(panel_read);
+				layout_search->addWidget(horizontal_bar);
+				layout_search->addWidget(panel_edit);
 			}
 
-			QVBoxLayout* const layout_main = new QVBoxLayout{ panel_main };
-			layout_main->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-			layout_main->addWidget(group_main);
+			QVBoxLayout* const layout_search = new QVBoxLayout{ group_search };
+			layout_search->setContentsMargins(QMargins{ 0, 0, 0, 0 });
+			layout_search->addWidget(panel_search);
 		}
 
-		splitter->addWidget(panel_index);
-		splitter->addWidget(panel_main);
+		splitter->addWidget(group_index);
+		splitter->addWidget(group_search);
 		splitter->setSizes({ OCT_LIST_WIDGET_LIST_WIDTH, OCT_LIST_WIDGET_MAIN_WIDTH });
 	}
 
