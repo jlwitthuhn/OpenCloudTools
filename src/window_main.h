@@ -15,6 +15,7 @@
 class QLineEdit;
 class QMdiArea;
 class QMdiSubWindow;
+class QPoint;
 class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -30,6 +31,9 @@ private:
 	void gui_refresh();
 
 	std::optional<UniverseProfile::Id> get_selected_universe_id();
+
+	void do_universe_delete(UniverseProfile::Id id);
+	void do_universe_edit(UniverseProfile::Id id);
 
 	void handle_active_api_key_changed();
 	void handle_active_api_key_details_changed();
@@ -50,6 +54,7 @@ private:
 	void show_http_log();
 	void show_subwindow(const SubwindowId& id);
 	void show_subwindow_from_item(QTreeWidgetItem* item);
+	void show_universe_context_menu(QPoint pos);
 
 	std::weak_ptr<ApiKeyProfile> attached_profile;
 	QMetaObject::Connection conn_attached_profile_details_changed;

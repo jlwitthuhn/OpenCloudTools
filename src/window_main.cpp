@@ -11,6 +11,7 @@
 #include <QList>
 #include <QMdiArea>
 #include <QMdiSubWindow>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSize>
@@ -89,6 +90,8 @@ MyMainWindow::MyMainWindow() : QMainWindow{ nullptr, Qt::Window }
 			layout_universe_tree->setAlignment(Qt::AlignHCenter);
 
 			tree_universe = new QTreeWidget{ universe_tree_container_inner };
+			tree_universe->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+			connect(tree_universe, &QTreeWidget::customContextMenuRequested, this, &MyMainWindow::show_universe_context_menu);
 			tree_universe->setColumnCount(1);
 			tree_universe->setHeaderHidden(true);
 			connect(tree_universe, &QTreeWidget::itemDoubleClicked, this, &MyMainWindow::show_subwindow_from_item);
@@ -170,6 +173,33 @@ std::optional<UniverseProfile::Id> MyMainWindow::get_selected_universe_id()
 	return ApiKeyProfile::Id{ user_data.toByteArray() };
 }
 
+void MyMainWindow::do_universe_delete(const UniverseProfile::Id id)
+{
+	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
+	OCTASSERT(api_profile);
+	const std::shared_ptr<UniverseProfile> universe_profile = api_profile->get_universe_profile_by_id(id);
+	OCTASSERT(universe_profile);
+	QMessageBox* msg_box = new QMessageBox{ this };
+	msg_box->setWindowTitle("Confirm deletion");
+	msg_box->setText(QString{ "Are you sure you want to delete universe `%1`?\nThis cannot be undone." }.arg(universe_profile->get_name()));
+	msg_box->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	int result = msg_box->exec();
+	if (result == QMessageBox::Yes)
+	{
+		api_profile->delete_universe(id);
+	}
+}
+
+void MyMainWindow::do_universe_edit(const UniverseProfile::Id id)
+{
+	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
+	OCTASSERT(api_profile);
+	const std::shared_ptr<UniverseProfile> universe_profile = api_profile->get_universe_profile_by_id(id);
+	OCTASSERT(universe_profile);
+	AddUniverseWindow* const modal_window = new AddUniverseWindow{ this, api_profile->get_key(), universe_profile };
+	modal_window->show();
+}
+
 void MyMainWindow::handle_active_api_key_changed()
 {
 	close_all_subwindows();
@@ -219,32 +249,16 @@ void MyMainWindow::pressed_add_universe()
 
 void MyMainWindow::pressed_edit_universe()
 {
-	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
-	OCTASSERT(api_profile);
 	const std::optional<UniverseProfile::Id> universe_id = get_selected_universe_id();
 	OCTASSERT(universe_id);
-	const std::shared_ptr<UniverseProfile> universe_profile = api_profile->get_universe_profile_by_id(*universe_id);
-	OCTASSERT(universe_profile);
-	AddUniverseWindow* const modal_window = new AddUniverseWindow{ this, api_profile->get_key(), universe_profile};
-	modal_window->show();
+	do_universe_edit(*universe_id);
 }
 
 void MyMainWindow::pressed_delete_universe()
 {
-	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
-	OCTASSERT(api_profile);
 	const std::optional<UniverseProfile::Id> universe_id = get_selected_universe_id();
 	OCTASSERT(universe_id);
-
-	QMessageBox* msg_box = new QMessageBox{ this };
-	msg_box->setWindowTitle("Confirm deletion");
-	msg_box->setText("Are you sure you want to delete this universe? This cannot be undone.");
-	msg_box->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	int result = msg_box->exec();
-	if (result == QMessageBox::Yes)
-	{
-		api_profile->delete_universe(*universe_id);
-	}
+	do_universe_delete(*universe_id);
 }
 
 void MyMainWindow::rebuild_universe_tree()
@@ -417,4 +431,57 @@ void MyMainWindow::show_subwindow_from_item(QTreeWidgetItem* const item)
 
 	const SubwindowId subwindow_id{ type, universe_profile_id };
 	show_subwindow(subwindow_id);
+}
+
+void MyMainWindow::show_universe_context_menu(const QPoint pos)
+{
+	const QModelIndex the_index = tree_universe->indexAt(pos);
+	if (the_index.isValid() == false)
+	{
+		return;
+	}
+	QTreeWidgetItem* const clicked_item = tree_universe->itemAt(pos.x(), pos.y());
+	if (clicked_item == nullptr)
+	{
+		return;
+	}
+	if (clicked_item->parent() != nullptr)
+	{
+		// Non-universe item
+		return;
+	}
+	const QVariant universe_profile_id_var = clicked_item->data(0, Qt::UserRole);
+	if (qvariant_is_byte_array(universe_profile_id_var, static_cast<int>(RandomId128::LENGTH)) == false)
+	{
+		OCTASSERT(false);
+		return;
+	}
+	const UniverseProfile::Id universe_profile_id{ universe_profile_id_var.toByteArray() };
+
+	QMenu* const context_menu = new QMenu{ tree_universe };
+	context_menu->setAttribute(Qt::WA_DeleteOnClose);
+	{
+		QAction* const edit_action = new QAction{ "Edit...", context_menu };
+		connect(edit_action, &QAction::triggered, this, [this, universe_profile_id]() {
+			do_universe_edit(universe_profile_id);
+		});
+
+		QAction* const delete_action = new QAction{ "Delete...", context_menu };
+		connect(delete_action, &QAction::triggered, this, [this, universe_profile_id]() {
+			do_universe_delete(universe_profile_id);
+		});
+
+		QAction* const preferences_action = new QAction{ "Preferences...", context_menu };
+		connect(preferences_action, &QAction::triggered, this, [this, universe_profile_id]() {
+			const SubwindowId subwindow_id{ SubwindowType::UNIVERSE_PREFERENCES, universe_profile_id };
+			show_subwindow(subwindow_id);
+		});
+
+		context_menu->addAction(edit_action);
+		context_menu->addAction(delete_action);
+		context_menu->addAction(preferences_action);
+	}
+
+	context_menu->move(tree_universe->mapToGlobal(pos));
+	context_menu->show();
 }
