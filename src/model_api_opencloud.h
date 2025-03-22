@@ -23,15 +23,15 @@ private:
 	std::optional<QString> next_page_token;
 };
 
-class GetOrderedDatastoreEntryDetailsResponse
+class GetOrderedDatastoreEntryDetailsV2Response
 {
 public:
-	static std::optional<GetOrderedDatastoreEntryDetailsResponse> from_json(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json);
+	static std::optional<GetOrderedDatastoreEntryDetailsV2Response> from_json(long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& json);
 
 	OrderedDatastoreEntryFull get_details() const { return details; }
 
 private:
-	GetOrderedDatastoreEntryDetailsResponse(const QString& path, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_id, long long value) :
+	GetOrderedDatastoreEntryDetailsV2Response(const QString& path, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_id, long long value) :
 		details{ path, universe_id, datastore_name, scope, key_id, value } {}
 
 	OrderedDatastoreEntryFull details;

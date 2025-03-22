@@ -117,7 +117,7 @@ std::optional<GetMemoryStoreSortedMapItemListResponse> GetMemoryStoreSortedMapIt
 	return std::nullopt;
 }
 
-std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryDetailsResponse::from_json(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
+std::optional<GetOrderedDatastoreEntryDetailsV2Response> GetOrderedDatastoreEntryDetailsV2Response::from_json(long long universe_id, const QString& datastore_name, const QString& scope, [[maybe_unused]] const QString& key_name, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
@@ -163,7 +163,7 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 	if (path_opt && id_opt && value_opt)
 	{
 		OCTASSERT(*id_opt == key_name);
-		return GetOrderedDatastoreEntryDetailsResponse{ *path_opt, universe_id, datastore_name, scope, *id_opt, *value_opt };
+		return GetOrderedDatastoreEntryDetailsV2Response{ *path_opt, universe_id, datastore_name, scope, *id_opt, *value_opt };
 	}
 	else
 	{

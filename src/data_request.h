@@ -161,10 +161,10 @@ private:
 	QString entry_id;
 };
 
-class OrderedDatastoreEntryGetDetailsRequest : public DataRequest
+class OrderedDatastoreEntryGetDetailsV2Request : public DataRequest
 {
 public:
-	OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
+	OrderedDatastoreEntryGetDetailsV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
 
 	virtual QString get_title_string() const override;
 

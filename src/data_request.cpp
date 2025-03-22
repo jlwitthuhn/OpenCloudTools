@@ -345,18 +345,18 @@ QString OrderedDatastoreEntryDeleteRequest::get_send_message() const
 	return QString{ "Deleting '%1'..." }.arg(entry_id);
 }
 
-OrderedDatastoreEntryGetDetailsRequest::OrderedDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id) :
+OrderedDatastoreEntryGetDetailsV2Request::OrderedDatastoreEntryGetDetailsV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }
 {
 
 }
 
-QString OrderedDatastoreEntryGetDetailsRequest::get_title_string() const
+QString OrderedDatastoreEntryGetDetailsV2Request::get_title_string() const
 {
-	return "Fetching ordered datastore entry details...";
+	return "Fetching ordered datastore entry details (v2)...";
 }
 
-std::optional<OrderedDatastoreEntryFull> OrderedDatastoreEntryGetDetailsRequest::get_details() const
+std::optional<OrderedDatastoreEntryFull> OrderedDatastoreEntryGetDetailsV2Request::get_details() const
 {
 	if (status == DataRequestStatus::Success)
 	{
@@ -368,14 +368,14 @@ std::optional<OrderedDatastoreEntryFull> OrderedDatastoreEntryGetDetailsRequest:
 	}
 }
 
-QNetworkRequest OrderedDatastoreEntryGetDetailsRequest::build_request(std::optional<QString>) const
+QNetworkRequest OrderedDatastoreEntryGetDetailsV2Request::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_get_details(api_key, universe_id, datastore_name, scope, entry_id);
+	return HttpRequestBuilder::ordered_datastore_v2_entry_get_details(api_key, universe_id, datastore_name, scope, entry_id);
 }
 
-void OrderedDatastoreEntryGetDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+void OrderedDatastoreEntryGetDetailsV2Request::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	std::optional<GetOrderedDatastoreEntryDetailsResponse> response = GetOrderedDatastoreEntryDetailsResponse::from_json(universe_id, datastore_name, scope, entry_id, body);
+	std::optional<GetOrderedDatastoreEntryDetailsV2Response> response = GetOrderedDatastoreEntryDetailsV2Response::from_json(universe_id, datastore_name, scope, entry_id, body);
 	if (response)
 	{
 		details = response->get_details();
@@ -389,7 +389,7 @@ void OrderedDatastoreEntryGetDetailsRequest::handle_http_200(const QString& body
 	do_success();
 }
 
-QString OrderedDatastoreEntryGetDetailsRequest::get_send_message() const
+QString OrderedDatastoreEntryGetDetailsV2Request::get_send_message() const
 {
 	return QString{ "Fetching information for key '%1'..." }.arg(entry_id);
 }

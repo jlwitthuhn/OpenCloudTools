@@ -55,7 +55,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 	{
 		QWidget* const panel_index = new QWidget{ splitter };
 		{
-			QGroupBox* const group_index = new QGroupBox{ "Datastores", panel_index };
+			QGroupBox* const group_index = new QGroupBox{ "Data stores", panel_index };
 			{
 				list_datastore_index = new QListWidget{ group_index };
 				list_datastore_index->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -63,10 +63,10 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 
 				edit_datastore_index_filter = new QLineEdit{ group_index };
 				edit_datastore_index_filter->setPlaceholderText("filter");
-				edit_datastore_index_filter->setToolTip("Only datastore names matching this text box will be displayed.");
+				edit_datastore_index_filter->setToolTip("Only data store names matching this text box will be displayed.");
 				connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &OrderedDatastorePanel::refresh_datastore_list);
 
-				check_save_recent_datastores = new QCheckBox{ "Add used datastores", group_index };
+				check_save_recent_datastores = new QCheckBox{ "Add used data stores", group_index };
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 				connect(check_save_recent_datastores, &QCheckBox::checkStateChanged, this, &OrderedDatastorePanel::handle_save_recent_datastores_toggled);
 #else
@@ -95,7 +95,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 				{
 					QWidget* const panel_search_params = new QWidget{ panel_search };
 					{
-						QLabel* const label_search_datastore_name = new QLabel{ "Datastore:", panel_search_params };
+						QLabel* const label_search_datastore_name = new QLabel{ "Data store:", panel_search_params };
 
 						edit_search_datastore_name = new QLineEdit{ panel_search_params };
 						connect(edit_search_datastore_name, &QLineEdit::textChanged, this, &OrderedDatastorePanel::handle_search_text_changed);
@@ -321,7 +321,7 @@ void OrderedDatastorePanel::view_entry(const QModelIndex& index, ViewOrderedData
 		return;
 	}
 
-	const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsRequest>(
+	const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsV2Request>(
 		api_key,
 		opt_entry->get_universe_id(),
 		opt_entry->get_datastore_name(),

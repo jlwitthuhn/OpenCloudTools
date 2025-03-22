@@ -133,7 +133,7 @@ void ViewOrderedDatastoreEntryWindow::refresh()
 	const QString scope = scope_edit->text();
 	const QString key_name = key_name_edit->text();
 
-	const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsRequest>(
+	const auto req = std::make_shared<OrderedDatastoreEntryGetDetailsV2Request>(
 		api_key,
 		universe_id,
 		datastore_name,
