@@ -446,7 +446,7 @@ void OrderedDatastoreEntryGetListV2Request::handle_http_200(const QString& body,
 	}
 }
 
-OrderedDatastoreEntryPostCreateRequest::OrderedDatastoreEntryPostCreateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long value)
+OrderedDatastoreEntryPostCreateV2Request::OrderedDatastoreEntryPostCreateV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long value)
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, value{ value }
 {
 	request_type = HttpRequestType::Post;
@@ -456,22 +456,22 @@ OrderedDatastoreEntryPostCreateRequest::OrderedDatastoreEntryPostCreateRequest(c
 	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
-QString OrderedDatastoreEntryPostCreateRequest::get_title_string() const
+QString OrderedDatastoreEntryPostCreateV2Request::get_title_string() const
 {
-	return "Creating entry...";
+	return "Creating entry (v2)...";
 }
 
-QNetworkRequest OrderedDatastoreEntryPostCreateRequest::build_request(std::optional<QString>) const
+QNetworkRequest OrderedDatastoreEntryPostCreateV2Request::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_post_create(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
+	return HttpRequestBuilder::ordered_datastore_v2_entry_post_create(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
 }
 
-void OrderedDatastoreEntryPostCreateRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+void OrderedDatastoreEntryPostCreateV2Request::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	do_success();
 }
 
-QString OrderedDatastoreEntryPostCreateRequest::get_send_message() const
+QString OrderedDatastoreEntryPostCreateV2Request::get_send_message() const
 {
 	return QString{ "Creating entry '%1' with value %2..." }.arg(entry_id).arg(value);
 }

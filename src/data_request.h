@@ -227,10 +227,10 @@ private:
 	long long new_value;
 };
 
-class OrderedDatastoreEntryPostCreateRequest : public DataRequest
+class OrderedDatastoreEntryPostCreateV2Request : public DataRequest
 {
 public:
-	OrderedDatastoreEntryPostCreateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long value);
+	OrderedDatastoreEntryPostCreateV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long value);
 
 	virtual QString get_title_string() const override;
 

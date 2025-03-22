@@ -519,7 +519,7 @@ void OrderedDatastorePanel::pressed_submit_new_entry()
 	const QString key_name = edit_add_entry_key_name->text();
 	const long long value = edit_add_entry_value->text().toLongLong();
 
-	const auto post_req = std::make_shared<OrderedDatastoreEntryPostCreateRequest>(api_key, universe_id, datastore_name, scope, key_name, value);
+	const auto post_req = std::make_shared<OrderedDatastoreEntryPostCreateV2Request>(api_key, universe_id, datastore_name, scope, key_name, value);
 	OperationInProgressDialog diag{ this, post_req };
 	diag.exec();
 
