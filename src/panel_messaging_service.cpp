@@ -25,7 +25,10 @@
 #include "diag_operation_in_progress.h"
 #include "profile.h"
 
-MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
+MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent },
+	api_key{ api_key },
+	attached_universe{ universe }
 {
 	QGroupBox* topic_history_group_box = new QGroupBox{ "Topic History" };
 	{
@@ -86,27 +89,9 @@ MessagingServicePanel::MessagingServicePanel(QWidget* parent, const QString& api
 	QHBoxLayout* layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
-	change_universe(nullptr);
-}
+	conn_universe_recent_topic_list_changed = connect(universe.get(), &UniverseProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
+	add_used_topics_check->setChecked(universe->get_save_recent_message_topics());
 
-void MessagingServicePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	attached_universe = universe;
-
-	QObject::disconnect(conn_universe_recent_topic_list_changed);
-	if (universe)
-	{
-		conn_universe_recent_topic_list_changed = connect(universe.get(), &UniverseProfile::recent_topic_list_changed, this, &MessagingServicePanel::handle_recent_topic_list_changed);
-	}
-
-	if (universe)
-	{
-		add_used_topics_check->setChecked(universe->get_save_recent_message_topics());
-	}
-	else
-	{
-		add_used_topics_check->setChecked(false);
-	}
 	handle_recent_topic_list_changed();
 	gui_refresh();
 }

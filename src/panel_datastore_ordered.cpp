@@ -44,7 +44,10 @@
 #include "util_alert.h"
 #include "util_validator.h"
 
-OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key { api_key }
+OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent },
+	api_key { api_key },
+	attached_universe{ universe }
 {
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &OrderedDatastorePanel::handle_show_datastore_filter_changed);
 
@@ -225,40 +228,9 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
+	conn_universe_ordered_datastores_changed = connect(universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
+
 	set_table_model(nullptr);
-	change_universe(nullptr);
-}
-
-void OrderedDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	if (universe && universe == attached_universe.lock())
-	{
-		gui_refresh();
-		return;
-	}
-	attached_universe = universe;
-
-	QObject::disconnect(conn_universe_ordered_datastores_changed);
-	if (universe)
-	{
-		conn_universe_ordered_datastores_changed = connect(universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &OrderedDatastorePanel::handle_recent_datastores_changed);
-	}
-
-	list_datastore_index->clear();
-	edit_search_datastore_name->setText("");
-	edit_search_datastore_scope->setText("");
-	set_table_model(nullptr);
-
-	const bool universe_exists = static_cast<bool>(universe);
-	check_save_recent_datastores->setEnabled(universe_exists);
-	if (universe_exists)
-	{
-		check_save_recent_datastores->setChecked(universe->get_save_recent_ordered_datastores());
-	}
-	else
-	{
-		check_save_recent_datastores->setChecked(false);
-	}
 	handle_recent_datastores_changed();
 	gui_refresh();
 }

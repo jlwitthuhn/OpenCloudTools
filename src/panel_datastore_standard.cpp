@@ -53,7 +53,10 @@
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 
-StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
+StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent },
+	api_key{ api_key },
+	attached_universe{ universe }
 {
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &StandardDatastorePanel::handle_show_datastore_filter_changed);
 
@@ -204,42 +207,9 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 	layout->addWidget(splitter);
 
 	set_table_model(nullptr);
-	change_universe(nullptr);
-}
 
-void StandardDatastorePanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	if (universe && universe == attached_universe.lock())
-	{
-		gui_refresh();
-		return;
-	}
-	attached_universe = universe;
-
-	QObject::disconnect(conn_universe_hidden_datastores_changed);
-	if (universe)
-	{
-		conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &StandardDatastorePanel::refresh_datastore_list);
-	}
-
-	// Clear all displayed data
-	list_datastore_index->clear();
-	edit_search_datastore_name->setText("");
-	edit_search_datastore_scope->setText("");
-	set_table_model(nullptr);
-
-	// Only enable buttons if there is a selected universe
-	const bool enabled = static_cast<bool>(universe);
-	check_datastore_index_show_hidden->setEnabled(enabled);
-	button_datastore_index_fetch->setEnabled(enabled);
-	if (universe)
-	{
-		check_datastore_index_show_hidden->setChecked(universe->get_show_hidden_standard_datastores());
-	}
-	else
-	{
-		check_datastore_index_show_hidden->setChecked(false);
-	}
+	conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &StandardDatastorePanel::refresh_datastore_list);
+	check_datastore_index_show_hidden->setChecked(universe->get_show_hidden_standard_datastores());
 
 	gui_refresh();
 }

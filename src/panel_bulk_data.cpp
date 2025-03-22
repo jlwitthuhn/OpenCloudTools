@@ -31,9 +31,10 @@
 #include "window_datastore_bulk_op.h"
 #include "window_datastore_bulk_op_progress.h"
 
-BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
+BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
 	QWidget{ parent },
-	api_key{ api_key }
+	api_key{ api_key },
+	attached_universe{ universe }
 {
 	QWidget* container_widget = new QWidget{ this };
 	{
@@ -105,19 +106,6 @@ BulkDataPanel::BulkDataPanel(QWidget* const parent, const QString& api_key) :
 	// Increase minimum width so the full window title can be seen
 	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
 
-	change_universe(nullptr);
-}
-
-void BulkDataPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	if (universe && universe == attached_universe.lock())
-	{
-		gui_refresh();
-		return;
-	}
-	attached_universe = universe;
-
-	danger_buttons_check->setCheckState(Qt::Unchecked);
 	gui_refresh();
 }
 

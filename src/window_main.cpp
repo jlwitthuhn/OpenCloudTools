@@ -41,8 +41,7 @@
 
 template <typename T> static QPointer<QMdiSubWindow> create_and_attach_panel(const std::shared_ptr<const ApiKeyProfile>& api_profile, const std::shared_ptr<UniverseProfile>& universe, QMdiArea* const mdi_area)
 {
-	T* const new_panel = new T{ mdi_area, api_profile->get_key() };
-	new_panel->change_universe(universe);
+	T* const new_panel = new T{ mdi_area, api_profile->get_key(), universe };
 	return mdi_area->addSubWindow(new_panel);
 }
 

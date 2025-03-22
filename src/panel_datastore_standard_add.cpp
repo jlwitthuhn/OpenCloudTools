@@ -16,7 +16,10 @@
 #include "util_json.h"
 #include "util_validator.h"
 
-StandardDatastoreAddEntryPanel::StandardDatastoreAddEntryPanel(QWidget* parent, const QString& api_key) : QWidget{ parent }, api_key{ api_key }
+StandardDatastoreAddEntryPanel::StandardDatastoreAddEntryPanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent },
+	api_key{ api_key },
+	attached_universe{ universe }
 {
 	edit_add_datastore_name = new QLineEdit{ this };
 	connect(edit_add_datastore_name, &QLineEdit::textChanged, this, &StandardDatastoreAddEntryPanel::gui_refresh);
@@ -64,15 +67,8 @@ StandardDatastoreAddEntryPanel::StandardDatastoreAddEntryPanel(QWidget* parent, 
 	layout->addRow("Type", combo_add_entry_type);
 	layout->addRow("Data", tab_add);
 	layout->addRow("", button_add_entry_submit);
-}
 
-void StandardDatastoreAddEntryPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	if (universe && universe == attached_universe.lock())
-	{
-		return;
-	}
-	attached_universe = universe;
+	gui_refresh();
 }
 
 void StandardDatastoreAddEntryPanel::gui_refresh()

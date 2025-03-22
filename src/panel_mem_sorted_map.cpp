@@ -30,9 +30,10 @@
 #include "model_qt.h"
 #include "profile.h"
 
-MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, const QString& api_key) :
+MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
 	QWidget{ parent },
-	api_key{ api_key }
+	api_key{ api_key },
+	attached_universe{ universe }
 {
 	QSplitter* const splitter = new QSplitter{ this };
 	splitter->setChildrenCollapsible(false);
@@ -139,33 +140,8 @@ MemoryStoreSortedMapPanel::MemoryStoreSortedMapPanel(QWidget* const parent, cons
 	QHBoxLayout* const layout = new QHBoxLayout{ this };
 	layout->addWidget(splitter);
 
-	set_table_model(nullptr);
-	change_universe(nullptr);
-}
-
-void MemoryStoreSortedMapPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	attached_universe = universe;
-
-	QObject::disconnect(conn_universe_mem_sorted_map_list_changed);
-	if (universe)
-	{
-		conn_universe_mem_sorted_map_list_changed = connect(universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &MemoryStoreSortedMapPanel::handle_recent_maps_changed);
-	}
-
-	list_maps->clear();
-	edit_map_name->setText("");
-
-	const bool enabled = static_cast<bool>(universe);
-	check_save_recent_maps->setEnabled(enabled);
-	if (universe)
-	{
-		check_save_recent_maps->setChecked(universe->get_save_recent_mem_sorted_maps());
-	}
-	else
-	{
-		check_save_recent_maps->setChecked(false);
-	}
+	conn_universe_mem_sorted_map_list_changed = connect(universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &MemoryStoreSortedMapPanel::handle_recent_maps_changed);
+	check_save_recent_maps->setChecked(universe->get_save_recent_mem_sorted_maps());
 
 	set_table_model(nullptr);
 	handle_recent_maps_changed();

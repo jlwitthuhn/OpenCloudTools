@@ -19,8 +19,13 @@
 #include "gui_constants.h"
 #include "profile.h"
 
-UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const QString&) : QWidget{ parent }
+UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const QString&, const std::shared_ptr<UniverseProfile>& universe) :
+	QWidget{ parent },
+	attached_universe{ universe }
 {
+	// Increase minimum width so the full window title can be seen
+	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
+
 	QWidget* container_widget = new QWidget{ this };
 	{
 		QGroupBox* hidden_datastore_group = new QGroupBox{ "Hidden Datastores", container_widget };
@@ -57,24 +62,10 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(container_widget);
 
-	// Increase minimum width so the full window title can be seen
-	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
+	conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
 
 	handle_hidden_datastores_changed();
 	handle_list_selection_changed();
-}
-
-void UniversePreferencesPanel::change_universe(const std::shared_ptr<UniverseProfile>& universe)
-{
-	attached_universe = universe;
-
-	QObject::disconnect(conn_universe_hidden_datastores_changed);
-	if (universe)
-	{
-		conn_universe_hidden_datastores_changed = connect(universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &UniversePreferencesPanel::handle_hidden_datastores_changed);
-	}
-
-	handle_hidden_datastores_changed();
 	gui_refresh();
 }
 

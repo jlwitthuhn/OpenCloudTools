@@ -15,9 +15,7 @@ class BulkDataPanel : public QWidget
 {
 	Q_OBJECT
 public:
-	BulkDataPanel(QWidget* parent, const QString& api_key);
-
-	void change_universe(const std::shared_ptr<UniverseProfile>& universe);
+	BulkDataPanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe);
 
 private:
 	void gui_refresh();
