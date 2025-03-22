@@ -35,10 +35,10 @@ QNetworkRequest HttpRequestBuilder::messaging_service_post_message(const QString
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_delete(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id)
+QNetworkRequest HttpRequestBuilder::ordered_datastore_v2_entry_delete(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id)
 {
-	QString url = base_url_ordered_datastore(universe_id);
-	url = url + "/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name);
+	QString url = base_url_ordered_datastore_v2(universe_id);
+	url = url + "/" + QUrl::toPercentEncoding(datastore_name);
 	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
 	url = url + "/entries/" + QUrl::toPercentEncoding(entry_id);
 
@@ -258,11 +258,6 @@ QString HttpRequestBuilder::base_url_memory_store(const long long universe_id)
 QString HttpRequestBuilder::base_url_messaging(const long long universe_id)
 {
 	return QString{ "https://apis.roblox.com/messaging-service/v1/universes/" } + QString::number(universe_id);
-}
-
-QString HttpRequestBuilder::base_url_ordered_datastore(const long long universe_id)
-{
-	return QString{ "https://apis.roblox.com/ordered-data-stores/v1/universes/" } + QString::number(universe_id);
 }
 
 QString HttpRequestBuilder::base_url_ordered_datastore_v2(const long long universe_id)

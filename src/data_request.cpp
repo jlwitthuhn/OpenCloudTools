@@ -319,28 +319,28 @@ QString MessagingServicePostMessageRequest::get_send_message() const
 	return QString{ "Sending message to '%1'..." }.arg(topic);
 }
 
-OrderedDatastoreEntryDeleteRequest::OrderedDatastoreEntryDeleteRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id) :
+OrderedDatastoreEntryDeleteV2Request::OrderedDatastoreEntryDeleteV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }
 {
 	request_type = HttpRequestType::Delete;
 }
 
-QString OrderedDatastoreEntryDeleteRequest::get_title_string() const
+QString OrderedDatastoreEntryDeleteV2Request::get_title_string() const
 {
-	return "Deleting ordered datastore entry...";
+	return "Deleting ordered datastore entry (v2)...";
 }
 
-QNetworkRequest OrderedDatastoreEntryDeleteRequest::build_request(std::optional<QString>) const
+QNetworkRequest OrderedDatastoreEntryDeleteV2Request::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_delete(api_key, universe_id, datastore_name, scope, entry_id);
+	return HttpRequestBuilder::ordered_datastore_v2_entry_delete(api_key, universe_id, datastore_name, scope, entry_id);
 }
 
-void OrderedDatastoreEntryDeleteRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+void OrderedDatastoreEntryDeleteV2Request::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	do_success();
 }
 
-QString OrderedDatastoreEntryDeleteRequest::get_send_message() const
+QString OrderedDatastoreEntryDeleteV2Request::get_send_message() const
 {
 	return QString{ "Deleting '%1'..." }.arg(entry_id);
 }

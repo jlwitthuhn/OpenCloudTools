@@ -143,10 +143,10 @@ private:
 	QString topic;
 };
 
-class OrderedDatastoreEntryDeleteRequest : public DataRequest
+class OrderedDatastoreEntryDeleteV2Request : public DataRequest
 {
 public:
-	OrderedDatastoreEntryDeleteRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
+	OrderedDatastoreEntryDeleteV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
 
 	virtual QString get_title_string() const override;
 

@@ -562,7 +562,7 @@ void OrderedDatastorePanel::pressed_entry_delete()
 		return;
 	}
 
-	const auto req = std::make_shared<OrderedDatastoreEntryDeleteRequest>(
+	const auto req = std::make_shared<OrderedDatastoreEntryDeleteV2Request>(
 		api_key,
 		opt_entry->get_universe_id(),
 		opt_entry->get_datastore_name(),
