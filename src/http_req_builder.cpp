@@ -132,7 +132,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_get_list(const QString& a
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::standard_datastore_snapshot_v2(const QString& api_key, const long long universe_id)
+QNetworkRequest HttpRequestBuilder::standard_datastore_v2_snapshot(const QString& api_key, const long long universe_id)
 {
 	const QString url = base_url_standard_datastore_v2(universe_id) + ":snapshot";
 	QNetworkRequest req{ url };
@@ -242,7 +242,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_version_get_list(co
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::universe_get_details(const QString& api_key, const long long universe_id)
+QNetworkRequest HttpRequestBuilder::universe_v2_get_details(const QString& api_key, const long long universe_id)
 {
 	const QString url = base_url_universe_v2(universe_id);
 	QNetworkRequest req{ url };

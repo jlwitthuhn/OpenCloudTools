@@ -879,7 +879,7 @@ QString StandardDatastorePostSnapshotRequest::get_title_string() const
 
 QNetworkRequest StandardDatastorePostSnapshotRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::standard_datastore_snapshot_v2(api_key, universe_id);
+	return HttpRequestBuilder::standard_datastore_v2_snapshot(api_key, universe_id);
 }
 
 void StandardDatastorePostSnapshotRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -906,7 +906,7 @@ QString UniverseGetDetailsRequest::get_title_string() const
 
 QNetworkRequest UniverseGetDetailsRequest::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::universe_get_details(api_key, universe_id);
+	return HttpRequestBuilder::universe_v2_get_details(api_key, universe_id);
 }
 
 void UniverseGetDetailsRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
