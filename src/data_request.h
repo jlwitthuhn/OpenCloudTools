@@ -208,10 +208,10 @@ private:
 	std::vector<OrderedDatastoreEntryFull> entries;
 };
 
-class OrderedDatastoreEntryPatchUpdateRequest : public DataRequest
+class OrderedDatastoreEntryPatchUpdateV2Request : public DataRequest
 {
 public:
-	OrderedDatastoreEntryPatchUpdateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long new_value);
+	OrderedDatastoreEntryPatchUpdateV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, long long new_value);
 
 	virtual QString get_title_string() const override;
 

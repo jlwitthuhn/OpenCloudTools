@@ -242,7 +242,7 @@ void ViewOrderedDatastoreEntryWindow::pressed_new_value()
 	const QString scope = scope_edit->text();
 	const QString key_name = key_name_edit->text();
 	const long long new_value = new_value_edit->text().toLongLong();
-	auto req = std::make_shared<OrderedDatastoreEntryPatchUpdateRequest>(api_key, universe_id, datastore_name, scope, key_name, new_value);
+	auto req = std::make_shared<OrderedDatastoreEntryPatchUpdateV2Request>(api_key, universe_id, datastore_name, scope, key_name, new_value);
 
 	OperationInProgressDialog diag{ this, req };
 	diag.exec();

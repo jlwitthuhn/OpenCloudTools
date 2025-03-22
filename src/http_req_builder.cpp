@@ -47,21 +47,6 @@ QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_delete(const QString
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_patch_update(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
-{
-	QString url = base_url_ordered_datastore(universe_id);
-	url = url + "/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name);
-	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
-	url = url + "/entries/" + QUrl::toPercentEncoding(entry_id);
-
-	QNetworkRequest req{ url };
-	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-	req.setRawHeader("Accept", "*/*");
-	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
-	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
-	return req;
-}
-
 QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_post_create(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
 {
 	QString url = base_url_ordered_datastore(universe_id);
@@ -102,6 +87,21 @@ QNetworkRequest HttpRequestBuilder::ordered_datastore_v2_entry_get_list(const QS
 
 	QNetworkRequest req{ url };
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
+QNetworkRequest HttpRequestBuilder::ordered_datastore_v2_entry_patch_update(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
+{
+	QString url = base_url_ordered_datastore_v2(universe_id);
+	url = url + "/" + QUrl::toPercentEncoding(datastore_name);
+	url = url + "/scopes/" + QUrl::toPercentEncoding(scope);
+	url = url + "/entries/" + QUrl::toPercentEncoding(entry_id);
+
+	QNetworkRequest req{ url };
+	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+	req.setRawHeader("Accept", "*/*");
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
 	return req;
 }
 

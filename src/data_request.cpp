@@ -476,7 +476,7 @@ QString OrderedDatastoreEntryPostCreateRequest::get_send_message() const
 	return QString{ "Creating entry '%1' with value %2..." }.arg(entry_id).arg(value);
 }
 
-OrderedDatastoreEntryPatchUpdateRequest::OrderedDatastoreEntryPatchUpdateRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long new_value)
+OrderedDatastoreEntryPatchUpdateV2Request::OrderedDatastoreEntryPatchUpdateV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long new_value)
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, new_value{ new_value }
 {
 	request_type = HttpRequestType::Patch;
@@ -487,22 +487,22 @@ OrderedDatastoreEntryPatchUpdateRequest::OrderedDatastoreEntryPatchUpdateRequest
 	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
-QString OrderedDatastoreEntryPatchUpdateRequest::get_title_string() const
+QString OrderedDatastoreEntryPatchUpdateV2Request::get_title_string() const
 {
-	return "Updating entry...";
+	return "Updating entry (v2)...";
 }
 
-QNetworkRequest OrderedDatastoreEntryPatchUpdateRequest::build_request(std::optional<QString>) const
+QNetworkRequest OrderedDatastoreEntryPatchUpdateV2Request::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_patch_update(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
+	return HttpRequestBuilder::ordered_datastore_v2_entry_patch_update(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
 }
 
-void OrderedDatastoreEntryPatchUpdateRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+void OrderedDatastoreEntryPatchUpdateV2Request::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	do_success();
 }
 
-QString OrderedDatastoreEntryPatchUpdateRequest::get_send_message() const
+QString OrderedDatastoreEntryPatchUpdateV2Request::get_send_message() const
 {
 	return QString{ "Setting '%1' to %2..." }.arg(entry_id).arg(new_value);
 }
