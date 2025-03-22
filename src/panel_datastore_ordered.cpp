@@ -119,7 +119,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 						button_search_find_ascending = new QPushButton{ "Find all (ascending)", panel_search_submit };
 						connect(button_search_find_ascending, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_find_ascending);
 
-						button_search_find_descending = new QPushButton{ "Find prefix match", panel_search_submit };
+						button_search_find_descending = new QPushButton{ "Find all (descending)", panel_search_submit };
 						connect(button_search_find_descending, &QPushButton::clicked, this, &OrderedDatastorePanel::pressed_find_descending);
 
 						QLabel* const label_find_limit = new QLabel{ "Limit:", panel_search_submit };
