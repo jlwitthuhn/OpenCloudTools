@@ -287,34 +287,35 @@ void MemoryStoreSortedMapGetListRequest::handle_http_200(const QString& body, co
 	}
 }
 
-MessagingServicePostMessageRequest::MessagingServicePostMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
+MessagingServicePostMessageV2Request::MessagingServicePostMessageV2Request(const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
 	: DataRequest{ api_key }, universe_id{ universe_id }, topic{ topic }
 {
 	request_type = HttpRequestType::Post;
 
 	QJsonObject send_object;
+	send_object.insert("topic", topic);
 	send_object.insert("message", unencoded_message);
 
 	const QJsonDocument doc{ send_object };
 	req_body = QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
 }
 
-QString MessagingServicePostMessageRequest::get_title_string() const
+QString MessagingServicePostMessageV2Request::get_title_string() const
 {
-	return "Setting message...";
+	return "Setting message (v2)...";
 }
 
-QNetworkRequest MessagingServicePostMessageRequest::build_request(std::optional<QString>) const
+QNetworkRequest MessagingServicePostMessageV2Request::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::messaging_service_post_message(api_key, universe_id, topic);
+	return HttpRequestBuilder::messaging_service_v2_post_message(api_key, universe_id);
 }
 
-void MessagingServicePostMessageRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+void MessagingServicePostMessageV2Request::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	do_success("Message sent");
 }
 
-QString MessagingServicePostMessageRequest::get_send_message() const
+QString MessagingServicePostMessageV2Request::get_send_message() const
 {
 	return QString{ "Sending message to '%1'..." }.arg(topic);
 }

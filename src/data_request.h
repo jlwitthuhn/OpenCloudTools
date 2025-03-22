@@ -127,10 +127,10 @@ private:
 	std::vector<MemoryStoreSortedMapItem> items;
 };
 
-class MessagingServicePostMessageRequest : public DataRequest
+class MessagingServicePostMessageV2Request : public DataRequest
 {
 public:
-	MessagingServicePostMessageRequest(const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
+	MessagingServicePostMessageV2Request(const QString& api_key, long long universe_id, QString topic, QString unencoded_message);
 
 	virtual QString get_title_string() const override;
 

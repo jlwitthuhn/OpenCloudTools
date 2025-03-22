@@ -25,9 +25,9 @@ QNetworkRequest HttpRequestBuilder::memory_store_sorted_map_get_list(const QStri
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::messaging_service_post_message(const QString api_key, long long universe_id, const QString& topic)
+QNetworkRequest HttpRequestBuilder::messaging_service_v2_post_message(const QString api_key, long long universe_id)
 {
-	const QString url = base_url_messaging(universe_id) + "/topics/" + QUrl::toPercentEncoding(topic);
+	const QString url = base_url_universe_v2(universe_id) + ":publishMessage";
 
 	QNetworkRequest req{ url };
 	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
@@ -253,11 +253,6 @@ QNetworkRequest HttpRequestBuilder::universe_get_details(const QString& api_key,
 QString HttpRequestBuilder::base_url_memory_store(const long long universe_id)
 {
 	return base_url_universe_v2(universe_id) + "/memory-store";
-}
-
-QString HttpRequestBuilder::base_url_messaging(const long long universe_id)
-{
-	return QString{ "https://apis.roblox.com/messaging-service/v1/universes/" } + QString::number(universe_id);
 }
 
 QString HttpRequestBuilder::base_url_ordered_datastore_v2(const long long universe_id)
