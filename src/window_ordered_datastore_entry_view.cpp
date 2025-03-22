@@ -205,7 +205,7 @@ void ViewOrderedDatastoreEntryWindow::pressed_increment()
 	const QString scope = scope_edit->text();
 	const QString key_name = key_name_edit->text();
 	const long long increment_by = increment_edit->text().toLongLong();
-	auto req = std::make_shared<OrderedDatastorePostIncrementRequest>(api_key, universe_id, datastore_name, scope, key_name, increment_by);
+	auto req = std::make_shared<OrderedDatastorePostIncrementV2Request>(api_key, universe_id, datastore_name, scope, key_name, increment_by);
 
 	OperationInProgressDialog diag{ this, req };
 	diag.exec();

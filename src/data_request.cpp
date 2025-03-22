@@ -507,7 +507,7 @@ QString OrderedDatastoreEntryPatchUpdateRequest::get_send_message() const
 	return QString{ "Setting '%1' to %2..." }.arg(entry_id).arg(new_value);
 }
 
-OrderedDatastorePostIncrementRequest::OrderedDatastorePostIncrementRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long increment_by)
+OrderedDatastorePostIncrementV2Request::OrderedDatastorePostIncrementV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const long long increment_by)
 	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, entry_id{ entry_id }, increment_by{ increment_by }
 {
 	request_type = HttpRequestType::Post;
@@ -518,22 +518,22 @@ OrderedDatastorePostIncrementRequest::OrderedDatastorePostIncrementRequest(const
 	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
-QString OrderedDatastorePostIncrementRequest::get_title_string() const
+QString OrderedDatastorePostIncrementV2Request::get_title_string() const
 {
-	return "Incrementing entry...";
+	return "Incrementing entry (v2)...";
 }
 
-QNetworkRequest OrderedDatastorePostIncrementRequest::build_request(std::optional<QString>) const
+QNetworkRequest OrderedDatastorePostIncrementV2Request::build_request(std::optional<QString>) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_post_increment(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
+	return HttpRequestBuilder::ordered_datastore_v2_entry_post_increment(api_key, universe_id, datastore_name, scope, entry_id, req_body.get_md5());
 }
 
-void OrderedDatastorePostIncrementRequest::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+void OrderedDatastorePostIncrementV2Request::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	do_success();
 }
 
-QString OrderedDatastorePostIncrementRequest::get_send_message() const
+QString OrderedDatastorePostIncrementV2Request::get_send_message() const
 {
 	return QString{ "Incrementing '%1' by %2..." }.arg(entry_id).arg(increment_by);
 }
