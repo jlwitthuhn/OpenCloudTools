@@ -171,13 +171,13 @@ std::optional<GetOrderedDatastoreEntryDetailsResponse> GetOrderedDatastoreEntryD
 	}
 }
 
-std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryListResponse::from_json(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
+std::optional<GetOrderedDatastoreEntryListV2Response> GetOrderedDatastoreEntryListV2Response::from_json(const long long universe_id, const QString& datastore_name, const QString& scope, const QString& json)
 {
 	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
 	QJsonObject root = doc.object();
 
 	std::vector<OrderedDatastoreEntryFull> entries;
-	QJsonObject::iterator entries_it = root.find("entries");
+	QJsonObject::iterator entries_it = root.find("orderedDataStoreEntries");
 	if (entries_it != root.end())
 	{
 		QJsonValueRef entries_value = entries_it.value();
@@ -247,7 +247,7 @@ std::optional<GetOrderedDatastoreEntryListResponse> GetOrderedDatastoreEntryList
 		}
 	}
 
-	return GetOrderedDatastoreEntryListResponse{ entries, page_token };
+	return GetOrderedDatastoreEntryListV2Response{ entries, page_token };
 }
 
 std::optional<GetStandardDatastoreListResponse> GetStandardDatastoreListResponse::from_json(const QString& json)

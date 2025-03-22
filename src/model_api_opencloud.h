@@ -37,17 +37,18 @@ private:
 	OrderedDatastoreEntryFull details;
 };
 
-class GetOrderedDatastoreEntryListResponse
+class GetOrderedDatastoreEntryListV2Response
 {
 public:
-	static std::optional<GetOrderedDatastoreEntryListResponse> from_json(long long universe_id, const QString& datastore_name, const QString& scope, const QString& json);
+	static std::optional<GetOrderedDatastoreEntryListV2Response> from_json(long long universe_id, const QString& datastore_name, const QString& scope, const QString& json);
 
 	const std::vector<OrderedDatastoreEntryFull>& get_entries() const { return entries; }
 	const std::optional<QString> get_next_page_token() const { return next_page_token; }
 
 private:
-	GetOrderedDatastoreEntryListResponse(const std::vector<OrderedDatastoreEntryFull>& entries, const std::optional<QString>& next_page_token) :
-		entries{ entries }, next_page_token{ next_page_token } {}
+	GetOrderedDatastoreEntryListV2Response(const std::vector<OrderedDatastoreEntryFull>& entries, const std::optional<QString>& next_page_token) :
+		entries{ entries }, next_page_token{ next_page_token } {
+	}
 
 	std::vector<OrderedDatastoreEntryFull> entries;
 	std::optional<QString> next_page_token;

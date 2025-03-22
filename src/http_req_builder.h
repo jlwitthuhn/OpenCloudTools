@@ -15,10 +15,10 @@ public:
 
 	static QNetworkRequest ordered_datastore_entry_delete(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
 	static QNetworkRequest ordered_datastore_entry_get_details(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
-	static QNetworkRequest ordered_datastore_entry_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending, std::optional<QString> cursor = std::nullopt);
 	static QNetworkRequest ordered_datastore_entry_patch_update(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 	static QNetworkRequest ordered_datastore_entry_post_create(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 	static QNetworkRequest ordered_datastore_entry_post_increment(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
+	static QNetworkRequest ordered_datastore_v2_entry_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending, std::optional<QString> cursor = std::nullopt);
 
 	static QNetworkRequest standard_datastore_get_list(const QString& api_key, long long universe_id, std::optional<QString> cursor = std::nullopt);
 	static QNetworkRequest standard_datastore_snapshot_v2(const QString& api_key, long long universe_id);
@@ -37,7 +37,8 @@ private:
 	static QString base_url_memory_store(long long universe_id);
 	static QString base_url_messaging(long long universe_id);
 	static QString base_url_ordered_datastore(long long universe_id);
+	static QString base_url_ordered_datastore_v2(long long universe_id);
 	static QString base_url_standard_datastore(long long universe_id);
 	static QString base_url_standard_datastore_v2(long long universe_id);
-	static QString base_url_universe(long long universe_id);
+	static QString base_url_universe_v2(long long universe_id);
 };

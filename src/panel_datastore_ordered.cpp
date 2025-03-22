@@ -445,7 +445,7 @@ void OrderedDatastorePanel::pressed_find(const bool ascending)
 
 	const size_t result_limit = edit_search_find_limit->text().trimmed().toULongLong();
 
-	const auto req = std::make_shared<OrderedDatastoreEntryGetListRequest>(api_key, universe_id, datastore_name, scope, ascending);
+	const auto req = std::make_shared<OrderedDatastoreEntryGetListV2Request>(api_key, universe_id, datastore_name, scope, ascending);
 	if (result_limit > 0)
 	{
 		req->set_result_limit(result_limit);

@@ -183,10 +183,10 @@ private:
 	std::optional<OrderedDatastoreEntryFull> details;
 };
 
-class OrderedDatastoreEntryGetListRequest : public DataRequest
+class OrderedDatastoreEntryGetListV2Request : public DataRequest
 {
 public:
-	OrderedDatastoreEntryGetListRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending);
+	OrderedDatastoreEntryGetListV2Request(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, bool ascending);
 
 	virtual QString get_title_string() const override;
 

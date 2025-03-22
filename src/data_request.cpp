@@ -394,30 +394,30 @@ QString OrderedDatastoreEntryGetDetailsRequest::get_send_message() const
 	return QString{ "Fetching information for key '%1'..." }.arg(entry_id);
 }
 
-OrderedDatastoreEntryGetListRequest::OrderedDatastoreEntryGetListRequest(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending) :
+OrderedDatastoreEntryGetListV2Request::OrderedDatastoreEntryGetListV2Request(const QString& api_key, const long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, ascending{ ascending }
 {
 
 }
 
-QString OrderedDatastoreEntryGetListRequest::get_title_string() const
+QString OrderedDatastoreEntryGetListV2Request::get_title_string() const
 {
-	return "Fetching ordered datastore entries...";
+	return "Fetching ordered datastore entries (v2)...";
 }
 
-void OrderedDatastoreEntryGetListRequest::set_result_limit(const size_t limit)
+void OrderedDatastoreEntryGetListV2Request::set_result_limit(const size_t limit)
 {
 	result_limit = limit;
 }
 
-QNetworkRequest OrderedDatastoreEntryGetListRequest::build_request(std::optional<QString> cursor) const
+QNetworkRequest OrderedDatastoreEntryGetListV2Request::build_request(std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::ordered_datastore_entry_get_list(api_key, universe_id, datastore_name, scope, ascending, cursor);
+	return HttpRequestBuilder::ordered_datastore_v2_entry_get_list(api_key, universe_id, datastore_name, scope, ascending, cursor);
 }
 
-void OrderedDatastoreEntryGetListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+void OrderedDatastoreEntryGetListV2Request::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
-	if (const std::optional<GetOrderedDatastoreEntryListResponse> response = GetOrderedDatastoreEntryListResponse::from_json(universe_id, datastore_name, scope, body))
+	if (const std::optional<GetOrderedDatastoreEntryListV2Response> response = GetOrderedDatastoreEntryListV2Response::from_json(universe_id, datastore_name, scope, body))
 	{
 		for (const OrderedDatastoreEntryFull& this_entry : response->get_entries())
 		{

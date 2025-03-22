@@ -59,22 +59,6 @@ QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_get_details(const QS
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending, std::optional<QString> cursor)
-{
-	QString url = base_url_ordered_datastore(universe_id) +
-		"/orderedDataStores/" + QUrl::toPercentEncoding(datastore_name) +
-		"/scopes/" + QUrl::toPercentEncoding(scope) +
-		"/entries?max_page_size=100&order_by=" + QString{ ascending ? "asc" : "desc" };
-	if (cursor)
-	{
-		url = url + "&page_token=" + QUrl::toPercentEncoding(*cursor);
-	}
-
-	QNetworkRequest req{ url };
-	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
-	return req;
-}
-
 QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_patch_update(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5)
 {
 	QString url = base_url_ordered_datastore(universe_id);
@@ -117,6 +101,22 @@ QNetworkRequest HttpRequestBuilder::ordered_datastore_entry_post_increment(const
 	req.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	req.setRawHeader("content-md5", body_md5.toStdString().c_str());
+	return req;
+}
+
+QNetworkRequest HttpRequestBuilder::ordered_datastore_v2_entry_get_list(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const bool ascending, std::optional<QString> cursor)
+{
+	QString url = base_url_ordered_datastore_v2(universe_id) +
+		"/" + QUrl::toPercentEncoding(datastore_name) +
+		"/scopes/" + QUrl::toPercentEncoding(scope) +
+		"/entries?maxPageSize=100&orderBy=" + QString{ ascending ? "value" : "value%20desc" };
+	if (cursor)
+	{
+		url = url + "&pageToken=" + QUrl::toPercentEncoding(*cursor);
+	}
+
+	QNetworkRequest req{ url };
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	return req;
 }
 
@@ -244,7 +244,7 @@ QNetworkRequest HttpRequestBuilder::standard_datastore_entry_version_get_list(co
 
 QNetworkRequest HttpRequestBuilder::universe_get_details(const QString& api_key, const long long universe_id)
 {
-	const QString url = base_url_universe(universe_id);
+	const QString url = base_url_universe_v2(universe_id);
 	QNetworkRequest req{ url };
 	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
 	return req;
@@ -252,7 +252,7 @@ QNetworkRequest HttpRequestBuilder::universe_get_details(const QString& api_key,
 
 QString HttpRequestBuilder::base_url_memory_store(const long long universe_id)
 {
-	return base_url_universe(universe_id) + "/memory-store";
+	return base_url_universe_v2(universe_id) + "/memory-store";
 }
 
 QString HttpRequestBuilder::base_url_messaging(const long long universe_id)
@@ -265,6 +265,11 @@ QString HttpRequestBuilder::base_url_ordered_datastore(const long long universe_
 	return QString{ "https://apis.roblox.com/ordered-data-stores/v1/universes/" } + QString::number(universe_id);
 }
 
+QString HttpRequestBuilder::base_url_ordered_datastore_v2(const long long universe_id)
+{
+	return base_url_universe_v2(universe_id) + "/ordered-data-stores";
+}
+
 QString HttpRequestBuilder::base_url_standard_datastore(const long long universe_id)
 {
 	return QString{ "https://apis.roblox.com/datastores/v1/universes/" } + QString::number(universe_id);
@@ -272,10 +277,10 @@ QString HttpRequestBuilder::base_url_standard_datastore(const long long universe
 
 QString HttpRequestBuilder::base_url_standard_datastore_v2(const long long universe_id)
 {
-	return QString{ "https://apis.roblox.com/cloud/v2/universes/" } + QString::number(universe_id) + "/data-stores";
+	return base_url_universe_v2(universe_id) + "/data-stores";
 }
 
-QString HttpRequestBuilder::base_url_universe(const long long universe_id)
+QString HttpRequestBuilder::base_url_universe_v2(const long long universe_id)
 {
 	return QString{ "https://apis.roblox.com/cloud/v2/universes/" } + QString::number(universe_id);
 }
