@@ -178,3 +178,12 @@ if(APPLE)
 else()
 	install(TARGETS OpenCloudTools)
 endif()
+
+qt_generate_deploy_app_script(
+	TARGET OpenCloudTools
+	OUTPUT_SCRIPT deploy_script
+	NO_TRANSLATIONS
+	NO_COMPILER_RUNTIME
+	NO_UNSUPPORTED_PLATFORM_ERROR
+)
+install(SCRIPT ${deploy_script})

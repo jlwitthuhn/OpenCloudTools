@@ -1,10 +1,11 @@
 {
-    "version": 2,
+    "version": 3,
     "configurePresets": [
         {
             "name": "common",
             "hidden": true,
             "binaryDir": "build/${presetName}",
+            "installDir": "build/${presetName}/install",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "OCT_USE_CLANG_TIDY": "FALSE",
