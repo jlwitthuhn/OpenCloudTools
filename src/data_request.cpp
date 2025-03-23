@@ -253,7 +253,7 @@ void MemoryStoreSortedMapGetListRequest::set_result_limit(const size_t limit)
 
 QNetworkRequest MemoryStoreSortedMapGetListRequest::build_request(std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::memory_store_sorted_map_get_list(api_key, universe_id, map_name, ascending, cursor);
+	return HttpRequestBuilder::memory_store_v2_sorted_map_get_list(api_key, universe_id, map_name, ascending, cursor);
 }
 
 void MemoryStoreSortedMapGetListRequest::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)

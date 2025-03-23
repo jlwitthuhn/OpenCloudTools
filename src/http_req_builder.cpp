@@ -6,14 +6,13 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
-QNetworkRequest HttpRequestBuilder::memory_store_sorted_map_get_list(const QString& api_key, const long long universe_id, const QString& map_name, bool ascending, const std::optional<QString> cursor)
+QNetworkRequest HttpRequestBuilder::memory_store_v2_sorted_map_get_list(const QString& api_key, const long long universe_id, const QString& map_name, bool ascending, const std::optional<QString> cursor)
 {
-	QString url = base_url_memory_store(universe_id);
+	QString url = base_url_memory_store_v2(universe_id);
 	url = url + "/sorted-maps/" + QUrl::toPercentEncoding(map_name);
 	url = url + "/items";
 	url = url + "?maxPageSize=100";
 	url = url + "&orderBy=" + (ascending ? "asc" : "desc");
-	//url = url + "&orderBy=id" + (ascending ? QByteArray{ "" } : QUrl::toPercentEncoding(" desc"));
 	if (cursor)
 	{
 		url = url + "&pageToken=" + QUrl::toPercentEncoding(*cursor);
@@ -250,7 +249,7 @@ QNetworkRequest HttpRequestBuilder::universe_v2_get_details(const QString& api_k
 	return req;
 }
 
-QString HttpRequestBuilder::base_url_memory_store(const long long universe_id)
+QString HttpRequestBuilder::base_url_memory_store_v2(const long long universe_id)
 {
 	return base_url_universe_v2(universe_id) + "/memory-store";
 }

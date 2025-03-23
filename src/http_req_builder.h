@@ -9,7 +9,7 @@ class QNetworkRequest;
 class HttpRequestBuilder
 {
 public:
-	static QNetworkRequest memory_store_sorted_map_get_list(const QString& api_key, long long universe_id, const QString& map_name, bool ascending, std::optional<QString> cursor = std::nullopt);
+	static QNetworkRequest memory_store_v2_sorted_map_get_list(const QString& api_key, long long universe_id, const QString& map_name, bool ascending, std::optional<QString> cursor = std::nullopt);
 
 	static QNetworkRequest messaging_service_v2_post_message(const QString api_key, long long universe_id);
 
@@ -34,7 +34,7 @@ public:
 	static QNetworkRequest universe_v2_get_details(const QString& api_key, long long universe_id);
 
 private:
-	static QString base_url_memory_store(long long universe_id);
+	static QString base_url_memory_store_v2(long long universe_id);
 	static QString base_url_ordered_datastore_v2(long long universe_id);
 	static QString base_url_standard_datastore(long long universe_id);
 	static QString base_url_standard_datastore_v2(long long universe_id);
