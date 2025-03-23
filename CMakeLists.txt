@@ -149,7 +149,11 @@ else()
 endif()
 
 if(DEFINED GIT_DESCRIBE)
-	target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
+	if(NOT GIT_DESCRIBE STREQUAL "")
+		target_compile_definitions(OpenCloudTools PRIVATE GIT_DESCRIBE="${GIT_DESCRIBE}")
+	else()
+		message(WARNING "Failed to get a valid version from 'git describe'")
+	endif()
 endif()
 
 target_include_directories(OpenCloudTools PRIVATE ./extern/sqlite)
