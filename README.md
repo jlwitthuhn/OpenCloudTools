@@ -102,7 +102,9 @@ The only permissions that exist for Ordered Datastores are:
 
 ## Building
 
-A CMake build file is provided. This project requires C++17 to build.
+This project uses CMake and requires a compiler that supports C++17.
+
+CMake presets are provided in the repo, to use these just edit `CMakeUserPresets.json` and update the relevant `CMAKE_PREFIX_PATH` variables to point at your own Qt installation. If Qt is on your default path you can delete the `CMAKE_PREFIX_PATH` lines entirely or just use the *-raw presets which do not have a prefix path set.
 
 ### Dependencies
 

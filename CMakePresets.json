@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "common",
+            "hidden": true,
+            "binaryDir": "build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "OCT_USE_CLANG_TIDY": "FALSE",
+                "OCT_USE_GIT_TAG": "TRUE",
+                "OCT_USE_IWYU": "FALSE",
+                "OCT_USE_QT5": "FALSE"
+            }
+        },
+        {
+            "name": "ninja-normal-raw",
+            "inherits": "common",
+            "generator": "Ninja"
+        }
+    ]
+}
