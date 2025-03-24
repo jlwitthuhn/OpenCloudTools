@@ -49,6 +49,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 	api_key { api_key },
 	attached_universe{ universe }
 {
+	OCTASSERT(universe);
 	connect(&(UserProfile::get()), &UserProfile::show_datastore_filter_changed, this, &OrderedDatastorePanel::handle_show_datastore_filter_changed);
 
 	QSplitter* const splitter = new QSplitter{ this };
@@ -65,6 +66,7 @@ OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api
 			connect(edit_datastore_index_filter, &QLineEdit::textChanged, this, &OrderedDatastorePanel::refresh_datastore_list);
 
 			check_save_recent_datastores = new QCheckBox{ "Add used data stores", group_index };
+			check_save_recent_datastores->setChecked(universe->get_save_recent_ordered_datastores());
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 			connect(check_save_recent_datastores, &QCheckBox::checkStateChanged, this, &OrderedDatastorePanel::handle_save_recent_datastores_toggled);
 #else
