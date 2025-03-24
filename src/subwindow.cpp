@@ -17,6 +17,8 @@ QString subwindow_type_display_name(const SubwindowType type)
 		return "Add to Data Store";
 	case SubwindowType::DATA_STORES_ORDERED:
 		return "Ordered Data Stores";
+	case SubwindowType::DATA_STORES_ORDERED_ADD:
+		return "Add to Ordered Data Store";
 	case SubwindowType::MEMORY_STORE_SORTED_MAP:
 		return "Memory Store, Sorted Map";
 	case SubwindowType::BULK_DATA:

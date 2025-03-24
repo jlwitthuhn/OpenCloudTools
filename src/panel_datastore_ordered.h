@@ -40,8 +40,6 @@ private:
 	void handle_selected_datastore_entry_changed();
 	void handle_show_datastore_filter_changed();
 
-	void handle_add_entry_text_changed();
-
 	void handle_recent_datastores_changed();
 	void handle_save_recent_datastores_toggled();
 
@@ -51,7 +49,6 @@ private:
 	void pressed_find_ascending();
 	void pressed_find_descending();
 	void pressed_remove_datastore();
-	void pressed_submit_new_entry();
 	void pressed_view_entry();
 
 	void pressed_entry_delete();
@@ -83,12 +80,4 @@ private:
 	QPushButton* button_entry_increment = nullptr;
 	QPushButton* button_entry_edit = nullptr;
 	QPushButton* button_entry_delete = nullptr;
-
-	// Add panel
-	QLineEdit* edit_add_entry_datastore_name = nullptr;
-	QLineEdit* edit_add_entry_scope = nullptr;
-	QLineEdit* edit_add_entry_key_name = nullptr;
-	QLineEdit* edit_add_entry_value = nullptr;
-
-	QPushButton* button_add_entry_submit = nullptr;
 };

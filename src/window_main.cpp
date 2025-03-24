@@ -26,6 +26,7 @@
 #include "assert.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_ordered.h"
+#include "panel_datastore_ordered_add.h"
 #include "panel_datastore_standard.h"
 #include "panel_datastore_standard_add.h"
 #include "panel_http_log.h"
@@ -302,6 +303,16 @@ void MyMainWindow::rebuild_universe_tree()
 				add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_STANDARD_ADD));
 				add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD_ADD));
 			}
+			else if (subwindow_type == SubwindowType::DATA_STORES_ORDERED)
+			{
+				QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
+				search_item->setText(0, "Search Ordered Data Store");
+				search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED));
+
+				QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
+				add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_ORDERED_ADD));
+				add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED_ADD));
+			}
 		}
 		this_item->setExpanded(true);
 	}
@@ -396,6 +407,9 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 			break;
 		case SubwindowType::DATA_STORES_ORDERED:
 			new_subwindow = create_and_attach_panel<OrderedDatastorePanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::DATA_STORES_ORDERED_ADD:
+			new_subwindow = create_and_attach_panel<OrderedDatastoreAddEntryPanel>(api_profile, universe, center_mdi_widget);
 			break;
 		case SubwindowType::MEMORY_STORE_SORTED_MAP:
 			new_subwindow = create_and_attach_panel<MemoryStoreSortedMapPanel>(api_profile, universe, center_mdi_widget);

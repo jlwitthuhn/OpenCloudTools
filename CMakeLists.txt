@@ -69,6 +69,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/panel_bulk_data.h
 	./src/panel_datastore_ordered.cpp
 	./src/panel_datastore_ordered.h
+	./src/panel_datastore_ordered_add.cpp
+	./src/panel_datastore_ordered_add.h
 	./src/panel_datastore_standard.cpp
 	./src/panel_datastore_standard.h
 	./src/panel_datastore_standard_add.cpp
