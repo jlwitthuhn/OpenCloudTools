@@ -87,14 +87,14 @@ ViewOrderedDatastoreEntryWindow::ViewOrderedDatastoreEntryWindow(QWidget* const 
 		{
 			increment_submit = new QPushButton{ "Increment", button_panel };
 			increment_submit->setEnabled(false);
-			connect(increment_submit, &QPushButton::pressed, this, &ViewOrderedDatastoreEntryWindow::pressed_increment);
+			connect(increment_submit, &QPushButton::clicked, this, &ViewOrderedDatastoreEntryWindow::pressed_increment);
 			button_layout->addWidget(increment_submit);
 		}
 		else if (edit_mode == EditMode::Edit)
 		{
 			new_value_submit = new QPushButton{ "Update", button_panel };
 			new_value_submit->setEnabled(false);
-			connect(new_value_submit, &QPushButton::pressed, this, &ViewOrderedDatastoreEntryWindow::pressed_new_value);
+			connect(new_value_submit, &QPushButton::clicked, this, &ViewOrderedDatastoreEntryWindow::pressed_new_value);
 			button_layout->addWidget(new_value_submit);
 		}
 	}

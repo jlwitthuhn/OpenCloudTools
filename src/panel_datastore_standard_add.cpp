@@ -29,7 +29,7 @@ StandardDatastoreAddEntryPanel::StandardDatastoreAddEntryPanel(QWidget* parent, 
 		connect(edit_add_datastore_name, &QLineEdit::textChanged, this, &StandardDatastoreAddEntryPanel::gui_refresh);
 
 		QPushButton* const button_datastore_name_lookup = new QPushButton{ "...", datastore_name_line };
-		connect(button_datastore_name_lookup, &QPushButton::pressed, this, &StandardDatastoreAddEntryPanel::pressed_select_datastore);
+		connect(button_datastore_name_lookup, &QPushButton::clicked, this, &StandardDatastoreAddEntryPanel::pressed_select_datastore);
 
 		QHBoxLayout* const datastore_name_line_layout = new QHBoxLayout{ datastore_name_line };
 		datastore_name_line_layout->setContentsMargins(0, 0, 0, 0);
