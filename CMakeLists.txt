@@ -49,6 +49,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/data_request.h
 	./src/diag_confirm_change.cpp
 	./src/diag_confirm_change.h
+	./src/diag_list_string.cpp
+	./src/diag_list_string.h
 	./src/diag_operation_in_progress.cpp
 	./src/diag_operation_in_progress.h
 	./src/gui_constants.cpp

@@ -2,6 +2,7 @@
 
 #include <QComboBox>
 #include <QFormLayout>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTabWidget>
@@ -10,6 +11,7 @@
 #include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
+#include "diag_list_string.h"
 #include "diag_operation_in_progress.h"
 #include "util_alert.h"
 #include "util_enum.h"
@@ -21,8 +23,19 @@ StandardDatastoreAddEntryPanel::StandardDatastoreAddEntryPanel(QWidget* parent, 
 	api_key{ api_key },
 	attached_universe{ universe }
 {
-	edit_add_datastore_name = new QLineEdit{ this };
-	connect(edit_add_datastore_name, &QLineEdit::textChanged, this, &StandardDatastoreAddEntryPanel::gui_refresh);
+	QWidget* const datastore_name_line = new QWidget{ this };
+	{
+		edit_add_datastore_name = new QLineEdit{ datastore_name_line };
+		connect(edit_add_datastore_name, &QLineEdit::textChanged, this, &StandardDatastoreAddEntryPanel::gui_refresh);
+
+		QPushButton* const button_datastore_name_lookup = new QPushButton{ "...", datastore_name_line };
+		connect(button_datastore_name_lookup, &QPushButton::pressed, this, &StandardDatastoreAddEntryPanel::pressed_select_datastore);
+
+		QHBoxLayout* const datastore_name_line_layout = new QHBoxLayout{ datastore_name_line };
+		datastore_name_line_layout->setContentsMargins(0, 0, 0, 0);
+		datastore_name_line_layout->addWidget(edit_add_datastore_name);
+		datastore_name_line_layout->addWidget(button_datastore_name_lookup);
+	}
 
 	edit_add_datastore_scope = new QLineEdit{ this };
 	edit_add_datastore_scope->setPlaceholderText("global");
@@ -61,7 +74,7 @@ StandardDatastoreAddEntryPanel::StandardDatastoreAddEntryPanel(QWidget* parent, 
 
 	QFormLayout* const layout = new QFormLayout{ this };
 	layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-	layout->addRow("Datastore", edit_add_datastore_name);
+	layout->addRow("Data store", datastore_name_line);
 	layout->addRow("Scope", edit_add_datastore_scope);
 	layout->addRow("Key", edit_add_datastore_key_name);
 	layout->addRow("Type", combo_add_entry_type);
@@ -75,6 +88,33 @@ void StandardDatastoreAddEntryPanel::gui_refresh()
 {
 	const bool submit_enabled = edit_add_datastore_name->text().size() > 0 && edit_add_datastore_key_name->text().size() > 0 && edit_add_entry_data->toPlainText().size() > 0;
 	button_add_entry_submit->setEnabled(submit_enabled);
+}
+
+void StandardDatastoreAddEntryPanel::datastore_name_selected(const QString& name)
+{
+	edit_add_datastore_name->setText(name);
+}
+
+void StandardDatastoreAddEntryPanel::pressed_select_datastore()
+{
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		return;
+	}
+
+	const auto req = std::make_shared<StandardDatastoreGetListRequest>(api_key, universe->get_universe_id());
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (req->get_datastore_names().size() == 0)
+	{
+		return;
+	}
+
+	StringListDialog* const list_dialog = new StringListDialog{ "Select a data store", req->get_datastore_names(), this };
+	connect(list_dialog, &StringListDialog::selected, this, &StandardDatastoreAddEntryPanel::datastore_name_selected);
+	list_dialog->open();
 }
 
 void StandardDatastoreAddEntryPanel::pressed_submit()

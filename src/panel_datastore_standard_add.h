@@ -22,6 +22,9 @@ public:
 private:
 	void gui_refresh();
 
+	void datastore_name_selected(const QString& name);
+
+	void pressed_select_datastore();
 	void pressed_submit();
 
 	QString api_key;
