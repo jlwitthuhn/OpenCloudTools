@@ -104,6 +104,15 @@ void UniverseProfile::set_save_recent_ordered_datastores(const bool save_datasto
 	}
 }
 
+void UniverseProfile::set_show_hidden_standard_datastores(const bool show_datastores)
+{
+	if (show_hidden_standard_datastores != show_datastores)
+	{
+		show_hidden_standard_datastores = show_datastores;
+		emit force_save();
+	}
+}
+
 void UniverseProfile::add_hidden_datastore(const QString& datastore)
 {
 	hidden_datastore_set.insert(datastore);
@@ -563,6 +572,9 @@ void UserProfile::load_from_disk()
 						const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
 						const bool save_recent_ordered_datastores = maybe_save_datastores.isNull() ? true : maybe_save_datastores.toBool();
 
+						const QVariant maybe_show_hidden_datastores = settings.value("show_hidden_standard_datastores");
+						const bool show_hidden_datastores = maybe_show_hidden_datastores.isNull() ? false : maybe_show_hidden_datastores.toBool();
+
 						if (const std::shared_ptr<ApiKeyProfile> this_api_key = get_api_key_by_id(*opt_key_id))
 						{
 							if (const std::optional<UniverseProfile::Id> new_universe_id = this_api_key->add_universe(universe_name, this_universe_id))
@@ -572,6 +584,7 @@ void UserProfile::load_from_disk()
 									this_universe->set_save_recent_mem_sorted_maps(save_recent_mem_sorted_maps);
 									this_universe->set_save_recent_message_topics(save_recent_message_topics);
 									this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);
+									this_universe->set_show_hidden_standard_datastores(show_hidden_datastores);
 
 									const int hidden_list_size = settings.beginReadArray("hidden_datastores");
 									{
@@ -692,6 +705,7 @@ void UserProfile::save_to_disk()
 						settings.setValue("save_recent_mem_sorted_maps", this_universe_profile->get_save_recent_mem_sorted_maps());
 						settings.setValue("save_recent_message_topics", this_universe_profile->get_save_recent_message_topics());
 						settings.setValue("save_recent_ordered_datastores", this_universe_profile->get_save_recent_ordered_datastores());
+						settings.setValue("show_hidden_standard_datastores", this_universe_profile->get_show_hidden_standard_datastores());
 
 						settings.beginWriteArray("hidden_datastores");
 						{

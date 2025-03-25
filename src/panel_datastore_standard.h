@@ -48,6 +48,7 @@ private:
 	void handle_selected_datastore_changed();
 	void handle_selected_datastore_entry_changed();
 	void handle_show_datastore_filter_changed();
+	void handle_show_hidden_datastores_toggled();
 
 	void pressed_right_click_datastore_list(const QPoint& pos);
 	void pressed_right_click_entry_list(const QPoint& pos);

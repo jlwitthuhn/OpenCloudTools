@@ -76,9 +76,9 @@ StandardDatastorePanel::StandardDatastorePanel(QWidget* parent, const QString& a
 
 			check_datastore_index_show_hidden = new QCheckBox{ "Show hidden", group_index };
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-			connect(check_datastore_index_show_hidden, &QCheckBox::checkStateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+			connect(check_datastore_index_show_hidden, &QCheckBox::checkStateChanged, this, &StandardDatastorePanel::handle_show_hidden_datastores_toggled);
 #else
-			connect(check_datastore_index_show_hidden, &QCheckBox::stateChanged, this, &StandardDatastorePanel::refresh_datastore_list);
+			connect(check_datastore_index_show_hidden, &QCheckBox::stateChanged, this, &StandardDatastorePanel::handle_show_hidden_datastores_toggled);
 #endif
 
 			button_datastore_index_fetch = new QPushButton{ "Fetch data stores", group_index };
@@ -521,6 +521,16 @@ void StandardDatastorePanel::handle_selected_datastore_entry_changed()
 void StandardDatastorePanel::handle_show_datastore_filter_changed()
 {
 	gui_refresh();
+}
+
+void StandardDatastorePanel::handle_show_hidden_datastores_toggled()
+{
+	gui_refresh();
+	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
+	{
+		const bool checked = check_datastore_index_show_hidden->isChecked();
+		universe->set_show_hidden_standard_datastores(checked);
+	}
 }
 
 void StandardDatastorePanel::pressed_right_click_datastore_list(const QPoint& pos)
