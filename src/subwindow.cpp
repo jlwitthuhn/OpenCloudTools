@@ -32,6 +32,31 @@ QString subwindow_type_display_name(const SubwindowType type)
 	return "ERROR: Invalid SubwindowType";
 }
 
+QString subwindow_type_id(const SubwindowType type)
+{
+	switch (type)
+	{
+	case SubwindowType::DATA_STORES_STANDARD:
+		return "SDS";
+	case SubwindowType::DATA_STORES_STANDARD_ADD:
+		return "SDSA";
+	case SubwindowType::DATA_STORES_ORDERED:
+		return "ODS";
+	case SubwindowType::DATA_STORES_ORDERED_ADD:
+		return "ODSA";
+	case SubwindowType::MEMORY_STORE_SORTED_MAP:
+		return "MSSM";
+	case SubwindowType::BULK_DATA:
+		return "BULK";
+	case SubwindowType::MESSAGING:
+		return "MSG";
+	case SubwindowType::UNIVERSE_PREFERENCES:
+		return "UPREF";
+	}
+	OCTASSERT(false);
+	return "ERR";
+}
+
 SubwindowId::SubwindowId(const SubwindowType type, const UniverseProfile::Id universe_profile_id) : type{ type }, universe_profile_id{ universe_profile_id }
 {
 

@@ -2,11 +2,14 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
 #include <Qt>
+#include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QLineEdit>
 #include <QList>
 #include <QListWidget>
@@ -18,22 +21,61 @@
 #include "assert.h"
 #include "gui_constants.h"
 #include "profile.h"
+#include "subwindow.h"
 
 UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const QString&, const std::shared_ptr<UniverseProfile>& universe) :
 	QWidget{ parent },
 	attached_universe{ universe }
 {
+	OCTASSERT(universe);
 	// Increase minimum width so the full window title can be seen
 	setMinimumWidth(OCT_SUBWINDOW_MIN_WIDTH);
 
-	QWidget* container_widget = new QWidget{ this };
+	QWidget* const container_widget = new QWidget{ this };
 	{
-		QGroupBox* hidden_datastore_group = new QGroupBox{ "Hidden Datastores", container_widget };
+		QGroupBox* const operations_group = new QGroupBox{ "Operations", container_widget };
+		{
+			QLabel* const label = new QLabel{ "Show operations in GUI:", operations_group };
+
+			const std::set<QString>& hidden_operations = universe->get_hidden_operations_set();
+			const static std::vector<SubwindowType> available_types = {
+				SubwindowType::DATA_STORES_STANDARD,
+				SubwindowType::DATA_STORES_STANDARD_ADD,
+				SubwindowType::DATA_STORES_ORDERED,
+				SubwindowType::DATA_STORES_ORDERED_ADD,
+				SubwindowType::MEMORY_STORE_SORTED_MAP,
+				SubwindowType::BULK_DATA,
+				SubwindowType::MESSAGING,
+				SubwindowType::UNIVERSE_PREFERENCES,
+			};
+			std::vector<QCheckBox*> checkboxes;
+			for (SubwindowType this_type : available_types)
+			{
+				const QString checkbox_label = subwindow_type_display_name(this_type);
+				const QString type_id = subwindow_type_id(this_type);
+				const bool checked = hidden_operations.count(type_id) == 0;
+
+				QCheckBox* const this_box = new QCheckBox{ checkbox_label, operations_group };
+				this_box->setChecked(checked);
+				connect(this_box, &QCheckBox::checkStateChanged, this, &UniversePreferencesPanel::handle_hidden_operation_checkbox_changed);
+				checkboxes.push_back(this_box);
+				checkbox_to_type[this_box] = this_type;
+			}
+
+			QVBoxLayout* const operations_layout = new QVBoxLayout{ operations_group };
+			operations_layout->addWidget(label);
+			for (QCheckBox* this_box : checkboxes)
+			{
+				operations_layout->addWidget(this_box);
+			}
+		}
+
+		QGroupBox* const hidden_datastore_group = new QGroupBox{ "Hidden Data stores", container_widget };
 		{
 			hidden_datastore_list = new QListWidget{ hidden_datastore_group };
 			connect(hidden_datastore_list, &QListWidget::itemSelectionChanged, this, &UniversePreferencesPanel::handle_list_selection_changed);
 
-			QWidget* button_widget = new QWidget{ hidden_datastore_group };
+			QWidget* const button_widget = new QWidget{ hidden_datastore_group };
 			{
 				button_add = new QPushButton{ "Add...", button_widget };
 				connect(button_add, &QPushButton::clicked, this, &UniversePreferencesPanel::pressed_add);
@@ -41,24 +83,23 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 				button_remove = new QPushButton{ "Remove", button_widget };
 				connect(button_remove, &QPushButton::clicked, this, &UniversePreferencesPanel::pressed_remove);
 
-				QHBoxLayout* button_layout = new QHBoxLayout{ button_widget };
+				QHBoxLayout* const button_layout = new QHBoxLayout{ button_widget };
 				button_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
 				button_layout->addWidget(button_add);
 				button_layout->addWidget(button_remove);
 			}
 
-			QVBoxLayout* hidden_datastore_layout = new QVBoxLayout{ hidden_datastore_group };
+			QVBoxLayout* const hidden_datastore_layout = new QVBoxLayout{ hidden_datastore_group };
 			hidden_datastore_layout->addWidget(hidden_datastore_list);
 			hidden_datastore_layout->addWidget(button_widget);
 		}
 
-		QHBoxLayout* container_layout = new QHBoxLayout{ container_widget };
-		container_layout->addStretch();
+		QHBoxLayout* const container_layout = new QHBoxLayout{ container_widget };
+		container_layout->addWidget(operations_group);
 		container_layout->addWidget(hidden_datastore_group);
-		container_layout->addStretch();
 	}
 
-	QVBoxLayout* layout = new QVBoxLayout{ this };
+	QVBoxLayout* const layout = new QVBoxLayout{ this };
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(container_widget);
 
@@ -100,6 +141,27 @@ void UniversePreferencesPanel::handle_hidden_datastores_changed()
 	}
 
 	gui_refresh();
+}
+
+void UniversePreferencesPanel::handle_hidden_operation_checkbox_changed()
+{
+	const std::shared_ptr<UniverseProfile> universe = attached_universe.lock();
+	if (!universe)
+	{
+		OCTASSERT(false);
+		return;
+	}
+
+	std::set<QString> hidden_operations;
+	for (const auto& [checkbox, op_type] : checkbox_to_type)
+	{
+		if (checkbox->isChecked() == false)
+		{
+			hidden_operations.insert(subwindow_type_id(op_type));
+		}
+	}
+
+	universe->set_hidden_operations_set(hidden_operations);
 }
 
 void UniversePreferencesPanel::handle_list_selection_changed()

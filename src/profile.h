@@ -17,6 +17,7 @@
 class UniverseProfile : public QObject
 {
 	Q_OBJECT
+
 public:
 	using Id = RandomId128;
 
@@ -34,6 +35,7 @@ public:
 	bool get_save_recent_ordered_datastores() const { return save_recent_ordered_datastores; }
 	bool get_show_hidden_standard_datastores() const { return show_hidden_standard_datastores; }
 	const std::set<QString>& get_hidden_datastore_set() const { return hidden_datastore_set; }
+	const std::set<QString>& get_hidden_operations_set() const { return hidden_operations_set; }
 	const std::set<QString>& get_recent_mem_sorted_map_set() const { return recent_mem_sorted_map_set; }
 	const std::set<QString>& get_recent_ordered_datastore_set() const { return recent_ordered_datastore_set; }
 	const std::set<QString>& get_recent_topic_set() const { return recent_topic_set; }
@@ -48,6 +50,10 @@ public:
 	void add_hidden_datastore(const QString& datastore);
 	void remove_hidden_datastore(const QString& datastore);
 
+	void add_hidden_operation(const QString& op);
+	void remove_hidden_operation(const QString& op);
+	void set_hidden_operations_set(const std::set<QString>& ops);
+
 	void add_recent_mem_sorted_map(const QString& map_name);
 	void remove_recent_mem_sorted_map(const QString& map_name);
 
@@ -61,6 +67,7 @@ signals:
 	void force_save();
 	void details_changed();
 	void hidden_datastore_list_changed();
+	void hidden_operations_changed();
 	void recent_mem_sorted_map_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
@@ -77,6 +84,7 @@ private:
 	bool show_hidden_standard_datastores = false;
 
 	std::set<QString> hidden_datastore_set;
+	std::set<QString> hidden_operations_set;
 	std::set<QString> recent_mem_sorted_map_set;
 	std::set<QString> recent_ordered_datastore_set;
 	std::set<QString> recent_topic_set;
@@ -88,6 +96,7 @@ private:
 class ApiKeyProfile : public QObject
 {
 	Q_OBJECT
+
 public:
 	using Id = RandomId128;
 
@@ -110,12 +119,13 @@ public:
 signals:
 	void force_save();
 	void details_changed();
-	void universe_details_changed(UniverseProfile::Id changed_universe);
-	void universe_list_changed(std::optional<UniverseProfile::Id> new_universe);
 	void hidden_datastore_list_changed();
 	void recent_mem_sorted_map_list_changed();
 	void recent_ordered_datastore_list_changed();
 	void recent_topic_list_changed();
+	void universe_details_changed(UniverseProfile::Id changed_universe);
+	void universe_hidden_operations_changed();
+	void universe_list_changed(std::optional<UniverseProfile::Id> new_universe);
 
 private:
 	bool universe_name_available(const QString& universe_name) const;
@@ -136,6 +146,7 @@ private:
 class UserProfile : public QObject
 {
 	Q_OBJECT
+
 public:
 	static UserProfile& get();
 	static std::shared_ptr<ApiKeyProfile> get_active_api_key();

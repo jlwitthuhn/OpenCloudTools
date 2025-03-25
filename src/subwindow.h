@@ -17,6 +17,7 @@ enum class SubwindowType
 };
 
 QString subwindow_type_display_name(SubwindowType type);
+QString subwindow_type_id(SubwindowType type);
 
 class SubwindowId
 {

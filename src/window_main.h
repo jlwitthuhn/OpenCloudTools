@@ -59,6 +59,7 @@ private:
 	std::weak_ptr<ApiKeyProfile> attached_profile;
 	QMetaObject::Connection conn_attached_profile_details_changed;
 	QMetaObject::Connection conn_attached_profile_universe_details_changed;
+	QMetaObject::Connection conn_attached_profile_universe_hidden_operations_changed;
 	QMetaObject::Connection conn_attached_profile_universe_list_changed;
 
 	QLineEdit* edit_api_key_name = nullptr;

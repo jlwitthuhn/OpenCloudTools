@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 
 #include <QMetaObject>
@@ -7,6 +8,9 @@
 #include <QString>
 #include <QWidget>
 
+#include "subwindow.h"
+
+class QCheckBox;
 class QLineEdit;
 class QListWidget;
 class QPushButton;
@@ -23,6 +27,7 @@ private:
 	void gui_refresh();
 
 	void handle_hidden_datastores_changed();
+	void handle_hidden_operation_checkbox_changed();
 	void handle_list_selection_changed();
 
 	void pressed_add();
@@ -30,6 +35,8 @@ private:
 
 	std::weak_ptr<UniverseProfile> attached_universe;
 	QMetaObject::Connection conn_universe_hidden_datastores_changed;
+
+	std::map<QCheckBox*, SubwindowType> checkbox_to_type;
 
 	QListWidget* hidden_datastore_list = nullptr;
 

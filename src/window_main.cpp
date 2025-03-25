@@ -211,6 +211,8 @@ void MyMainWindow::handle_active_api_key_changed()
 	conn_attached_profile_details_changed = connect(key_profile.get(), &ApiKeyProfile::details_changed, this, &MyMainWindow::handle_active_api_key_details_changed);
 	disconnect(conn_attached_profile_universe_details_changed);
 	conn_attached_profile_universe_details_changed = connect(key_profile.get(), &ApiKeyProfile::universe_details_changed, this, &MyMainWindow::handle_universe_details_changed);
+	disconnect(conn_attached_profile_universe_hidden_operations_changed);
+	conn_attached_profile_universe_hidden_operations_changed = connect(key_profile.get(), &ApiKeyProfile::universe_hidden_operations_changed, this, &MyMainWindow::rebuild_universe_tree);
 	disconnect(conn_attached_profile_universe_list_changed);
 	conn_attached_profile_universe_list_changed = connect(key_profile.get(), &ApiKeyProfile::universe_list_changed, this, &MyMainWindow::handle_universe_list_changed);
 
@@ -283,35 +285,47 @@ void MyMainWindow::rebuild_universe_tree()
 			SubwindowType::MESSAGING,
 			SubwindowType::UNIVERSE_PREFERENCES,
 		};
+		const std::set<QString>& hidden_operation_ids = this_universe->get_hidden_operations_set();
 		const QByteArray this_universe_id = this_universe->get_id().as_q_byte_array();
 		QTreeWidgetItem* const this_item = new QTreeWidgetItem{ tree_universe };
 		this_item->setText(0, this_universe->get_display_name());
 		this_item->setData(0, Qt::UserRole, this_universe_id);
 		for (const SubwindowType subwindow_type : subwindow_types)
 		{
+			if (hidden_operation_ids.count(subwindow_type_id(subwindow_type)) == 1)
+			{
+				// Do not add hidden operations
+				continue;
+			}
 			QTreeWidgetItem* const subwindow_item = new QTreeWidgetItem{ this_item };
 			subwindow_item->setText(0, subwindow_type_display_name(subwindow_type));
 			subwindow_item->setData(0, Qt::UserRole, static_cast<int>(subwindow_type));
 
 			if (subwindow_type == SubwindowType::DATA_STORES_STANDARD)
 			{
-				QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
-				search_item->setText(0, "Search Data Store");
-				search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD));
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_STANDARD_ADD)) == 0)
+				{
+					QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
+					search_item->setText(0, "Search Data Store");
+					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD));
 
-				QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
-				add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_STANDARD_ADD));
-				add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD_ADD));
+					QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
+					add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_STANDARD_ADD));
+					add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD_ADD));
+				}
 			}
 			else if (subwindow_type == SubwindowType::DATA_STORES_ORDERED)
 			{
-				QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
-				search_item->setText(0, "Search Ordered Data Store");
-				search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED));
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_ORDERED_ADD)) == 0)
+				{
+					QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
+					search_item->setText(0, "Search Ordered Data Store");
+					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED));
 
-				QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
-				add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_ORDERED_ADD));
-				add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED_ADD));
+					QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
+					add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_ORDERED_ADD));
+					add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED_ADD));
+				}
 			}
 		}
 		this_item->setExpanded(true);

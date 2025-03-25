@@ -118,6 +118,18 @@ void UniverseProfile::remove_hidden_datastore(const QString& datastore)
 	}
 }
 
+void UniverseProfile::add_hidden_operation(const QString& op)
+{
+	hidden_operations_set.insert(op);
+	emit hidden_operations_changed();
+}
+
+void UniverseProfile::set_hidden_operations_set(const std::set<QString>& ops)
+{
+	hidden_operations_set = ops;
+	emit hidden_operations_changed();
+}
+
 void UniverseProfile::add_recent_mem_sorted_map(const QString& map_name)
 {
 	recent_mem_sorted_map_set.insert(map_name);
@@ -228,6 +240,7 @@ std::optional<UniverseProfile::Id> ApiKeyProfile::add_universe(const QString& un
 	});
 	connect(this_universe.get(), &UniverseProfile::force_save, this, &ApiKeyProfile::force_save);
 	connect(this_universe.get(), &UniverseProfile::hidden_datastore_list_changed, this, &ApiKeyProfile::hidden_datastore_list_changed);
+	connect(this_universe.get(), &UniverseProfile::hidden_operations_changed, this, &ApiKeyProfile::universe_hidden_operations_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_mem_sorted_map_list_changed, this, &ApiKeyProfile::recent_mem_sorted_map_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_ordered_datastore_list_changed, this, &ApiKeyProfile::recent_ordered_datastore_list_changed);
 	connect(this_universe.get(), &UniverseProfile::recent_topic_list_changed, this, &ApiKeyProfile::recent_topic_list_changed);
@@ -431,6 +444,7 @@ std::optional<ApiKeyProfile::Id> UserProfile::add_api_key(const QString& name, c
 		connect(this_profile.get(), &ApiKeyProfile::recent_mem_sorted_map_list_changed, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::recent_ordered_datastore_list_changed, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::recent_topic_list_changed, this, &UserProfile::save_to_disk);
+		connect(this_profile.get(), &ApiKeyProfile::universe_hidden_operations_changed, this, &UserProfile::save_to_disk);
 		connect(this_profile.get(), &ApiKeyProfile::universe_list_changed, this, &UserProfile::save_to_disk);
 
 		OCTASSERT(api_keys.count(this_profile->get_id()) == 0);
@@ -570,6 +584,17 @@ void UserProfile::load_from_disk()
 									}
 									settings.endArray();
 
+									const int hidden_ops_size = settings.beginReadArray("hidden_operations");
+									{
+										for (int k = 0; k < hidden_ops_size; k++)
+										{
+											settings.setArrayIndex(k);
+											const QString datastore_name = settings.value("name").toString();
+											this_universe->add_hidden_operation(datastore_name);
+										}
+									}
+									settings.endArray();
+
 									const int map_list_size = settings.beginReadArray("mem_sorted_maps");
 									{
 										for (int k = 0; k < map_list_size; k++)
@@ -675,6 +700,17 @@ void UserProfile::save_to_disk()
 							{
 								settings.setArrayIndex(next_hidden_array_index++);
 								settings.setValue("name", this_datastore_name);
+							}
+						}
+						settings.endArray();
+
+						settings.beginWriteArray("hidden_operations");
+						{
+							int next_datastore_index = 0;
+							for (const QString& this_op : this_universe_profile->get_hidden_operations_set())
+							{
+								settings.setArrayIndex(next_datastore_index++);
+								settings.setValue("name", this_op);
 							}
 						}
 						settings.endArray();
