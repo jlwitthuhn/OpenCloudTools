@@ -44,7 +44,7 @@ void HttpLogModel::append_entry(const HttpLogEntry& entry)
 	endInsertRows();
 	while (entries.size() > LOG_MAX_ENTRIES)
 	{
-		beginRemoveRows(parent_index, entries.size() - 2, entries.size() - 1);
+		beginRemoveRows(parent_index, static_cast<int>(entries.size() - 2), static_cast<int>(entries.size() - 1));
 		entries.erase(entries.begin(), entries.begin() + 1);
 		endRemoveRows();
 	}
