@@ -11,7 +11,7 @@
 #include "assert.h"
 #include "util_enum.h"
 
-constexpr size_t LOG_MAX_ENTRIES = 1000;
+static constexpr size_t LOG_MAX_ENTRIES = 2000;
 
 HttpLogEntry::HttpLogEntry(HttpRequestType type, const QString& url) : _timestamp{ QDateTime::currentDateTime() }, _type{type}, _url{url}
 {
@@ -42,6 +42,12 @@ void HttpLogModel::append_entry(const HttpLogEntry& entry)
 	beginInsertRows(parent_index, 0, 1);
 	entries.push_back(entry);
 	endInsertRows();
+	while (entries.size() > LOG_MAX_ENTRIES)
+	{
+		beginRemoveRows(parent_index, entries.size() - 2, entries.size() - 1);
+		entries.erase(entries.begin(), entries.begin() + 1);
+		endRemoveRows();
+	}
 }
 
 QVariant HttpLogModel::data(const QModelIndex& index, const int role) const
