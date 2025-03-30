@@ -46,6 +46,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 				SubwindowType::MEMORY_STORE_SORTED_MAP,
 				SubwindowType::BULK_DATA,
 				SubwindowType::MESSAGING,
+				SubwindowType::BAN_LIST,
 				SubwindowType::UNIVERSE_PREFERENCES,
 			};
 			std::vector<QCheckBox*> checkboxes;

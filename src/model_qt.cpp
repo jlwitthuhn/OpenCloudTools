@@ -7,6 +7,80 @@
 
 #include "util_json.h"
 
+BanListQTableModel::BanListQTableModel(QObject* parent, const std::vector<BanListUserRestriction>& restrictions) :  QAbstractTableModel{ parent }, restrictions{ restrictions }
+{
+
+}
+
+QVariant BanListQTableModel::data(const QModelIndex& index, const int role) const
+{
+	if (role == Qt::DisplayRole)
+	{
+		if (index.row() < static_cast<int>(restrictions.size()))
+		{
+			if (index.column() == 0)
+			{
+				return restrictions.at(index.row()).get_user();
+			}
+			else if (index.column() == 1)
+			{
+				return restrictions.at(index.row()).get_game_join_restriction().get_active();
+			}
+			else if (index.column() == 2)
+			{
+				return restrictions.at(index.row()).get_game_join_restriction().get_start_time();
+			}
+			else if (index.column() == 3)
+			{
+				const std::optional<QString> opt_duration = restrictions.at(index.row()).get_game_join_restriction().get_duration();
+				if (opt_duration)
+				{
+					return *opt_duration;
+				}
+				else
+				{
+					return "Permanent";
+				}
+			}
+		}
+	}
+	return QVariant{};
+}
+
+int BanListQTableModel::columnCount(const QModelIndex&) const
+{
+	return 4;
+}
+
+int BanListQTableModel::rowCount(const QModelIndex&) const
+{
+	return static_cast<int>(restrictions.size());
+}
+
+QVariant BanListQTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+	{
+		if (section == 0)
+		{
+			return "User";
+		}
+		else if (section == 1)
+		{
+			return "Active";
+		}
+		else if (section == 2)
+		{
+			return "Start";
+		}
+		else if (section == 3)
+		{
+			return "Duration";
+		}
+	}
+	return QVariant{};
+}
+
 MemoryStoreSortedMapQTableModel::MemoryStoreSortedMapQTableModel(QObject* parent, const std::vector<MemoryStoreSortedMapItem>& items) : QAbstractTableModel{ parent }, items{ items }
 {
 

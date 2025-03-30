@@ -467,3 +467,25 @@ private:
 
 	std::optional<QString> display_name;
 };
+
+class UserRestrictionsGetListV2Request : public DataRequest
+{
+public:
+	UserRestrictionsGetListV2Request(const QString& api_key, long long universe_id);
+
+	virtual QString get_title_string() const override;
+
+	void set_result_limit(size_t limit);
+
+	const std::vector<BanListUserRestriction>& get_restrictions() const { return restrictions; }
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+
+	long long universe_id;
+
+	std::optional<size_t> result_limit;
+
+	std::vector<BanListUserRestriction> restrictions;
+};

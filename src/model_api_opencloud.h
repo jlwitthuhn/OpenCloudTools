@@ -125,6 +125,21 @@ private:
 	QString display_name;
 };
 
+class GetUserRestrictionListV2Response
+{
+public:
+	static std::optional<GetUserRestrictionListV2Response> from(const QString& json);
+
+	const std::vector<BanListUserRestriction>& get_restrictions() const { return restrictions; }
+	const std::optional<QString>& get_next_page_token() const { return next_page_token; }
+
+private:
+	GetUserRestrictionListV2Response(const std::vector<BanListUserRestriction>& restrictions, const std::optional<QString>& next_page_token) : restrictions{ restrictions }, next_page_token{ next_page_token } {}
+
+	std::vector<BanListUserRestriction> restrictions;
+	std::optional<QString> next_page_token;
+};
+
 class PostStandardDatastoreSnapshotResponseV2
 {
 public:

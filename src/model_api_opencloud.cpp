@@ -514,6 +514,78 @@ std::optional<GetUniverseDetailsResponse> GetUniverseDetailsResponse::from(const
 	}
 }
 
+std::optional<GetUserRestrictionListV2Response> GetUserRestrictionListV2Response::from(const QString& json)
+{
+	const QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	QJsonObject root = doc.object();
+
+	std::vector<BanListUserRestriction> user_restrictions_vec;
+	QJsonObject::iterator user_restrictions_it = root.find("userRestrictions");
+	if (user_restrictions_it != root.end())
+	{
+		QJsonValueRef user_restrictions_value = user_restrictions_it.value();
+		if (user_restrictions_value.isArray())
+		{
+			for (QJsonValueRef this_val : user_restrictions_value.toArray())
+			{
+				if (this_val.isObject())
+				{
+					QJsonObject this_user_restriction_obj = this_val.toObject();
+
+					std::optional<QString> opt_path = extract_string(this_user_restriction_obj, "path");
+					std::optional<QString> opt_update_time = extract_string(this_user_restriction_obj, "updateTime");
+					std::optional<QString> opt_user = extract_string(this_user_restriction_obj, "user");
+
+					QJsonObject::iterator it_game_join_restriction_obj = this_user_restriction_obj.find("gameJoinRestriction");
+					if (it_game_join_restriction_obj != this_user_restriction_obj.end())
+					{
+						QJsonValueRef game_join_restrictions_value = it_game_join_restriction_obj.value();
+						if (game_join_restrictions_value.isObject())
+						{
+							QJsonObject game_join_restrictions_obj = game_join_restrictions_value.toObject();
+
+							std::optional<bool> opt_active = extract_bool(game_join_restrictions_obj, "active");
+							std::optional<QString> opt_start_time = extract_string(game_join_restrictions_obj, "startTime");
+							std::optional<QString> opt_duration = extract_string(game_join_restrictions_obj, "duration"); // TODO: Make optional
+							std::optional<QString> opt_private_reason = extract_string(game_join_restrictions_obj, "privateReason");
+							std::optional<QString> opt_display_reason = extract_string(game_join_restrictions_obj, "displayReason");
+							std::optional<bool> opt_exclude_alt_accounts = extract_bool(game_join_restrictions_obj, "excludeAltAccounts");
+							std::optional<bool> opt_inherited = extract_bool(game_join_restrictions_obj, "inherited");
+
+							std::optional<BanListGameJoinRestriction> opt_game_join_restriction;
+							if (opt_active && opt_start_time && opt_private_reason && opt_display_reason && opt_exclude_alt_accounts && opt_exclude_alt_accounts && opt_inherited)
+							{
+								opt_game_join_restriction = BanListGameJoinRestriction{
+									*opt_active,
+									*opt_start_time,
+									opt_duration,
+									*opt_private_reason,
+									*opt_display_reason,
+									*opt_exclude_alt_accounts,
+									*opt_inherited
+								};
+							}
+							if (opt_path && opt_user && opt_game_join_restriction)
+							{
+								user_restrictions_vec.push_back(BanListUserRestriction{
+									*opt_path,
+									opt_update_time,
+									*opt_user,
+									*opt_game_join_restriction
+								});
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	std::optional<QString> next_page_token = extract_string(root, "nextPageToken");
+
+	return GetUserRestrictionListV2Response{ user_restrictions_vec, next_page_token };
+}
+
 std::optional<PostStandardDatastoreSnapshotResponseV2> PostStandardDatastoreSnapshotResponseV2::from(const QString& json)
 {
 	const QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());

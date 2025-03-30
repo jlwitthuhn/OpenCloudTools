@@ -918,3 +918,52 @@ void UniverseGetDetailsRequest::handle_http_200(const QString& body, const QList
 	}
 	do_success();
 }
+
+UserRestrictionsGetListV2Request::UserRestrictionsGetListV2Request(const QString& api_key, const long long universe_id)
+	: DataRequest{ api_key }, universe_id{ universe_id }
+{
+
+}
+
+QString UserRestrictionsGetListV2Request::get_title_string() const
+{
+	return "Fetching user restrictions...";
+}
+
+QNetworkRequest UserRestrictionsGetListV2Request::build_request(const std::optional<QString> cursor) const
+{
+	return HttpRequestBuilder::use_restrictions_v2_list(api_key, universe_id, cursor);
+}
+
+void UserRestrictionsGetListV2Request::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	const std::optional<GetUserRestrictionListV2Response> response = GetUserRestrictionListV2Response::from(body);
+	if (!response)
+	{
+		status_error("Received invalid response with HTTP 200");
+		return;
+	}
+
+	for (const BanListUserRestriction& this_restriction : response->get_restrictions())
+	{
+		if (result_limit && restrictions.size() >= *result_limit)
+		{
+			// Limit has been hit
+			break;
+		}
+		restrictions.push_back(this_restriction);
+	}
+
+	const bool limit_reached = result_limit && restrictions.size() >= *result_limit;
+	const std::optional<QString> token{ response->get_next_page_token() };
+	if (token && token->size() > 0 && !limit_reached)
+	{
+		send_request(token);
+	}
+	else
+	{
+		do_success();
+	}
+
+	do_success();
+}

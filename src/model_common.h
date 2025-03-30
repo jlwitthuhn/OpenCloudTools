@@ -9,6 +9,73 @@
 
 enum class DatastoreEntryType;
 
+class BanListGameJoinRestriction
+{
+public:
+	BanListGameJoinRestriction(
+		bool active,
+		const QString& start_time,
+		const std::optional<QString>& duration,
+		const QString& private_reason,
+		const QString& display_reason,
+		bool exclude_alt_accounts,
+		bool inherited
+	) :
+		active{ active },
+		start_time{ start_time },
+		duration{ duration },
+		private_reason{ private_reason },
+		display_reason{ display_reason },
+		exclude_alt_accounts{ exclude_alt_accounts },
+		inherited{ inherited }
+	{}
+
+	bool get_active() const { return active; }
+	const QString& get_start_time() const { return start_time; }
+	const std::optional<QString>& get_duration() const { return duration; }
+	const QString& get_private_reason() const { return private_reason; }
+	const QString& get_display_reason() const { return display_reason; }
+	bool get_inherited() const { return inherited; }
+
+private:
+	bool active;
+	QString start_time;
+	std::optional<QString> duration;
+	QString private_reason;
+	QString display_reason;
+	bool exclude_alt_accounts;
+	bool inherited;
+};
+
+class BanListUserRestriction
+{
+public:
+	BanListUserRestriction(
+		const QString& path,
+		const std::optional<QString>& update_time,
+		const QString& user,
+		const BanListGameJoinRestriction& game_join_restriction
+	) :
+		path{ path },
+		update_time{ update_time },
+		user{ user },
+		game_join_restriction{ game_join_restriction }
+	{}
+
+	long long get_universe_id() const { return universe_id; }
+	const QString& get_path() const { return path; }
+	const std::optional<QString>& get_update_time() const { return update_time; }
+	const QString& get_user() const { return user; }
+	const BanListGameJoinRestriction& get_game_join_restriction() const { return game_join_restriction; }
+
+private:
+	long long universe_id;
+	QString path;
+	std::optional<QString> update_time;
+	QString user;
+	BanListGameJoinRestriction game_join_restriction;
+};
+
 class MemoryStoreSortedMapItem
 {
 public:
@@ -21,8 +88,8 @@ public:
 		const QString& expire_time,
 		const QString& id,
 		const std::optional<QString>& string_sort_key,
-		const std::optional<double>& numeric_sort_key)
-		:
+		const std::optional<double>& numeric_sort_key
+		) :
 		universe_id{ universe_id },
 		map_name{ map_name },
 		path{ path },

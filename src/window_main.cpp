@@ -24,6 +24,7 @@
 #include <QWidget>
 
 #include "assert.h"
+#include "panel_ban_list.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_ordered.h"
 #include "panel_datastore_ordered_add.h"
@@ -283,6 +284,7 @@ void MyMainWindow::rebuild_universe_tree()
 			SubwindowType::MEMORY_STORE_SORTED_MAP,
 			SubwindowType::BULK_DATA,
 			SubwindowType::MESSAGING,
+			SubwindowType::BAN_LIST,
 			SubwindowType::UNIVERSE_PREFERENCES,
 		};
 		const std::set<QString>& hidden_operation_ids = this_universe->get_hidden_operations_set();
@@ -433,6 +435,9 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 			break;
 		case SubwindowType::MESSAGING:
 			new_subwindow = create_and_attach_panel<MessagingServicePanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::BAN_LIST:
+			new_subwindow = create_and_attach_panel<BanListPanel>(api_profile, universe, center_mdi_widget);
 			break;
 		case SubwindowType::UNIVERSE_PREFERENCES:
 			new_subwindow = create_and_attach_panel<UniversePreferencesPanel>(api_profile, universe, center_mdi_widget);

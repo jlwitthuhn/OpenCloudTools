@@ -249,6 +249,25 @@ QNetworkRequest HttpRequestBuilder::universe_v2_get_details(const QString& api_k
 	return req;
 }
 
+QNetworkRequest HttpRequestBuilder::use_restrictions_v2_list(const QString& api_key, const long long universe_id, const std::optional<QString> cursor)
+{
+	QString url = base_url_user_restrictions_v2(universe_id);
+	url = url + "?maxPageSize=100";
+	if (cursor)
+	{
+		url = url + "&pageToken=" + QUrl::toPercentEncoding(*cursor);
+	}
+
+	QNetworkRequest req{ url };
+	req.setRawHeader("x-api-key", api_key.toStdString().c_str());
+	return req;
+}
+
+QString HttpRequestBuilder::base_url_universe_v2(const long long universe_id)
+{
+	return QString{ "https://apis.roblox.com/cloud/v2/universes/" } + QString::number(universe_id);
+}
+
 QString HttpRequestBuilder::base_url_memory_store_v2(const long long universe_id)
 {
 	return base_url_universe_v2(universe_id) + "/memory-store";
@@ -269,7 +288,7 @@ QString HttpRequestBuilder::base_url_standard_datastore_v2(const long long unive
 	return base_url_universe_v2(universe_id) + "/data-stores";
 }
 
-QString HttpRequestBuilder::base_url_universe_v2(const long long universe_id)
+QString HttpRequestBuilder::base_url_user_restrictions_v2(const long long universe_id)
 {
-	return QString{ "https://apis.roblox.com/cloud/v2/universes/" } + QString::number(universe_id);
+	return base_url_universe_v2(universe_id) + "/user-restrictions";
 }
