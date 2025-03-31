@@ -35,6 +35,7 @@ public:
 	const std::optional<QString>& get_duration() const { return duration; }
 	const QString& get_private_reason() const { return private_reason; }
 	const QString& get_display_reason() const { return display_reason; }
+	bool get_exclude_alt_accounts() const { return exclude_alt_accounts; }
 	bool get_inherited() const { return inherited; }
 
 private:

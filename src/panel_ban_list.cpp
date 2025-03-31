@@ -9,6 +9,7 @@
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
 #include "model_qt.h"
+#include "window_ban_view.h"
 
 BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
     QWidget{ parent },
@@ -23,10 +24,14 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
         QPushButton* const refresh_button = new QPushButton{ "Refresh", button_bar };
         connect(refresh_button, &QPushButton::clicked, this, &BanListPanel::pressed_refresh);
 
+        details_button = new QPushButton{ "Details...", button_bar };
+        connect(details_button, &QPushButton::clicked, this, &BanListPanel::pressed_details);
+
         QHBoxLayout* const button_layout = new QHBoxLayout{ button_bar };
         button_layout->setContentsMargins(0, 0, 0, 0);
         button_layout->addWidget(refresh_button);
         button_layout->addStretch();
+        button_layout->addWidget(details_button);
     }
 
     QVBoxLayout* const layout = new QVBoxLayout{ this };
@@ -39,7 +44,24 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 
 void BanListPanel::gui_refresh()
 {
+    const bool enabled = get_selected_single_index().isValid();
+    details_button->setEnabled(enabled);
+}
 
+QModelIndex BanListPanel::get_selected_single_index() const
+{
+    const QItemSelectionModel* const select_model = tree_view->selectionModel();
+    if (select_model == nullptr)
+    {
+        return QModelIndex{};
+    }
+
+    if (select_model->selectedRows().count() != 1)
+    {
+        return QModelIndex{};
+    }
+
+    return select_model->selectedRows().front();
 }
 
 void BanListPanel::set_table_model(BanListQTableModel* entry_model)
@@ -49,11 +71,42 @@ void BanListPanel::set_table_model(BanListQTableModel* entry_model)
         entry_model = new BanListQTableModel{ this, {} };
     }
     tree_view->setModel(entry_model);
+    connect(tree_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &BanListPanel::handle_selected_ban_changed);
     for (int i = 0; i < entry_model->columnCount(); i++)
     {
         tree_view->resizeColumnToContents(i);
     }
     gui_refresh();
+}
+
+void BanListPanel::handle_selected_ban_changed()
+{
+    gui_refresh();
+}
+
+void BanListPanel::pressed_details()
+{
+    const QModelIndex selected_index = get_selected_single_index();
+
+    if (selected_index.isValid() == false)
+    {
+        return;
+    }
+
+    BanListQTableModel* const table_model = dynamic_cast<BanListQTableModel*>(tree_view->model());
+    if (table_model == nullptr)
+    {
+        return;
+    }
+
+    const std::optional<BanListUserRestriction> opt_restriction = table_model->get_restriction(selected_index.row());
+    if (!opt_restriction)
+    {
+        return;
+    }
+
+    ViewBanWindow* const ban_window = new ViewBanWindow{ *opt_restriction, ViewEditMode::View, this };
+    ban_window->show();
 }
 
 void BanListPanel::pressed_refresh()

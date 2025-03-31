@@ -8,6 +8,8 @@
 
 #include "profile.h"
 
+class QModelIndex;
+class QPushButton;
 class QTreeView;
 
 class BanListQTableModel;
@@ -22,12 +24,19 @@ public:
 private:
     void gui_refresh();
 
+    QModelIndex get_selected_single_index() const;
+
     void set_table_model(BanListQTableModel* entry_model);
 
+    void handle_selected_ban_changed();
+
+    void pressed_details();
     void pressed_refresh();
 
     QString api_key;
     std::weak_ptr<UniverseProfile> attached_universe;
 
     QTreeView* tree_view = nullptr;
+
+    QPushButton* details_button = nullptr;
 };

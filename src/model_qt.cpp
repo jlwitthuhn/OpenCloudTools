@@ -12,6 +12,18 @@ BanListQTableModel::BanListQTableModel(QObject* parent, const std::vector<BanLis
 
 }
 
+std::optional<BanListUserRestriction> BanListQTableModel::get_restriction(const size_t row_index) const
+{
+	if (row_index < restrictions.size())
+	{
+		return restrictions.at(row_index);
+	}
+	else
+	{
+		return std::nullopt;
+	}
+}
+
 QVariant BanListQTableModel::data(const QModelIndex& index, const int role) const
 {
 	if (role == Qt::DisplayRole)

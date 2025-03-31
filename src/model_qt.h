@@ -19,6 +19,8 @@ class BanListQTableModel : public QAbstractTableModel
 public:
 	BanListQTableModel(QObject* parent, const std::vector<BanListUserRestriction>& restrictions);
 
+	std::optional<BanListUserRestriction> get_restriction(size_t row_index) const;
+
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 	virtual int columnCount(const QModelIndex& index = QModelIndex{}) const override;
 	virtual int rowCount(const QModelIndex& index = QModelIndex{}) const override;

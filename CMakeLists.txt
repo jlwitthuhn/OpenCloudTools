@@ -117,6 +117,8 @@ set(OPENCLOUDTOOLS_SRC
 	./src/window_add_universe.h
 	./src/window_api_key_manage.cpp
 	./src/window_api_key_manage.h
+	./src/window_ban_view.cpp
+	./src/window_ban_view.h
 	./src/window_datastore_bulk_op.cpp
 	./src/window_datastore_bulk_op.h
 	./src/window_datastore_bulk_op_progress.cpp
