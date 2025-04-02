@@ -16,6 +16,8 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
     api_key{ api_key },
     attached_universe{ universe }
 {
+    setMinimumWidth(450);
+
     tree_view = new QTreeView{ this };
     tree_view->setMinimumSize(400, 200);
 
@@ -24,6 +26,9 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
         QPushButton* const refresh_button = new QPushButton{ "Refresh", button_bar };
         connect(refresh_button, &QPushButton::clicked, this, &BanListPanel::pressed_refresh);
 
+        edit_button = new QPushButton{ "Edit...", button_bar };
+        connect(edit_button, &QPushButton::clicked, this, &BanListPanel::pressed_edit);
+
         details_button = new QPushButton{ "Details...", button_bar };
         connect(details_button, &QPushButton::clicked, this, &BanListPanel::pressed_details);
 
@@ -31,6 +36,7 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
         button_layout->setContentsMargins(0, 0, 0, 0);
         button_layout->addWidget(refresh_button);
         button_layout->addStretch();
+        button_layout->addWidget(edit_button);
         button_layout->addWidget(details_button);
     }
 
@@ -46,6 +52,7 @@ void BanListPanel::gui_refresh()
 {
     const bool enabled = get_selected_single_index().isValid();
     details_button->setEnabled(enabled);
+    edit_button->setEnabled(enabled);
 }
 
 QModelIndex BanListPanel::get_selected_single_index() const
@@ -106,6 +113,31 @@ void BanListPanel::pressed_details()
     }
 
     ViewBanWindow* const ban_window = new ViewBanWindow{ *opt_restriction, ViewEditMode::View, this };
+    ban_window->show();
+}
+
+void BanListPanel::pressed_edit()
+{
+    const QModelIndex selected_index = get_selected_single_index();
+
+    if (selected_index.isValid() == false)
+    {
+        return;
+    }
+
+    BanListQTableModel* const table_model = dynamic_cast<BanListQTableModel*>(tree_view->model());
+    if (table_model == nullptr)
+    {
+        return;
+    }
+
+    const std::optional<BanListUserRestriction> opt_restriction = table_model->get_restriction(selected_index.row());
+    if (!opt_restriction)
+    {
+        return;
+    }
+
+    ViewBanWindow* const ban_window = new ViewBanWindow{ *opt_restriction, ViewEditMode::Edit, this };
     ban_window->show();
 }
 

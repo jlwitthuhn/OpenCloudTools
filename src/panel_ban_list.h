@@ -31,6 +31,7 @@ private:
     void handle_selected_ban_changed();
 
     void pressed_details();
+    void pressed_edit();
     void pressed_refresh();
 
     QString api_key;
@@ -38,5 +39,6 @@ private:
 
     QTreeView* tree_view = nullptr;
 
+    QPushButton* edit_button = nullptr;
     QPushButton* details_button = nullptr;
 };
