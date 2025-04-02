@@ -146,7 +146,7 @@ void BanListPanel::pressed_refresh()
     auto universe = attached_universe.lock();
     OCTASSERT(universe);
 
-    auto req = std::make_shared<UserRestrictionsGetListV2Request>(api_key, universe->get_universe_id());
+    auto req = std::make_shared<UserRestrictionGetListV2Request>(api_key, universe->get_universe_id());
     OperationInProgressDialog diag{ this, req };
     diag.exec();
 

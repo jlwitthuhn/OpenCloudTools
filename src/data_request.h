@@ -468,10 +468,10 @@ private:
 	std::optional<QString> display_name;
 };
 
-class UserRestrictionsGetListV2Request : public DataRequest
+class UserRestrictionGetListV2Request : public DataRequest
 {
 public:
-	UserRestrictionsGetListV2Request(const QString& api_key, long long universe_id);
+	UserRestrictionGetListV2Request(const QString& api_key, long long universe_id);
 
 	virtual QString get_title_string() const override;
 

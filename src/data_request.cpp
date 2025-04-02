@@ -919,23 +919,23 @@ void UniverseGetDetailsRequest::handle_http_200(const QString& body, const QList
 	do_success();
 }
 
-UserRestrictionsGetListV2Request::UserRestrictionsGetListV2Request(const QString& api_key, const long long universe_id)
+UserRestrictionGetListV2Request::UserRestrictionGetListV2Request(const QString& api_key, const long long universe_id)
 	: DataRequest{ api_key }, universe_id{ universe_id }
 {
 
 }
 
-QString UserRestrictionsGetListV2Request::get_title_string() const
+QString UserRestrictionGetListV2Request::get_title_string() const
 {
 	return "Fetching user restrictions...";
 }
 
-QNetworkRequest UserRestrictionsGetListV2Request::build_request(const std::optional<QString> cursor) const
+QNetworkRequest UserRestrictionGetListV2Request::build_request(const std::optional<QString> cursor) const
 {
 	return HttpRequestBuilder::use_restrictions_v2_list(api_key, universe_id, cursor);
 }
 
-void UserRestrictionsGetListV2Request::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
+void UserRestrictionGetListV2Request::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
 {
 	const std::optional<GetUserRestrictionListV2Response> response = GetUserRestrictionListV2Response::from(body);
 	if (!response)
