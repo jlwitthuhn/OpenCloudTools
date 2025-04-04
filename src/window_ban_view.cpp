@@ -7,9 +7,13 @@
 #include <QPushButton>
 
 #include "assert.h"
+#include "data_request.h"
+#include "diag_operation_in_progress.h"
 #include "model_common.h"
 
-ViewBanWindow::ViewBanWindow(const BanListUserRestriction& user_restriction, const ViewEditMode view_edit_mode, QWidget* const parent) : QWidget{ parent, Qt::Window }
+ViewBanWindow::ViewBanWindow(const ViewEditMode view_edit_mode, const QString& api_key, const BanListUserRestriction& user_restriction, QWidget* const parent) :
+	QWidget{ parent, Qt::Window },
+	api_key{ api_key }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
@@ -30,7 +34,7 @@ ViewBanWindow::ViewBanWindow(const BanListUserRestriction& user_restriction, con
 
 	QGroupBox* const ban_details_group = new QGroupBox("Ban Details");
 	{
-		QLineEdit* const path_edit = new QLineEdit{ ban_details_group };
+		path_edit = new QLineEdit{ ban_details_group };
 		path_edit->setReadOnly(true);
 		path_edit->setText(user_restriction.get_path());
 
@@ -96,21 +100,22 @@ ViewBanWindow::ViewBanWindow(const BanListUserRestriction& user_restriction, con
 
 		QWidget* const update_form_widget = new QWidget{ update_group };
 		{
-			QCheckBox* const update_active_check = new QCheckBox{ update_form_widget };
+			update_active_check = new QCheckBox{ update_form_widget };
+			update_active_check->setChecked(game_join_restriction.get_active());
 
-			QLineEdit* const update_duration_edit = new QLineEdit{ update_form_widget };
+			update_duration_edit = new QLineEdit{ update_form_widget };
 			if (game_join_restriction.get_duration())
 			{
 				update_duration_edit->setText(*game_join_restriction.get_duration());
 			}
 
-			QLineEdit* const update_private_reason_edit = new QLineEdit{ update_form_widget };
+			update_private_reason_edit = new QLineEdit{ update_form_widget };
 			update_private_reason_edit->setText(game_join_restriction.get_private_reason());
 
-			QLineEdit* const update_display_reason_edit = new QLineEdit{ update_form_widget };
+			update_display_reason_edit = new QLineEdit{ update_form_widget };
 			update_display_reason_edit->setText(game_join_restriction.get_display_reason());
 
-			QCheckBox* const update_exclude_alt_accounts_check = new QCheckBox{ update_form_widget };
+			update_exclude_alt_accounts_check = new QCheckBox{ update_form_widget };
 			update_exclude_alt_accounts_check->setChecked(game_join_restriction.get_exclude_alt_accounts());
 
 			QFormLayout* const update_form_layout = new QFormLayout{ update_form_widget };
@@ -123,6 +128,7 @@ ViewBanWindow::ViewBanWindow(const BanListUserRestriction& user_restriction, con
 		}
 
 		QPushButton* const submit_button = new QPushButton{ "Submit", update_group };
+		connect(submit_button, &QPushButton::clicked, this, &ViewBanWindow::pressed_submit);
 
 		QVBoxLayout* const update_group_layout = new QVBoxLayout{ update_group };
 		update_group_layout->addWidget(update_form_widget);
@@ -139,10 +145,31 @@ ViewBanWindow::ViewBanWindow(const BanListUserRestriction& user_restriction, con
 
 	if (view_edit_mode == ViewEditMode::Edit)
 	{
-		setMinimumWidth(800);
+		setMinimumWidth(820);
 	}
 	else
 	{
 		setMinimumWidth(450);
+	}
+}
+
+void ViewBanWindow::pressed_submit()
+{
+	const QString path = path_edit->text();
+
+	const bool active = update_active_check->isChecked();
+	const QString duration = update_duration_edit->text();
+	const QString private_reason = update_private_reason_edit->text();
+	const QString display_reason = update_display_reason_edit->text();
+	const bool exclude_alt_accounts = update_exclude_alt_accounts_check->isChecked();
+	const BanListGameJoinRestrictionUpdate update{ active, duration, private_reason, display_reason, exclude_alt_accounts };
+
+	const std::shared_ptr<UserRestrictionPatchUpdateV2Request> req = std::make_shared<UserRestrictionPatchUpdateV2Request>(api_key, path, update);
+	OperationInProgressDialog diag{ this, req };
+	diag.exec();
+
+	if (req->req_status() == DataRequestStatus::Success)
+	{
+		close();
 	}
 }

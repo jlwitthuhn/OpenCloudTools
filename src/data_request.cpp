@@ -2,12 +2,14 @@
 
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaEnum>
 #include <QNetworkReply>
 #include <QTimer>
+#include <QUUid>
 #include <QVariant>
 
 #include "http_req_builder.h"
@@ -484,7 +486,6 @@ OrderedDatastoreEntryPatchUpdateV2Request::OrderedDatastoreEntryPatchUpdateV2Req
 	QJsonObject body_json_obj;
 	body_json_obj.insert("value", QJsonValue::fromVariant(new_value));
 	const QJsonDocument body_json_doc{ body_json_obj };
-	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
 	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 
@@ -966,4 +967,38 @@ void UserRestrictionGetListV2Request::handle_http_200(const QString& body, const
 	}
 
 	do_success();
+}
+
+UserRestrictionPatchUpdateV2Request::UserRestrictionPatchUpdateV2Request(const QString& api_key, const QString& path, const BanListGameJoinRestrictionUpdate& restriction_update) :
+	DataRequest{ api_key },
+	path{ path },
+	restriction_update{ restriction_update }
+{
+	request_type = HttpRequestType::Patch;
+	req_body = restriction_update.to_json();
+}
+
+QString UserRestrictionPatchUpdateV2Request::get_title_string() const
+{
+	return "Updating ban details...";
+}
+
+QNetworkRequest UserRestrictionPatchUpdateV2Request::build_request(const std::optional<QString>) const
+{
+	const QString uuid = QUuid::createUuid().toString();
+	const QString now_str = QDateTime::currentDateTimeUtc().toString(Qt::ISODate);
+	QString path_with_params = path;
+	path_with_params = path_with_params + "?idempotencyKey.key=" + uuid;
+	path_with_params = path_with_params + "&idempotencyKey.firstSent=" + now_str;
+	return HttpRequestBuilder::resource_v2(api_key, path_with_params);
+}
+
+void UserRestrictionPatchUpdateV2Request::handle_http_200(const QString&, const QList<QNetworkReply::RawHeaderPair>&)
+{
+	do_success();
+}
+
+QString UserRestrictionPatchUpdateV2Request::get_send_message() const
+{
+	return QString{ "Updating ban %1" }.arg(path);
 }

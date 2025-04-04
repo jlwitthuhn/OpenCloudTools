@@ -21,6 +21,8 @@ public:
 	static QNetworkRequest ordered_datastore_v2_entry_post_create(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 	static QNetworkRequest ordered_datastore_v2_entry_post_increment(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id, const QString& body_md5);
 
+	static QNetworkRequest resource_v2(const std::optional<QString>& api_key, const QString& path);
+
 	static QNetworkRequest standard_datastore_get_list(const QString& api_key, long long universe_id, std::optional<QString> cursor = std::nullopt);
 	static QNetworkRequest standard_datastore_v2_snapshot(const QString& api_key, long long universe_id);
 
@@ -37,6 +39,7 @@ public:
 	static QNetworkRequest use_restrictions_v2_list(const QString& api_key, long long universe_id, std::optional<QString> cursor = std::nullopt);
 
 private:
+	static QString base_url_v2();
 	static QString base_url_universe_v2(long long universe_id);
 	static QString base_url_memory_store_v2(long long universe_id);
 	static QString base_url_ordered_datastore_v2(long long universe_id);

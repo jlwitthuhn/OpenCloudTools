@@ -5,6 +5,9 @@
 
 #include "util_enum.h"
 
+class QCheckBox;
+class QLineEdit;
+
 class BanListUserRestriction;
 
 class ViewBanWindow : public QWidget
@@ -12,5 +15,17 @@ class ViewBanWindow : public QWidget
 	Q_OBJECT
 
 public:
-	ViewBanWindow(const BanListUserRestriction& user_restriction, ViewEditMode view_edit_mode, QWidget* parent = nullptr);
+	ViewBanWindow(ViewEditMode view_edit_mode, const QString& api_key, const BanListUserRestriction& user_restriction, QWidget* parent = nullptr);
+
+	void pressed_submit();
+
+private:
+	QString api_key;
+
+	QLineEdit* path_edit = nullptr;
+	QCheckBox* update_active_check = nullptr;
+	QLineEdit* update_duration_edit = nullptr;
+	QLineEdit* update_private_reason_edit = nullptr;
+	QLineEdit* update_display_reason_edit = nullptr;
+	QCheckBox* update_exclude_alt_accounts_check = nullptr;
 };

@@ -489,3 +489,19 @@ private:
 
 	std::vector<BanListUserRestriction> restrictions;
 };
+
+class UserRestrictionPatchUpdateV2Request : public DataRequest
+{
+public:
+	UserRestrictionPatchUpdateV2Request(const QString& api_key, const QString& path, const BanListGameJoinRestrictionUpdate& restriction_update);
+
+	virtual QString get_title_string() const override;
+
+private:
+	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
+	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
+	virtual QString get_send_message() const override;
+
+	QString path;
+	BanListGameJoinRestrictionUpdate restriction_update;
+};

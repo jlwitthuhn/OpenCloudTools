@@ -48,6 +48,33 @@ private:
 	bool inherited;
 };
 
+class BanListGameJoinRestrictionUpdate
+{
+public:
+	BanListGameJoinRestrictionUpdate(
+		bool active,
+		const QString& duration,
+		const QString& private_reason,
+		const QString& display_reason,
+		bool exclude_alt_accounts
+	) :
+		active{ active },
+		duration{ duration },
+		private_reason{ private_reason },
+		display_reason{ display_reason },
+		exclude_alt_accounts{ exclude_alt_accounts }
+	{}
+
+	QString to_json() const;
+
+private:
+	bool active;
+	QString duration;
+	QString private_reason;
+	QString display_reason;
+	bool exclude_alt_accounts;
+};
+
 class BanListUserRestriction
 {
 public:

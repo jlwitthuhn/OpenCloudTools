@@ -112,7 +112,7 @@ void BanListPanel::pressed_details()
         return;
     }
 
-    ViewBanWindow* const ban_window = new ViewBanWindow{ *opt_restriction, ViewEditMode::View, this };
+    ViewBanWindow* const ban_window = new ViewBanWindow{ ViewEditMode::View, "", *opt_restriction, this };
     ban_window->show();
 }
 
@@ -137,7 +137,7 @@ void BanListPanel::pressed_edit()
         return;
     }
 
-    ViewBanWindow* const ban_window = new ViewBanWindow{ *opt_restriction, ViewEditMode::Edit, this };
+    ViewBanWindow* const ban_window = new ViewBanWindow{ ViewEditMode::Edit, api_key, *opt_restriction, this };
     ban_window->show();
 }
 
