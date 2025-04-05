@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include <QObject>
 #include <QString>
@@ -11,6 +12,7 @@ class QPushButton;
 class QTreeView;
 
 class BanListQTableModel;
+class BanListUserRestriction;
 class UniverseProfile;
 
 class BanListPanel : public QWidget
@@ -24,6 +26,7 @@ private:
 	void gui_refresh();
 
 	QModelIndex get_selected_single_index() const;
+	std::optional<BanListUserRestriction> get_selected_restriction() const;
 
 	void set_table_model(BanListQTableModel* entry_model);
 

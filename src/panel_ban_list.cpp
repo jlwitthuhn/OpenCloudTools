@@ -80,6 +80,24 @@ QModelIndex BanListPanel::get_selected_single_index() const
 	return select_model->selectedRows().front();
 }
 
+std::optional<BanListUserRestriction> BanListPanel::get_selected_restriction() const
+{
+	const QModelIndex selected_index = get_selected_single_index();
+
+	if (selected_index.isValid() == false)
+	{
+		return std::nullopt;
+	}
+
+	BanListQTableModel* const table_model = dynamic_cast<BanListQTableModel*>(tree_view->model());
+	if (table_model == nullptr)
+	{
+		return std::nullopt;
+	}
+
+	return table_model->get_restriction(selected_index.row());
+}
+
 void BanListPanel::set_table_model(BanListQTableModel* entry_model)
 {
 	if (entry_model == nullptr)
@@ -102,24 +120,7 @@ void BanListPanel::handle_selected_ban_changed()
 
 void BanListPanel::pressed_details()
 {
-	const QModelIndex selected_index = get_selected_single_index();
-
-	if (selected_index.isValid() == false)
-	{
-		return;
-	}
-
-	BanListQTableModel* const table_model = dynamic_cast<BanListQTableModel*>(tree_view->model());
-	if (table_model == nullptr)
-	{
-		return;
-	}
-
-	const std::optional<BanListUserRestriction> opt_restriction = table_model->get_restriction(selected_index.row());
-	if (!opt_restriction)
-	{
-		return;
-	}
+	const std::optional<BanListUserRestriction> opt_restriction = get_selected_restriction();
 
 	ViewBanWindow* const ban_window = new ViewBanWindow{ ViewEditMode::View, "", *opt_restriction, this };
 	ban_window->show();
@@ -127,24 +128,7 @@ void BanListPanel::pressed_details()
 
 void BanListPanel::pressed_edit()
 {
-	const QModelIndex selected_index = get_selected_single_index();
-
-	if (selected_index.isValid() == false)
-	{
-		return;
-	}
-
-	BanListQTableModel* const table_model = dynamic_cast<BanListQTableModel*>(tree_view->model());
-	if (table_model == nullptr)
-	{
-		return;
-	}
-
-	const std::optional<BanListUserRestriction> opt_restriction = table_model->get_restriction(selected_index.row());
-	if (!opt_restriction)
-	{
-		return;
-	}
+	const std::optional<BanListUserRestriction> opt_restriction = get_selected_restriction();
 
 	ViewBanWindow* const ban_window = new ViewBanWindow{ ViewEditMode::Edit, api_key, *opt_restriction, this };
 	ban_window->show();
