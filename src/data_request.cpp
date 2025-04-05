@@ -519,7 +519,6 @@ OrderedDatastorePostIncrementV2Request::OrderedDatastorePostIncrementV2Request(c
 	QJsonObject body_json_obj;
 	body_json_obj.insert("amount", QJsonValue::fromVariant(increment_by));
 	const QJsonDocument body_json_doc{ body_json_obj };
-	const QByteArray post_body_bytes = body_json_doc.toJson(QJsonDocument::Compact);
 	req_body = QString::fromUtf8(body_json_doc.toJson(QJsonDocument::Compact));
 }
 

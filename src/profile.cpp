@@ -539,119 +539,120 @@ void UserProfile::load_from_disk()
 	QVariant settings_version = settings.value("version");
 	if (settings_version.toUInt() == 1)
 	{
-		settings.beginGroup("keys");
 		const QVariant keys_version = settings.value("version");
-
-		const int key_list_size = settings.beginReadArray("list");
-		for (int i = 0; i < key_list_size; i++)
+		if (keys_version.toUInt() == 1)
 		{
-			settings.setArrayIndex(i);
-			const QString name = settings.value("name").toString();
-			const QString key = settings.value("key").toString();
-			bool production = settings.value("production").toBool();
-			if (name.size() > 0 && key.size() > 0)
+			settings.beginGroup("keys");
+			const int key_list_size = settings.beginReadArray("list");
+			for (int i = 0; i < key_list_size; i++)
 			{
-				std::optional<ApiKeyProfile::Id> opt_key_id = add_api_key(name, key, production, true);
-
-				if (opt_key_id)
+				settings.setArrayIndex(i);
+				const QString name = settings.value("name").toString();
+				const QString key = settings.value("key").toString();
+				bool production = settings.value("production").toBool();
+				if (name.size() > 0 && key.size() > 0)
 				{
-					const int universe_list_size = settings.beginReadArray("universe_ids");
-					for (int j = 0; j < universe_list_size; j++)
+					std::optional<ApiKeyProfile::Id> opt_key_id = add_api_key(name, key, production, true);
+
+					if (opt_key_id)
 					{
-						settings.setArrayIndex(j);
-						const long long this_universe_id = settings.value("universe_id").toLongLong();
-
-						const QVariant maybe_universe_name = settings.value("name");
-						const QString universe_name = maybe_universe_name.isNull() ? "Unnamed" : maybe_universe_name.toString();
-
-						const QVariant maybe_save_mem_sorted_maps = settings.value("save_recent_mem_sorted_map");
-						const bool save_recent_mem_sorted_maps = maybe_save_mem_sorted_maps.isNull() ? true : maybe_save_mem_sorted_maps.toBool();
-
-						const QVariant maybe_save_topics = settings.value("save_recent_message_topics");
-						const bool save_recent_message_topics = maybe_save_topics.isNull() ? true : maybe_save_topics.toBool();
-
-						const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
-						const bool save_recent_ordered_datastores = maybe_save_datastores.isNull() ? true : maybe_save_datastores.toBool();
-
-						const QVariant maybe_show_hidden_datastores = settings.value("show_hidden_standard_datastores");
-						const bool show_hidden_datastores = maybe_show_hidden_datastores.isNull() ? false : maybe_show_hidden_datastores.toBool();
-
-						if (const std::shared_ptr<ApiKeyProfile> this_api_key = get_api_key_by_id(*opt_key_id))
+						const int universe_list_size = settings.beginReadArray("universe_ids");
+						for (int j = 0; j < universe_list_size; j++)
 						{
-							if (const std::optional<UniverseProfile::Id> new_universe_id = this_api_key->add_universe(universe_name, this_universe_id))
+							settings.setArrayIndex(j);
+							const long long this_universe_id = settings.value("universe_id").toLongLong();
+
+							const QVariant maybe_universe_name = settings.value("name");
+							const QString universe_name = maybe_universe_name.isNull() ? "Unnamed" : maybe_universe_name.toString();
+
+							const QVariant maybe_save_mem_sorted_maps = settings.value("save_recent_mem_sorted_map");
+							const bool save_recent_mem_sorted_maps = maybe_save_mem_sorted_maps.isNull() ? true : maybe_save_mem_sorted_maps.toBool();
+
+							const QVariant maybe_save_topics = settings.value("save_recent_message_topics");
+							const bool save_recent_message_topics = maybe_save_topics.isNull() ? true : maybe_save_topics.toBool();
+
+							const QVariant maybe_save_datastores = settings.value("save_recent_ordered_datastores");
+							const bool save_recent_ordered_datastores = maybe_save_datastores.isNull() ? true : maybe_save_datastores.toBool();
+
+							const QVariant maybe_show_hidden_datastores = settings.value("show_hidden_standard_datastores");
+							const bool show_hidden_datastores = maybe_show_hidden_datastores.isNull() ? false : maybe_show_hidden_datastores.toBool();
+
+							if (const std::shared_ptr<ApiKeyProfile> this_api_key = get_api_key_by_id(*opt_key_id))
 							{
-								if (const std::shared_ptr<UniverseProfile> this_universe = this_api_key->get_universe_profile_by_id(*new_universe_id))
+								if (const std::optional<UniverseProfile::Id> new_universe_id = this_api_key->add_universe(universe_name, this_universe_id))
 								{
-									this_universe->set_save_recent_mem_sorted_maps(save_recent_mem_sorted_maps);
-									this_universe->set_save_recent_message_topics(save_recent_message_topics);
-									this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);
-									this_universe->set_show_hidden_standard_datastores(show_hidden_datastores);
-
-									const int hidden_list_size = settings.beginReadArray("hidden_datastores");
+									if (const std::shared_ptr<UniverseProfile> this_universe = this_api_key->get_universe_profile_by_id(*new_universe_id))
 									{
-										for (int k = 0; k < hidden_list_size; k++)
-										{
-											settings.setArrayIndex(k);
-											const QString datastore_name = settings.value("name").toString();
-											this_universe->add_hidden_datastore(datastore_name);
-										}
-									}
-									settings.endArray();
+										this_universe->set_save_recent_mem_sorted_maps(save_recent_mem_sorted_maps);
+										this_universe->set_save_recent_message_topics(save_recent_message_topics);
+										this_universe->set_save_recent_ordered_datastores(save_recent_ordered_datastores);
+										this_universe->set_show_hidden_standard_datastores(show_hidden_datastores);
 
-									const int hidden_ops_size = settings.beginReadArray("hidden_operations");
-									{
-										for (int k = 0; k < hidden_ops_size; k++)
+										const int hidden_list_size = settings.beginReadArray("hidden_datastores");
 										{
-											settings.setArrayIndex(k);
-											const QString datastore_name = settings.value("name").toString();
-											this_universe->add_hidden_operation(datastore_name);
+											for (int k = 0; k < hidden_list_size; k++)
+											{
+												settings.setArrayIndex(k);
+												const QString datastore_name = settings.value("name").toString();
+												this_universe->add_hidden_datastore(datastore_name);
+											}
 										}
-									}
-									settings.endArray();
+										settings.endArray();
 
-									const int map_list_size = settings.beginReadArray("mem_sorted_maps");
-									{
-										for (int k = 0; k < map_list_size; k++)
+										const int hidden_ops_size = settings.beginReadArray("hidden_operations");
 										{
-											settings.setArrayIndex(k);
-											const QString map_name = settings.value("name").toString();
-											this_universe->add_recent_mem_sorted_map(map_name);
+											for (int k = 0; k < hidden_ops_size; k++)
+											{
+												settings.setArrayIndex(k);
+												const QString datastore_name = settings.value("name").toString();
+												this_universe->add_hidden_operation(datastore_name);
+											}
 										}
-									}
-									settings.endArray();
+										settings.endArray();
 
-									const int topic_list_size = settings.beginReadArray("message_topics");
-									{
-										for (int k = 0; k < topic_list_size; k++)
+										const int map_list_size = settings.beginReadArray("mem_sorted_maps");
 										{
-											settings.setArrayIndex(k);
-											const QString topic_name = settings.value("name").toString();
-											this_universe->add_recent_topic(topic_name);
+											for (int k = 0; k < map_list_size; k++)
+											{
+												settings.setArrayIndex(k);
+												const QString map_name = settings.value("name").toString();
+												this_universe->add_recent_mem_sorted_map(map_name);
+											}
 										}
-									}
-									settings.endArray();
+										settings.endArray();
 
-									const int ordered_datastore_list_size = settings.beginReadArray("ordered_datastores");
-									{
-										for (int k = 0; k < ordered_datastore_list_size; k++)
+										const int topic_list_size = settings.beginReadArray("message_topics");
 										{
-											settings.setArrayIndex(k);
-											const QString datastore_name = settings.value("name").toString();
-											this_universe->add_recent_ordered_datastore(datastore_name);
+											for (int k = 0; k < topic_list_size; k++)
+											{
+												settings.setArrayIndex(k);
+												const QString topic_name = settings.value("name").toString();
+												this_universe->add_recent_topic(topic_name);
+											}
 										}
+										settings.endArray();
+
+										const int ordered_datastore_list_size = settings.beginReadArray("ordered_datastores");
+										{
+											for (int k = 0; k < ordered_datastore_list_size; k++)
+											{
+												settings.setArrayIndex(k);
+												const QString datastore_name = settings.value("name").toString();
+												this_universe->add_recent_ordered_datastore(datastore_name);
+											}
+										}
+										settings.endArray();
 									}
-									settings.endArray();
 								}
 							}
 						}
+						settings.endArray();
 					}
-					settings.endArray();
 				}
 			}
+			settings.endArray();
+			settings.endGroup();
 		}
-		settings.endArray();
-
-		settings.endGroup();
 	}
 
 	settings.endGroup();
