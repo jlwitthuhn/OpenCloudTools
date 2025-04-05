@@ -88,11 +88,11 @@ end
 local delete_only = function()
 	for i=0,200 do
 		print("Starting: " .. int_to_string(i))
-        save_before_delete(i)
-        wait(11)
-        do_delete(i)
-        wait(1)
-    end
+		save_before_delete(i)
+		wait(11)
+		do_delete(i)
+		wait(1)
+	end
 end
 
 populate_all()

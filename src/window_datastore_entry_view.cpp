@@ -123,7 +123,7 @@ ViewDatastoreEntryWindow::ViewDatastoreEntryWindow(QWidget* parent, const QStrin
 
 		QFormLayout* info_layout = new QFormLayout{ info_panel };
 		info_layout->setContentsMargins(QMargins{ 0, 0, 0, 0 });
-        info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+		info_layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 		info_layout->addRow("Universe", universe_id_edit);
 		info_layout->addRow("Datastore", datastore_name_edit);
 		info_layout->addRow("Scope", scope_edit);

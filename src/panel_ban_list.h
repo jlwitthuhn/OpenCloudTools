@@ -18,26 +18,26 @@ class BanListPanel : public QWidget
 Q_OBJECT
 
 public:
-    BanListPanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe);
+	BanListPanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe);
 
 private:
-    void gui_refresh();
+	void gui_refresh();
 
-    QModelIndex get_selected_single_index() const;
+	QModelIndex get_selected_single_index() const;
 
-    void set_table_model(BanListQTableModel* entry_model);
+	void set_table_model(BanListQTableModel* entry_model);
 
-    void handle_selected_ban_changed();
+	void handle_selected_ban_changed();
 
-    void pressed_details();
-    void pressed_edit();
-    void pressed_refresh();
+	void pressed_details();
+	void pressed_edit();
+	void pressed_refresh();
 
-    QString api_key;
-    std::weak_ptr<UniverseProfile> attached_universe;
+	QString api_key;
+	std::weak_ptr<UniverseProfile> attached_universe;
 
-    QTreeView* tree_view = nullptr;
+	QTreeView* tree_view = nullptr;
 
-    QPushButton* edit_button = nullptr;
-    QPushButton* details_button = nullptr;
+	QPushButton* edit_button = nullptr;
+	QPushButton* details_button = nullptr;
 };
