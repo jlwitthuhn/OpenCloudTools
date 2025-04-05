@@ -1,1 +1,1 @@
-Checks: -*,performance-*,portability-*
+Checks: -*,bugprone-*,performance-*,portability-*,-bugprone-easily-swappable-parameters

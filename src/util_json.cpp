@@ -80,7 +80,6 @@ QString JsonValue::get_short_display_string() const
 	switch (type)
 	{
 		case JsonDataType::Bool:
-			return json_string;
 		case JsonDataType::Number:
 			return json_string;
 		case JsonDataType::String:

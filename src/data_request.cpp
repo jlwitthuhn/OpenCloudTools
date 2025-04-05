@@ -114,7 +114,7 @@ void DataRequest::handle_reply_ready()
 	pending_reply->deleteLater();
 	pending_reply = nullptr;
 
-	if (http_status == "200") // OK
+	if (http_status == "200") // OK -- NOLINTNEXTLINE(bugprone-branch-clone)
 	{
 		handle_http_200(reply_body, headers);
 	}

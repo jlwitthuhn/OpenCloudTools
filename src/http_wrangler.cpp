@@ -193,7 +193,7 @@ void HttpWrangler::add_log_entry(const HttpLogEntry& log_entry)
 	http_log_entries.push_back(log_entry);
 	if (http_log_entries.size() > LOG_MAX_ENTRIES)
 	{
-		const size_t erase_count = http_log_entries.size() - LOG_MAX_ENTRIES;
+		const auto erase_count = static_cast<std::vector<HttpLogEntry>::difference_type>(http_log_entries.size() - LOG_MAX_ENTRIES);
 		http_log_entries.erase(http_log_entries.begin(), http_log_entries.begin() + erase_count);
 	}
 	emit log_entry_added(log_entry);
