@@ -54,7 +54,7 @@ class BanListGameJoinRestrictionUpdate
 public:
 	BanListGameJoinRestrictionUpdate(
 		bool active,
-		const QString& duration,
+		const std::optional<QString>& duration,
 		const QString& private_reason,
 		const QString& display_reason,
 		bool exclude_alt_accounts
@@ -70,7 +70,7 @@ public:
 
 private:
 	bool active;
-	QString duration;
+	std::optional<QString> duration;
 	QString private_reason;
 	QString display_reason;
 	bool exclude_alt_accounts;

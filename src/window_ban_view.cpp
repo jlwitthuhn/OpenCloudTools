@@ -164,7 +164,8 @@ void ViewBanWindow::pressed_submit()
 	const QString path = path_edit->text();
 
 	const bool active = update_active_check->isChecked();
-	const QString duration = update_duration_edit->text();
+	const bool has_duration_set = update_duration_edit->text().trimmed().size() > 0;
+	const std::optional<QString> duration = has_duration_set ? std::make_optional(update_duration_edit->text()) : std::nullopt;
 	const QString private_reason = update_private_reason_edit->text();
 	const QString display_reason = update_display_reason_edit->text();
 	const bool exclude_alt_accounts = update_exclude_alt_accounts_check->isChecked();

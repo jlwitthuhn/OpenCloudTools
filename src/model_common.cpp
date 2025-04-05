@@ -13,7 +13,10 @@ QString BanListGameJoinRestrictionUpdate::to_json() const
 {
 	QJsonObject inner_obj;
 	inner_obj.insert("active", QJsonValue::fromVariant(active));
-	inner_obj.insert("duration", QJsonValue::fromVariant(duration));
+	if (duration)
+	{
+		inner_obj.insert("duration", QJsonValue::fromVariant(*duration));
+	}
 	inner_obj.insert("privateReason", QJsonValue::fromVariant(private_reason));
 	inner_obj.insert("displayReason", QJsonValue::fromVariant(display_reason));
 	inner_obj.insert("excludeAltAccounts", QJsonValue::fromVariant(exclude_alt_accounts));
