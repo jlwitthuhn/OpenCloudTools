@@ -1,1 +1,1 @@
-Checks: portability-*
+Checks: -*,performance-*,portability-*

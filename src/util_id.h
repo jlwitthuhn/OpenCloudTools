@@ -12,7 +12,7 @@ public:
 	static const std::size_t LENGTH = 16;
 
 	RandomId128();
-	RandomId128(QByteArray q_id);
+	RandomId128(const QByteArray& q_id);
 
 	bool operator==(const RandomId128& other) const;
 	bool operator<(const RandomId128& other) const;

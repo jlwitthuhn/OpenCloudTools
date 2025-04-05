@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include <QDialog>
 #include <QObject>
 
@@ -7,7 +9,7 @@ class QCheckBox;
 class QPushButton;
 class QWidget;
 
-enum class ChangeType
+enum class ChangeType : std::uint8_t
 {
 	OrderedDatastoreCreate,
 	OrderedDatastoreDelete,

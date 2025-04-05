@@ -38,7 +38,7 @@ public:
 	void start();
 
 protected:
-	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names);
+	DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& find_scope, const QString& find_key_prefix, const std::vector<QString>& datastore_names);
 
 	virtual QString progress_label_done() const = 0;
 	virtual QString progress_label_working(size_t total) const = 0;
@@ -124,7 +124,7 @@ public:
 		const std::shared_ptr<UniverseProfile>& universe,
 		const QString& scope,
 		const QString& key_prefix,
-		std::vector<QString> datastore_names,
+		const std::vector<QString>& datastore_names,
 		bool confirm_count_before_delete,
 		bool rewrite_before_delete,
 		bool hide_datastores_when_done
@@ -160,7 +160,7 @@ class DatastoreBulkDownloadProgressWindow : public DatastoreBulkOperationProgres
 {
 	Q_OBJECT
 public:
-	DatastoreBulkDownloadProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::unique_ptr<SqliteDatastoreWrapper> db_wrapper);
+	DatastoreBulkDownloadProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, const std::vector<QString>& datastore_names, std::unique_ptr<SqliteDatastoreWrapper> db_wrapper);
 	DatastoreBulkDownloadProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, std::unique_ptr<SqliteDatastoreWrapper> db_wrapper);
 
 private:
@@ -187,7 +187,7 @@ class DatastoreBulkUndeleteProgressWindow : public DatastoreBulkOperationProgres
 {
 	Q_OBJECT
 public:
-	DatastoreBulkUndeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, std::vector<QString> datastore_names, std::optional<QDateTime> undelete_after);
+	DatastoreBulkUndeleteProgressWindow(QWidget* parent, const QString& api_key, long long universe_id, const QString& scope, const QString& key_prefix, const std::vector<QString>& datastore_names, const std::optional<QDateTime>& undelete_after);
 
 private:
 	virtual QString progress_label_done() const override;

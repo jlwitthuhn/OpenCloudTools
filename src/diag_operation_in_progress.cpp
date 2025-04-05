@@ -165,12 +165,14 @@ void OperationInProgressDialog::handle_all_requests_complete()
 	}
 }
 
+// NOLINTNEXTLINE(*-unnecessary-value-param)
 void OperationInProgressDialog::handle_status_error(const QString message)
 {
 	handle_status_info(message);
 	retry_button->setEnabled(true);
 }
 
+// NOLINTNEXTLINE(*-unnecessary-value-param)
 void OperationInProgressDialog::handle_status_info(const QString message)
 {
 	text_log->append(message);

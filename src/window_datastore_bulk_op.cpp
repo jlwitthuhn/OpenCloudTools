@@ -226,7 +226,7 @@ DatastoreBulkDeleteWindow::DatastoreBulkDeleteWindow(QWidget* parent, const QStr
 		options_layout->addWidget(confirm_count_before_delete_check);
 		options_layout->addWidget(rewrite_before_delete_check);
 		options_layout->addWidget(hide_after_delete_check);
-	};
+	}
 
 	right_bar_layout->addWidget(options_box);
 	right_bar_layout->addStretch();
@@ -423,7 +423,7 @@ DatastoreBulkUndeleteWindow::DatastoreBulkUndeleteWindow(QWidget* parent, const 
 		QVBoxLayout* options_layout = new QVBoxLayout{ options_box };
 		options_layout->addWidget(time_filter_check);
 		options_layout->addWidget(time_filter_bar);
-	};
+	}
 
 	right_bar_layout->addWidget(options_box);
 	right_bar_layout->addStretch();

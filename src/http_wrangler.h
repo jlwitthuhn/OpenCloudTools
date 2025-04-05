@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstddef>
-
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -13,7 +13,7 @@
 #include <QObject>
 #include <QString>
 
-enum class HttpRequestType;
+enum class HttpRequestType : std::uint8_t;
 
 class QNetworkAccessManager;
 class QNetworkReply;

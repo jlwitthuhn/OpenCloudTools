@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <memory>
 
@@ -15,7 +16,7 @@ class QPushButton;
 
 class UniverseProfile;
 
-enum class SubwindowType;
+enum class SubwindowType : std::uint8_t;
 
 class UniversePreferencesPanel : public QWidget
 {

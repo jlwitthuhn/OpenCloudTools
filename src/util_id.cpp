@@ -25,7 +25,7 @@ RandomId128::RandomId128()
 	}
 }
 
-RandomId128::RandomId128(const QByteArray q_id)
+RandomId128::RandomId128(const QByteArray& q_id)
 {
 	id.fill(0);
 	OCTASSERT(static_cast<size_t>(q_id.size()) == id.size());

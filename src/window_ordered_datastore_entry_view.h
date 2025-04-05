@@ -13,7 +13,7 @@ class ViewOrderedDatastoreEntryWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	enum class EditMode
+    enum class EditMode : std::uint8_t
 	{
 		View,
 		Edit,

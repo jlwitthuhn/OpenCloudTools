@@ -22,14 +22,21 @@ void DatastoreBulkOperationProgressWindow::start()
 	send_next_enumerate_keys_request();
 }
 
-DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(QWidget* parent, const QString& api_key, const long long universe_id, const QString& find_scope, const QString& find_key_prefix, std::vector<QString> datastore_names) :
+DatastoreBulkOperationProgressWindow::DatastoreBulkOperationProgressWindow(
+    QWidget* parent,
+    const QString& api_key,
+    const long long universe_id,
+    const QString& find_scope,
+    const QString& find_key_prefix,
+    const std::vector<QString>& datastore_names
+    ) :
 	QWidget{ parent, Qt::Window },
 	api_key{ api_key },
 	universe_id{ universe_id },
 	find_scope{ find_scope },
 	find_key_prefix{ find_key_prefix },
 	progress{ datastore_names.size() },
-	datastore_names{ std::move(datastore_names) }
+	datastore_names{ datastore_names }
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setMinimumHeight(380);
@@ -152,6 +159,7 @@ void DatastoreBulkOperationProgressWindow::handle_clicked_retry()
 	do_retry();
 }
 
+// NOLINTNEXTLINE(*-unnecessary-value-param)
 void DatastoreBulkOperationProgressWindow::handle_error_message(const QString message)
 {
 	handle_status_message(message);
@@ -159,6 +167,7 @@ void DatastoreBulkOperationProgressWindow::handle_error_message(const QString me
 	retry_button->setEnabled(is_retryable());
 }
 
+// NOLINTNEXTLINE(*-unnecessary-value-param)
 void DatastoreBulkOperationProgressWindow::handle_status_message(const QString message)
 {
 	text_log->append(message);
@@ -257,7 +266,7 @@ DatastoreBulkDeleteProgressWindow::DatastoreBulkDeleteProgressWindow(
 	const std::shared_ptr<UniverseProfile>& universe,
 	const QString& scope,
 	const QString& key_prefix,
-	const std::vector<QString> datastore_names,
+	const std::vector<QString>& datastore_names,
 	const bool confirm_count_before_delete ,
 	const bool rewrite_before_delete,
 	const bool hide_datastores_when_done) :
@@ -343,7 +352,7 @@ void DatastoreBulkDeleteProgressWindow::send_next_entry_request()
 			{
 				for (const QString& this_name : datastore_names)
 				{
-					universe->add_hidden_datastore(this_name);;
+					universe->add_hidden_datastore(this_name);
 					handle_status_message(QString{ "Hid datastore: '%1'" }.arg(this_name));
 				}
 			}
@@ -458,9 +467,9 @@ DatastoreBulkDownloadProgressWindow::DatastoreBulkDownloadProgressWindow(
 	long long universe_id,
 	const QString& scope,
 	const QString& key_prefix,
-	std::vector<QString> datastore_names,
+	const std::vector<QString>& datastore_names,
 	std::unique_ptr<SqliteDatastoreWrapper> db_wrapper) :
-	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, std::move(datastore_names) },
+	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
 	db_wrapper{ std::move(db_wrapper) }
 {
 	setWindowTitle("Download Progress");
@@ -618,8 +627,9 @@ DatastoreBulkUndeleteProgressWindow::DatastoreBulkUndeleteProgressWindow(
 	long long universe_id,
 	const QString& scope,
 	const QString& key_prefix,
-	std::vector<QString> datastore_names,
-	std::optional<QDateTime> undelete_after) :
+	const std::vector<QString>& datastore_names,
+	const std::optional<QDateTime>& undelete_after
+    ) :
 	DatastoreBulkOperationProgressWindow{ parent, api_key, universe_id, scope, key_prefix, datastore_names },
 	undelete_after{ undelete_after }
 {

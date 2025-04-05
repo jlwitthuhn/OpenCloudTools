@@ -21,7 +21,7 @@ class UniverseProfile : public QObject
 public:
 	using Id = RandomId128;
 
-	UniverseProfile(QObject* parent, const QString& name, long long universe_id, std::function<bool(const QString&)> name_available, std::function<bool(long long)> is_universe_id_available);
+	UniverseProfile(QObject* parent, const QString& name, long long universe_id, const std::function<bool(const QString&)>& name_available, const std::function<bool(long long)>& is_universe_id_available);
 
 	bool matches_name_and_id(const UniverseProfile& other) const;
 
@@ -100,7 +100,7 @@ class ApiKeyProfile : public QObject
 public:
 	using Id = RandomId128;
 
-	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk, std::function<bool(const QString&)> api_key_name_available);
+	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk, const std::function<bool(const QString&)>& api_key_name_available);
 
 	Id get_id() const { return id; }
 	QString get_name() const { return name; };

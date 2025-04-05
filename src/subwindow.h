@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstdint>
+
 #include <QString>
 
 #include "profile.h"
 
-enum class SubwindowType
+enum class SubwindowType : std::uint8_t
 {
 	DATA_STORES_STANDARD,
 	DATA_STORES_STANDARD_ADD,

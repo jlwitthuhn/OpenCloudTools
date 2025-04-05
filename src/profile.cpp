@@ -19,12 +19,12 @@
 
 #include "assert.h"
 
-static bool compare_api_key_profile(const std::shared_ptr<const ApiKeyProfile> a, const std::shared_ptr<const ApiKeyProfile> b)
+static bool compare_api_key_profile(const std::shared_ptr<const ApiKeyProfile>& a, const std::shared_ptr<const ApiKeyProfile>& b)
 {
 	return a->get_name() < b->get_name();
 }
 
-static bool compare_universe_profile(const std::shared_ptr<const UniverseProfile> a, const std::shared_ptr<const UniverseProfile> b)
+static bool compare_universe_profile(const std::shared_ptr<const UniverseProfile>& a, const std::shared_ptr<const UniverseProfile>& b)
 {
 	if (a->get_name() < b->get_name())
 	{
@@ -46,7 +46,7 @@ static bool compare_universe_profile(const std::shared_ptr<const UniverseProfile
 	return false;
 }
 
-UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&)> is_name_available, const std::function<bool(long long)> is_universe_id_available)
+UniverseProfile::UniverseProfile(QObject* parent, const QString& name, const long long universe_id, const std::function<bool(const QString&)>& is_name_available, const std::function<bool(long long)>& is_universe_id_available)
 	: QObject{ parent }, name{ name }, universe_id{ universe_id }, is_name_available{ is_name_available }, is_universe_id_available{ is_universe_id_available }
 {
 
@@ -183,7 +183,7 @@ void UniverseProfile::remove_recent_topic(const QString& topic)
 	}
 }
 
-ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk, const std::function<bool(const QString&)> api_key_name_available)
+ApiKeyProfile::ApiKeyProfile(QObject* parent, const QString& name, const QString& key, const bool production, const bool save_to_disk, const std::function<bool(const QString&)>& api_key_name_available)
 	: QObject{ parent }, name{ name }, key{ key }, production{ production }, save_to_disk{ save_to_disk }, api_key_name_available{ api_key_name_available }
 {
 

@@ -56,7 +56,8 @@ void HttpLogPanel::refresh()
 	}
 }
 
-void HttpLogPanel::handle_log_entry_added(HttpLogEntry log_entry)
+// NOLINTNEXTLINE(*-unnecessary-value-param)
+void HttpLogPanel::handle_log_entry_added(const HttpLogEntry log_entry)
 {
 	if (HttpLogModel* const log_model = dynamic_cast<HttpLogModel*>(tree_view->model()))
 	{

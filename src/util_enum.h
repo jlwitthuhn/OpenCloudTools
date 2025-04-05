@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstdint>
+
 class QString;
 
-enum class DatastoreEntryType
+enum class DatastoreEntryType : std::uint8_t
 {
 	Error,
 	Bool,
@@ -11,7 +13,7 @@ enum class DatastoreEntryType
 	Json,
 };
 
-enum class HttpRequestType
+enum class HttpRequestType : std::uint8_t
 {
 	Get,
 	Patch,
@@ -19,7 +21,7 @@ enum class HttpRequestType
 	Delete,
 };
 
-enum class JsonDataType
+enum class JsonDataType : std::uint8_t
 {
 	Bool,
 	Number,
@@ -28,7 +30,7 @@ enum class JsonDataType
 	Object,
 };
 
-enum class ViewEditMode
+enum class ViewEditMode : std::uint8_t
 {
 	View,
 	Edit,

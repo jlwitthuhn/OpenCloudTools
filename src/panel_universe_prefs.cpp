@@ -250,7 +250,7 @@ void UniversePreferencesAddHiddenDatastoreWindow::pressed_add()
 {
 	if (const std::shared_ptr<UniverseProfile> universe = attached_universe.lock())
 	{
-		universe->add_hidden_datastore(name_edit->text());;
+		universe->add_hidden_datastore(name_edit->text());
 	}
 	close();
 }

@@ -10,9 +10,9 @@ class HttpRequestBuilder
 {
 public:
 
-	static QNetworkRequest memory_store_v2_sorted_map_get_list(const QString& api_key, long long universe_id, const QString& map_name, bool ascending, std::optional<QString> cursor = std::nullopt);
+	static QNetworkRequest memory_store_v2_sorted_map_get_list(const QString& api_key, long long universe_id, const QString& map_name, bool ascending, const std::optional<QString>& cursor = std::nullopt);
 
-	static QNetworkRequest messaging_service_v2_post_message(const QString api_key, long long universe_id);
+	static QNetworkRequest messaging_service_v2_post_message(const QString& api_key, long long universe_id);
 
 	static QNetworkRequest ordered_datastore_v2_entry_delete(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& entry_id);
 	static QNetworkRequest ordered_datastore_v2_entry_get_details(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name);
@@ -36,7 +36,7 @@ public:
 
 	static QNetworkRequest universe_v2_get_details(const QString& api_key, long long universe_id);
 
-	static QNetworkRequest use_restrictions_v2_list(const QString& api_key, long long universe_id, std::optional<QString> cursor = std::nullopt);
+	static QNetworkRequest use_restrictions_v2_list(const QString& api_key, long long universe_id, const std::optional<QString>& cursor = std::nullopt);
 
 private:
 	static QString base_url_v2();

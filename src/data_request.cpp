@@ -36,7 +36,7 @@ DataRequestBody::operator bool() const
 	return data.has_value();
 }
 
-void DataRequest::send_request(std::optional<QString> cursor)
+void DataRequest::send_request(const std::optional<QString>& cursor)
 {
 	if (status != DataRequestStatus::ReadyToBegin && status != DataRequestStatus::Waiting)
 	{
@@ -292,7 +292,7 @@ void MemoryStoreSortedMapGetListRequest::handle_http_200(const QString& body, co
 	}
 }
 
-MessagingServicePostMessageV2Request::MessagingServicePostMessageV2Request(const QString& api_key, long long universe_id, QString topic, QString unencoded_message)
+MessagingServicePostMessageV2Request::MessagingServicePostMessageV2Request(const QString& api_key, long long universe_id, const QString& topic, const QString& unencoded_message)
 	: DataRequest{ api_key }, universe_id{ universe_id }, topic{ topic }
 {
 	request_type = HttpRequestType::Post;
@@ -542,7 +542,7 @@ QString OrderedDatastorePostIncrementV2Request::get_send_message() const
 	return QString{ "Incrementing '%1' by %2..." }.arg(entry_id).arg(increment_by);
 }
 
-StandardDatastoreEntryDeleteRequest::StandardDatastoreEntryDeleteRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
+StandardDatastoreEntryDeleteRequest::StandardDatastoreEntryDeleteRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
 	request_type = HttpRequestType::Delete;
@@ -587,7 +587,7 @@ QString StandardDatastoreEntryDeleteRequest::get_send_message() const
 	return QString{ "Deleting entry '%1'..." }.arg(key_name);
 }
 
-StandardDatastoreEntryGetDetailsRequest::StandardDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
+StandardDatastoreEntryGetDetailsRequest::StandardDatastoreEntryGetDetailsRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
 
@@ -620,9 +620,9 @@ void StandardDatastoreEntryGetDetailsRequest::handle_http_200(const QString& bod
 	std::optional<QString> version;
 	std::optional<QString> userids;
 	std::optional<QString> attributes;
-	for (QNetworkReply::RawHeaderPair this_header : headers)
+	for (const QNetworkReply::RawHeaderPair& this_header : headers)
 	{
-		QString header_key{ this_header.first };
+		const QString header_key{ this_header.first };
 		if (header_key == "roblox-entry-version")
 		{
 			version = QString{ this_header.second };
@@ -669,8 +669,20 @@ QString StandardDatastoreEntryGetDetailsRequest::get_send_message() const
 	return QString{ "Fetching entry '%1'..." }.arg(key_name);
 }
 
-StandardDatastoreEntryGetListRequest::StandardDatastoreEntryGetListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString prefix, std::optional<QString> initial_cursor) :
-	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, prefix{ prefix }, initial_cursor{ initial_cursor }
+StandardDatastoreEntryGetListRequest::StandardDatastoreEntryGetListRequest(
+    const QString& api_key,
+    const long long universe_id,
+    const QString& datastore_name,
+    const QString& scope,
+    const QString& prefix,
+    const std::optional<QString>& initial_cursor
+    ) :
+	DataRequest{ api_key },
+    universe_id{ universe_id },
+    datastore_name{ datastore_name },
+    scope{ scope },
+    prefix{ prefix },
+    initial_cursor{ initial_cursor }
 {
 
 }
@@ -738,7 +750,7 @@ void StandardDatastoreEntryGetListRequest::handle_http_200(const QString& body, 
 	}
 }
 
-StandardDatastoreEntryGetVersionRequest::StandardDatastoreEntryGetVersionRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, QString version) :
+StandardDatastoreEntryGetVersionRequest::StandardDatastoreEntryGetVersionRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name, const QString& version) :
 	StandardDatastoreEntryGetDetailsRequest{ api_key, universe_id, datastore_name, scope, key_name }, version{ version }
 {
 
@@ -749,7 +761,7 @@ QNetworkRequest StandardDatastoreEntryGetVersionRequest::build_request(std::opti
 	return HttpRequestBuilder::standard_datastore_entry_version_get_details(api_key, universe_id, datastore_name, scope, key_name, version);
 }
 
-StandardDatastoreEntryGetVersionListRequest::StandardDatastoreEntryGetVersionListRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name) :
+StandardDatastoreEntryGetVersionListRequest::StandardDatastoreEntryGetVersionListRequest(const QString& api_key, long long universe_id, const QString& datastore_name, const QString& scope, const QString& key_name) :
 	DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }
 {
 
@@ -770,7 +782,7 @@ void StandardDatastoreEntryGetVersionListRequest::handle_http_200(const QString&
 	std::optional<GetStandardDatastoreEntryVersionListResponse> response = GetStandardDatastoreEntryVersionListResponse::from(body);
 	if (response)
 	{
-		for (StandardDatastoreEntryVersion this_version : response->get_versions())
+		for (const StandardDatastoreEntryVersion& this_version : response->get_versions())
 		{
 			versions.push_back(this_version);
 		}
@@ -798,8 +810,23 @@ QString StandardDatastoreEntryGetVersionListRequest::get_send_message() const
 	return QString{ "Fetching versions for '%1'..." }.arg(key_name);
 }
 
-StandardDatastoreEntryPostSetRequest::StandardDatastoreEntryPostSetRequest(const QString& api_key, long long universe_id, QString datastore_name, QString scope, QString key_name, std::optional<QString> userids, std::optional<QString> attributes, QString body)
-	: DataRequest{ api_key }, universe_id{ universe_id }, datastore_name{ datastore_name }, scope{ scope }, key_name{ key_name }, userids{ userids }, attributes{ attributes }
+StandardDatastoreEntryPostSetRequest::StandardDatastoreEntryPostSetRequest(
+    const QString& api_key,
+    const long long universe_id,
+    const QString& datastore_name,
+    const QString& scope,
+    const QString& key_name,
+    const std::optional<QString>& userids,
+    const std::optional<QString>& attributes,
+    const QString& body
+    ) :
+    DataRequest{ api_key },
+    universe_id{ universe_id },
+    datastore_name{ datastore_name },
+    scope{ scope },
+    key_name{ key_name },
+    userids{ userids },
+    attributes{ attributes }
 {
 	request_type = HttpRequestType::Post;
 	req_body = body;
@@ -845,7 +872,7 @@ void StandardDatastoreGetListRequest::handle_http_200(const QString& body, const
 	std::optional<GetStandardDatastoreListResponse> response = GetStandardDatastoreListResponse::from_json(body);
 	if (response)
 	{
-		for (QString this_name : response->get_datastores_vec())
+		for (const QString& this_name : response->get_datastores_vec())
 		{
 			datastore_names.push_back(this_name);
 		}

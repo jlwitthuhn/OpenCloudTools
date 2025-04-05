@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include <QObject>
 #include <QString>
 #include <QWidget>
@@ -9,7 +11,7 @@ class QLineEdit;
 
 class BanListUserRestriction;
 
-enum class ViewEditMode;
+enum class ViewEditMode : std::uint8_t;
 
 class ViewBanWindow : public QWidget
 {

@@ -12,6 +12,8 @@
 #include "model_common.h"
 #include "util_enum.h"
 
+// NOLINTBEGIN(*-no-int-to-ptr)
+
 std::unique_ptr<SqliteDatastoreWrapper> SqliteDatastoreWrapper::new_from_path(const std::string& file_path)
 {
 	sqlite3* db_handle = nullptr;
@@ -272,7 +274,6 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "next_cursor" &&
 							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "TEXT";
 						break;
-						break;
 					default:
 						return false;
 					}
@@ -322,7 +323,6 @@ bool SqliteDatastoreWrapper::is_correct_schema()
 						column_valid[2] =
 							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) } == "value" &&
 							std::string{ reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) } == "TEXT";
-						break;
 						break;
 					default:
 						return false;
@@ -542,7 +542,7 @@ void SqliteDatastoreWrapper::write_details(const StandardDatastoreEntryFull& det
 	}
 }
 
-void SqliteDatastoreWrapper::write_enumeration(long long universe_id, const std::string& datastore_name, const std::optional<std::string> cursor)
+void SqliteDatastoreWrapper::write_enumeration(long long universe_id, const std::string& datastore_name, const std::optional<std::string>& cursor)
 {
 	if (db_handle != nullptr)
 	{
@@ -981,3 +981,5 @@ std::optional<std::vector<StandardDatastoreEntryFull>> SqliteDatastoreReader::re
 		}
 	}
 }
+
+// NOLINTEND(*-no-int-to-ptr)

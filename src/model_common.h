@@ -1,13 +1,14 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 
 #include <QString>
 
 #include "util_json.h"
 
-enum class DatastoreEntryType;
+enum class DatastoreEntryType : std::uint8_t;
 
 class BanListGameJoinRestriction
 {

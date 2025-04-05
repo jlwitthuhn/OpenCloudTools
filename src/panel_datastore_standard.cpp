@@ -679,7 +679,7 @@ void StandardDatastorePanel::pressed_fetch_datastores()
 	diag.exec();
 
 	list_datastore_index->clear();
-	for (QString this_name : req->get_datastore_names())
+	for (const QString& this_name : req->get_datastore_names())
 	{
 		QListWidgetItem* this_item = new QListWidgetItem(list_datastore_index);
 		this_item->setText(this_name);

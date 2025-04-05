@@ -78,7 +78,7 @@ ManageApiKeysWindow::ManageApiKeysWindow(QWidget* parent) : QWidget{ parent, Qt:
 
 		sel_button = new QPushButton{ "Select", button_panel_bot };
 		sel_button->setEnabled(false);
-		button_layout->addWidget(sel_button);;
+		button_layout->addWidget(sel_button);
 		connect(sel_button, &QPushButton::clicked, this, &ManageApiKeysWindow::pressed_select);
 
 		QPushButton* close_button = new QPushButton{ "Close", button_panel_bot };

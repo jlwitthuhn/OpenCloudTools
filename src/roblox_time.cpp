@@ -25,7 +25,7 @@ static QDateTime parse_header(const QByteArray& date_header)
 
 void RobloxTime::update_time_from_headers(const QList<QNetworkReply::RawHeaderPair>& headers)
 {
-	for (auto this_pair : headers)
+	for (const auto& this_pair : headers)
 	{
 		if (this_pair.first.toStdString() == "date")
 		{
@@ -55,7 +55,7 @@ std::optional<QDateTime> RobloxTime::parse_version_date(const QString& version_d
 	mutable_date.replace("T", " ");
 	mutable_date = mutable_date.mid(0, 19);
 	// Now the format is "2022-06-05 09:44:26"
-	const QDateTime result{ QDateTime::fromString(mutable_date, "yyyy-MM-dd HH:mm:ss") };
+	QDateTime result{ QDateTime::fromString(mutable_date, "yyyy-MM-dd HH:mm:ss") };
 	if (result.isValid())
 	{
 		return result;
