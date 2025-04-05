@@ -10,6 +10,7 @@
 
 #include <QtGlobal>
 #include <QApplication>
+#include <QColor>
 #include <QPalette>
 #include <QSettings>
 #include <QString>
@@ -327,19 +328,22 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 
 		QPalette main_palette;
 
-		const char* color_background = "#323232";
-		const char* color_background_alt = "#262626";
-		const char* color_background_input = "#202020";
-		const char* color_text = "#FFFFFF";
-		const char* color_text_alt = "#DDDDDD";
-		const char* color_text_disabled = "#BBBBBB";
+		constexpr QColor color_background{ 0x32, 0x32, 0x32 };
+		constexpr QColor color_background_alt{ 0x26, 0x26, 0x26 };
+		constexpr QColor color_background_input{ 0x20, 0x20, 0x20 };
+		constexpr QColor color_text { 0xFF, 0xFF, 0xFF };
+		constexpr QColor color_text_alt{ 0xDD, 0xDD, 0xDD };
+		constexpr QColor color_text_disabled{ 0xBB, 0xBB, 0xBB };
+
+		constexpr QColor color_tooltip_bg{ 0xFF, 0xFF, 0xFF };
+		constexpr QColor color_tooltip_fg{ 0x00, 0x00, 0x00 };
 
 		main_palette.setColor(QPalette::Active, QPalette::Window, color_background);
 		main_palette.setColor(QPalette::Active, QPalette::WindowText, color_text);
 		main_palette.setColor(QPalette::Active, QPalette::Base, color_background_input);
 		main_palette.setColor(QPalette::Active, QPalette::AlternateBase, color_background_alt);
-		main_palette.setColor(QPalette::Active, QPalette::ToolTipBase, "#FFFFFF");
-		main_palette.setColor(QPalette::Active, QPalette::ToolTipText, "#000000");
+		main_palette.setColor(QPalette::Active, QPalette::ToolTipBase, color_tooltip_bg);
+		main_palette.setColor(QPalette::Active, QPalette::ToolTipText, color_tooltip_fg);
 		main_palette.setColor(QPalette::Active, QPalette::PlaceholderText, color_text);
 		main_palette.setColor(QPalette::Active, QPalette::Text, color_text);
 		main_palette.setColor(QPalette::Active, QPalette::Button, color_background);
@@ -350,8 +354,8 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 		main_palette.setColor(QPalette::Inactive, QPalette::WindowText, color_text);
 		main_palette.setColor(QPalette::Inactive, QPalette::Base, color_background_input);
 		main_palette.setColor(QPalette::Inactive, QPalette::AlternateBase, color_background_alt);
-		main_palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, "#FFFFFF");
-		main_palette.setColor(QPalette::Inactive, QPalette::ToolTipText, "#000000");
+		main_palette.setColor(QPalette::Inactive, QPalette::ToolTipBase, color_tooltip_bg);
+		main_palette.setColor(QPalette::Inactive, QPalette::ToolTipText, color_tooltip_fg);
 		main_palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, color_text);
 		main_palette.setColor(QPalette::Inactive, QPalette::Text, color_text);
 		main_palette.setColor(QPalette::Inactive, QPalette::Button, color_background);
@@ -362,8 +366,8 @@ void UserProfile::set_qt_theme(const QString& theme_name)
 		main_palette.setColor(QPalette::Disabled, QPalette::WindowText, color_text_disabled);
 		main_palette.setColor(QPalette::Disabled, QPalette::Base, color_background);
 		main_palette.setColor(QPalette::Disabled, QPalette::AlternateBase, color_background_alt);
-		main_palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, "#FFFFFF");
-		main_palette.setColor(QPalette::Disabled, QPalette::ToolTipText, "#000000");
+		main_palette.setColor(QPalette::Disabled, QPalette::ToolTipBase, color_tooltip_bg);
+		main_palette.setColor(QPalette::Disabled, QPalette::ToolTipText, color_tooltip_fg);
 		main_palette.setColor(QPalette::Disabled, QPalette::PlaceholderText, color_text_disabled);
 		main_palette.setColor(QPalette::Disabled, QPalette::Text, color_text_disabled);
 		main_palette.setColor(QPalette::Disabled, QPalette::Button, color_background);
