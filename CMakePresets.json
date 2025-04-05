@@ -14,10 +14,18 @@
                 "OCT_USE_QT5": "FALSE"
             }
         },
-        {
-            "name": "ninja-normal-raw",
-            "inherits": "common",
-            "generator": "Ninja"
+      {
+        "name": "ninja-normal",
+        "inherits": "common",
+        "generator": "Ninja"
+      },
+      {
+        "name": "ninja-clang-tidy",
+        "inherits": "common",
+        "generator": "Ninja",
+        "cacheVariables": {
+          "OCT_USE_CLANG_TIDY": "TRUE"
         }
+      }
     ]
 }

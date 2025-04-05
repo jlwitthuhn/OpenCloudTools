@@ -2,8 +2,8 @@
     "version": 2,
     "configurePresets": [
         {
-            "name": "ninja-normal",
-            "inherits": "ninja-normal-raw",
+            "name": "ninja-normal-withqtpath",
+            "inherits": "ninja-normal",
             "cacheVariables": {
                 "CMAKE_PREFIX_PATH": "D:/Dev/Qt/install/6.8.1_vs2022"
             }

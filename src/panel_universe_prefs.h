@@ -8,14 +8,14 @@
 #include <QString>
 #include <QWidget>
 
-#include "subwindow.h"
-
 class QCheckBox;
 class QLineEdit;
 class QListWidget;
 class QPushButton;
 
 class UniverseProfile;
+
+enum class SubwindowType;
 
 class UniversePreferencesPanel : public QWidget
 {

@@ -5,7 +5,6 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <string>
 #include <vector>
 
 #include <Qt>
@@ -13,7 +12,6 @@
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QCheckBox>
-#include <QFormLayout>
 #include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -28,7 +26,6 @@
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QSplitter>
-#include <QTabWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -41,8 +38,6 @@
 #include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
-#include "util_alert.h"
-#include "util_validator.h"
 
 OrderedDatastorePanel::OrderedDatastorePanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :
 	QWidget{ parent },

@@ -1,5 +1,6 @@
 #include "data_request.h"
 
+#include <Qt>
 #include <QByteArray>
 #include <QCryptographicHash>
 #include <QDateTime>
@@ -9,8 +10,10 @@
 #include <QMetaEnum>
 #include <QNetworkReply>
 #include <QTimer>
-#include <QUUid>
+#include <QUuid>
 #include <QVariant>
+
+#include <memory>
 
 #include "http_req_builder.h"
 #include "http_wrangler.h"

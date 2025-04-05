@@ -1,14 +1,22 @@
 #include "panel_datastore_ordered_add.h"
 
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
+
 #include <QFormLayout>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSizePolicy>
 
 #include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_list_string.h"
 #include "diag_operation_in_progress.h"
+#include "profile.h"
 #include "util_alert.h"
 #include "util_validator.h"
 

@@ -1,18 +1,25 @@
 #include "panel_datastore_standard_add.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include <QComboBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSizePolicy>
 #include <QTabWidget>
 #include <QTextEdit>
+#include <QVariant>
 
 #include "assert.h"
 #include "data_request.h"
 #include "diag_confirm_change.h"
 #include "diag_list_string.h"
 #include "diag_operation_in_progress.h"
+#include "profile.h"
 #include "util_alert.h"
 #include "util_enum.h"
 #include "util_json.h"

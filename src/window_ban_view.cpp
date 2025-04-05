@@ -1,10 +1,16 @@
 #include "window_ban_view.h"
 
+#include <memory>
+#include <optional>
+
+#include <Qt>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 #include "assert.h"
 #include "data_request.h"

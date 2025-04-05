@@ -5,11 +5,11 @@
 #include <QObject>
 #include <QString>
 #include <QDialog>
-#include <qlistwidget.h>
 
 class QListWidget;
 class QListWidgetItem;
 class QPushButton;
+class QWidget;
 
 class StringListDialog : public QDialog
 {

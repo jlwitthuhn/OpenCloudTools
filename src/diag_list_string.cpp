@@ -1,9 +1,11 @@
 #include "diag_list_string.h"
 
 #include <QHBoxLayout>
+#include <QList>
 #include <QListWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QWidget>
 
 StringListDialog::StringListDialog(const QString& title, const std::vector<QString>& strings, QWidget* const parent) : QDialog{ parent }
 {

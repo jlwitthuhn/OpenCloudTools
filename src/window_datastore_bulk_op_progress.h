@@ -2,7 +2,6 @@
 
 #include <cstddef>
 
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -26,7 +25,6 @@ class StandardDatastoreEntryGetDetailsRequest;
 class StandardDatastoreEntryGetListRequest;
 class StandardDatastoreEntryGetVersionRequest;
 class StandardDatastoreEntryGetVersionListRequest;
-class StandardDatastoreEntryName;
 class StandardDatastoreEntryPostSetRequest;
 class TextLogWidget;
 

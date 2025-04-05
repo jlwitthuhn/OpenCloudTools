@@ -3,14 +3,15 @@
 #include <memory>
 
 #include <QObject>
+#include <QString>
 #include <QWidget>
-
-#include "profile.h"
 
 class QComboBox;
 class QLineEdit;
 class QPushButton;
 class QTextEdit;
+
+class UniverseProfile;
 
 class StandardDatastoreAddEntryPanel : public QWidget
 {

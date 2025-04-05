@@ -1,6 +1,12 @@
 #include "panel_ban_list.h"
 
+#include <optional>
+#include <vector>
+
+#include <QAbstractItemModel>
 #include <QHBoxLayout>
+#include <QItemSelectionModel>
+#include <QModelIndex>
 #include <QPushButton>
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -8,7 +14,10 @@
 #include "assert.h"
 #include "data_request.h"
 #include "diag_operation_in_progress.h"
+#include "model_common.h"
 #include "model_qt.h"
+#include "profile.h"
+#include "util_enum.h"
 #include "window_ban_view.h"
 
 BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::shared_ptr<UniverseProfile>& universe) :

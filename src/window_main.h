@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <type_traits>
 
 #include <QMainWindow>
 #include <QMetaObject>

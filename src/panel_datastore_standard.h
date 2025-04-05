@@ -14,7 +14,6 @@ class QListWidget;
 class QModelIndex;
 class QPoint;
 class QPushButton;
-class QTextEdit;
 class QTreeView;
 
 class StandardDatastoreEntryName;

@@ -6,13 +6,12 @@
 #include <QString>
 #include <QWidget>
 
-#include "profile.h"
-
 class QModelIndex;
 class QPushButton;
 class QTreeView;
 
 class BanListQTableModel;
+class UniverseProfile;
 
 class BanListPanel : public QWidget
 {

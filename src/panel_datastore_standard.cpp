@@ -5,7 +5,6 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <string>
 
 #include <Qt>
 #include <QtGlobal>
@@ -14,8 +13,6 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QClipboard>
-#include <QComboBox>
-#include <QFormLayout>
 #include <QFrame>
 #include <QGroupBox>
 #include <QGuiApplication>
@@ -32,9 +29,7 @@
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QSplitter>
-#include <QTextEdit>
 #include <QTreeView>
-#include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -46,10 +41,7 @@
 #include "model_common.h"
 #include "model_qt.h"
 #include "profile.h"
-#include "util_alert.h"
 #include "util_enum.h"
-#include "util_json.h"
-#include "util_validator.h"
 #include "window_datastore_entry_versions_view.h"
 #include "window_datastore_entry_view.h"
 

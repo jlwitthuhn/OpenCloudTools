@@ -6,10 +6,10 @@
 #include <QString>
 #include <QWidget>
 
-#include "profile.h"
-
 class QLineEdit;
 class QPushButton;
+
+class UniverseProfile;
 
 class OrderedDatastoreAddEntryPanel : public QWidget
 {

@@ -1,12 +1,13 @@
 #include "model_common.h"
 
-#include "util_enum.h"
-#include "util_json.h"
-#include "util_validator.h"
-
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QVariant>
+
+#include "util_enum.h"
+#include "util_json.h"
+#include "util_validator.h"
 
 QString BanListGameJoinRestrictionUpdate::to_json() const
 {

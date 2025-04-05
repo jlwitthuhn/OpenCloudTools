@@ -1,9 +1,11 @@
 #include "window_main.h"
 
+#include <set>
 #include <utility>
 #include <vector>
 
 #include <Qt>
+#include <QAction>
 #include <QByteArray>
 #include <QDockWidget>
 #include <QLabel>
@@ -13,6 +15,8 @@
 #include <QMdiSubWindow>
 #include <QMenu>
 #include <QMessageBox>
+#include <QModelIndex>
+#include <QPoint>
 #include <QPushButton>
 #include <QSize>
 #include <QString>
