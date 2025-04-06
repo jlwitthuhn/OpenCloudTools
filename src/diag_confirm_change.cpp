@@ -25,6 +25,9 @@ ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType
 	case ChangeType::BanListUnbanUser:
 		info->setText(QString{ "This action will unban %1.\nAre you sure you want to do this?" }.arg(name));
 		break;
+	case ChangeType::BanListUpdateRestriction:
+		info->setText("This action will update this user's restriction.\nAre you sure you want to do this?");
+		break;
 	case ChangeType::OrderedDatastoreCreate:
 		info->setText("This action will create a new ordered datastore entry. Are you sure you want to do this?");
 		break;

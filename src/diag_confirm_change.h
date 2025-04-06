@@ -12,6 +12,7 @@ class QWidget;
 enum class ChangeType : std::uint8_t
 {
 	BanListUnbanUser,
+	BanListUpdateRestriction,
 	OrderedDatastoreCreate,
 	OrderedDatastoreDelete,
 	OrderedDatastoreIncrement,

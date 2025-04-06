@@ -14,6 +14,7 @@
 
 #include "assert.h"
 #include "data_request.h"
+#include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
 #include "model_common.h"
 
@@ -161,6 +162,13 @@ ViewBanWindow::ViewBanWindow(const ViewEditMode view_edit_mode, const QString& a
 
 void ViewBanWindow::pressed_submit()
 {
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BanListUpdateRestriction };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (!confirmed)
+	{
+		return;
+	}
+
 	const QString path = path_edit->text();
 
 	const bool active = update_active_check->isChecked();
