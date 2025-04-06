@@ -15,13 +15,16 @@
 
 #include "profile.h"
 
-ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType change_type) : QDialog{ parent }
+ConfirmChangeDialog::ConfirmChangeDialog(QWidget* const parent, const ChangeType change_type, const QString& name) : QDialog{ parent }
 {
 	setWindowTitle("Confirm Change");
 
 	QLabel* info = new QLabel{ this };
 	switch (change_type)
 	{
+	case ChangeType::BanListUnbanUser:
+		info->setText(QString{ "This action will unban %1.\nAre you sure you want to do this?" }.arg(name));
+		break;
 	case ChangeType::OrderedDatastoreCreate:
 		info->setText("This action will create a new ordered datastore entry. Are you sure you want to do this?");
 		break;

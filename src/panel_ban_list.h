@@ -35,12 +35,14 @@ private:
 	void pressed_details();
 	void pressed_edit();
 	void pressed_refresh();
+	void pressed_unban();
 
 	QString api_key;
 	std::weak_ptr<UniverseProfile> attached_universe;
 
 	QTreeView* tree_view = nullptr;
 
+	QPushButton* unban_button = nullptr;
 	QPushButton* edit_button = nullptr;
 	QPushButton* details_button = nullptr;
 };

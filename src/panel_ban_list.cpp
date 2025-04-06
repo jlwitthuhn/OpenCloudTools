@@ -13,6 +13,7 @@
 
 #include "assert.h"
 #include "data_request.h"
+#include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
 #include "model_common.h"
 #include "model_qt.h"
@@ -35,6 +36,9 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 		QPushButton* const refresh_button = new QPushButton{ "Refresh", button_bar };
 		connect(refresh_button, &QPushButton::clicked, this, &BanListPanel::pressed_refresh);
 
+		unban_button = new QPushButton{ "Unban...", button_bar };
+		connect(unban_button, &QPushButton::clicked, this, &BanListPanel::pressed_unban);
+
 		edit_button = new QPushButton{ "Edit...", button_bar };
 		connect(edit_button, &QPushButton::clicked, this, &BanListPanel::pressed_edit);
 
@@ -45,6 +49,7 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 		button_layout->setContentsMargins(0, 0, 0, 0);
 		button_layout->addWidget(refresh_button);
 		button_layout->addStretch();
+		button_layout->addWidget(unban_button);
 		button_layout->addWidget(edit_button);
 		button_layout->addWidget(details_button);
 	}
@@ -60,6 +65,7 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 void BanListPanel::gui_refresh()
 {
 	const bool enabled = get_selected_single_index().isValid();
+	unban_button->setEnabled(enabled);
 	details_button->setEnabled(enabled);
 	edit_button->setEnabled(enabled);
 }
@@ -145,4 +151,30 @@ void BanListPanel::pressed_refresh()
 
 	BanListQTableModel* const new_model = new BanListQTableModel{ this, req->get_restrictions() };
 	set_table_model(new_model);
+}
+
+void BanListPanel::pressed_unban()
+{
+	const std::optional<BanListUserRestriction> opt_restriction = get_selected_restriction();
+	if (!opt_restriction)
+	{
+		return;
+	}
+
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BanListUnbanUser, opt_restriction->get_user()};
+	bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (!confirmed)
+	{
+		return;
+	}
+
+	constexpr bool active = false;
+	const std::optional<QString> duration;
+	const QString reason = "Manually unbanned";
+	constexpr bool exclude_alts = false;
+	const BanListGameJoinRestrictionUpdate update{ active, duration, reason, reason, exclude_alts };
+
+	const auto update_req = std::make_shared<UserRestrictionPatchUpdateV2Request>(api_key, opt_restriction->get_path(), update);
+	OperationInProgressDialog diag{ this, update_req };
+	diag.exec();
 }

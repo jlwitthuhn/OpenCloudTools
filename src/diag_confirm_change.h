@@ -11,6 +11,7 @@ class QWidget;
 
 enum class ChangeType : std::uint8_t
 {
+	BanListUnbanUser,
 	OrderedDatastoreCreate,
 	OrderedDatastoreDelete,
 	OrderedDatastoreIncrement,
@@ -28,7 +29,7 @@ class ConfirmChangeDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	ConfirmChangeDialog(QWidget* parent, ChangeType change_type);
+	ConfirmChangeDialog(QWidget* parent, ChangeType change_type, const QString& name = "?");
 
 private:
 	void handle_prod_confirm_check_changed();
