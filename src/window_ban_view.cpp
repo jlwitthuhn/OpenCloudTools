@@ -198,6 +198,7 @@ void ViewBanWindow::pressed_submit()
 		if (!valid_number)
 		{
 			show_error_dialog();
+			return;
 		}
 	}
 
