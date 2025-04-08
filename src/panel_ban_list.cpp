@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <QAbstractItemModel>
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QItemSelectionModel>
 #include <QModelIndex>
@@ -28,14 +29,26 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 {
 	setMinimumWidth(450);
 
+	QWidget* const top_bar = new QWidget{ this };
+	{
+		QPushButton* const refresh_button = new QPushButton{ "Refresh", top_bar };
+		connect(refresh_button, &QPushButton::clicked, this, &BanListPanel::pressed_refresh);
+
+		active_only_check = new QCheckBox{ "Active bans only", top_bar };
+		active_only_check->setChecked(true);
+
+		QHBoxLayout* const top_layout = new QHBoxLayout{ top_bar };
+		top_layout->setContentsMargins(0, 0, 0, 0);
+		top_layout->addWidget(refresh_button);
+		top_layout->addWidget(active_only_check);
+		top_layout->addStretch();
+	}
+
 	tree_view = new QTreeView{ this };
 	tree_view->setMinimumSize(400, 200);
 
 	QWidget* const button_bar = new QWidget{ this };
 	{
-		QPushButton* const refresh_button = new QPushButton{ "Refresh", button_bar };
-		connect(refresh_button, &QPushButton::clicked, this, &BanListPanel::pressed_refresh);
-
 		unban_button = new QPushButton{ "Unban...", button_bar };
 		connect(unban_button, &QPushButton::clicked, this, &BanListPanel::pressed_unban);
 
@@ -47,7 +60,6 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 
 		QHBoxLayout* const button_layout = new QHBoxLayout{ button_bar };
 		button_layout->setContentsMargins(0, 0, 0, 0);
-		button_layout->addWidget(refresh_button);
 		button_layout->addStretch();
 		button_layout->addWidget(unban_button);
 		button_layout->addWidget(edit_button);
@@ -55,6 +67,7 @@ BanListPanel::BanListPanel(QWidget* parent, const QString& api_key, const std::s
 	}
 
 	QVBoxLayout* const layout = new QVBoxLayout{ this };
+	layout->addWidget(top_bar);
 	layout->addWidget(tree_view);
 	layout->addWidget(button_bar);
 
@@ -145,7 +158,8 @@ void BanListPanel::pressed_refresh()
 	auto universe = attached_universe.lock();
 	OCTASSERT(universe);
 
-	auto req = std::make_shared<UserRestrictionGetListV2Request>(api_key, universe->get_universe_id());
+	const bool active_only = active_only_check->isChecked();
+	auto req = std::make_shared<UserRestrictionGetListV2Request>(api_key, universe->get_universe_id(), active_only);
 	OperationInProgressDialog diag{ this, req };
 	diag.exec();
 

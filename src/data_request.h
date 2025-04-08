@@ -477,7 +477,7 @@ private:
 class UserRestrictionGetListV2Request : public DataRequest
 {
 public:
-	UserRestrictionGetListV2Request(const QString& api_key, long long universe_id);
+	UserRestrictionGetListV2Request(const QString& api_key, long long universe_id, bool active_only);
 
 	virtual QString get_title_string() const override;
 
@@ -489,7 +489,8 @@ private:
 	virtual QNetworkRequest build_request(std::optional<QString> cursor = std::nullopt) const override;
 	virtual void handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>& headers = QList<QNetworkReply::RawHeaderPair>{}) override;
 
-	long long universe_id;
+	long long universe_id = 0;
+	bool active_only = false;
 
 	std::optional<size_t> result_limit;
 

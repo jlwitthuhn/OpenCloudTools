@@ -949,8 +949,8 @@ void UniverseGetDetailsRequest::handle_http_200(const QString& body, const QList
 	do_success();
 }
 
-UserRestrictionGetListV2Request::UserRestrictionGetListV2Request(const QString& api_key, const long long universe_id)
-	: DataRequest{ api_key }, universe_id{ universe_id }
+UserRestrictionGetListV2Request::UserRestrictionGetListV2Request(const QString& api_key, const long long universe_id, const bool active_only)
+	: DataRequest{ api_key }, universe_id{ universe_id }, active_only{ active_only }
 {
 
 }
@@ -962,7 +962,7 @@ QString UserRestrictionGetListV2Request::get_title_string() const
 
 QNetworkRequest UserRestrictionGetListV2Request::build_request(const std::optional<QString> cursor) const
 {
-	return HttpRequestBuilder::use_restrictions_v2_list(api_key, universe_id, cursor);
+	return HttpRequestBuilder::user_restrictions_v2_list(api_key, universe_id, active_only, cursor);
 }
 
 void UserRestrictionGetListV2Request::handle_http_200(const QString& body, const QList<QNetworkReply::RawHeaderPair>&)
@@ -980,6 +980,10 @@ void UserRestrictionGetListV2Request::handle_http_200(const QString& body, const
 		{
 			// Limit has been hit
 			break;
+		}
+		if (!this_restriction.get_game_join_restriction().get_active() && active_only)
+		{
+			continue;
 		}
 		restrictions.push_back(this_restriction);
 	}

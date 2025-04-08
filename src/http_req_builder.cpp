@@ -262,13 +262,18 @@ QNetworkRequest HttpRequestBuilder::universe_v2_get_details(const QString& api_k
 	return req;
 }
 
-QNetworkRequest HttpRequestBuilder::use_restrictions_v2_list(const QString& api_key, const long long universe_id, const std::optional<QString>& cursor)
+QNetworkRequest HttpRequestBuilder::user_restrictions_v2_list(const QString& api_key, const long long universe_id, const bool active_only, const std::optional<QString>& cursor)
 {
 	QString url = base_url_user_restrictions_v2(universe_id);
 	url = url + "?maxPageSize=100";
 	if (cursor)
 	{
 		url = url + "&pageToken=" + QUrl::toPercentEncoding(*cursor);
+	}
+	if (active_only)
+	{
+		// TODO: It looks like this doesn't actually work, so we filter client-side instead
+		url = url + "&filter=" + QUrl::toPercentEncoding("game_join_restriction.active==\"true\"");
 	}
 
 	QNetworkRequest req{ url };

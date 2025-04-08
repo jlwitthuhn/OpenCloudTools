@@ -7,6 +7,7 @@
 #include <QString>
 #include <QWidget>
 
+class QCheckBox;
 class QModelIndex;
 class QPushButton;
 class QTreeView;
@@ -39,6 +40,8 @@ private:
 
 	QString api_key;
 	std::weak_ptr<UniverseProfile> attached_universe;
+
+	QCheckBox* active_only_check = nullptr;
 
 	QTreeView* tree_view = nullptr;
 

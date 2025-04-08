@@ -36,7 +36,7 @@ public:
 
 	static QNetworkRequest universe_v2_get_details(const QString& api_key, long long universe_id);
 
-	static QNetworkRequest use_restrictions_v2_list(const QString& api_key, long long universe_id, const std::optional<QString>& cursor = std::nullopt);
+	static QNetworkRequest user_restrictions_v2_list(const QString& api_key, long long universe_id, bool active_only, const std::optional<QString>& cursor = std::nullopt);
 
 private:
 	static QString base_url_v2();
