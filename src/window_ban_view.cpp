@@ -9,6 +9,7 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -162,15 +163,6 @@ ViewBanWindow::ViewBanWindow(const ViewEditMode view_edit_mode, const QString& a
 
 void ViewBanWindow::pressed_submit()
 {
-	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BanListUpdateRestriction };
-	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
-	if (!confirmed)
-	{
-		return;
-	}
-
-	const QString path = path_edit->text();
-
 	const bool active = update_active_check->isChecked();
 	const bool has_duration_set = update_duration_edit->text().trimmed().size() > 0;
 	const std::optional<QString> duration = has_duration_set ? std::make_optional(update_duration_edit->text()) : std::nullopt;
@@ -179,6 +171,44 @@ void ViewBanWindow::pressed_submit()
 	const bool exclude_alt_accounts = update_exclude_alt_accounts_check->isChecked();
 	const BanListGameJoinRestrictionUpdate update{ active, duration, private_reason, display_reason, exclude_alt_accounts };
 
+	if (duration)
+	{
+		auto show_error_dialog = [this]() {
+			QMessageBox* const message_box = new QMessageBox{ this };
+			message_box->setWindowTitle("Duration error");
+			message_box->setText("Duration must be in the form '{number}s' ex: '600s'");
+			message_box->setIcon(QMessageBox::Warning);
+			message_box->exec();
+		};
+
+		if (duration->size() < 2)
+		{
+			show_error_dialog();
+			return;
+		}
+		if ((*duration)[duration->size() - 1] != 's')
+		{
+			show_error_dialog();
+			return;
+		}
+
+		const QString without_s = duration->left(duration->size() - 1);
+		bool valid_number = false;
+		without_s.toInt(&valid_number);
+		if (!valid_number)
+		{
+			show_error_dialog();
+		}
+	}
+
+	ConfirmChangeDialog* const confirm_dialog = new ConfirmChangeDialog{ this, ChangeType::BanListUpdateRestriction };
+	const bool confirmed = static_cast<bool>(confirm_dialog->exec());
+	if (!confirmed)
+	{
+		return;
+	}
+
+	const QString path = path_edit->text();
 	const std::shared_ptr<UserRestrictionPatchUpdateV2Request> req = std::make_shared<UserRestrictionPatchUpdateV2Request>(api_key, path, update);
 	OperationInProgressDialog diag{ this, req };
 	diag.exec();
