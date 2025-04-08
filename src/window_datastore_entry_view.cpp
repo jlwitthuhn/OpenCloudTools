@@ -348,5 +348,8 @@ void ViewDatastoreEntryWindow::pressed_save()
 	OperationInProgressDialog diag{ this, post_req };
 	diag.exec();
 
-	close();
+	if (post_req->req_success())
+	{
+		close();
+	}
 }
