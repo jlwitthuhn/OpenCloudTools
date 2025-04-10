@@ -287,7 +287,7 @@ void MyMainWindow::rebuild_universe_tree()
 			SubwindowType::MEMORY_STORE_SORTED_MAP,
 			SubwindowType::BULK_DATA,
 			SubwindowType::MESSAGING,
-			SubwindowType::BAN_LIST,
+			SubwindowType::CAT_MODERATION,
 			SubwindowType::UNIVERSE_PREFERENCES,
 		};
 		const std::set<QString>& hidden_operation_ids = this_universe->get_hidden_operations_set();
@@ -331,6 +331,15 @@ void MyMainWindow::rebuild_universe_tree()
 					QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
 					add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_ORDERED_ADD));
 					add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED_ADD));
+				}
+			}
+			if (subwindow_type == SubwindowType::CAT_MODERATION)
+			{
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::BAN_LIST)) == 0)
+				{
+					QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
+					search_item->setText(0, subwindow_type_display_name(SubwindowType::BAN_LIST));
+					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::BAN_LIST));
 				}
 			}
 		}
@@ -390,7 +399,7 @@ void MyMainWindow::show_http_log()
 
 void MyMainWindow::show_subwindow(const SubwindowId& id)
 {
-	if (id.get_type() == SubwindowType::CAT_DATA_STORES)
+	if (id.get_type() == SubwindowType::CAT_DATA_STORES || id.get_type() == SubwindowType::CAT_MODERATION)
 	{
 		return;
 	}
@@ -448,6 +457,9 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 		case SubwindowType::MESSAGING:
 			new_subwindow = create_and_attach_panel<MessagingServicePanel>(api_profile, universe, center_mdi_widget);
 			break;
+		case SubwindowType::CAT_MODERATION:
+			OCTASSERT(false);
+			return;
 		case SubwindowType::BAN_LIST:
 			new_subwindow = create_and_attach_panel<BanListPanel>(api_profile, universe, center_mdi_widget);
 			break;

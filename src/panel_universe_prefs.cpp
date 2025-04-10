@@ -47,6 +47,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 				SubwindowType::MEMORY_STORE_SORTED_MAP,
 				SubwindowType::BULK_DATA,
 				SubwindowType::MESSAGING,
+				SubwindowType::CAT_MODERATION,
 				SubwindowType::BAN_LIST,
 				SubwindowType::UNIVERSE_PREFERENCES,
 			};

@@ -27,6 +27,8 @@ QString subwindow_type_display_name(const SubwindowType type)
 		return "Bulk Data";
 	case SubwindowType::MESSAGING:
 		return "Messaging Service";
+	case SubwindowType::CAT_MODERATION:
+		return "Moderation";
 	case SubwindowType::BAN_LIST:
 		return "Ban List";
 	case SubwindowType::UNIVERSE_PREFERENCES:
@@ -56,6 +58,8 @@ QString subwindow_type_id(const SubwindowType type)
 		return "BULK";
 	case SubwindowType::MESSAGING:
 		return "MSG";
+	case SubwindowType::CAT_MODERATION:
+		return "CMOD";
 	case SubwindowType::BAN_LIST:
 		return "BAN";
 	case SubwindowType::UNIVERSE_PREFERENCES:
