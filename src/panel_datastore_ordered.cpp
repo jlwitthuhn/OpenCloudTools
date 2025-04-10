@@ -196,6 +196,9 @@ void OrderedDatastorePanel::gui_refresh()
 
 	setEnabled(true);
 
+	const bool data_store_selected = list_datastore_index->selectionModel()->selectedRows().count() > 0;
+	button_remove_datastore->setEnabled(data_store_selected);
+
 	const bool find_enabled = edit_search_datastore_name->text().size() > 0;
 	button_search_find_ascending->setEnabled(find_enabled);
 	button_search_find_descending->setEnabled(find_enabled);
