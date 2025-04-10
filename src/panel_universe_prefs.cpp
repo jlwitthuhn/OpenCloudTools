@@ -39,6 +39,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 
 			const std::set<QString>& hidden_operations = universe->get_hidden_operations_set();
 			const static std::vector<SubwindowType> available_types = {
+				SubwindowType::CAT_DATA_STORES,
 				SubwindowType::DATA_STORES_STANDARD,
 				SubwindowType::DATA_STORES_STANDARD_ADD,
 				SubwindowType::DATA_STORES_ORDERED,

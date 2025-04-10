@@ -283,8 +283,7 @@ void MyMainWindow::rebuild_universe_tree()
 	for (const std::shared_ptr<UniverseProfile>& this_universe : universe_list)
 	{
 		static const std::vector<SubwindowType> subwindow_types = std::vector<SubwindowType>{
-			SubwindowType::DATA_STORES_STANDARD,
-			SubwindowType::DATA_STORES_ORDERED,
+			SubwindowType::CAT_DATA_STORES,
 			SubwindowType::MEMORY_STORE_SORTED_MAP,
 			SubwindowType::BULK_DATA,
 			SubwindowType::MESSAGING,
@@ -307,27 +306,28 @@ void MyMainWindow::rebuild_universe_tree()
 			subwindow_item->setText(0, subwindow_type_display_name(subwindow_type));
 			subwindow_item->setData(0, Qt::UserRole, static_cast<int>(subwindow_type));
 
-			if (subwindow_type == SubwindowType::DATA_STORES_STANDARD)
+			if (subwindow_type == SubwindowType::CAT_DATA_STORES)
 			{
-				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_STANDARD_ADD)) == 0)
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_STANDARD)) == 0)
 				{
 					QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
-					search_item->setText(0, "Search Data Store");
+					search_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_STANDARD));
 					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD));
-
+				}
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_STANDARD_ADD)) == 0)
+				{
 					QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
 					add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_STANDARD_ADD));
 					add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_STANDARD_ADD));
 				}
-			}
-			else if (subwindow_type == SubwindowType::DATA_STORES_ORDERED)
-			{
-				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_ORDERED_ADD)) == 0)
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_ORDERED)) == 0)
 				{
 					QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
-					search_item->setText(0, "Search Ordered Data Store");
+					search_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_ORDERED));
 					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED));
-
+				}
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::DATA_STORES_ORDERED_ADD)) == 0)
+				{
 					QTreeWidgetItem* const add_item = new QTreeWidgetItem{ subwindow_item };
 					add_item->setText(0, subwindow_type_display_name(SubwindowType::DATA_STORES_ORDERED_ADD));
 					add_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::DATA_STORES_ORDERED_ADD));
@@ -390,6 +390,11 @@ void MyMainWindow::show_http_log()
 
 void MyMainWindow::show_subwindow(const SubwindowId& id)
 {
+	if (id.get_type() == SubwindowType::CAT_DATA_STORES)
+	{
+		return;
+	}
+
 	const std::shared_ptr<ApiKeyProfile> api_profile = attached_profile.lock();
 	if (!api_profile)
 	{
@@ -419,6 +424,9 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 	QPointer<QMdiSubWindow> new_subwindow;
 	switch (id.get_type())
 	{
+		case SubwindowType::CAT_DATA_STORES:
+			OCTASSERT(false);
+			return;
 		case SubwindowType::DATA_STORES_STANDARD:
 			new_subwindow = create_and_attach_panel<StandardDatastorePanel>(api_profile, universe, center_mdi_widget);
 			break;

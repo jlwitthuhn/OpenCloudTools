@@ -8,6 +8,7 @@
 
 enum class SubwindowType : std::uint8_t
 {
+	CAT_DATA_STORES,
 	DATA_STORES_STANDARD,
 	DATA_STORES_STANDARD_ADD,
 	DATA_STORES_ORDERED,

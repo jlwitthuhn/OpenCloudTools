@@ -11,12 +11,14 @@ QString subwindow_type_display_name(const SubwindowType type)
 {
 	switch (type)
 	{
-	case SubwindowType::DATA_STORES_STANDARD:
+	case SubwindowType::CAT_DATA_STORES:
 		return "Data Stores";
+	case SubwindowType::DATA_STORES_STANDARD:
+		return "Search Data Store";
 	case SubwindowType::DATA_STORES_STANDARD_ADD:
 		return "Add to Data Store";
 	case SubwindowType::DATA_STORES_ORDERED:
-		return "Ordered Data Stores";
+		return "Search Ordered Data Store";
 	case SubwindowType::DATA_STORES_ORDERED_ADD:
 		return "Add to Ordered Data Store";
 	case SubwindowType::MEMORY_STORE_SORTED_MAP:
@@ -38,6 +40,8 @@ QString subwindow_type_id(const SubwindowType type)
 {
 	switch (type)
 	{
+	case SubwindowType::CAT_DATA_STORES:
+		return "CDS";
 	case SubwindowType::DATA_STORES_STANDARD:
 		return "SDS";
 	case SubwindowType::DATA_STORES_STANDARD_ADD:
