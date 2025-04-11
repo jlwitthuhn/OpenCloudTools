@@ -29,6 +29,7 @@
 
 #include "assert.h"
 #include "panel_ban_list.h"
+#include "panel_ban_list_add.h"
 #include "panel_bulk_data.h"
 #include "panel_datastore_ordered.h"
 #include "panel_datastore_ordered_add.h"
@@ -341,6 +342,12 @@ void MyMainWindow::rebuild_universe_tree()
 					search_item->setText(0, subwindow_type_display_name(SubwindowType::BAN_LIST));
 					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::BAN_LIST));
 				}
+				if (hidden_operation_ids.count(subwindow_type_id(SubwindowType::BAN_LIST_ADD)) == 0)
+				{
+					QTreeWidgetItem* const search_item = new QTreeWidgetItem{ subwindow_item };
+					search_item->setText(0, subwindow_type_display_name(SubwindowType::BAN_LIST_ADD));
+					search_item->setData(0, Qt::UserRole, static_cast<int>(SubwindowType::BAN_LIST_ADD));
+				}
 			}
 		}
 		this_item->setExpanded(true);
@@ -462,6 +469,9 @@ void MyMainWindow::show_subwindow(const SubwindowId& id)
 			return;
 		case SubwindowType::BAN_LIST:
 			new_subwindow = create_and_attach_panel<BanListPanel>(api_profile, universe, center_mdi_widget);
+			break;
+		case SubwindowType::BAN_LIST_ADD:
+			new_subwindow = create_and_attach_panel<BanAddPanel>(api_profile, universe, center_mdi_widget);
 			break;
 		case SubwindowType::UNIVERSE_PREFERENCES:
 			new_subwindow = create_and_attach_panel<UniversePreferencesPanel>(api_profile, universe, center_mdi_widget);

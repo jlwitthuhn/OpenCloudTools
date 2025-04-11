@@ -31,6 +31,8 @@ QString subwindow_type_display_name(const SubwindowType type)
 		return "Moderation";
 	case SubwindowType::BAN_LIST:
 		return "Ban List";
+	case SubwindowType::BAN_LIST_ADD:
+		return "Ban User";
 	case SubwindowType::UNIVERSE_PREFERENCES:
 		return "Universe Preferences";
 	}
@@ -62,6 +64,8 @@ QString subwindow_type_id(const SubwindowType type)
 		return "CMOD";
 	case SubwindowType::BAN_LIST:
 		return "BAN";
+	case SubwindowType::BAN_LIST_ADD:
+		return "BANA";
 	case SubwindowType::UNIVERSE_PREFERENCES:
 		return "UPREF";
 	}

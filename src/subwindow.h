@@ -18,6 +18,7 @@ enum class SubwindowType : std::uint8_t
 	MESSAGING,
 	CAT_MODERATION,
 	BAN_LIST,
+	BAN_LIST_ADD,
 	UNIVERSE_PREFERENCES,
 };
 
