@@ -103,8 +103,8 @@ public:
 	ApiKeyProfile(QObject* parent, const QString& name, const QString& key, bool production, bool save_to_disk, const std::function<bool(const QString&)>& api_key_name_available);
 
 	Id get_id() const { return id; }
-	QString get_name() const { return name; };
-	QString get_key() const { return key; };
+	QString get_name() const { return name; }
+	QString get_key() const { return key; }
 	bool get_production() const { return production; }
 	bool get_save_to_disk() const { return save_to_disk; }
 

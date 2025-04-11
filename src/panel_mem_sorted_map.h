@@ -34,7 +34,7 @@ private:
 	void handle_selected_map_changed();
 
 	void pressed_list_all(bool ascending);
-	void pressed_list_all_asc() { return pressed_list_all(true); };
+	void pressed_list_all_asc() { return pressed_list_all(true); }
 	void pressed_list_all_desc() { return pressed_list_all(false); }
 	void pressed_remove_recent_map();
 
