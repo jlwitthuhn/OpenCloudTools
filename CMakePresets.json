@@ -7,25 +7,35 @@
             "binaryDir": "build/${presetName}",
             "installDir": "build/${presetName}/install",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "OCT_USE_CLANG_TIDY": "FALSE",
                 "OCT_USE_GIT_TAG": "TRUE",
                 "OCT_USE_IWYU": "FALSE",
                 "OCT_USE_QT5": "FALSE"
             }
         },
-      {
-        "name": "ninja-normal",
-        "inherits": "common",
-        "generator": "Ninja"
-      },
-      {
-        "name": "ninja-clang-tidy",
-        "inherits": "common",
-        "generator": "Ninja",
-        "cacheVariables": {
-          "OCT_USE_CLANG_TIDY": "TRUE"
+        {
+            "name": "ninja-dev",
+            "inherits": "common",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "ninja-rel",
+            "inherits": "ninja-dev",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "ninja-analysis-clang-tidy",
+            "inherits": "common",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "OCT_USE_CLANG_TIDY": "TRUE"
+            }
         }
-      }
     ]
 }

@@ -2,10 +2,32 @@
     "version": 2,
     "configurePresets": [
         {
-            "name": "ninja-normal-withqtpath",
-            "inherits": "ninja-normal",
+            "name": "ninja-dev-withqt6",
+            "inherits": "ninja-dev",
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "D:/Dev/Qt/install/6.8.1_vs2022"
+                "CMAKE_PREFIX_PATH": "D:/Dev/Qt/install/6.8.3_vs2022"
+            }
+        },
+        {
+            "name": "ninja-rel-withqt6",
+            "inherits": "ninja-dev-withqt6",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "ninja-dev-withqt5",
+            "inherits": "ninja-dev",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "D:/Dev/Qt/install/5.15.16_vs2019",
+                "OCT_USE_QT5": "TRUE"
+            }
+        },
+        {
+            "name": "ninja-rel-withqt5",
+            "inherits": "ninja-dev-withqt5",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
             }
         }
     ]
