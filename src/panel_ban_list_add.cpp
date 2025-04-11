@@ -1,5 +1,7 @@
 #include "panel_ban_list_add.h"
 
+#include <optional>
+
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QLineEdit>

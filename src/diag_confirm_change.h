@@ -4,6 +4,7 @@
 
 #include <QDialog>
 #include <QObject>
+#include <QString>
 
 class QCheckBox;
 class QPushButton;
@@ -29,6 +30,7 @@ enum class ChangeType : std::uint8_t
 class ConfirmChangeDialog : public QDialog
 {
 	Q_OBJECT
+
 public:
 	ConfirmChangeDialog(QWidget* parent, ChangeType change_type, const QString& name = "?");
 

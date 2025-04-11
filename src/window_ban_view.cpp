@@ -4,6 +4,7 @@
 #include <optional>
 
 #include <Qt>
+#include <QChar>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
@@ -18,6 +19,7 @@
 #include "diag_confirm_change.h"
 #include "diag_operation_in_progress.h"
 #include "model_common.h"
+#include "util_enum.h"
 
 ViewBanWindow::ViewBanWindow(const ViewEditMode view_edit_mode, const QString& api_key, const BanListUserRestriction& user_restriction, QWidget* const parent) :
 	QWidget{ parent, Qt::Window },

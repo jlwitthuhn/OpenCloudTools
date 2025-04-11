@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <Qt>
+#include <QtGlobal>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>

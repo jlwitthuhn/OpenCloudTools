@@ -1,7 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QWidget>
+#include <QString>
 
 class QCheckBox;
 class QLineEdit;
