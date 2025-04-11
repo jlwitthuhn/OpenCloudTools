@@ -61,9 +61,11 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 
 				QCheckBox* const this_box = new QCheckBox{ checkbox_label, operations_group };
 				this_box->setChecked(checked);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 				connect(this_box, &QCheckBox::checkStateChanged, this, &UniversePreferencesPanel::handle_hidden_operation_checkbox_changed);
-				checkboxes.push_back(this_box);
-				checkbox_to_type[this_box] = this_type;
+#else
+				connect(this_box, &QCheckBox::stateChanged, this, &UniversePreferencesPanel::handle_hidden_operation_checkbox_changed);
+#endif
 			}
 
 			QVBoxLayout* const operations_layout = new QVBoxLayout{ operations_group };
