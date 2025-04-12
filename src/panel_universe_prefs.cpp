@@ -67,6 +67,7 @@ UniversePreferencesPanel::UniversePreferencesPanel(QWidget* const parent, const 
 #else
 				connect(this_box, &QCheckBox::stateChanged, this, &UniversePreferencesPanel::handle_hidden_operation_checkbox_changed);
 #endif
+				checkboxes.push_back(this_box);
 			}
 
 			QVBoxLayout* const operations_layout = new QVBoxLayout{ operations_group };
