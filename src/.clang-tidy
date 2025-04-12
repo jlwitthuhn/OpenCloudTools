@@ -1,1 +1,1 @@
-Checks: -*,bugprone-*,performance-*,portability-*,-bugprone-easily-swappable-parameters
+Checks: -*,bugprone-*,cert-*,misc-*,performance-*,portability-*,-bugprone-easily-swappable-parameters,-cert-err58-cpp,-misc-include-cleaner

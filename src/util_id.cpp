@@ -8,7 +8,7 @@
 
 #include "assert.h"
 
-static std::default_random_engine engine;
+static std::default_random_engine engine{ std::random_device{}() };
 static std::uniform_int_distribution<int> dist{ 0, std::numeric_limits<char>::max() };
 
 static char generate_char()
